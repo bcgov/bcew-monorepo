@@ -1,6 +1,6 @@
 {
-    "name": "bcgov-theme/design-system-wordpress-child-theme-template",
-    "description": "Design System Wordpress Child Theme Template",
+    "name": "bcgov-theme/design-system-wordpress-child-theme-firb",
+    "description": "Design System Wordpress Child Theme FIRB",
     "version": "1.0.0",
     "type": "wordpress-theme",
     "license": "Apache-2.0",
@@ -11,7 +11,7 @@
         }
     ],
     "require-dev": {
-        "bcgov/wordpress-utils": "@dev"
+        "bcgov/wordpress-utils": "~2.4"
     },
     "autoload": {
         "psr-4": {

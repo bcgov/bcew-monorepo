@@ -1,7 +1,7 @@
 {
-  "name": "design-system-wordpress-child-theme-template",
+  "name": "design-system-wordpress-child-theme-firb",
   "version": "1.0.0",
-  "description": "Child Theme Template",
+  "description": "Child Theme FIRB",
   "author": "govwordpress@gov.bc.ca",
   "license": "GPL-2.0-or-later",
   "keywords": [
@@ -13,7 +13,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bcgov/design-system-wordpress-child-theme-template.git"
+    "url": "git+https://github.com/bcgov/design-system-wordpress-child-theme-firb.git"
   },
   "bugs": {
     "url": "https://github.com/bcgov/design-system-wordpress-theme#readme",

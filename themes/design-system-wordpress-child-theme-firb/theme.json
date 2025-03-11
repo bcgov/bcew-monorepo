@@ -1,11 +1,35 @@
 {
     "$schema": "https://schemas.wp.org/trunk/theme.json",
     "version": 3,
-    "title": "Child Theme Template",
+    "title": "Child Theme FIRB",
     "settings": {
         "color": {
             "palette": [
-              
+              {
+                "slug": "drk-green",
+                "color": "#2A5529",
+                "name": "Dark Green"
+              },
+              {
+                "slug": "light-green",
+                "color": "#79A04E",
+                "name": "Light Green"
+              },
+              {
+                "slug": "drk-brown",
+                "color": "#825923",
+                "name": "Dark Brown"
+              },
+              {
+                "slug": "light-brown",
+                "color": "#C0882C",
+                "name": "Light Brown"
+              },
+              {
+                "slug": "drk-grey",
+                "color": "#4C4D4C",
+                "name": "Dark Grey"
+              }
             ]
         }
     }
