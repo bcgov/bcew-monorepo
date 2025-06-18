@@ -1,12 +1,48 @@
 {
     "$schema": "https://schemas.wp.org/trunk/theme.json",
     "version": 3,
-    "title": "Child Theme Template",
+    "title": "HPOROO Child Theme",
     "settings": {
         "color": {
+            "defaultPalette": false,
             "palette": [
-              
+                {
+                    "slug": "bar-colour",
+                    "color": "#2481C4",
+                    "name": "Bar Colour"
+                },
+                {
+                    "slug": "typography-color-primary",
+                    "color": "#2D2D2D",
+                    "name": "Typography Color Primary"
+                },
+                {
+                    "slug": "typography-color-secondary",
+                    "color": "#474543",
+                    "name": "Typography Color Secondary"
+                },
+                {
+                    "slug": "primary-footer-colour",
+                    "color": "#D9EFED",
+                    "name": "Primary Footer Colour"
+                },
+                {
+                    "slug": "secondary-colour",
+                    "color": "#2481C4",
+                    "name": "SecondaryColour"
+                },
+                {
+                    "slug": "tertiary",
+                    "color": "#1FBAAA",
+                    "name": "Tertiary"
+                },
+                {
+                    "slug": "accent-primary",
+                    "color": "#BD94C7",
+                    "name": "Accent Primary"
+                }
             ]
         }
+        
     }
 }
