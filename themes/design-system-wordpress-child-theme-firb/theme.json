@@ -2,6 +2,33 @@
     "$schema": "https://schemas.wp.org/trunk/theme.json",
     "version": 3,
     "title": "Child Theme FIRB",
+    "templateParts": [
+        {
+			"area": "header",
+			"name": "header",
+			"title": "Header"
+		},
+		{
+			"area": "header",
+			"name": "header-no-breadcrumbs",
+			"title": "Header, no breadcrumbs"
+		},
+        {
+			"area": "header",
+			"name": "homepage-header",
+			"title": "Homepage Header"
+		},
+        {
+			"area": "header",
+			"name": "search-header",
+			"title": "Search Header"
+		},
+        {
+			"area": "footer",
+			"name": "footer",
+			"title": "Footer"
+		}
+    ],
     "settings": {
         "color": {
             "palette": [
