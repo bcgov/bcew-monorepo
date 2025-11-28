@@ -94,7 +94,7 @@
                                     <!-- wp:image {"id":7837,"width":"28px","height":"auto","sizeSlug":"full","linkDestination":"none","className":"dswp-information-contact-socials-card-img size-full is-resized is-style-default"} -->
                                     <figure
                                         class="wp-block-image size-full is-resized dswp-information-contact-socials-card-img is-style-default">
-                                        <img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/icons/phone-light-green.png'); ?>"
+                                        <img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/icons/phone-light-green.png' ); ?>"
                                             alt="" class="wp-image-7837" style="width:28px;height:auto" /></figure>
                                     <!-- /wp:image -->
                                 </div>
@@ -361,13 +361,13 @@
 
                         <!-- wp:paragraph {"style":{"typography":{"lineHeight":"1.7"}}} -->
                         <p style="line-height:1.7"><a
-                                href="<?php echo esc_url( home_url('regulated-marketing/regulated-sectors-and-commodity-boards' ) ); ?>"
+                                href="<?php echo esc_url( home_url( 'regulated-marketing/regulated-sectors-and-commodity-boards' ) ); ?>"
                                 data-type="page" data-id="2557">Boards and commissions</a></p>
                         <!-- /wp:paragraph -->
 
                         <!-- wp:paragraph {"style":{"typography":{"lineHeight":"1.7"}}} -->
                         <p style="line-height:1.7"><a
-                                href="<?php echo esc_url( home_url('regulated-marketing/governance-and-compliance/guiding-principles-and-directives' ) ); ?>"
+                                href="<?php echo esc_url( home_url( 'regulated-marketing/governance-and-compliance/guiding-principles-and-directives' ) ); ?>"
                                 data-type="page" data-id="3732">Guiding principles (SAFETI)</a></p>
                         <!-- /wp:paragraph -->
                     </div>
