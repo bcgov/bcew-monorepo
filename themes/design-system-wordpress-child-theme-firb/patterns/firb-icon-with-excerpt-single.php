@@ -3,7 +3,7 @@
  * Title: FIRB Icon with Excerpt - Single
  * Slug: design-system-wordpress-child-theme-firb/firb-icon-with-excerpt-single
  * Categories: text
- * 
+ *
  * @package Design-System-WordPress-Theme
  */
 ?>

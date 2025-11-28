@@ -3,7 +3,7 @@
  * Title: FIRB Subheading H3 H4 with Paragraph(s)
  * Slug: design-system-wordpress-child-theme-firb/firb-subheading-h3-h4-with-paragraphs
  * Categories: text
- * 
+ *
  * @package Design-System-WordPress-Theme
  */
 ?>

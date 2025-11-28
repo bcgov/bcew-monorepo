@@ -3,7 +3,7 @@
  * Title: FIRB Columns with Headings (H3/H4)
  * Slug: design-system-wordpress-child-theme-firb/firb-columns-with-headings-h3-h4
  * Categories: text
- * 
+ *
  * @package Design-System-WordPress-Theme
  */
 ?>
