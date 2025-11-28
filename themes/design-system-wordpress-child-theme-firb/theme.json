@@ -4,60 +4,87 @@
     "title": "Child Theme FIRB",
     "templateParts": [
         {
-			"area": "header",
-			"name": "header",
-			"title": "Header"
+            "area": "header",
+            "name": "header",
+            "title": "Header"
+        },
+        {
+            "area": "header",
+            "name": "header-no-breadcrumbs",
+            "title": "Header, no breadcrumbs"
+        },
+        {
+            "area": "header",
+            "name": "homepage-header",
+            "title": "Homepage Header"
+        },
+        {
+            "area": "header",
+            "name": "search-header",
+            "title": "Search Header"
+        },
+        {
+            "area": "footer",
+            "name": "footer",
+            "title": "Footer"
+        }
+    ],
+    "customTemplates": [
+        {
+			"name": "wp-custom-template-pages-no-breadcrumbs",
+			"title": "Pages no breadcrumbs",
+			"postTypes": [
+				"page",
+				"post"
+			]
 		},
 		{
-			"area": "header",
-			"name": "header-no-breadcrumbs",
-			"title": "Header, no breadcrumbs"
-		},
-        {
-			"area": "header",
-			"name": "homepage-header",
-			"title": "Homepage Header"
-		},
-        {
-			"area": "header",
-			"name": "search-header",
-			"title": "Search Header"
-		},
-        {
-			"area": "footer",
-			"name": "footer",
-			"title": "Footer"
+			"name": "wp-custom-template-navigation-only",
+			"title": "Navigation only",
+			"postTypes": [
+				"page",
+				"post"
+			]
 		}
-    ],
+	],
     "settings": {
         "color": {
             "palette": [
-              {
-                "slug": "drk-green",
-                "color": "#2A5529",
-                "name": "Dark Green"
-              },
-              {
-                "slug": "light-green",
-                "color": "#79A04E",
-                "name": "Light Green"
-              },
-              {
-                "slug": "drk-brown",
-                "color": "#825923",
-                "name": "Dark Brown"
-              },
-              {
-                "slug": "light-brown",
-                "color": "#C0882C",
-                "name": "Light Brown"
-              },
-              {
-                "slug": "drk-grey",
-                "color": "#4C4D4C",
-                "name": "Dark Grey"
-              }
+                {
+                    "slug": "drk-green",
+                    "color": "#2A5529",
+                    "name": "Dark Green"
+                },
+                {
+                    "slug": "light-green",
+                    "color": "#79A04E",
+                    "name": "Light Green"
+                },
+                {
+                    "slug": "drk-brown",
+                    "color": "#825923",
+                    "name": "Dark Brown"
+                },
+                {
+                    "slug": "light-brown",
+                    "color": "#C0882C",
+                    "name": "Light Brown"
+                },
+                {
+                    "slug": "drk-grey",
+                    "color": "#4C4D4C",
+                    "name": "Dark Grey"
+                }
             ]
+        }
+    },
+    "styles": {
+        "elements": {
+            "heading": {
+                "color": {
+                    "text": "var(--wp--preset--color--drk-green)"
+                }
+            }
         }
     }
 }
