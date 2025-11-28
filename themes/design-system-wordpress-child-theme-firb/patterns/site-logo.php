@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Title: Site logo
  * Slug: design-system-wordpress-child-theme-firb/site-logo
