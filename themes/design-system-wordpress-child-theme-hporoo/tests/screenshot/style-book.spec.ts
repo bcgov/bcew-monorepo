@@ -1,4 +1,5 @@
-import { test, expect, Page } from '@wordpress/e2e-test-utils-playwright';
+import { test, expect } from '@wordpress/e2e-test-utils-playwright';
+import type { Page } from '@playwright/test';
 
 // Config
 const SCREENSHOT_OPTIONS = { maxDiffPixelRatio: 0.02 } as const;
