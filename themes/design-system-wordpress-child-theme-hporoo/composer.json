@@ -6,7 +6,7 @@
     "repositories": [
         {
             "type": "composer",
-            "url": "https://apps.itsm.gov.bc.ca/satis"
+            "url": "https://blog.gov.bc.ca/satis"
         }
     ],
     "require-dev": {
@@ -33,7 +33,8 @@
             "npm run fix:js",
             "npm run fix:css",
             "npm run test",
-            "composer test"
+            "composer test",
+            "npm run build"
         ],
         "checklist": [
             "composer validate",
