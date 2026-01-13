@@ -2,7 +2,9 @@ import { test, expect } from '@wordpress/e2e-test-utils-playwright';
 import type { Page } from '@playwright/test';
 
 // Config
+// Allows up to 2% of pixels to differ; accounts for anti-aliasing and minor rendering variations
 const SCREENSHOT_OPTIONS = { maxDiffPixelRatio: 0.02 } as const;
+const RENDER_WAIT_MS = 500;
 const EXCLUDED_BLOCKS = [
     'column',
     'comment-template',
@@ -44,11 +46,11 @@ const disableAnimations = async (page: Page) => {
 
 const waitForRender = async (page: Page) => {
     // Allow block preview to finish layout rendering
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(RENDER_WAIT_MS);
 };
 
 test.describe('style book', () => {
-    test('all blocks', async ({ admin }) => {
+    test('should capture visual regressions for all stable blocks', async ({ admin }) => {
         await admin.visitAdminPage(
             'site-editor.php',
             'p=%2Fstyles&preview=stylebook&section=%2Fblocks'
@@ -56,22 +58,41 @@ test.describe('style book', () => {
 
         const list = getStylesList(admin.page);
         const count = await list.count();
+        const results = { tested: 0, skipped: 0, failed: 0 };
 
         for (let i = 0; i < count; i++) {
             const item = list.nth(i);
-            const name = slugify(await item.textContent());
-            if (EXCLUDED_BLOCKS.includes(name as ExcludedBlockName)) continue;
+            const blockLabel = await item.textContent();
+            const name = slugify(blockLabel);
 
-            await item.click();
+            if (EXCLUDED_BLOCKS.includes(name as ExcludedBlockName)) {
+                results.skipped++;
+                continue;
+            }
 
-            const preview = getPreviewCell(admin.page);
-            await preview.waitFor({ state: 'visible' });
-            await disableAnimations(preview.page());
-            await waitForRender(preview.page());
+            try {
+                await item.click();
 
-            await expect(preview).toHaveScreenshot(`style-book-${name}.png`, SCREENSHOT_OPTIONS);
+                const preview = getPreviewCell(admin.page);
+                await preview.waitFor({ state: 'visible' });
+                await disableAnimations(preview.page());
+                await waitForRender(preview.page());
 
-            await admin.page.getByRole('button', { name: 'Back', exact: true }).click();
+                await expect(preview).toHaveScreenshot(`style-book-${name}.png`, SCREENSHOT_OPTIONS);
+                results.tested++;
+            } catch (error) {
+                results.failed++;
+                console.error(`Failed to snapshot block: ${name}`, error);
+                throw error; // Re-throw to fail the test
+            } finally {
+                // Always try to navigate back, even on error
+                try {
+                    await admin.page.getByRole('button', { name: 'Back', exact: true }).click();
+                } catch {
+                    // Ignore back button errors
+                }
+            }
         }
+
     });
 });
