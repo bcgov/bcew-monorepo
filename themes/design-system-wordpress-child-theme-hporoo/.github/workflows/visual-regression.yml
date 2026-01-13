@@ -1,7 +1,6 @@
-name: Visual Regression
+name: Visual regression snapshot update
 
-on:
-  pull_request:
+on: [pull_request]
 
 permissions:
   contents: write
@@ -9,35 +8,29 @@ permissions:
 jobs:
   visual-regression:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Install Node.js 24
+        uses: actions/setup-node@v3
         with:
-          node-version: '24.12.0'
-          cache: npm
+          node-version: 24
+          cache: 'npm'
 
-      - name: Install dependencies
+      - name: Install node dependencies
         run: npm ci
 
-      - name: Install Playwright browsers
+      - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
-      - name: Start WordPress environment
+      - name: Start wp-env
         run: npm run wp-env start
 
-      - name: Run visual regression tests
+      - name: Run screenshot updates
         run: npm run test:screenshot:update
 
-      - name: Stop WordPress environment
-        run: npm run wp-env stop
-        if: always() # Ensure the environment is stopped even if tests fail
-
-      - name: Commit snapshot updates
-        uses: stefanzweifel/git-auto-commit-action@v5.0.0
+      - name: Commit and push updated snapshots
+        uses: stefanzweifel/git-auto-commit-action@v7.1.0
         with:
-          commit_message: 'chore: update visual regression snapshots'
-          file_pattern: 'tests/screenshot/__snapshots__/**'
+          commit_message: 'Update e2e snapshots (committed automatically via Visual Regression workflow)'
