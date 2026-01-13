@@ -3,7 +3,6 @@ import type { Page } from '@playwright/test';
 
 // Config
 // Allows up to 2% of pixels to differ; accounts for anti-aliasing and minor rendering variations
-const SCREENSHOT_OPTIONS = { maxDiffPixelRatio: 0.02 } as const;
 const RENDER_WAIT_MS = 500;
 const EXCLUDED_BLOCKS = [
     'column',
