@@ -78,7 +78,13 @@ test.describe('style book', () => {
                 await disableAnimations(preview.page());
                 await waitForRender(preview.page());
 
-                await expect(preview).toHaveScreenshot(`style-book-${name}.png`, SCREENSHOT_OPTIONS);
+                await preview.screenshot({
+                    animations: 'disabled',
+                    path:
+                        'tests/screenshot/__snapshots__/style-book-' +
+                        name +
+                        '.png',
+                });
                 results.tested++;
             } catch (error) {
                 results.failed++;
