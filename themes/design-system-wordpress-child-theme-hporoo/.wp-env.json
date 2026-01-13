@@ -5,10 +5,6 @@
         ".",
         "bcgov/design-system-wordpress-theme"
     ],
-    "plugins": [
-        "../../plugins/design-system-wordpress-plugin",
-        "../../plugins/wordpress-document-repository"
-    ],
     "lifecycleScripts": {
         "afterStart": "wp-env run tests-cli wp theme activate design-system-wordpress-child-theme-hporoo"
     }
