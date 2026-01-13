@@ -18,6 +18,8 @@ const EXCLUDED_BLOCKS = [
     'navigation',
 ] as const;
 
+type ExcludedBlockName = (typeof EXCLUDED_BLOCKS)[number];
+
 // Helpers
 const slugify = (text: string | null): string =>
     (text ?? 'unknown').trim().replace(/[ /]/g, '-').toLowerCase();
@@ -41,10 +43,8 @@ const disableAnimations = async (page: Page) => {
 };
 
 const waitForRender = async (page: Page) => {
-    // simple debounce to allow block preview to finish layout
-    await page.evaluate(
-        () => new Promise((resolve) => setTimeout(resolve, 500))
-    );
+    // Allow block preview to finish layout rendering
+    await page.waitForTimeout(500);
 };
 
 test.describe('style book', () => {
@@ -60,7 +60,7 @@ test.describe('style book', () => {
         for (let i = 0; i < count; i++) {
             const item = list.nth(i);
             const name = slugify(await item.textContent());
-            if (EXCLUDED_BLOCKS.includes(name as any)) continue;
+            if (EXCLUDED_BLOCKS.includes(name as ExcludedBlockName)) continue;
 
             await item.click();
 
