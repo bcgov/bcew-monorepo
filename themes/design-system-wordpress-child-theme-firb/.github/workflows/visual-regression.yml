@@ -1,56 +1,36 @@
-name: Visual Regression Tests
+name: Visual regression snapshot update
 
-on:
-  pull_request:
-    branches:
-      - main
-      - release/*
-  workflow_dispatch:
+on: [pull_request]
+
+permissions:
+  contents: write
 
 jobs:
   visual-regression:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Install Node.js 24
+        uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: 24
+          cache: 'npm'
 
-      - name: Install dependencies
+      - name: Install node dependencies
         run: npm ci
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
-      - name: Start WordPress environment
+      - name: Start wp-env
         run: npm run wp-env start
-        env:
-          WP_ENV_PORT: 8888
 
-      - name: Wait for WordPress
-        run: |
-          timeout 300 bash -c 'until curl -f http://localhost:8888/wp-admin/install.php; do sleep 2; done'
+      - name: Run screenshot updates
+        run: npm run test:screenshot:update
 
-      - name: Run screenshot tests
-        run: npm run test:screenshot
-
-      - name: Upload screenshots
-        if: always()
-        uses: actions/upload-artifact@v4
+      - name: Commit and push updated snapshots
+        uses: stefanzweifel/git-auto-commit-action@v7.1.0
         with:
-          name: screenshots
-          path: tests/screenshot/__snapshots__/
-          retention-days: 30
-
-      - name: Commit screenshots
-        if: github.event_name == 'pull_request'
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add tests/screenshot/__snapshots__/
-          git diff --staged --quiet || git commit -m "Update visual regression screenshots [skip ci]"
-          git push || echo "No changes to commit"
+          commit_message: 'Update e2e snapshots (committed automatically via Visual Regression workflow)'
