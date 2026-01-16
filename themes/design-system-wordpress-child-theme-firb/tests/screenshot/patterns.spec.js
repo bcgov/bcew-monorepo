@@ -17,6 +17,13 @@ test.describe('pattern', () => {
 		{ name: 'firb-icon-with-excerpt-single' },
 		{ name: 'firb-paragraph' },
 		{ name: 'firb-subheading-h3-h4-with-paragraphs' },
+		{ name: 'hero-banner' },
+		{ name: 'site-logo' },
+		{ name: 'base-header' },
+		{ name: 'base-footer' },
+		{ name: 'page-404' },
+		// Note: navigation and navigation-mobile use custom blocks with menuId that require
+		// menu setup in the test environment. They are excluded from visual regression tests.
 	].forEach(({ name }) => {
 		test(name, async ({ editor }) => {
 			// TODO: There's probably a faster way to add a pattern than this.
