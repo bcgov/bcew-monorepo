@@ -41,10 +41,16 @@ test.describe('pattern', () => {
 			await editor.page
 				.getByRole('button', { name: 'Exit code editor' })
 				.click();
-			const preview = (await editor.openPreviewPage())
-				.locator('.entry-content')
-				.first();
-			await expect(preview).toHaveScreenshot(SCREENSHOT_OPTIONS);
+			const previewPage = await editor.openPreviewPage();
+			// Wait for page to be fully loaded
+			await previewPage.waitForLoadState('networkidle');
+			const preview = previewPage.locator('.entry-content').first();
+			// Wait for the element to be visible before taking screenshot
+			await preview.waitFor({ state: 'visible', timeout: 30000 });
+			await expect(preview).toHaveScreenshot({
+				...SCREENSHOT_OPTIONS,
+				timeout: 30000,
+			});
 		});
 	});
 });
