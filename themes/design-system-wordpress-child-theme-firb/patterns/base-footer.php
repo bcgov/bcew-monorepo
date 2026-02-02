@@ -111,7 +111,7 @@
                                     <div class="wp-block-group">
                                         <!-- wp:paragraph {"align":"left","style":{"layout":{"selfStretch":"fit","flexSize":null},"typography":{"lineHeight":"1.5"}},"textColor":"font dark"} -->
                                         <p class="has-text-align-left has-font-dark-color has-text-color"
-                                            style="line-height:1.5"><a href="tel:18006637867">1-800-663-7867</a>
+                                            style="line-height:1.5"><a href="tel:18006637867">250-356-8945</a>
                                             (toll-free, Canada and USA)</p>
                                         <!-- /wp:paragraph -->
 
@@ -382,8 +382,8 @@
 
                         <!-- wp:paragraph {"style":{"typography":{"lineHeight":"1.7"}}} -->
                         <p style="line-height:1.7"><a href="placeholder" data-type="link"
-                                data-id="placeholder"></a>Phone: <a href="tel:1-800-663-7867" data-type="link"
-                                data-id="placeholder"></a><a href="tel:18006637867">1-800-663-7867</a></p>
+                                data-id="placeholder"></a>Phone: <a href="tel:250-356-8945" data-type="link"
+                                data-id="placeholder"></a><a href="tel:2503568945">250-356-8945</a></p>
                         <!-- /wp:paragraph -->
 
                         <!-- wp:paragraph {"style":{"typography":{"lineHeight":"1.7"}}} -->
