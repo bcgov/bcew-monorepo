@@ -12,6 +12,10 @@ const EXCLUDED_BLOCKS = [
     'post-template',
     'query-total',
     'spacer',
+    'rss',
+    'video',
+    'calendar',
+    'latest-comments',
 ];
 
 /**
