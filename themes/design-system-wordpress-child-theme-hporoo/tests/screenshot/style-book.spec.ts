@@ -16,6 +16,7 @@ const EXCLUDED_BLOCKS = [
     'video',
     'calendar',
     'latest-comments',
+    'archives',
 ];
 
 /**
