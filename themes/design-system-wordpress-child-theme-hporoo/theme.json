@@ -6,7 +6,12 @@
         {
             "name": "tribunal_pages",
             "title": "Pages Tribunal"
+        },
+        {
+            "name": "tribunal_secondary",
+            "title": "Pages Secondary Tribunal"
         }
+
     ],
     "settings": {
         "color": {
