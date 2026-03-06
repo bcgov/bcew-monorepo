@@ -1,0 +1,10 @@
+<?php
+/**
+ * Title: Sample
+ * Slug: <%= slug %>/sample
+ *
+ * @package <%= slug %>
+ */
+?>
+
+<!-- This is a sample and can be safely removed. -->

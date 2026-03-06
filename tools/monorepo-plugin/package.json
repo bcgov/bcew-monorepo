@@ -1,0 +1,56 @@
+{
+    "name": "monorepo-plugin",
+    "version": "0.0.1",
+    "private": true,
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        "./package.json": "./package.json",
+        ".": {
+            "bcgov-wordpress-monorepo": "./src/index.ts",
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js",
+            "default": "./dist/index.js"
+        }
+    },
+    "nx": {
+        "targets": {
+            "build": {
+                "executor": "@nx/js:tsc",
+                "outputs": [
+                    "{options.outputPath}"
+                ],
+                "options": {
+                    "outputPath": "tools/monorepo-plugin/dist",
+                    "main": "tools/monorepo-plugin/src/index.ts",
+                    "tsConfig": "tools/monorepo-plugin/tsconfig.lib.json",
+                    "rootDir": "tools/monorepo-plugin/src",
+                    "generatePackageJson": false,
+                    "assets": [
+                        {
+                            "input": "./tools/monorepo-plugin/src",
+                            "glob": "**/!(*.ts)",
+                            "output": "."
+                        },
+                        {
+                            "input": "./tools/monorepo-plugin/src",
+                            "glob": "**/*.d.ts",
+                            "output": "."
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "dependencies": {
+        "@nx/devkit": "22.5.4",
+        "tslib": "^2.3.0"
+    },
+    "generators": "./generators.json",
+    "files": [
+        "dist",
+        "!**/*.tsbuildinfo",
+        "generators.json"
+    ]
+}

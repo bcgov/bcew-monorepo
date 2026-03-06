@@ -2,3 +2,4 @@ packages:
     - 'themes/*'
     - 'plugins/*'
     - 'packages/*'
+    - 'tools/*'

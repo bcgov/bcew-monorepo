@@ -27,14 +27,23 @@
         "packages/*"
     ],
     "devDependencies": {
+        "@nx/plugin": "^22.5.4",
         "@playwright/test": "^1.58.2",
+        "@swc-node/register": "~1.11.1",
+        "@swc/cli": "~0.8.0",
+        "@swc/core": "~1.15.5",
+        "@swc/helpers": "~0.5.18",
+        "@types/node": "20.19.9",
         "@wordpress/env": "^10.39.0",
         "@wordpress/scripts": "^31.5.0",
         "@wordpress/stylelint-config": "^23.32.0",
         "eslint-plugin-playwright": "^2.7.0",
         "eslint-plugin-prefer-arrow": "^1.2.3",
         "js-beautify": "^1.15.4",
-        "nx": "22.5.0"
+        "nx": "22.5.0",
+        "prettier": "~3.6.2",
+        "tslib": "^2.3.0",
+        "typescript": "~5.9.2"
     },
     "scripts": {
         "build": "npx nx run-many -t build",
@@ -61,5 +70,8 @@
         "check-engines": "wp-scripts check-engines",
         "check-licenses": "wp-scripts check-licenses --prod",
         "wp-env": "wp-env"
+    },
+    "dependencies": {
+        "@nx/devkit": "22.5.4"
     }
 }

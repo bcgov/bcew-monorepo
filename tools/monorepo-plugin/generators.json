@@ -1,0 +1,9 @@
+{
+    "generators": {
+        "theme-generator": {
+            "factory": "./dist/generators/theme-generator/theme-generator",
+            "schema": "./dist/generators/theme-generator/schema.json",
+            "description": "theme-generator generator"
+        }
+    }
+}
