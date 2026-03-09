@@ -2,6 +2,23 @@
     "$schema": "https://schemas.wp.org/trunk/theme.json",
     "version": 3,
     "title": "HPOROO Child Theme",
+    "templateParts": [
+                {
+            "area": "footer",
+            "name": "footer",
+            "title": "Footer"
+        },
+        {
+            "area": "footer",
+            "name": "hporoo_footer",
+            "title": "HPOROO Footer"
+        },
+        {
+            "area": "footer",
+            "name": "tribunal_footer",
+            "title": "Tribunal Footer"
+        }
+    ],
     "customTemplates": [
         {
             "name": "tribunal_pages",
@@ -11,7 +28,6 @@
             "name": "tribunal_secondary",
             "title": "Pages Secondary Tribunal"
         }
-
     ],
     "settings": {
         "color": {
@@ -54,6 +70,5 @@
                 }
             ]
         }
-        
     }
 }
