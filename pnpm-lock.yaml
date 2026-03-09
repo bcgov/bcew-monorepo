@@ -12,12 +12,6 @@ importers:
         specifier: 22.5.4
         version: 22.5.4(nx@22.5.0(@swc-node/register@1.11.1(@swc/core@1.15.11(@swc/helpers@0.5.18))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.11(@swc/helpers@0.5.18)))
     devDependencies:
-      '@nx/jest':
-        specifier: 22.5.4
-        version: 22.5.4(@babel/traverse@7.29.0)(@swc-node/register@1.11.1(@swc/core@1.15.11(@swc/helpers@0.5.18))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.11(@swc/helpers@0.5.18))(@types/node@20.19.9)(babel-plugin-macros@3.1.0)(nx@22.5.0(@swc-node/register@1.11.1(@swc/core@1.15.11(@swc/helpers@0.5.18))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.11(@swc/helpers@0.5.18)))(typescript@5.9.3)
-      '@nx/js':
-        specifier: 22.5.4
-        version: 22.5.4(@babel/traverse@7.29.0)(@swc-node/register@1.11.1(@swc/core@1.15.11(@swc/helpers@0.5.18))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.11(@swc/helpers@0.5.18))(nx@22.5.0(@swc-node/register@1.11.1(@swc/core@1.15.11(@swc/helpers@0.5.18))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.11(@swc/helpers@0.5.18)))
       '@nx/plugin':
         specifier: ^22.5.4
         version: 22.5.4(@babel/traverse@7.29.0)(@swc-node/register@1.11.1(@swc/core@1.15.11(@swc/helpers@0.5.18))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.11(@swc/helpers@0.5.18))(@types/node@20.19.9)(@zkochan/js-yaml@0.0.7)(babel-plugin-macros@3.1.0)(eslint@8.57.1)(nx@22.5.0(@swc-node/register@1.11.1(@swc/core@1.15.11(@swc/helpers@0.5.18))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.11(@swc/helpers@0.5.18)))(typescript@5.9.3)
@@ -136,6 +130,9 @@ importers:
 
   tools/monorepo-plugin:
     dependencies:
+      '@nx/devkit':
+        specifier: 22.5.4
+        version: 22.5.4(nx@22.5.4(@swc-node/register@1.11.1(@swc/core@1.15.11(@swc/helpers@0.5.18))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.11(@swc/helpers@0.5.18)))
       tslib:
         specifier: ^2.3.0
         version: 2.8.1
@@ -8257,11 +8254,6 @@ packages:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
     hasBin: true
 
-  semver@7.7.3:
-    resolution: {integrity: sha512-SdsKMrI9TdgjdweUSR9MweHA4EJ8YxHn8DFaDisvhVlUOe4BF1tLD7GAj0lIqWVl+dPb/rExr0Btby5loQm20Q==}
-    engines: {node: '>=10'}
-    hasBin: true
-
   semver@7.7.4:
     resolution: {integrity: sha512-vFKC2IEtQnVhpT78h1Yp8wzwrf8CM+MzKMHGJZfBtzhZNycRFnXsHk6E5TxIkkMsgNS7mdX3AGB7x2QM2di4lA==}
     engines: {node: '>=10'}
@@ -16277,7 +16269,7 @@ snapshots:
       postcss-modules-scope: 3.2.1(postcss@8.5.6)
       postcss-modules-values: 4.0.0(postcss@8.5.6)
       postcss-value-parser: 4.2.0
-      semver: 7.7.3
+      semver: 7.7.4
     optionalDependencies:
       webpack: 5.104.1(@swc/core@1.15.11(@swc/helpers@0.5.18))(webpack-cli@5.1.4)
 
@@ -16290,7 +16282,7 @@ snapshots:
       postcss-modules-scope: 3.2.1(postcss@8.5.6)
       postcss-modules-values: 4.0.0(postcss@8.5.6)
       postcss-value-parser: 4.2.0
-      semver: 7.7.3
+      semver: 7.7.4
     optionalDependencies:
       webpack: 5.105.1(@swc/core@1.15.11(@swc/helpers@0.5.18))(webpack-cli@5.1.4)
 
@@ -16303,7 +16295,7 @@ snapshots:
       postcss-modules-scope: 3.2.1(postcss@8.5.6)
       postcss-modules-values: 4.0.0(postcss@8.5.6)
       postcss-value-parser: 4.2.0
-      semver: 7.7.3
+      semver: 7.7.4
     optionalDependencies:
       webpack: 5.105.2(@swc/core@1.15.11(@swc/helpers@0.5.18))(webpack-cli@5.1.4)
 
@@ -19462,7 +19454,7 @@ snapshots:
       log-symbols: 4.1.0
       meow: 9.0.0
       plur: 4.0.0
-      semver: 7.7.3
+      semver: 7.7.4
       slash: 3.0.0
       strip-json-comments: 3.1.1
       type-fest: 3.13.1
@@ -19972,7 +19964,7 @@ snapshots:
       cosmiconfig: 7.1.0
       klona: 2.0.6
       postcss: 8.5.6
-      semver: 7.7.3
+      semver: 7.7.4
       webpack: 5.104.1(@swc/core@1.15.11(@swc/helpers@0.5.18))(webpack-cli@5.1.4)
 
   postcss-loader@6.2.1(postcss@8.5.6)(webpack@5.105.1):
@@ -19980,7 +19972,7 @@ snapshots:
       cosmiconfig: 7.1.0
       klona: 2.0.6
       postcss: 8.5.6
-      semver: 7.7.3
+      semver: 7.7.4
       webpack: 5.105.1(@swc/core@1.15.11(@swc/helpers@0.5.18))(webpack-cli@5.1.4)
 
   postcss-loader@6.2.1(postcss@8.5.6)(webpack@5.105.2):
@@ -19988,7 +19980,7 @@ snapshots:
       cosmiconfig: 7.1.0
       klona: 2.0.6
       postcss: 8.5.6
-      semver: 7.7.3
+      semver: 7.7.4
       webpack: 5.105.2(@swc/core@1.15.11(@swc/helpers@0.5.18))(webpack-cli@5.1.4)
 
   postcss-media-query-parser@0.2.3: {}
@@ -20770,8 +20762,6 @@ snapshots:
   semver@5.7.2: {}
 
   semver@6.3.1: {}
-
-  semver@7.7.3: {}
 
   semver@7.7.4: {}
 

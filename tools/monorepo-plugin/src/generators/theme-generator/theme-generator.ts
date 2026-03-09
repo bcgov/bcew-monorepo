@@ -13,6 +13,7 @@ export async function themeGeneratorGenerator(
 ) {
     const projectRoot = `themes/${ options.slug }`;
     // Todo: Detect existing project and update instead of initializing new project.
+    // @see https://nx.dev/docs/extending-nx/migration-generators
     addProjectConfiguration( tree, options.slug, {
         root: projectRoot,
         projectType: 'application',

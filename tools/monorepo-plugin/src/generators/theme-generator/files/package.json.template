@@ -25,23 +25,22 @@
   },
   "main": "index.js",
   "devDependencies": {
-    "@wordpress/scripts": "^28.6.0"
+    "@playwright/test": "^1.58.0",
+    "@wordpress/e2e-test-utils-playwright": "^1.35.0",
+    "@wordpress/env": "^10.35.0",
+    "@wordpress/scripts": "^28.6.0",
+    "@wordpress-monorepo/e2e": "workspace:*"
   },
   "scripts": {
     "build": "wp-scripts build --output-path=dist",
     "build:production": "npm ci && npm run fix:css && npm run fix:md && npm run test:unit && npm run build",
-    "lint:css": "wp-scripts lint-style 'src/**/*.scss' --allow-empty-input",
-    "fix:css": "wp-scripts lint-style 'src/**/*.scss' --fix --allow-empty-input",
-    "lint:js": "wp-scripts lint-js src/**/*.js",
-    "fix:js": "wp-scripts lint-js src/scripts --fix",
-    "format": "wp-scripts format src/",
-    "lint:md": "wp-scripts lint-md-docs --config ../../.markdownlint.json --ignore-path ../../.markdownlintignore",
-    "fix:md": "wp-scripts lint-md-docs --fix",
-    "lint:pkg-json": "wp-scripts lint-pkg-json",
-    "packages-update": "wp-scripts packages-update",
     "start": "wp-scripts start --output-path=dist",
-    "test:e2e": "",
+    "test:e2e": "wp-scripts test-e2e --passWithNoTests",
+    "test:screenshot": "pnpm exec playwright test",
+    "test:screenshot:update": "pnpm exec playwright test --update-snapshots",
     "test:unit": "wp-scripts test-unit-js --passWithNoTests",
-    "test": "npm run test:unit"
+    "test": "npm run test:unit",
+    "wp-env": "wp-env",
+    "wp-env:start": "wp-env start --xdebug=coverage"
   }
 }
