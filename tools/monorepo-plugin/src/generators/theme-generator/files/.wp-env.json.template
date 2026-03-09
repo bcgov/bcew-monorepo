@@ -1,0 +1,15 @@
+{
+    "core": "WordPress/WordPress#6.8",
+    "phpVersion": "7.4",
+    "themes": [
+        <% if(parentTheme !== "none") { %>
+        ".",
+        "bcgov/<%= parentTheme %>"
+        <% } else { %>
+        "."
+        <% } %>
+    ],
+    "lifecycleScripts": {
+        "afterStart": "wp-env run tests-cli wp theme activate <%= slug %>"
+    }
+}

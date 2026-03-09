@@ -1,0 +1,46 @@
+{
+  "name": "<%= slug %>",
+  "version": "1.0.0",
+  "description": "<%= name %>",
+  "author": "govwordpress@gov.bc.ca",
+  "license": "GPL-2.0-or-later",
+  "keywords": [
+    "WordPress",
+    "Block Theme",
+    "BCGov",
+    "DesignSystem",
+    "Gutenberg"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bcgov/<%= slug %>.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bcgov/<%= slug %>#readme",
+    "email": "govwordpress@gov.bc.ca"
+  },
+  "engines": {
+    "npm": ">= 10.7.0",
+    "node": ">=20.15.1"
+  },
+  "main": "index.js",
+  "devDependencies": {
+    "@playwright/test": "^1.58.0",
+    "@wordpress/e2e-test-utils-playwright": "^1.35.0",
+    "@wordpress/env": "^10.35.0",
+    "@wordpress/scripts": "^28.6.0",
+    "@wordpress-monorepo/e2e": "workspace:*"
+  },
+  "scripts": {
+    "build": "wp-scripts build --output-path=dist",
+    "build:production": "npm ci && npm run fix:css && npm run fix:md && npm run test:unit && npm run build",
+    "start": "wp-scripts start --output-path=dist",
+    "test:e2e": "wp-scripts test-e2e --passWithNoTests",
+    "test:screenshot": "pnpm exec playwright test",
+    "test:screenshot:update": "pnpm exec playwright test --update-snapshots",
+    "test:unit": "wp-scripts test-unit-js --passWithNoTests",
+    "test": "npm run test:unit",
+    "wp-env": "wp-env",
+    "wp-env:start": "wp-env start --xdebug=coverage"
+  }
+}

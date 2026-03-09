@@ -1,0 +1,46 @@
+{
+    "$schema": "https://json-schema.org/schema",
+    "$id": "ThemeGenerator",
+    "title": "",
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "Human-readable theme name. Example: My Theme",
+            "$default": {
+                "$source": "argv",
+                "index": 0
+            },
+            "x-prompt": "What name would you like to use?"
+        },
+        "slug": {
+            "type": "string",
+            "description": "Theme slug. Example: my-theme",
+            "$default": {
+                "$source": "argv",
+                "index": 0
+            },
+            "x-prompt": "What slug would you like to use?"
+        },
+        "parentTheme": {
+            "type": "string",
+            "description": "The parent theme, if this is a child theme.",
+            "$default": "",
+            "x-prompt": {
+                "message": "Select the parent theme, if this is a child theme.",
+                "type": "list",
+                "items": [
+                    {
+                        "label": "Design System WordPress Theme",
+                        "value": "design-system-wordpress-theme"
+                    },
+                    {
+                        "label": "None (this is a standalone theme)",
+                        "value": "none"
+                    }
+                ]
+            }
+        }
+    },
+    "required": [ "name", "slug", "parentTheme" ]
+}

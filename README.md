@@ -18,6 +18,17 @@ This repository uses `nx` for various monorepo-related tasks:
 
 See the [nx documentation](https://nx.dev/docs/getting-started/intro) for more information.
 
+### Generating a new theme
+
+Using the `nx generator` feature, we can easily create a new theme in the monorepo using the command:
+
+```shell
+npx nx generate monorepo-plugin:theme-generator
+pnpm install
+```
+
+Follow the on-screen instructions to generate a standalone or child theme that adheres to the current theme standards.
+
 ---
 
 ## Contributing

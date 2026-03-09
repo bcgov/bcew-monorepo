@@ -1,0 +1,8 @@
+/*
+Theme Name:   <%= name %>
+Theme URI:    https://github.com/bcgov/<%= slug %>
+Version:      1.0.0
+<% if(parentTheme !== "none") { %>
+Template:     <%= parentTheme %>
+<% } %>
+*/
