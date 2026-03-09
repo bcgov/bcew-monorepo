@@ -20,13 +20,14 @@ See the [nx documentation](https://nx.dev/docs/getting-started/intro) for more i
 
 ### Generating a new theme
 
-Using the `nx` `generator` feature, we can easily create a new theme in the monorepo using the command:
+Using the `nx generator` feature, we can easily create a new theme in the monorepo using the command:
 
 ```shell
 npx nx generate monorepo-plugin:theme-generator
+pnpm install
 ```
 
-Follow the on-screen instructions to generate a
+Follow the on-screen instructions to generate a standalone or child theme that adheres to the current theme standards.
 
 ---
 
