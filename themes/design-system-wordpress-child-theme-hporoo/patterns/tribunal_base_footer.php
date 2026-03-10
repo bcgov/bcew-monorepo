@@ -9,10 +9,17 @@
 ?>
 
 <!-- wp:group {"metadata":{"name":"DSWP Information Contact Socials","categories":["contact"],"patternName":"design-system-wordpress-theme/dswp-information-contact-socials"},"style":{"spacing":{"padding":{"right":"var:preset|spacing|60","left":"var:preset|spacing|60"},"margin":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|60"}}},"layout":{"type":"constrained"}} -->
-<div class="wp-block-group" style="margin-top:var(--wp--preset--spacing--60);margin-bottom:var(--wp--preset--spacing--60);padding-right:var(--wp--preset--spacing--60);padding-left:var(--wp--preset--spacing--60)"><!-- wp:group {"className":"dswp-information-contact-socials-cards","style":{"spacing":{"padding":{"right":"0","left":"0","top":"0","bottom":"0"}},"border":{"radius":"0px","width":"1px"}},"borderColor":"border-default","layout":{"type":"constrained"}} -->
-<div class="wp-block-group dswp-information-contact-socials-cards has-border-color has-border-default-border-color" style="border-width:1px;border-radius:0px;padding-top:0;padding-right:0;padding-bottom:0;padding-left:0"><!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}},"border":{"radius":{"topLeft":"5px","topRight":"5px","bottomLeft":"0px","bottomRight":"0px"}},"color":{"background":"#7c2a90"}},"layout":{"type":"flex","orientation":"vertical"}} -->
-<div class="wp-block-group has-background" style="border-top-left-radius:5px;border-top-right-radius:5px;border-bottom-left-radius:0px;border-bottom-right-radius:0px;background-color:#7c2a90;padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40)"><!-- wp:heading {"level":4,"style":{"spacing":{"padding":{"right":"var:preset|spacing|50","left":"var:preset|spacing|50"}},"elements":{"link":{"color":{"text":"var:preset|color|background-white"}}}},"textColor":"background-white"} -->
-<h4 class="wp-block-heading has-background-white-color has-text-color has-link-color" style="padding-right:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--50)">Contact
+<div class="wp-block-group"
+    style="margin-top:var(--wp--preset--spacing--60);margin-bottom:var(--wp--preset--spacing--60);padding-right:var(--wp--preset--spacing--60);padding-left:var(--wp--preset--spacing--60)">
+    <!-- wp:group {"className":"dswp-information-contact-socials-cards","style":{"spacing":{"padding":{"right":"0","left":"0","top":"0","bottom":"0"}},"border":{"radius":"0px","width":"1px"}},"borderColor":"border-default","layout":{"type":"constrained"}} -->
+    <div class="wp-block-group dswp-information-contact-socials-cards has-border-color has-border-default-border-color"
+        style="border-width:1px;border-radius:0px;padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
+        <!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}},"border":{"radius":{"topLeft":"5px","topRight":"5px","bottomLeft":"0px","bottomRight":"0px"}}},"backgroundColor":"primary-tribunal","layout":{"type":"flex","orientation":"vertical"}} -->
+        <div class="wp-block-group has-primary-tribunal-background-color has-background"
+            style="border-top-left-radius:5px;border-top-right-radius:5px;border-bottom-left-radius:0px;border-bottom-right-radius:0px;padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40)">
+            <!-- wp:heading {"level":4,"style":{"spacing":{"padding":{"right":"var:preset|spacing|50","left":"var:preset|spacing|50"}},"elements":{"link":{"color":{"text":"var:preset|color|background-white"}}}},"textColor":"background-white"} -->
+            <h4 class="wp-block-heading has-background-white-color has-text-color has-link-color"
+                style="padding-right:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--50)">Contact
                 us</h4>
             <!-- /wp:heading -->
         </div>
@@ -36,19 +43,21 @@
                             <div class="wp-block-group" style="padding-top:0;padding-bottom:0">
                                 <!-- wp:group {"className":"dswp-information-contact-socials-card-img-group","layout":{"type":"constrained"}} -->
                                 <div class="wp-block-group dswp-information-contact-socials-card-img-group">
-                                    <!-- wp:image {"width":"32px","height":"auto","linkDestination":"none","className":"dswp-information-contact-socials-card-img"} -->
-                                    <figure class="wp-block-image is-resized dswp-information-contact-socials-card-img">
-                                        <img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/phone-solid-full.svg' );?>"
-                                            alt="Phone" style="width:32px;height:auto" /></figure>
+                                    <!-- wp:image {"linkDestination":"none","className":"dswp-information-contact-socials-card-img"} -->
+                                    <figure class="wp-block-image dswp-information-contact-socials-card-img">
+                                        <img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/phone-solid-full.svg'); ?>"
+                                            alt="Phone" />
+                                    </figure>
                                     <!-- /wp:image -->
                                 </div>
                                 <!-- /wp:group -->
 
                                 <!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"flex","orientation":"vertical"}} -->
                                 <div class="wp-block-group">
-                                    <!-- wp:heading {"level":6,"style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"elements":{"link":{"color":{"text":"var:preset|color|font dark"}}},"typography":{"fontSize":"16px"}},"textColor":"font dark"} -->
-                                    <h6 class="wp-block-heading has-font-dark-color has-text-color has-link-color"
-                                        style="margin-top:0;margin-bottom:0;font-size:16px">General inquiries:</h6>
+                                    <!-- wp:heading {"level":6,"style":{"spacing":{"margin":{"top":"0","bottom":"-0.75rem"}},"typography":{"fontSize":"16px"}},"textColor":"font dark"} -->
+                                    <h6 class="wp-block-heading has-font-dark-color has-text-color"
+                                        style="margin-top:0;margin-bottom:-0.75rem;font-size:16px">General inquiries:
+                                    </h6>
                                     <!-- /wp:heading -->
 
                                     <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"}}} -->
@@ -74,19 +83,20 @@
                             <div class="wp-block-group" style="padding-top:0;padding-bottom:0">
                                 <!-- wp:group {"className":"dswp-information-contact-socials-card-img-group","layout":{"type":"constrained"}} -->
                                 <div class="wp-block-group dswp-information-contact-socials-card-img-group">
-                                    <!-- wp:image {"width":"32px","linkDestination":"none","className":"dswp-information-contact-socials-card-img"} -->
-                                    <figure class="wp-block-image is-resized dswp-information-contact-socials-card-img">
-                                        <img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/phone-solid-full.svg' );?>"
-                                            alt="Phone" style="width:32px" /></figure>
+                                    <!-- wp:image {"linkDestination":"none","className":"dswp-information-contact-socials-card-img"} -->
+                                    <figure class="wp-block-image dswp-information-contact-socials-card-img">
+                                        <img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/phone-solid-full.svg'); ?>"
+                                            alt="Phone" />
+                                    </figure>
                                     <!-- /wp:image -->
                                 </div>
                                 <!-- /wp:group -->
 
                                 <!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"flex","orientation":"vertical"}} -->
                                 <div class="wp-block-group">
-                                    <!-- wp:heading {"level":6,"style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"elements":{"link":{"color":{"text":"var:preset|color|font dark"}}},"typography":{"fontSize":"16px"}},"textColor":"font dark"} -->
+                                    <!-- wp:heading {"level":6,"style":{"spacing":{"margin":{"top":"0","bottom":"-0.75rem"}},"elements":{"link":{"color":{"text":"var:preset|color|font dark"}}},"typography":{"fontSize":"16px"}},"textColor":"font dark"} -->
                                     <h6 class="wp-block-heading has-font-dark-color has-text-color has-link-color"
-                                        style="margin-top:0;margin-bottom:0;font-size:16px">Complaints:</h6>
+                                        style="margin-top:0;margin-bottom:-0.75rem;font-size:16px">Complaints:</h6>
                                     <!-- /wp:heading -->
 
                                     <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"}}} -->
@@ -120,17 +130,18 @@
                                     <!-- wp:image {"scale":"cover","linkDestination":"none","className":"dswp-information-contact-socials-card-img is-style-default"} -->
                                     <figure
                                         class="wp-block-image dswp-information-contact-socials-card-img is-style-default">
-                                        <img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/envelope-open-solid-full.svg' );?>"
-                                            alt="Email" style="object-fit:cover" /></figure>
+                                        <img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/envelope-open-solid-full.svg'); ?>"
+                                            alt="Email" style="object-fit:cover" />
+                                    </figure>
                                     <!-- /wp:image -->
                                 </div>
                                 <!-- /wp:group -->
 
                                 <!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"flex","orientation":"vertical"}} -->
                                 <div class="wp-block-group">
-                                    <!-- wp:heading {"level":6,"style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"elements":{"link":{"color":{"text":"var:preset|color|font dark"}}},"typography":{"fontSize":"16px"}},"textColor":"font dark"} -->
+                                    <!-- wp:heading {"level":6,"style":{"spacing":{"margin":{"top":"0","bottom":"-0.75rem"}},"elements":{"link":{"color":{"text":"var:preset|color|font dark"}}},"typography":{"fontSize":"16px"}},"textColor":"font dark"} -->
                                     <h6 class="wp-block-heading has-font-dark-color has-text-color has-link-color"
-                                        style="margin-top:0;margin-bottom:0;font-size:16px">Email:</h6>
+                                        style="margin-top:0;margin-bottom:-0.75rem;font-size:16px">Email:</h6>
                                     <!-- /wp:heading -->
 
                                     <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px"}}} -->
@@ -157,19 +168,20 @@
                             <div class="wp-block-group" style="padding-top:0;padding-bottom:0">
                                 <!-- wp:group {"className":"dswp-information-contact-socials-card-img-group","layout":{"type":"constrained"}} -->
                                 <div class="wp-block-group dswp-information-contact-socials-card-img-group">
-                                    <!-- wp:image {"width":"32px","linkDestination":"none","className":"dswp-information-contact-socials-card-img"} -->
-                                    <figure class="wp-block-image is-resized dswp-information-contact-socials-card-img">
-                                        <img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/building-solid-full.svg' );?>"
-                                            alt="Address" style="width:32px" /></figure>
+                                    <!-- wp:image {"linkDestination":"none","className":"dswp-information-contact-socials-card-img"} -->
+                                    <figure class="wp-block-image dswp-information-contact-socials-card-img">
+                                        <img src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/building-solid-full.svg'); ?>"
+                                            alt="Address" />
+                                    </figure>
                                     <!-- /wp:image -->
                                 </div>
                                 <!-- /wp:group -->
 
                                 <!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"flex","orientation":"vertical","flexWrap":"wrap"}} -->
                                 <div class="wp-block-group">
-                                    <!-- wp:heading {"level":6,"style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"elements":{"link":{"color":{"text":"var:preset|color|font dark"}}},"typography":{"fontSize":"16px"}},"textColor":"font dark"} -->
+                                    <!-- wp:heading {"level":6,"style":{"spacing":{"margin":{"top":"0","bottom":"-0.75rem"}},"elements":{"link":{"color":{"text":"var:preset|color|font dark"}}},"typography":{"fontSize":"16px"}},"textColor":"font dark"} -->
                                     <h6 class="wp-block-heading has-font-dark-color has-text-color has-link-color"
-                                        style="margin-top:0;margin-bottom:0;font-size:16px">Mailing address:</h6>
+                                        style="margin-top:0;margin-bottom:-0.75rem;font-size:16px">Mailing address:</h6>
                                     <!-- /wp:heading -->
 
                                     <!-- wp:group {"layout":{"type":"constrained"}} -->
