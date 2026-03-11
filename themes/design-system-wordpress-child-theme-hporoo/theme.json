@@ -79,6 +79,11 @@
                     "name": "HPOROO Footer Primary"
                 },
                 {
+                    "slug": "hporoo-hyperlink-footer-primary",
+                    "color": "var(--dswp-typography-color-primary)",
+                    "name": "HPOROO Footer Hyperlink"
+                },
+                {
                     "slug": "hyperlink-primary",
                     "color": "#005B94",
                     "name": "Hyperlink Primary"
