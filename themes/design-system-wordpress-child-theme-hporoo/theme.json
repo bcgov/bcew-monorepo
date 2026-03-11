@@ -2,6 +2,23 @@
     "$schema": "https://schemas.wp.org/trunk/theme.json",
     "version": 3,
     "title": "HPOROO Child Theme",
+    "templateParts": [
+        {
+            "area": "footer",
+            "name": "footer",
+            "title": "Footer"
+        },
+        {
+            "area": "footer",
+            "name": "hporoo_footer",
+            "title": "HPOROO Footer"
+        },
+        {
+            "area": "footer",
+            "name": "tribunal_footer",
+            "title": "Tribunal Footer"
+        }
+    ],
     "customTemplates": [
         {
             "name": "tribunal_pages",
@@ -11,49 +28,96 @@
             "name": "tribunal_secondary",
             "title": "Pages Secondary Tribunal"
         }
-
     ],
     "settings": {
         "color": {
             "defaultPalette": false,
             "palette": [
                 {
-                    "slug": "bar-colour",
-                    "color": "#2481C4",
-                    "name": "Bar Colour"
+                    "slug": "primary-tribunal",
+                    "color": "#7c2a90",
+                    "name": "Tribunal Primary"
                 },
                 {
-                    "slug": "typography-color-primary",
-                    "color": "#005B94",
-                    "name": "Typography Color Primary"
-                },
-                {
-                    "slug": "typography-color-secondary",
-                    "color": "#474543",
-                    "name": "Typography Color Secondary"
-                },
-                {
-                    "slug": "primary-footer-colour",
-                    "color": "#D9EFED",
-                    "name": "Primary Footer Colour"
-                },
-                {
-                    "slug": "secondary-colour",
-                    "color": "#2481C4",
-                    "name": "SecondaryColour"
-                },
-                {
-                    "slug": "tertiary",
-                    "color": "#1FBAAA",
-                    "name": "Tertiary"
-                },
-                {
-                    "slug": "accent-primary",
+                    "slug": "tribunal-accent-primary",
                     "color": "#BD94C7",
-                    "name": "Accent Primary"
+                    "name": "Tribunal Accent Primary"
+                },
+                {
+                    "slug": "tribunal-accent-secondary",
+                    "color": "#EAD8EE",
+                    "name": "Tribunal Accent Secondary"
+                },
+                {
+                    "slug": "primary-hporoo",
+                    "color": "#2481c4",
+                    "name": "HPOROO Primary"
+                },
+                {
+                    "slug": "hporoo-subheader-nav",
+                    "color": "#91C0E1",
+                    "name": "HPOROO Subheader Nav"
+                },
+                {
+                    "slug": "hporoo-accent-primary",
+                    "color": "#E6F0F8",
+                    "name": "HPOROO Accent Primary"
+                },
+                {
+                    "slug": "hporoo-footer-border",
+                    "color": "#1fbaaa",
+                    "name": "HPOROO Footer Border"
+                },
+                {
+                    "slug": "hporoo-footer-accent",
+                    "color": "#8FDDD5",
+                    "name": "HPOROO Footer Accent Primary"
+                },
+                {
+                    "slug": "hporoo-footer-primary",
+                    "color": "#FAF9F8",
+                    "name": "HPOROO Footer Primary"
+                },
+                {
+                    "slug": "hporoo-hyperlink-footer-primary",
+                    "color": "var(--dswp-typography-color-primary)",
+                    "name": "HPOROO Footer Hyperlink"
+                },
+                {
+                    "slug": "hyperlink-primary",
+                    "color": "#005B94",
+                    "name": "Hyperlink Primary"
+                },
+                {
+                    "slug": "hyperlink-hover",
+                    "color": "#0070B8",
+                    "name": "Hyperlink Hover"
+                },
+                {
+                    "slug": "hyperlink-pressed",
+                    "color": "#004873",
+                    "name": "Hyperlink Pressed"
                 }
             ]
         }
-        
+    },
+    "styles": {
+        "elements": {
+            "link": {
+                "color": {
+                    "text": "var:preset|color|hyperlink-primary"
+                },
+                ":hover": {
+                    "color": {
+                        "text": "var:preset|color|hyperlink-hover"
+                    }
+                },
+                ":active": {
+                    "color": {
+                        "text": "var:preset|color|hyperlink-pressed"
+                    }
+                }
+            }
+        }
     }
 }
