@@ -8,8 +8,8 @@
  */
 ?>
 
-<!-- wp:group {"style":{"spacing":{"padding":{"top":"0","bottom":"var:preset|spacing|50"}},"border":{"top":{"color":"var:preset|color|hporoo-footer-border","width":"1px"},"right":{},"bottom":{},"left":{}}},"backgroundColor":"hporoo-footer-primary","layout":{"type":"constrained"}} -->
-<div class="wp-block-group has-hporoo-footer-primary-background-color has-background"
+<!-- wp:group {"className":"site-footer","style":{"spacing":{"padding":{"top":"0","bottom":"var:preset|spacing|50"}},"border":{"top":{"color":"var:preset|color|hporoo-footer-border","width":"1px"},"right":{},"bottom":{},"left":{}}},"backgroundColor":"hporoo-footer-primary","layout":{"type":"constrained"}} -->
+<div class="wp-block-group site-footer has-hporoo-footer-primary-background-color has-background"
     style="border-top-color:var(--wp--preset--color--hporoo-footer-border);border-top-width:1px;padding-top:0;padding-bottom:var(--wp--preset--spacing--50)">
     <!-- wp:columns {"style":{"spacing":{"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70","left":"0","right":"var:preset|spacing|20"},"blockGap":{"top":"var:preset|spacing|60"}}}} -->
     <div class="wp-block-columns"
@@ -45,8 +45,10 @@
 
                 <!-- wp:columns {"isStackedOnMobile":false,"style":{"spacing":{"blockGap":{"top":"0"}}}} -->
                 <div class="wp-block-columns is-not-stacked-on-mobile">
-                    <!-- wp:column {"style":{"spacing":{"blockGap":"var:preset|spacing|30"}}} -->
-                    <div class="wp-block-column"><!-- wp:paragraph {"fontSize":"small"} -->
+                    <!-- wp:column {"style":{"spacing":{"blockGap":"var:preset|spacing|30"},"elements":{"link":{"color":{"text":"var:preset|color|hporoo-hyperlink-footer-primary"}}}},"textColor":"hporoo-hyperlink-footer-primary"} -->
+                    <div
+                        class="wp-block-column has-hporoo-hyperlink-footer-primary-color has-text-color has-link-color">
+                        <!-- wp:paragraph {"fontSize":"small"} -->
                         <p class="has-small-font-size"><a href="/home">Home</a></p>
                         <!-- /wp:paragraph -->
 
@@ -64,8 +66,10 @@
                     </div>
                     <!-- /wp:column -->
 
-                    <!-- wp:column {"style":{"spacing":{"blockGap":"var:preset|spacing|30"}}} -->
-                    <div class="wp-block-column"><!-- wp:paragraph {"fontSize":"small"} -->
+                    <!-- wp:column {"style":{"spacing":{"blockGap":"var:preset|spacing|30"},"elements":{"link":{"color":{"text":"var:preset|color|hporoo-hyperlink-footer-primary"}}}},"textColor":"hporoo-hyperlink-footer-primary"} -->
+                    <div
+                        class="wp-block-column has-hporoo-hyperlink-footer-primary-color has-text-color has-link-color">
+                        <!-- wp:paragraph {"fontSize":"small"} -->
                         <p class="has-small-font-size"><a href="/publications">Publications</a></p>
                         <!-- /wp:paragraph -->
 
