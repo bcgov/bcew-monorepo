@@ -1,0 +1,41 @@
+{
+  "name": "wordpress-search",
+  "root": "plugins/wordpress-search",
+  "sourceRoot": "plugins/wordpress-search/src",
+  "projectType": "application",
+  "generators": {
+    "wordpress-monorepo:plugin": {
+        "name": "Wordpress Search",
+        "slug": "wordpress-search"
+    }
+  },
+  "targets": {
+    "composer:install": {},
+    "build": {
+      "options": {
+        "source-path": "plugins/wordpress-search/src",
+        "output-path": "plugins/wordpress-search/dist"
+      }
+    },
+    "start": {
+      "options": {
+        "source-path": "plugins/wordpress-search/src",
+        "output-path": "plugins/wordpress-search/dist"
+      }
+    },
+    "test:unit:js": {},
+    "test:e2e": {
+        "options": {
+            "config": "plugins/wordpress-search/playwright.config.js"
+        }
+    },
+    "wp-env:start": {
+        "options": {
+            "config": "plugins/wordpress-search/.wp-env.json",
+            "cwd": "{workspaceRoot}"
+        }
+    }
+  },
+  "implicitDependencies": ["packages/phpunit-config/"],
+  "tags": ["type:wp-plugin"]
+}

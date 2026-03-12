@@ -3,6 +3,14 @@
 This repository contains WordPress themes and plugins managed within a single Git monorepo.
 The primary goals are consistency, shared tooling, and safer long-term maintenance while preserving historical context.
 
+## Installation
+
+[pnpm](https://pnpm.io/installation) is the required package manager for this repository. To install:
+
+```shell
+npm install -g pnpm
+```
+
 ## Nx
 
 This repository uses `nx` for various monorepo-related tasks:

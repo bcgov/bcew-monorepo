@@ -61,5 +61,5 @@ module.exports = {
             version: 'detect',
         },
     },
-    ignorePatterns: [ '**/dist/**' ],
+    ignorePatterns: [ '**/dist/**', '**/coverage/**', '{plugins,themes}/**/build/**' ],
 };
