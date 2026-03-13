@@ -12,15 +12,15 @@ $email_icon = esc_url(get_stylesheet_directory_uri() . '/assets/images/envelope-
 $mail_icon = esc_url(get_stylesheet_directory_uri() . '/assets/images/building-solid-full.svg');
 ?>
 
-<!-- wp:group {"metadata":{"name":"DSWP Information Contact Socials","categories":["contact"],"patternName":"design-system-wordpress-theme/dswp-information-contact-socials"},"style":{"spacing":{"padding":{"right":"var:preset|spacing|60","left":"var:preset|spacing|60"},"margin":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
+<!-- wp:group {"metadata":{"name":"DSWP Information Contact Socials","categories":["contact"],"patternName":"design-system-wordpress-theme/dswp-information-contact-socials"},"style":{"spacing":{"padding":{"right":"var:preset|spacing|60","left":"var:preset|spacing|60"},"margin":{"bottom":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
 <div class="wp-block-group"
-    style="margin-top:var(--wp--preset--spacing--60);margin-bottom:var(--wp--preset--spacing--60);padding-right:var(--wp--preset--spacing--60);padding-left:var(--wp--preset--spacing--60)">
+    style="margin-bottom:var(--wp--preset--spacing--60);padding-right:var(--wp--preset--spacing--60);padding-left:var(--wp--preset--spacing--60)">
     <!-- wp:group {"className":"dswp-information-contact-socials-cards","style":{"spacing":{"padding":{"right":"0","left":"0","top":"0","bottom":"0"}},"border":{"radius":"0px","width":"1px"}},"borderColor":"border-default","layout":{"type":"constrained"}} -->
     <div class="wp-block-group dswp-information-contact-socials-cards has-border-color has-border-default-border-color"
         style="border-width:1px;border-radius:0px;padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
         <!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}},"border":{"radius":{"topLeft":"5px","topRight":"5px","bottomLeft":"0px","bottomRight":"0px"}}},"backgroundColor":"primary-hporoo","layout":{"type":"flex","orientation":"vertical"}} -->
-        <div class="wp-block-group has-background"
-            style="background-color: var(--footer-primary); border-top-left-radius:5px;border-top-right-radius:5px;border-bottom-left-radius:0px;border-bottom-right-radius:0px;padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40)">
+        <div class="wp-block-group has-primary-hporoo-background-color has-background"
+            style="border-top-left-radius:5px;border-top-right-radius:5px;border-bottom-left-radius:0px;border-bottom-right-radius:0px;padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40)">
             <!-- wp:heading {"level":4,"style":{"spacing":{"padding":{"right":"var:preset|spacing|50","left":"var:preset|spacing|50"}},"elements":{"link":{"color":{"text":"var:preset|color|background-white"}}}},"textColor":"background-white"} -->
             <h4 class="wp-block-heading has-background-white-color has-text-color has-link-color"
                 style="padding-right:var(--wp--preset--spacing--50);padding-left:var(--wp--preset--spacing--50)">Contact
