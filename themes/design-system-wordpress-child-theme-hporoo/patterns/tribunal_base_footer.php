@@ -1,7 +1,7 @@
 <?php
 /**
- * Title: HPOROO Base Footer
- * Slug: design-system-wordpress-child-theme-hporoo/hporoo-base-footer
+ * Title: Tribunal Base Footer
+ * Slug: design-system-wordpress-child-theme-hporoo/tribunal-base-footer
  * Categories: footer
  *
  * @package Design-System-WordPress-Theme
@@ -18,8 +18,8 @@ $mail_icon = esc_url(get_stylesheet_directory_uri() . '/assets/images/building-s
     <!-- wp:group {"className":"dswp-information-contact-socials-cards","style":{"spacing":{"padding":{"right":"0","left":"0","top":"0","bottom":"0"}},"border":{"radius":"0px","width":"1px"}},"borderColor":"border-default","layout":{"type":"constrained"}} -->
     <div class="wp-block-group dswp-information-contact-socials-cards has-border-color has-border-default-border-color"
         style="border-width:1px;border-radius:0px;padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
-        <!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}},"border":{"radius":{"topLeft":"5px","topRight":"5px","bottomLeft":"0px","bottomRight":"0px"}}},"backgroundColor":"primary-hporoo","layout":{"type":"flex","orientation":"vertical"}} -->
-        <div class="wp-block-group has-primary-hporoo-background-color has-background"
+        <!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40"}},"border":{"radius":{"topLeft":"5px","topRight":"5px","bottomLeft":"0px","bottomRight":"0px"}}},"backgroundColor":"primary-tribunal","layout":{"type":"flex","orientation":"vertical"}} -->
+        <div class="wp-block-group has-primary-tribunal-background-color has-background"
             style="border-top-left-radius:5px;border-top-right-radius:5px;border-bottom-left-radius:0px;border-bottom-right-radius:0px;padding-top:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--40)">
             <!-- wp:heading {"level":4,"style":{"spacing":{"padding":{"right":"var:preset|spacing|50","left":"var:preset|spacing|50"}},"elements":{"link":{"color":{"text":"var:preset|color|background-white"}}}},"textColor":"background-white"} -->
             <h4 class="wp-block-heading has-background-white-color has-text-color has-link-color"
