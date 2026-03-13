@@ -6,6 +6,8 @@
  *
  * @package Design-System-WordPress-Theme
  */
+
+$hporoo_logo = esc_url(get_stylesheet_directory_uri() . '/assets/images/hporoo-logo.svg');
 ?>
 
 <!-- wp:group {"className":"site-footer","style":{"spacing":{"padding":{"top":"0","bottom":"var:preset|spacing|50"}},"border":{"top":{"color":"var:preset|color|hporoo-footer-border","width":"1px"},"right":{},"bottom":{},"left":{}}},"backgroundColor":"hporoo-footer-primary","layout":{"type":"constrained"}} -->
@@ -18,7 +20,7 @@
         <div class="wp-block-column" style="flex-basis:35rem">
             <!-- wp:image {"id":1954,"sizeSlug":"full","linkDestination":"none"} -->
             <figure class="wp-block-image size-full"><img
-                    src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/hporoo-logo.svg'); ?>"
+                    src="<?php echo $hporoo_logo; ?>"
                     alt="" class="wp-image-1954" /></figure>
             <!-- /wp:image -->
 
