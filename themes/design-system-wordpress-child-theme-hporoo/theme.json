@@ -17,6 +17,11 @@
             "area": "footer",
             "name": "tribunal_footer",
             "title": "Tribunal Footer"
+        },
+        {
+            "area": "uncategorized",
+            "name": "hporoo_hero",
+            "title": "HPOROO Hero Image with Title"
         }
     ],
     "customTemplates": [
