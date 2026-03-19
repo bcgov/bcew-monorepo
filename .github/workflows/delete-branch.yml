@@ -13,6 +13,7 @@ permissions:
 jobs:
     list-projects:
         name: List all sub-projects
+        runs-on: ubuntu-latest
         outputs:
             projects: ${{ steps.compute.outputs.projects }}
         steps:
