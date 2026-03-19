@@ -1,0 +1,19 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "test-plugin/test2-plugin",
+    "version": "0.0.1",
+    "title": "test2-plugin",
+    "category": "widgets",
+    "icon": "media-document",
+    "description": "this is a test of the plugin",
+    "example": {},
+    "supports": {
+        "html": false
+    },
+    "textdomain": "test2-plugin",
+    "editorScript": "file:./index.js",
+    "editorStyle": "file:./index.css",
+    "style": "file:./style-index.css",
+    "viewScript": "file:./view.js"
+}

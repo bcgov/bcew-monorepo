@@ -1,0 +1,11 @@
+{
+    "core": "WordPress/WordPress#6.8",
+    "phpVersion": "7.4",
+    "plugins": ["."],
+    "config": {
+        "WP_DEBUG": true,
+        "WP_DEBUG_LOG": true,
+        "WP_DEBUG_DISPLAY": false,
+        "SCRIPT_DEBUG": true
+    }
+}

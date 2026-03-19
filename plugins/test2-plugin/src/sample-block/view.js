@@ -21,5 +21,5 @@
  */
 
 /* eslint-disable no-console */
-console.log( 'Hello World! (from __namespace__-block-slug block)' );
+console.log('Hello World! (from sample-block)');
 /* eslint-enable no-console */
