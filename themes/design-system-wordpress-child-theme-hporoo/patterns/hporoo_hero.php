@@ -7,7 +7,7 @@
  * @package Design-System-WordPress-Theme
  */
 
-$hporoo_logo = esc_url(get_stylesheet_directory_uri() . '/assets/images/hero-section.png');
+$hporoo_logo = esc_url(get_stylesheet_directory_uri() . '/assets/images/hero-image.svg');
 ?>
 
 <!-- wp:cover {"dimRatio":0,"isUserOverlayColor":true,"isDark":false,"style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"0","right":"0"},"margin":{"top":"0","bottom":"0"}},"dimensions":{"aspectRatio":"auto"}},"layout":{"type":"default"}} -->
