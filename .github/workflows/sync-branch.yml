@@ -1,0 +1,65 @@
+name: Sync branch to standalone repositories
+
+on:
+    push:
+        paths:
+        - '{plugins,themes}/**'
+
+concurrency:
+    group: sync-branch-${{ github.ref }}
+    cancel-in-progress: true
+
+permissions:
+    contents: read
+
+jobs:
+    detect-affected-projects:
+        name: Detect affected sub-projects
+        uses: ./.github/workflows/detect-affected-projects.yml
+
+    build-and-sync:
+        name: Build and sync ${{ matrix.project }}
+        needs: detect-affected-projects
+        if: ${{ needs.detect-affected-projects.outputs.projects != '' && needs.detect-affected-projects.outputs.projects != '[]' }}
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                project: ${{ fromJSON(needs.detect-affected-projects.outputs.projects) }}
+        permissions:
+            contents: write
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Install pnpm 
+              uses: pnpm/action-setup@v4
+              with:
+                  version: 10
+                  cache: true
+
+            - name: Setup Node.js 24
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+                  cache: "pnpm"
+
+            - name: Install dependencies
+              run: pnpm install
+
+            - name: Install Composer dependencies
+              run: npx nx run ${{ matrix.project }}:composer:install
+
+            - name: Build
+              run: npx nx run ${{ matrix.project }}:build
+
+            - name: Split subdirectory into branch
+              run: |
+                  git subtree split -P $(npx nx show project ${{ matrix.project }} --json  | jq -r .root) -b split-branch
+
+            - name: Push subtree branch to target repo
+              run: |
+                  git remote add target https://github.com/bcgov/${{ matrix.project }}
+                  git push -f target split-branch:${{ github.head_ref || github.ref_name }} 
+
+
