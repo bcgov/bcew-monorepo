@@ -102,6 +102,11 @@
                     "slug": "hyperlink-pressed",
                     "color": "#004873",
                     "name": "Hyperlink Pressed"
+                },
+                {
+                    "slug": "button-hover",
+                    "color": "#EDEBE9",
+                    "name": "Button Hover"
                 }
             ]
         }
@@ -120,6 +125,53 @@
                 ":active": {
                     "color": {
                         "text": "var:preset|color|hyperlink-pressed"
+                    }
+                }
+            },
+            "button": {
+                "border": {
+                    "radius": "10px",
+                    "width": "1px",
+                    "color": "var:preset|color|hyperlink-primary"
+                },
+                "color": {
+                    "text": "var:preset|color|hyperlink-primary",
+                    "background": "var:preset|color|white"
+                },
+                "typography": {
+                    "fontSize": "var(--dswp-typography-font-size-body)",
+                    "fontWeight": "700"
+                },
+                "spacing": {
+                    "padding": {
+                        "top": "10px",
+                        "bottom": "10px",
+                        "left": "19px",
+                        "right": "19px"
+                    }
+                },
+                ":hover": {
+                    "border": {
+                        "color": "var:preset|color|hyperlink-hover"
+                    },
+                    "color": {
+                        "text": "var:preset|color|hyperlink-hover",
+                        "background": "var:preset|color|button-hover"
+                    },
+                    "typography": {
+                        "textDecoration": "underline"
+                    }
+                },
+                ":active": {
+                    "border": {
+                        "color": "var:preset|color|hyperlink-pressed"
+                    },
+                    "color": {
+                        "text": "var:preset|color|hyperlink-pressed",
+                        "background": "var:preset|color|button-hover"
+                    },
+                    "typography": {
+                        "textDecoration": "underline"
                     }
                 }
             }
