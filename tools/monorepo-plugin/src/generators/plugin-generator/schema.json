@@ -1,0 +1,36 @@
+{
+    "$schema": "https://json-schema.org/schema",
+    "$id": "PluginGenerator",
+    "title": "",
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "Human-readable plugin name. Example: WordPress Search Plugin",
+            "$default": {
+                "$source": "argv",
+                "index": 0
+            },
+            "x-prompt": "What name would you like to use?"
+        },
+        "slug": {
+            "type": "string",
+            "description": "Plugin slug. Example: wordpress-search-plugin",
+            "$default": {
+                "$source": "argv",
+                "index": 0
+            },
+            "x-prompt": "What slug would you like to use?"
+        },
+        "description": {
+            "type": "string",
+            "description": "Block Plugin description. Example: This plugin provides a search block for WordPress.",
+            "$default": {
+                "$source": "argv",
+                "index": 0
+            },
+            "x-prompt": "What description would you like to use?"
+        }
+    },
+    "required": ["name", "slug", "description"]
+}

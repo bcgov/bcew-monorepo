@@ -31,13 +31,29 @@ Follow the on-screen instructions to generate a standalone or child theme that a
 
 ---
 
+### Generating a new WordPress Block plugin
+
+From the monorepo root, run the plugin generator and then install dependencies:
+
+```shell
+npx nx generate monorepo-plugin:plugin-generator
+pnpm install
+```
+
+During generation, the CLI will prompt for plugin details (for example name/slug and other setup options).
+Use those prompts to configure the plugin you want to scaffold.
+
+The generator creates a new Block Plugin that follows the current monorepo plugin standards.
+
+---
+
 ## Contributing
 
 ### Adding an Existing Repository to the Monorepo
 
 The example below assumes you are adding a theme and uses `example-theme` as a placeholder for the existing repository name.
 
-> ⚠️ **Important**  
+> ⚠️ **Important**
 > This process rewrites Git history. **Do not run it directly on the original repository.**
 
 ---
@@ -96,7 +112,7 @@ git filter-repo --to-subdirectory-filter themes/example-theme
 
 Rename tags to avoid collisions with other packages in the monorepo.
 
-> TODO: Finalize naming convention  
+> TODO: Finalize naming convention
 > Default: `themes/<theme-slug>/`
 
 ```bash
