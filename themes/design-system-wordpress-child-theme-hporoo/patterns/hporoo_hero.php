@@ -10,12 +10,12 @@
 $hporoo_logo = esc_url(get_stylesheet_directory_uri() . '/assets/images/hero-section.png');
 ?>
 
-<!-- wp:cover {"dimRatio":0,"isUserOverlayColor":true,"minHeight":420,"minHeightUnit":"px","isDark":false,"style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"0","right":"0"}}},"layout":{"type":"default"}} -->
+<!-- wp:cover {"dimRatio":0,"isUserOverlayColor":true,"isDark":false,"style":{"spacing":{"padding":{"top":"0","bottom":"0","left":"0","right":"0"},"margin":{"top":"0","bottom":"0"}},"dimensions":{"aspectRatio":"auto"}},"layout":{"type":"default"}} -->
 <div class="wp-block-cover is-light"
-    style="padding-top:0;padding-right:0;padding-bottom:0;padding-left:0;min-height:420px"><span aria-hidden="true"
-        class="wp-block-cover__background has-background-dim-0 has-background-dim"></span>
+    style="margin-top:0;margin-bottom:0;padding-top:0;padding-right:0;padding-bottom:0;padding-left:0;"><span
+        aria-hidden="true" class="wp-block-cover__background has-background-dim-0 has-background-dim"></span>
     <div class="wp-block-cover__inner-container">
-        <!-- wp:group {"style":{"background":{"backgroundImage":{"url":"<?php echo $hporoo_logo; ?>","id":53,"source":"file","title":"hero-section"},"backgroundSize":"cover"}},"layout":{"type":"default"}} -->
+        <!-- wp:group {"style":{"background":{"backgroundImage":{"url":"<?php echo $hporoo_logo; ?>","id":53,"source":"file","title":"hero-section"},"backgroundSize":"cover"},"spacing":{"margin":{"top":"0","bottom":"0"}}},"layout":{"type":"default"}} -->
         <div class="wp-block-group">
             <!-- wp:group {"style":{"spacing":{"margin":{"top":"0","bottom":"0"},"padding":{"right":"var:preset|spacing|60","left":"var:preset|spacing|60","top":"var:preset|spacing|60","bottom":"var:preset|spacing|60"}}},"layout":{"type":"constrained","contentSize":"var(--dswp-layout-content-size)"}} -->
             <div class="wp-block-group"
