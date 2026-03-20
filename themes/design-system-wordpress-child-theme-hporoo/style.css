@@ -4,3 +4,24 @@ Theme URI:    https://github.com/bcgov/design-system-wordpress-child-theme-hporo
 Version:      1.1.0
 Template:     design-system-wordpress-theme
 */
+.wp-block-button .wp-block-button__link {
+    border: 1px solid var(--wp--preset--color--hyperlink-primary);
+    border-radius: 10px;
+    color: var(--wp--preset--color--hyperlink-primary);
+    background-color: var(--wp--preset--color--white);
+    padding: 10px 19px;
+    font-size: var(--dswp-typography-font-size-body);
+    font-weight: 700;
+}
+
+.wp-block-button:hover .wp-block-button__link {
+    color: var(--wp--preset--color--hyperlink-hover);
+    background-color: var(--wp--preset--color--button-hover);
+    text-decoration-line: underline;
+}
+
+.wp-block-button:active .wp-block-button__link {
+    color: var(--wp--preset--color--hyperlink-pressed);
+    background-color: var(--wp--preset--color--button-hover);
+    text-decoration-line: underline;
+}
