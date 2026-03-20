@@ -1,0 +1,6 @@
+{
+    "name": "bcgov-theme/<%= slug %>",
+    "description": "<%= name %>",
+    "type": "wordpress-theme",
+    "license": "Apache-2.0"
+}

@@ -1,19 +1,19 @@
 import { createTreeWithEmptyWorkspace } from '@nx/devkit/testing';
 import { Tree, readProjectConfiguration } from '@nx/devkit';
 
-import { themeGeneratorGenerator } from './theme-generator';
-import { ThemeGeneratorGeneratorSchema } from './schema';
+import { themeGenerator } from './theme';
+import { ThemeGeneratorSchema } from './schema';
 
-describe( 'theme-generator generator', () => {
+describe( 'theme generator', () => {
     let tree: Tree;
-    const options: ThemeGeneratorGeneratorSchema = { name: 'test' };
+    const options: ThemeGeneratorSchema = { name: 'test' };
 
     beforeEach( () => {
         tree = createTreeWithEmptyWorkspace();
     } );
 
     it( 'should run successfully', async () => {
-        await themeGeneratorGenerator( tree, options );
+        await themeGenerator( tree, options );
         const config = readProjectConfiguration( tree, 'test' );
         expect( config ).toBeDefined();
     } );

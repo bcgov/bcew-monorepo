@@ -51,14 +51,14 @@ jobs:
             - name: Install Composer dependencies
               run: composer i
 
-            - name: Run css lint
-              run: npm run lint:css
+            - name: Run php lint
+              run: pnpm run lint:php
 
             - name: Run js lint
-              run: npm run lint:js
+              run: pnpm run lint:js
 
-            - name: Run php lint
-              run: npm run lint:php
+            - name: Run css lint
+              run: pnpm run lint:css
 
     detect-affected-projects:
         name: Detect affected sub-projects

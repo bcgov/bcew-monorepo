@@ -11,6 +11,7 @@
     "DesignSystem",
     "Gutenberg"
   ],
+  "homepage": "https://github.com/bcgov/<%= slug %>",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bcgov/<%= slug %>.git"
@@ -19,17 +20,13 @@
     "url": "https://github.com/bcgov/<%= slug %>#readme",
     "email": "govwordpress@gov.bc.ca"
   },
-  "engines": {
-    "npm": ">= 10.7.0",
-    "node": ">=20.15.1"
-  },
   "main": "index.js",
   "devDependencies": {
     "@playwright/test": "^1.58.0",
+    "@wordpress-monorepo/e2e": "workspace:*",
     "@wordpress/e2e-test-utils-playwright": "^1.35.0",
     "@wordpress/env": "^10.35.0",
-    "@wordpress/scripts": "^28.6.0",
-    "@wordpress-monorepo/e2e": "workspace:*"
+    "@wordpress/scripts": "^28.6.0"
   },
   "scripts": {
     "build": "wp-scripts build --output-path=dist",

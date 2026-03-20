@@ -1,9 +1,9 @@
 <?php
 /**
  * Title: Sample
- * Slug: test-theme/sample
+ * Slug: <%= slug %>/sample
  *
- * @package test-theme
+ * @package <%= slug %>
  */
 ?>
 

@@ -13,3 +13,7 @@ plugin:
 theme:
     - changed-files:
           - any-glob-to-any-file: 'themes/**'
+
+themes/child-theme-belleville-terminal:
+    - changed-files:
+          - any-glob-to-any-file: 'themes/design-system-wordpress-child-theme-belleville-terminal/**'

@@ -31,7 +31,7 @@ See the [nx documentation](https://nx.dev/docs/getting-started/intro) for more i
 Using the `nx generator` feature, we can easily create a new theme in the monorepo using the command:
 
 ```shell
-npx nx generate monorepo-plugin:theme-generator
+npx nx generate monorepo-plugin:theme
 pnpm install
 ```
 
@@ -63,6 +63,7 @@ npx nx import <git repo url> <destination path>
 Then follow the on-screen wizard to finish the import.
 
 Example:
+
 ```bash
 npx nx import https://github.com/bcgov/design-system-wordpress-theme themes/design-system-wordpress-theme
 ```
@@ -183,8 +184,8 @@ git push origin --tags
 
 - Raw branch names like `release/1.1.0` are **not allowed**
 - All legacy branches must be namespaced:
-  - `themes/example-theme/release-x.x.x`
-  - `plugins/example-plugin/release-x.x.x`
+    - `themes/example-theme/release-x.x.x`
+    - `plugins/example-plugin/release-x.x.x`
 
 ---
 
@@ -409,7 +410,9 @@ npm is the supported package manager. `pnpm` may be evaluated experimentally but
 - No script contract changes
 
 ### pnpm Workspace Configuration
+
 At the repository root, define workspaces of any package.json files in pnpm-workspace.yaml, e.g.:
+
 ```yaml
 packages:
   - "themes/*"
