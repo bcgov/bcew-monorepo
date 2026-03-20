@@ -102,6 +102,11 @@
                     "slug": "hyperlink-pressed",
                     "color": "#004873",
                     "name": "Hyperlink Pressed"
+                },
+                {
+                    "slug": "button-hover",
+                    "color": "#EDEBE9",
+                    "name": "Button Hover"
                 }
             ]
         }
