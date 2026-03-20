@@ -35,9 +35,6 @@
         }
     ],
     "settings": {
-        "custom": {
-            "navBreakpoint": "1200"
-        },
         "color": {
             "defaultPalette": false,
             "palette": [
