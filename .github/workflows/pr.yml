@@ -133,7 +133,7 @@ jobs:
               run: pnpm install
 
             - name: Install Composer dependencies
-              run: npx nx run run-many -p ${{ matrix.project }} -t composer-install
+              run: npx nx run-many -p ${{ matrix.project }} -t composer-install
 
             - name: Install Playwright dependencies
               run: npx playwright install --with-deps
