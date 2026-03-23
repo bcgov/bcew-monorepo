@@ -35,6 +35,7 @@
         "@swc/core": "~1.15.18",
         "@swc/helpers": "~0.5.19",
         "@types/node": "20.19.9",
+        "@wordpress-monorepo/e2e": "workspace:*",
         "@wordpress/e2e-test-utils-playwright": "^1.41.0",
         "@wordpress/env": "^10.39.0",
         "@wordpress/scripts": "^31.7.0",
@@ -71,6 +72,6 @@
         "check-engines": "wp-scripts check-engines",
         "check-licenses": "wp-scripts check-licenses --prod",
         "wp-env": "wp-env",
-        "wp-env:cleanup": "sh -c 'containers=$(docker ps -a --format \"{{.Names}}\" | grep -E \"^[a-f0-9]{32}-(wordpress|cli|mysql)-1$\" || true); if [ -n \"$containers\" ]; then echo \"$containers\" | xargs docker rm -f; else echo \"No orphan wp-env containers found.\"; fi'"
+        "wp-env-remove-all": "sh -c 'containers=$(docker ps -a --format \"{{.Names}}\" | grep -E \"^[a-f0-9]{32}-(wordpress|cli|mysql)-1$\" || true); if [ -n \"$containers\" ]; then echo \"$containers\" | xargs docker rm -f; else echo \"No orphan wp-env containers found.\"; fi'"
     }
 }

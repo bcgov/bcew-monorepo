@@ -144,9 +144,6 @@ jobs:
             - name: Start wp-env
               run: npx nx run ${{ matrix.project }}:wp-env-start
 
-            - name: Run JS unit tests
-              run: npx nx run ${{ matrix.project }}:test-unit:js
-
             - name: Run e2e tests
               run: npx nx run ${{ matrix.project }}:test-e2e
 

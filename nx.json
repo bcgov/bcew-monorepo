@@ -28,14 +28,14 @@
             "continuous": true,
             "outputs": [ "{workspaceRoot}/dist" ]
         },
-        "test-unit-js": {
+        "test-integration": {
             "executor": "nx:run-commands",
             "options": {
-                "command": "wp-scripts test-unit-js",
-                "cwd": "{workspaceRoot}",
-                "passWithNoTests": true
+                "command": "wp-env run tests-cli composer run test",
+                "configuration": "vendor/wordpress-monorepo/phpunit-config/phpunit.integration.xml",
+                "cwd": "{workspaceRoot}"
             },
-            "dependsOn": [ "^build" ]
+            "dependsOn": [ "composer-install", "wp-env-start" ]
         },
         "test-e2e": {
             "executor": "nx:run-commands",

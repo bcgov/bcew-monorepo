@@ -29,7 +29,7 @@ export const updateLabeler = async (
 ) => {
     const filePath = `.github/labeler.yml`;
     const contents = tree.read( filePath );
-    if (!contents) {
+    if ( ! contents ) {
         return;
     }
     const pathPrefix =

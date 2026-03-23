@@ -55,6 +55,17 @@ module.exports = {
         'jsdoc/require-param-name': lintSeverity,
         'jsdoc/require-param-type': lintSeverity,
         'jsdoc/require-returns': lintSeverity,
+        'import/no-extraneous-dependencies': [
+            'error',
+            {
+                devDependencies: [ '**/*.spec.ts', '**/*.spec.js' ],
+                packageDir: [
+                    '.',
+                    './themes/*',
+                    './plugins/test-plugin-rename',
+                ],
+            },
+        ],
     },
     settings: {
         react: {
@@ -63,8 +74,8 @@ module.exports = {
     },
     ignorePatterns: [
         '**/dist/**',
-        'tools/**/files/**',
         '**/coverage/**',
+        'tools/monorepo-plugin/src/generators/**/files/**',
         '{plugins,themes}/**/build/**',
     ],
 };

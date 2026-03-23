@@ -2,7 +2,10 @@
 module.exports = {
     extends: [ '@wordpress/stylelint-config/scss' ],
     ignoreFontFamilies: [ 'BCSans' ],
-    ignoreFiles: [ '**/dist/**', 'tools/monorepo-plugin/src/generators/plugin-generator/files/**' ],
+    ignoreFiles: [
+        '**/dist/**',
+        'tools/monorepo-plugin/src/generators/plugin-generator/files/**',
+    ],
     rules: {
         'plugin-wpds/no-unknown-ds-tokens': null,
         'selector-class-pattern': null,

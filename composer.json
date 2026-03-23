@@ -3,10 +3,10 @@
     "description": "A monorepo for BC government WordPress plugins and themes",
     "license": "Apache-2.0",
     "scripts": {
-        "lint:php": [
+        "lint-php": [
             "vendor/bin/phpcs -ps ."
         ],
-        "fix:php": [
+        "fix-php": [
             "vendor/bin/phpcbf -ps ."
         ]
     },

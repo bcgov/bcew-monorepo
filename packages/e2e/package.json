@@ -12,7 +12,7 @@
     "type": "module",
     "main": "index.js",
     "peerDependencies": {
-        "@wordpress/scripts": "*",
-        "@playwright/test": "*"
+        "@playwright/test": "*",
+        "@wordpress/scripts": "*"
     }
 }
