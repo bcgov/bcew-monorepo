@@ -21,6 +21,7 @@
 	<exclude-pattern>*/coverage/*</exclude-pattern>
 	<exclude-pattern>*/tests/_*</exclude-pattern>
     <exclude-pattern>packages/phpunit-config/integration-test-bootstrap.php</exclude-pattern>
+	<exclude-pattern>tools/monorepo-plugin/src/generators/plugin-generator/files/*</exclude-pattern>
 
 	<!-- Until a better solution comes to code check blade files. -->
 	<exclude-pattern>*.blade.php</exclude-pattern>

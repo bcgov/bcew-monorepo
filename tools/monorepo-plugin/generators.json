@@ -3,7 +3,12 @@
         "theme": {
             "factory": "./dist/generators/theme/theme",
             "schema": "./dist/generators/theme/schema.json",
-            "description": "theme generator"
+            "description": "Generate a WordPress theme"
+        },
+        "plugin": {
+            "factory": "./dist/generators/plugin/plugin",
+            "schema": "./dist/generators/plugin/schema.json",
+            "description": "Generate a WordPress block plugin"
         }
     }
 }

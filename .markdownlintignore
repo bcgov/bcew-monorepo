@@ -1,3 +1,4 @@
 checklist.md
 vendor
 node_modules
+tools/monorepo-plugin/src/generators/plugin-generator/files/**

@@ -70,6 +70,7 @@
         "format": "wp-scripts format",
         "check-engines": "wp-scripts check-engines",
         "check-licenses": "wp-scripts check-licenses --prod",
-        "wp-env": "wp-env"
+        "wp-env": "wp-env",
+        "wp-env:cleanup": "sh -c 'containers=$(docker ps -a --format \"{{.Names}}\" | grep -E \"^[a-f0-9]{32}-(wordpress|cli|mysql)-1$\" || true); if [ -n \"$containers\" ]; then echo \"$containers\" | xargs docker rm -f; else echo \"No orphan wp-env containers found.\"; fi'"
     }
 }
