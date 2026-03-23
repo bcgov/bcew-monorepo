@@ -46,6 +46,15 @@ This is the long description. No limit, and you can use Markdown (as well as in 
 
 These defaults are aimed at reproducible local environments and safer team workflows.
 
+## == Visual Regression Testing ==
+
+This template includes Playwright screenshot tests in `tests/screenshot` for catching visual regressions.
+
+1. Build assets: `pnpm run build`
+2. Start WordPress: `pnpm run wp-env:start`
+3. Generate baseline screenshots: `pnpm run test:screenshot:update`
+4. Run visual regression checks: `pnpm run test:screenshot`
+
 
 ## == Frequently Asked Questions ==
 

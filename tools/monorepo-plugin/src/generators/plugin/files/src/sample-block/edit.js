@@ -29,10 +29,15 @@ import './editor.scss';
  *
  * @return {Element} Element to render.
  */
-export default Edit = () => {
-	return (
-		<p { ...useBlockProps() }>
-			{ __( '<%= name %> – hello from the editor!', '<%= slug %>' ) }
-		</p>
-	);
-}
+const Edit = () => {
+    return (
+        <p { ...useBlockProps() }>
+            { __(
+                '<%= name %> – hello from the editor!',
+                '<%= slug %>'
+            ) }
+        </p>
+    );
+};
+
+export default Edit;

@@ -3576,10 +3576,6 @@ packages:
       '@playwright/test': '>=1'
       '@types/node': ^20.17.10
 
-  '@wordpress/element@6.40.0':
-    resolution: {integrity: sha512-OhU8B2xEGg7c41rh/VRiJLOz6TnM/r5r8sraAg5ISc2bF7s2oAFqLwvlR0/U6ervyYwbK644osWZGQxFyL3huA==}
-    engines: {node: '>=18.12.0', npm: '>=8.19.2'}
-
   '@wordpress/element@6.42.0':
     resolution: {integrity: sha512-aSuifJL9MF0xrAynWSWxIuhgagJcVwSWrqIpLwX0DZasQ0LKsJe08SmuDe/z3sgOymGG6cOd/GHv0fLwQe8VFQ==}
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
@@ -3756,10 +3752,6 @@ packages:
 
   '@wordpress/priority-queue@3.42.0':
     resolution: {integrity: sha512-XNi5PWOCz6Y8YSNl7PDNx+CPoADxzRvYhfxCdzJbX4Za5HZi7/qfrIIUI6GIETRPRvWSCI9TZmctRFjBg1mq3Q==}
-    engines: {node: '>=18.12.0', npm: '>=8.19.2'}
-
-  '@wordpress/private-apis@1.40.0':
-    resolution: {integrity: sha512-68cwZKVq8Xy8GBzKoDRuV4b3pQ4nJFItY689HXp+poc0XXrnAeC4ZhjeSgS1qGRpFo6RVvLjjcaZsN2OrSSMvQ==}
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
 
   '@wordpress/private-apis@1.42.0':
@@ -15118,8 +15110,6 @@ snapshots:
     dependencies:
       requestidlecallback: 0.3.0
 
-  '@wordpress/private-apis@1.40.0': {}
-
   '@wordpress/private-apis@1.42.0': {}
 
   '@wordpress/redux-routine@5.42.0(redux@5.0.1)':
@@ -15377,8 +15367,8 @@ snapshots:
 
   '@wordpress/theme@0.7.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.9.3))':
     dependencies:
-      '@wordpress/element': 6.40.0
-      '@wordpress/private-apis': 1.40.0
+      '@wordpress/element': 6.42.0
+      '@wordpress/private-apis': 1.42.0
       colorjs.io: 0.6.1
       memize: 2.1.1
       react: 18.3.1

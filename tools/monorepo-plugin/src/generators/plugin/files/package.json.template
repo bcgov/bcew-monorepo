@@ -4,7 +4,6 @@
     "description": "<%= description %>",
     "author": "The WordPress Contributors",
     "license": "GPL-2.0-or-later",
-    "main": "build/index.js",
     "keywords": [
         "WordPress",
         "block",
@@ -13,6 +12,7 @@
         "Gutenberg",
         "plugin"
     ],
+    "homepage": "https://github.com/bcgov/wordpress-monorepo",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/bcgov/<%= slug %>.git"

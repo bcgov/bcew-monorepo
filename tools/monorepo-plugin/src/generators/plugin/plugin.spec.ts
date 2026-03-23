@@ -86,4 +86,52 @@ describe( 'plugin generator', () => {
             composerJson.autoload[ 'psr-4' ][ 'Bcgov\\MyPluginV2\\' ]
         ).toBe( 'src/' );
     } );
+
+    it( 'should scaffold visual regression tests', async () => {
+        const options: PluginGeneratorSchema = {
+            name: 'Screenshot Plugin',
+            description: 'Description',
+        };
+
+        await pluginGenerator( tree, options );
+
+        const screenshotSpecPath =
+            'plugins/screenshot-plugin/tests/screenshot/sample-block.spec.js';
+
+        expect( tree.exists( screenshotSpecPath ) ).toBe( true );
+    } );
+
+    it( 'should generate a supported wp-env config', async () => {
+        const options: PluginGeneratorSchema = {
+            name: 'WP Env Plugin',
+            description: 'Description',
+        };
+
+        await pluginGenerator( tree, options );
+
+        const wpEnvPath = 'plugins/wp-env-plugin/.wp-env.json';
+        const wpEnvConfig = JSON.parse( tree.read( wpEnvPath )!.toString() );
+
+        expect( wpEnvConfig.testsEnvironment ).toBeUndefined();
+        expect( wpEnvConfig.plugins ).toEqual( [ '.' ] );
+    } );
+
+    it( 'should scaffold sample block e2e smoke coverage', async () => {
+        const options: PluginGeneratorSchema = {
+            name: 'E2E Coverage Plugin',
+            description: 'Description',
+        };
+
+        await pluginGenerator( tree, options );
+
+        const smokeSpecPath =
+            'plugins/e2e-coverage-plugin/tests/e2e/smoke.spec.js';
+        const smokeSpec = tree.read( smokeSpecPath )!.toString();
+
+        expect( smokeSpec ).toContain(
+            'sample block can be inserted and rendered on the frontend'
+        );
+        expect( smokeSpec ).toContain( 'sample-block' );
+        expect( smokeSpec ).toContain( 'hello from the saved content!' );
+    } );
 } );
