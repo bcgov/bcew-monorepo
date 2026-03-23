@@ -28,10 +28,13 @@ export const updateLabeler = async (
     type: WordPressProjectType = WordPressProjectType.Theme
 ) => {
     const filePath = `.github/labeler.yml`;
-    const contents = tree.read( filePath ).toString();
+    const contents = tree.read( filePath );
+    if (!contents) {
+        return;
+    }
     const pathPrefix =
         type === WordPressProjectType.Theme ? 'themes' : 'plugins';
-    const newContents = contents.concat(
+    const newContents = contents.toString().concat(
         `
 ${ pathPrefix }/${ schema.slug }:
     - changed-files:

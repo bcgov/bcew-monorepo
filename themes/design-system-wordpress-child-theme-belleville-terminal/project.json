@@ -1,8 +1,50 @@
 {
-    "name": "design-system-wordpress-child-theme-belleville-terminal",
     "$schema": "../../node_modules/nx/schemas/project-schema.json",
-    "projectType": "application",
+    "name": "design-system-wordpress-child-theme-belleville-terminal",
+    "root": "themes/design-system-wordpress-child-theme-belleville-terminal",
     "sourceRoot": "themes/design-system-wordpress-child-theme-belleville-terminal/src",
-    "// targets": "to see all targets run: nx show project design-system-wordpress-child-theme-belleville-terminal --web",
-    "targets": {}
+    "projectType": "application",
+    "generators": {
+        "wordpress-monorepo:theme-generator": {
+            "name": "Belleville Terminal Child Theme",
+            "slug": "design-system-wordpress-child-theme-belleville-terminal"
+        }
+    },
+    "targets": {
+        "composer-install": {
+            "options": {
+                "cwd": "themes/design-system-wordpress-child-theme-belleville-terminal"
+            }
+        },
+        "build": {
+            "options": {
+                "source-path": "themes/design-system-wordpress-child-theme-belleville-terminal/src",
+                "output-path": "themes/design-system-wordpress-child-theme-belleville-terminal/dist"
+            }
+        },
+        "start": {
+            "options": {
+                "source-path": "themes/design-system-wordpress-child-theme-belleville-terminal/src",
+                "output-path": "themes/design-system-wordpress-child-theme-belleville-terminal/dist"
+            }
+        },
+        "test-screenshot": {
+            "options": {
+                "config": "playwright.regression.config.js",
+                "cwd": "themes/design-system-wordpress-child-theme-belleville-terminal"
+            }
+        },
+        "wp-env-start": {
+            "options": {
+                "cwd": "themes/design-system-wordpress-child-theme-belleville-terminal"
+            }
+        },
+        "wp-env-clean": {
+            "options": {
+                "cwd": "themes/design-system-wordpress-child-theme-belleville-terminal"
+            }
+        }
+    },
+    "implicitDependencies": ["packages/phpunit-config/"],
+    "tags": ["type:wp-theme"]
 }

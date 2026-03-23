@@ -52,13 +52,13 @@ jobs:
               run: composer i
 
             - name: Run php lint
-              run: pnpm run lint:php
+              run: pnpm run lint-php
 
             - name: Run js lint
-              run: pnpm run lint:js
+              run: pnpm run lint-js
 
             - name: Run css lint
-              run: pnpm run lint:css
+              run: pnpm run lint-css
 
     detect-affected-projects:
         name: Detect affected sub-projects
@@ -133,7 +133,7 @@ jobs:
               run: pnpm install
 
             - name: Install Composer dependencies
-              run: npx nx run ${{ matrix.project }}:composer:install
+              run: npx nx run ${{ matrix.project }}:composer-install
 
             - name: Install Playwright dependencies
               run: npx playwright install --with-deps
@@ -142,13 +142,13 @@ jobs:
               run: npx nx run ${{ matrix.project }}:build
 
             - name: Start wp-env
-              run: npx nx run ${{ matrix.project }}:wp-env:start
+              run: npx nx run ${{ matrix.project }}:wp-env-start
 
             - name: Run JS unit tests
-              run: npx nx run ${{ matrix.project }}:test:unit:js
+              run: npx nx run ${{ matrix.project }}:test-unit:js
 
             - name: Run e2e tests
-              run: npx nx run ${{ matrix.project }}:test:e2e
+              run: npx nx run ${{ matrix.project }}:test-e2e
 
             - uses: actions/upload-artifact@v4
               if: ${{ !cancelled() }}
@@ -158,10 +158,10 @@ jobs:
                   retention-days: 30
 
             - name: Run screenshot updates
-              run: npx nx run ${{ matrix.project }}:test:screenshot
+              run: npx nx run ${{ matrix.project }}:test-screenshot
 
             - name: Run PHP integration tests
-              run: npx nx run ${{ matrix.project }}:test:integration
+              run: npx nx run ${{ matrix.project }}:test-integration
 
             # Todo: Determine how to allow bot commits without retriggering default CodeQL check.
             # - name: Commit and push updates

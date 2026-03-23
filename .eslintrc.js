@@ -61,5 +61,10 @@ module.exports = {
             version: 'detect',
         },
     },
-    ignorePatterns: [ '**/dist/**', 'tools/**/files/**', '**/coverage/**', '{plugins,themes}/**/build/**' ]
+    ignorePatterns: [
+        '**/dist/**',
+        'tools/**/files/**',
+        '**/coverage/**',
+        '{plugins,themes}/**/build/**',
+    ],
 };

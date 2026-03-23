@@ -1,7 +1,7 @@
 {
     "$schema": "./node_modules/nx/schemas/nx-schema.json",
     "targetDefaults": {
-        "composer:install": {
+        "composer-install": {
             "executor": "nx:run-commands",
             "options": {
                 "command": "composer install"
@@ -28,7 +28,7 @@
             "continuous": true,
             "outputs": [ "{workspaceRoot}/dist" ]
         },
-        "test:unit:js": {
+        "test-unit-js": {
             "executor": "nx:run-commands",
             "options": {
                 "command": "wp-scripts test-unit-js",
@@ -37,22 +37,37 @@
             },
             "dependsOn": [ "^build" ]
         },
-        "test:e2e": {
+        "test-e2e": {
             "executor": "nx:run-commands",
             "options": {
                 "command": "wp-scripts test-playwright",
-                "cwd": "{workspaceRoot}"
+                "cwd": "{workspaceRoot}",
+                "parallel": false
             },
-            "dependsOn": [ "^build", "wp-env:start" ] 
+            "dependsOn": [ "^build", "wp-env-start" ]
         },
-        "test": {
-            "dependsOn": [ "^build" ]
+        "test-screenshot": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "npx playwright test",
+                "update-snapshots": "all",
+                "parallel": false
+            },
+            "dependsOn": [ "^build", "wp-env-start" ] 
         },
-        "wp-env:start": {
+        "wp-env-start": {
             "executor": "nx:run-commands",
             "options": {
                 "command": "wp-env start",
-                "xdebug": "coverage"
+                "xdebug": "coverage",
+                "parallel": false
+            }
+        },
+        "wp-env-clean": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "wp-env clean",
+                "parallel": false
             }
         }
     },

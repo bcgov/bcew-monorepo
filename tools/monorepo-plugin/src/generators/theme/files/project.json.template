@@ -1,0 +1,50 @@
+{
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "name": "<%= slug %>",
+    "root": "themes/<%= slug %>",
+    "sourceRoot": "themes/<%= slug %>/src",
+    "projectType": "application",
+    "generators": {
+        "wordpress-monorepo:theme": {
+            "name": "<%= name %>",
+            "slug": "<%= slug %>"
+        }
+    },
+    "targets": {
+        "composer-install": {
+            "options": {
+                "cwd": "themes/<%= slug %>"
+            }
+        },
+        "build": {
+            "options": {
+                "source-path": "themes/<%= slug %>/src",
+                "output-path": "themes/<%= slug %>/dist"
+            }
+        },
+        "start": {
+            "options": {
+                "source-path": "themes/<%= slug %>/src",
+                "output-path": "themes/<%= slug %>/dist"
+            }
+        },
+        "test-screenshot": {
+            "options": {
+                "config": "playwright.regression.config.js",
+                "cwd": "themes/<%= slug %>"
+            }
+        },
+        "wp-env-start": {
+            "options": {
+                "cwd": "themes/<%= slug %>"
+            }
+        },
+        "wp-env-clean": {
+            "options": {
+                "cwd": "themes/<%= slug %>"
+            }
+        }
+    },
+    "implicitDependencies": ["packages/phpunit-config/"],
+    "tags": ["type:wp-theme"]
+}
