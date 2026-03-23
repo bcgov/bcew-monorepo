@@ -60,6 +60,12 @@ jobs:
             - name: Run css lint
               run: pnpm run lint-css
 
+            - name: Run md lint
+              run: pnpm run lint-md
+
+            - name: Run package.json lint
+              run: pnpm run lint-pkg-json
+
     detect-affected-projects:
         name: Detect affected sub-projects
         runs-on: ubuntu-latest
