@@ -53,6 +53,54 @@ Use those prompts to configure the plugin you want to scaffold.
 
 The generator creates a new Block Plugin that follows the current monorepo plugin standards.
 
+### Syncing wp-env versions across projects
+
+To update `core` and `phpVersion` in all project-level `.wp-env.json` files, generator templates, and root by default, run:
+
+```shell
+pnpm run wp-env:sync
+```
+
+The source of truth for those values is:
+
+```shell
+tools/wp-env/config.json
+```
+
+To print the currently configured wp-env versions from that source of truth, run:
+
+```shell
+npm run wp-env:config
+```
+
+The generator also falls back to that file automatically if you run it directly without `--core` or `--phpVersion`.
+
+Equivalent direct Nx command:
+
+```shell
+npx nx generate monorepo-plugin:sync-wp-env --core="WordPress/WordPress#6.8" --phpVersion=7.4
+```
+
+To skip updating the root `.wp-env.json`, add:
+
+```shell
+pnpm run wp-env:sync -- --includeRoot=false
+```
+
+For actual environment lifecycle commands, use Nx project targets so `wp-env` runs in the correct project directory:
+
+```shell
+npx nx run <project>:wp-env-start
+npx nx run <project>:wp-env-clean
+```
+
+Note: the commands below are real working examples from this repository.
+
+```shell
+npx nx run design-system-wordpress-child-theme-belleville-terminal:wp-env-start
+npx nx run design-system-wordpress-child-theme-belleville-terminal:wp-env-clean
+```
+
 If `wp-env start` fails with `port is already allocated` (for example `8888`), run:
 
 ```shell
@@ -378,6 +426,12 @@ Themes and plugins should only add package-local build configuration when they h
 - Playwright configuration (`packages/e2e/playwright.config.js`)
 - wp-env configuration (`.wp-env.json`)
 - Shared test utilities and bootstrap files (under `packages/e2e/`)
+
+`wp-env` version synchronization is managed centrally from `tools/wp-env/config.json` via:
+
+- root `package.json` (`wp-env:sync`, `wp-env:config` scripts)
+
+Update that config file in one place when version bumping, then run `pnpm run wp-env:sync` to write values into `.wp-env.json` files.
 
 Individual packages may define **minimal wrapper configs** that reference the shared setup.
 

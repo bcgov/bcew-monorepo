@@ -53,7 +53,7 @@
                 "update-snapshots": "all",
                 "parallel": false
             },
-            "dependsOn": [ "^build", "wp-env-start" ] 
+            "dependsOn": [ "^build", "wp-env-start" ]
         },
         "wp-env-start": {
             "executor": "nx:run-commands",

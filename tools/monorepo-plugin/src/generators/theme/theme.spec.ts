@@ -6,7 +6,11 @@ import { ThemeGeneratorSchema } from './schema';
 
 describe( 'theme generator', () => {
     let tree: Tree;
-    const options: ThemeGeneratorSchema = { name: 'test' };
+    const options: ThemeGeneratorSchema = {
+        name: 'test',
+        slug: 'test',
+        parentTheme: 'none',
+    };
 
     beforeEach( () => {
         tree = createTreeWithEmptyWorkspace();

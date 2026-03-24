@@ -72,6 +72,12 @@
         "format": "wp-scripts format",
         "check-engines": "wp-scripts check-engines",
         "check-licenses": "wp-scripts check-licenses --prod",
-        "wp-env": "wp-env"
+        "wp-env": "wp-env",
+        "wp-env:sync": "node tools/wp-env/cli.js sync",
+        "wp-env:config": "node tools/wp-env/cli.js print-config"
+    },
+    "devDependencies": {
+        "jest": "^30.3.0",
+        "ts-jest": "^29.4.6"
     }
 }

@@ -35,6 +35,16 @@
                         }
                     ]
                 }
+            },
+            "test": {
+                "executor": "nx:run-commands",
+                "options": {
+                    "command": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --config tools/monorepo-plugin/jest.config.cjs",
+                    "cwd": "{workspaceRoot}"
+                },
+                "outputs": [
+                    "{workspaceRoot}/coverage/tools/monorepo-plugin"
+                ]
             }
         }
     },

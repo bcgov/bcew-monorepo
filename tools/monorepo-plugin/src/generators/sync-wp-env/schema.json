@@ -1,0 +1,21 @@
+{
+    "$schema": "https://json-schema.org/schema",
+    "$id": "SyncWpEnv",
+    "title": "Sync wp-env versions",
+    "type": "object",
+    "properties": {
+        "core": {
+            "type": "string",
+            "description": "WordPress core source to apply. Defaults to tools/wp-env/config.json. Example: WordPress/WordPress#6.8"
+        },
+        "phpVersion": {
+            "type": ["string", "number"],
+            "description": "PHP version to apply. Defaults to tools/wp-env/config.json. Example: 7.4"
+        },
+        "includeRoot": {
+            "type": "boolean",
+            "description": "Also update the root .wp-env.json file.",
+            "default": true
+        }
+    }
+}

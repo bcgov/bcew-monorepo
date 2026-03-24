@@ -9,6 +9,11 @@
             "factory": "./dist/generators/plugin/plugin",
             "schema": "./dist/generators/plugin/schema.json",
             "description": "Generate a WordPress block plugin"
+        },
+        "sync-wp-env": {
+            "factory": "./dist/generators/sync-wp-env/sync-wp-env",
+            "schema": "./dist/generators/sync-wp-env/schema.json",
+            "description": "Sync core and phpVersion across .wp-env.json files"
         }
     }
 }
