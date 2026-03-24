@@ -2,8 +2,6 @@ name: Sync branch to standalone repositories
 
 on:
     push:
-        paths:
-        - '{plugins,themes}/**'
 
 concurrency:
     group: sync-branch-${{ github.ref }}
