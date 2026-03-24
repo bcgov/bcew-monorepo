@@ -2,6 +2,10 @@ name: Detect affected projects
 
 on:
     workflow_call:
+        outputs:
+            projects:
+                description: "List of affected application projects"
+                value: ${{ steps.compute.outputs.projects }}
 
 jobs:
     detect-affected-projects:
