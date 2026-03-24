@@ -49,3 +49,4 @@ jobs:
                   fi
 
                   echo "projects=$(npx nx show projects --base=$BASE --head=$HEAD --type app --affected --json)" >> "$GITHUB_OUTPUT"
+                  echo "$projects"
