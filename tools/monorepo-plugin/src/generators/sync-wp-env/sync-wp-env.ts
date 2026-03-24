@@ -12,17 +12,21 @@ interface WpEnvVersionConfig {
 
 // Reads the canonical wp-env versions used as defaults when generator options are omitted.
 /**
+ * @param {Tree} tree In-memory Nx file tree.
  * @return {WpEnvVersionConfig} Default core and PHP versions.
  */
-const getDefaultWpEnvVersionConfig = (): WpEnvVersionConfig => {
-    const configPath = path.resolve(
-        __dirname,
-        '../../../../wp-env/config.json'
-    );
+const getDefaultWpEnvVersionConfig = ( tree: Tree ): WpEnvVersionConfig => {
+    const configPath = 'tools/wp-env/config.json';
+    const fileContent = tree.read( configPath );
 
-    return JSON.parse(
-        fs.readFileSync( configPath, 'utf8' )
-    ) as WpEnvVersionConfig;
+    if ( ! fileContent ) {
+        throw new Error(
+            `Missing wp-env version config at "${ configPath }". ` +
+                'Ensure this file exists so default core/PHP versions can be determined.'
+        );
+    }
+
+    return JSON.parse( fileContent.toString() ) as WpEnvVersionConfig;
 };
 
 // Recursively finds .wp-env.json files under a directory in the virtual Nx tree.
