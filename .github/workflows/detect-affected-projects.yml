@@ -5,7 +5,7 @@ on:
         outputs:
             projects:
                 description: "List of affected application projects"
-                value: ${{ steps.compute.outputs.projects }}
+                value: ${{ jobs.compute.outputs.projects }}
 
 jobs:
     detect-affected-projects:
