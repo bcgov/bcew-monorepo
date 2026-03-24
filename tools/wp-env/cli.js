@@ -38,8 +38,7 @@ const runCommand = ( command, commandArgs, envOverrides = {} ) => {
         process.exit( 1 );
     }
 
-    const exitCode =
-        typeof result.status === 'number' ? result.status : 1;
+    const exitCode = 'number' === typeof result.status ? result.status : 1;
 
     process.exit( exitCode );
 };

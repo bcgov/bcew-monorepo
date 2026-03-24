@@ -70,7 +70,7 @@ tools/wp-env/config.json
 To print the currently configured wp-env versions from that source of truth, run:
 
 ```shell
-npm run wp-env:config
+pnpm run wp-env:config
 ```
 
 The generator also falls back to that file automatically if you run it directly without `--core` or `--phpVersion`.

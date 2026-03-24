@@ -1,5 +1,3 @@
-import * as fs from 'node:fs';
-import * as path from 'node:path';
 import { formatFiles, Tree } from '@nx/devkit';
 import { SyncWpEnvGeneratorSchema } from './schema';
 
@@ -97,7 +95,7 @@ export const syncWpEnvGenerator = async (
     options: SyncWpEnvGeneratorSchema
 ) => {
     // Merge explicit CLI options over defaults so callers can override per run.
-    const defaultVersionConfig = getDefaultWpEnvVersionConfig();
+    const defaultVersionConfig = getDefaultWpEnvVersionConfig( tree );
     const versionConfig: WpEnvVersionConfig = {
         core: options.core ?? defaultVersionConfig.core,
         phpVersion: String(

@@ -4,7 +4,6 @@ import { Tree } from '@nx/devkit';
 import { syncWpEnvGenerator } from './sync-wp-env';
 import { SyncWpEnvGeneratorSchema } from './schema';
 
-
 describe( 'sync wp-env generator', () => {
     let tree: Tree;
 
