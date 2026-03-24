@@ -111,6 +111,64 @@ pnpm run wp-env:cleanup
 
 ## Contributing
 
+### Pull Request Preflight Checklist
+
+Before pushing a branch or opening a pull request, run the same checks that CI runs.
+
+#### 1. Confirm tool versions
+
+CI uses Node.js 24 and pnpm 10. Matching these locally helps avoid environment-only failures.
+
+#### 2. Install dependencies from repository root
+
+```bash
+pnpm install
+composer i
+```
+
+#### 3. Run all lint checks
+
+```bash
+pnpm run lint
+```
+
+This runs JavaScript, CSS, PHP, Markdown, and package.json linting.
+
+#### 4. Run monorepo plugin unit tests
+
+```bash
+npx nx test monorepo-plugin
+```
+
+If you are only working on the wp-env sync generator, you can run the focused test suite:
+
+```bash
+pnpm run test-unit-sync-wp-env
+```
+
+#### 5. Run affected project tasks before push
+
+The PR workflow calculates affected projects and runs build and tests per affected project. Before push, check affected projects and run relevant targets locally when possible.
+
+```bash
+npx nx show projects --affected
+```
+
+Typical targets used by CI include build, wp-env start, e2e tests, screenshot tests, and integration tests.
+
+#### 6. Push only after checks pass locally
+
+Suggested flow:
+
+```bash
+git status
+git add -A
+git commit -m "<your message>"
+git push
+```
+
+If a PR check fails, reproduce it locally with the matching command from this checklist, fix the issue, and push again.
+
 ### Adding an Existing Repository to the Monorepo
 
 The example below assumes you are adding a theme and uses `example-theme` as a placeholder for the existing repository name.
