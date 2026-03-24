@@ -34,6 +34,7 @@
         "@swc/cli": "~0.8.0",
         "@swc/core": "~1.15.18",
         "@swc/helpers": "~0.5.19",
+        "@types/jest": "^30.0.0",
         "@types/node": "20.19.9",
         "@wordpress-monorepo/e2e": "workspace:*",
         "@wordpress/e2e-test-utils-playwright": "^1.41.0",
