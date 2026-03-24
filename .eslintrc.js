@@ -1,13 +1,13 @@
 /**
  * The "global" error severity level. The user can specify that they only want to be
  * warned of linter issues.
- **/
+ */
 const lintSeverity = process.env.LINT_SEVERITY ?? 'error';
 
 module.exports = {
     root: true,
     // React rules used for Gutenberg
-    extends: [ 'eslint:recommended', 'plugin:react/recommended', 'plugin:playwright/recommended' ],
+    extends: [ 'plugin:@wordpress/eslint-plugin/recommended' ],
     env: {
         node: true,
         es6: true,
@@ -55,11 +55,27 @@ module.exports = {
         'jsdoc/require-param-name': lintSeverity,
         'jsdoc/require-param-type': lintSeverity,
         'jsdoc/require-returns': lintSeverity,
+        'import/no-extraneous-dependencies': [
+            'error',
+            {
+                devDependencies: [ '**/*.spec.ts', '**/*.spec.js' ],
+                packageDir: [
+                    '.',
+                    './themes/*',
+                    './plugins/test-plugin-rename',
+                ],
+            },
+        ],
     },
     settings: {
         react: {
             version: 'detect',
         },
     },
-    ignorePatterns: [ '**/dist/**' ],
+    ignorePatterns: [
+        '**/dist/**',
+        '**/coverage/**',
+        'tools/monorepo-plugin/src/generators/**/files/**',
+        '{plugins,themes}/**/build/**',
+    ],
 };

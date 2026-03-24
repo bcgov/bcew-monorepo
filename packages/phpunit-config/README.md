@@ -5,6 +5,7 @@ This package demonstrates how internally sharing Composer code between plugins/t
 ## Usage
 
 In the plugin or theme `composer.json`:
+
 ```json
     "repositories": [
         {
@@ -17,7 +18,9 @@ In the plugin or theme `composer.json`:
         }
     ],
 ```
+
 And:
+
 ```json
     "require-dev": {
         "wordpress-monorepo/phpunit-config": "dev-main",

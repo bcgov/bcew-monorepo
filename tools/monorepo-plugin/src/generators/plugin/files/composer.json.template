@@ -1,0 +1,30 @@
+{
+    "name": "bcgov-plugin/<%= slug %>",
+    "description": "<%= description %>",
+    "type": "wordpress-plugin",
+    "license": "Apache-2.0",
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../../packages/phpunit-config",
+            "options": {
+                "symlink": false
+            }
+        }
+    ],
+    "require-dev": {
+        "wordpress-monorepo/phpunit-config": "dev-main",
+        "phpunit/phpunit": "^9.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Bcgov\\<%= phpNamespace %>\\": "src/",
+            "Bcgov\\<%= phpNamespace %>\\Test\\": "tests/php/"
+        }
+    },
+    "scripts": {
+        "test": [
+            "./vendor/bin/phpunit"
+        ]
+    }
+}

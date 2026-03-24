@@ -1,0 +1,24 @@
+{
+    "name": "design-system-wordpress-child-theme-belleville-terminal",
+    "version": "1.0.0",
+    "description": "Belleville Terminal Child Theme",
+    "author": "govwordpress@gov.bc.ca",
+    "license": "GPL-2.0-or-later",
+    "keywords": [
+        "WordPress",
+        "Block Theme",
+        "BCGov",
+        "DesignSystem",
+        "Gutenberg"
+    ],
+    "homepage": "https://github.com/bcgov/design-system-wordpress-child-theme-belleville-terminal",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/bcgov/design-system-wordpress-child-theme-belleville-terminal.git"
+    },
+    "bugs": {
+        "url": "https://github.com/bcgov/design-system-wordpress-child-theme-belleville-terminal#readme",
+        "email": "govwordpress@gov.bc.ca"
+    },
+    "main": "index.js"
+}

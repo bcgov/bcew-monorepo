@@ -1,6 +1,8 @@
 # Build artifacts
 build
 dist
+coverage
+artifacts
 
 # Dependencies
 node_modules

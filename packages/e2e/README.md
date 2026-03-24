@@ -5,6 +5,7 @@ This package demonstrates how internally sharing npm code between plugins/themes
 ## Usage
 
 In the plugin or theme `package.json`:
+
 ```json
   "devDependencies": {
     "@wordpress-monorepo/e2e": "workspace:*",
@@ -12,6 +13,7 @@ In the plugin or theme `package.json`:
 ```
 
 Then in a JS file:
+
 ```js
 import { PageHelpers } from '@wordpress-monorepo/e2e';
 

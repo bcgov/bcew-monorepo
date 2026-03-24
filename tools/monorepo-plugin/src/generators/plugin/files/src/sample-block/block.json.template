@@ -1,0 +1,33 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "<%= slug %>/sample-block",
+	"version": "0.0.1",
+	"title": "<%= name %>",
+	"category": "widgets",
+	"icon": "media-document",
+	"description": "<%= description %>",
+	"example": {},
+	"supports": {
+		"html": false,
+		"align": ["wide", "full"],
+		"anchor": true,
+		"color": {
+			"text": true,
+			"background": true,
+			"gradients": false
+		},
+		"typography": {
+			"fontSize": true
+		},
+		"spacing": {
+			"padding": true,
+			"margin": true
+		}
+	},
+	"textdomain": "<%= slug %>",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"viewScript": "file:./view.js"
+}

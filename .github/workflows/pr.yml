@@ -51,14 +51,20 @@ jobs:
             - name: Install Composer dependencies
               run: composer i
 
-            - name: Run css lint
-              run: npm run lint:css
+            - name: Run php lint
+              run: pnpm run lint-php
 
             - name: Run js lint
-              run: npm run lint:js
+              run: pnpm run lint-js
 
-            - name: Run php lint
-              run: npm run lint:php
+            - name: Run css lint
+              run: pnpm run lint-css
+
+            - name: Run md lint
+              run: pnpm run lint-md
+
+            - name: Run package.json lint
+              run: pnpm run lint-pkg-json
 
     detect-affected-projects:
         name: Detect affected sub-projects
@@ -133,22 +139,19 @@ jobs:
               run: pnpm install
 
             - name: Install Composer dependencies
-              run: npx nx run ${{ matrix.project }}:composer:install
+              run: npx nx run-many -p ${{ matrix.project }} -t composer-install
 
             - name: Install Playwright dependencies
               run: npx playwright install --with-deps
 
             - name: Build
-              run: npx nx run ${{ matrix.project }}:build
+              run: npx nx run-many -p ${{ matrix.project }} -t build
 
             - name: Start wp-env
-              run: npx nx run ${{ matrix.project }}:wp-env:start
-
-            - name: Run JS unit tests
-              run: npx nx run ${{ matrix.project }}:test:unit:js
+              run: npx nx run-many -p ${{ matrix.project }} -t wp-env-start
 
             - name: Run e2e tests
-              run: npx nx run ${{ matrix.project }}:test:e2e
+              run: npx nx run-many -p ${{ matrix.project }} -t test-e2e
 
             - uses: actions/upload-artifact@v4
               if: ${{ !cancelled() }}
@@ -158,10 +161,10 @@ jobs:
                   retention-days: 30
 
             - name: Run screenshot updates
-              run: npx nx run ${{ matrix.project }}:test:screenshot
+              run: npx nx run-many -p ${{ matrix.project }} -t test-screenshot
 
             - name: Run PHP integration tests
-              run: npx nx run ${{ matrix.project }}:test:integration
+              run: npx nx run-many -p ${{ matrix.project }} -t test-integration
 
             # Todo: Determine how to allow bot commits without retriggering default CodeQL check.
             # - name: Commit and push updates

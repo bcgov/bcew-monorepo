@@ -1,5 +1,13 @@
 packages:
-    - 'themes/*'
-    - 'plugins/*'
-    - 'packages/*'
-    - 'tools/*'
+  - 'themes/*'
+  - 'plugins/*'
+  - 'packages/*'
+  - 'tools/*'
+allowBuilds:
+  '@parcel/watcher': false
+  '@swc/core': false
+  core-js: false
+  core-js-pure: false
+  fs-ext: false
+  nx: false
+  unrs-resolver: false

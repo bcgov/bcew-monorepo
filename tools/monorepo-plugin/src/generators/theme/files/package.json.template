@@ -1,0 +1,24 @@
+{
+  "name": "<%= slug %>",
+  "version": "1.0.0",
+  "description": "<%= name %>",
+  "author": "govwordpress@gov.bc.ca",
+  "license": "GPL-2.0-or-later",
+  "keywords": [
+    "WordPress",
+    "Block Theme",
+    "BCGov",
+    "DesignSystem",
+    "Gutenberg"
+  ],
+  "homepage": "https://github.com/bcgov/<%= slug %>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bcgov/<%= slug %>.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bcgov/<%= slug %>#readme",
+    "email": "govwordpress@gov.bc.ca"
+  },
+  "main": "index.js"
+}

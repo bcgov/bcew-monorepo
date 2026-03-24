@@ -3,6 +3,14 @@
 This repository contains WordPress themes and plugins managed within a single Git monorepo.
 The primary goals are consistency, shared tooling, and safer long-term maintenance while preserving historical context.
 
+## Installation
+
+[pnpm](https://pnpm.io/installation) is the required package manager for this repository. To install:
+
+```shell
+npm install -g pnpm
+```
+
 ## Nx
 
 This repository uses `nx` for various monorepo-related tasks:
@@ -23,11 +31,33 @@ See the [nx documentation](https://nx.dev/docs/getting-started/intro) for more i
 Using the `nx generator` feature, we can easily create a new theme in the monorepo using the command:
 
 ```shell
-npx nx generate monorepo-plugin:theme-generator
+npx nx generate monorepo-plugin:theme
 pnpm install
 ```
 
 Follow the on-screen instructions to generate a standalone or child theme that adheres to the current theme standards.
+
+---
+
+### Generating a new WordPress Block plugin
+
+From the monorepo root, run the plugin generator and then install dependencies:
+
+```shell
+npx nx generate monorepo-plugin:plugin
+pnpm install
+```
+
+During generation, the CLI will prompt for the plugin name and, optionally, a description.
+Use those prompts to configure the plugin you want to scaffold.
+
+The generator creates a new Block Plugin that follows the current monorepo plugin standards.
+
+If `wp-env start` fails with `port is already allocated` (for example `8888`), run:
+
+```shell
+pnpm run wp-env:cleanup
+```
 
 ---
 
@@ -37,7 +67,7 @@ Follow the on-screen instructions to generate a standalone or child theme that a
 
 The example below assumes you are adding a theme and uses `example-theme` as a placeholder for the existing repository name.
 
-> ⚠️ **Important**  
+> ⚠️ **Important**
 > This process rewrites Git history. **Do not run it directly on the original repository.**
 
 ---
@@ -55,6 +85,7 @@ npx nx import <git repo url> <destination path>
 Then follow the on-screen wizard to finish the import.
 
 Example:
+
 ```bash
 npx nx import https://github.com/bcgov/design-system-wordpress-theme themes/design-system-wordpress-theme
 ```
@@ -96,7 +127,7 @@ git filter-repo --to-subdirectory-filter themes/example-theme
 
 Rename tags to avoid collisions with other packages in the monorepo.
 
-> TODO: Finalize naming convention  
+> TODO: Finalize naming convention
 > Default: `themes/<theme-slug>/`
 
 ```bash
@@ -175,8 +206,8 @@ git push origin --tags
 
 - Raw branch names like `release/1.1.0` are **not allowed**
 - All legacy branches must be namespaced:
-  - `themes/example-theme/release-x.x.x`
-  - `plugins/example-plugin/release-x.x.x`
+    - `themes/example-theme/release-x.x.x`
+    - `plugins/example-plugin/release-x.x.x`
 
 ---
 
@@ -401,7 +432,9 @@ npm is the supported package manager. `pnpm` may be evaluated experimentally but
 - No script contract changes
 
 ### pnpm Workspace Configuration
+
 At the repository root, define workspaces of any package.json files in pnpm-workspace.yaml, e.g.:
+
 ```yaml
 packages:
   - "themes/*"
