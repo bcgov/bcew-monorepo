@@ -31,7 +31,17 @@ const runCommand = ( command, commandArgs, envOverrides = {} ) => {
         throw result.error;
     }
 
-    process.exit( result.status ?? 0 );
+    if ( result.signal ) {
+        process.stderr.write(
+            `Command "${ command }" was terminated by signal ${ result.signal }.\n`
+        );
+        process.exit( 1 );
+    }
+
+    const exitCode =
+        typeof result.status === 'number' ? result.status : 1;
+
+    process.exit( exitCode );
 };
 
 switch ( mode ) {
