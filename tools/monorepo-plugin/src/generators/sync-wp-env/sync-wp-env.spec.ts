@@ -4,13 +4,6 @@ import { Tree } from '@nx/devkit';
 import { syncWpEnvGenerator } from './sync-wp-env';
 import { SyncWpEnvGeneratorSchema } from './schema';
 
-declare const describe: ( name: string, fn: () => void ) => void;
-declare const beforeEach: ( fn: () => void ) => void;
-declare const it: ( name: string, fn: () => Promise< void > | void ) => void;
-declare const expect: ( value: unknown ) => {
-    toBe: ( expected: unknown ) => void;
-    toEqual: ( expected: unknown ) => void;
-};
 
 describe( 'sync wp-env generator', () => {
     let tree: Tree;
