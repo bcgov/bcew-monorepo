@@ -46,7 +46,7 @@ jobs:
               run: pnpm install
 
             - name: Install Composer dependencies
-              run: npx nx run ${{ matrix.project }}:composer:install
+              run: npx nx run ${{ matrix.project }}:composer-install
 
             - name: Build
               run: npx nx run ${{ matrix.project }}:build
