@@ -12,9 +12,9 @@ $email_icon = esc_url(get_stylesheet_directory_uri() . '/assets/images/envelope-
 $mail_icon = esc_url(get_stylesheet_directory_uri() . '/assets/images/building-solid-full.svg');
 ?>
 
-<!-- wp:group {"style":{"spacing":{"padding":{"right":"var:preset|spacing|60","left":"var:preset|spacing|60"},"margin":{"bottom":"var:preset|spacing|60"}}},"layout":{"type":"constrained"}} -->
+<!-- wp:group {"style":{"spacing":{"padding":{"right":"var:preset|spacing|40","left":"var:preset|spacing|40"},"margin":{"bottom":"var:preset|spacing|60"}}},"layout":{"type":"constrained"}} -->
 <div class="wp-block-group"
-    style="margin-bottom:var(--wp--preset--spacing--60);padding-right:var(--wp--preset--spacing--60);padding-left:var(--wp--preset--spacing--60)">
+    style="margin-bottom:var(--wp--preset--spacing--60);padding-right:var(--wp--preset--spacing--40);padding-left:var(--wp--preset--spacing--40)">
     <!-- wp:group {"className":"dswp-information-contact-socials-cards","style":{"spacing":{"padding":{"right":"0","left":"0","top":"0","bottom":"0"}},"border":{"radius":"0px","width":"1px"}},"borderColor":"border-default","layout":{"type":"constrained"}} -->
     <div class="wp-block-group dswp-information-contact-socials-cards has-border-color has-border-default-border-color"
         style="border-width:1px;border-radius:0px;padding-top:0;padding-right:0;padding-bottom:0;padding-left:0">
@@ -47,10 +47,10 @@ $mail_icon = esc_url(get_stylesheet_directory_uri() . '/assets/images/building-s
                             <div class="wp-block-group" style="padding-top:0;padding-bottom:0">
                                 <!-- wp:group {"className":"dswp-information-contact-socials-card-img-group","layout":{"type":"constrained"}} -->
                                 <div class="wp-block-group dswp-information-contact-socials-card-img-group">
-                                    <!-- wp:image {"linkDestination":"none","className":"dswp-information-contact-socials-card-img is-style-default"} -->
+                                    <!-- wp:image {"width":"16px","linkDestination":"none","className":"dswp-information-contact-socials-card-img is-style-default"} -->
                                     <figure
-                                        class="wp-block-image dswp-information-contact-socials-card-img is-style-default">
-                                        <img src="<?php echo $email_icon; ?>" alt="Email" />
+                                        class="wp-block-image is-resized dswp-information-contact-socials-card-img is-style-default">
+                                        <img src="<?php echo $email_icon; ?>" alt="Email" style="width:16px" />
                                     </figure>
                                     <!-- /wp:image -->
                                 </div>
@@ -88,9 +88,9 @@ $mail_icon = esc_url(get_stylesheet_directory_uri() . '/assets/images/building-s
                             <div class="wp-block-group" style="padding-top:0;padding-bottom:0">
                                 <!-- wp:group {"className":"dswp-information-contact-socials-card-img-group","layout":{"type":"constrained"}} -->
                                 <div class="wp-block-group dswp-information-contact-socials-card-img-group">
-                                    <!-- wp:image {"linkDestination":"none","className":"dswp-information-contact-socials-card-img"} -->
-                                    <figure class="wp-block-image dswp-information-contact-socials-card-img"><img
-                                            src="<?php echo $phone_icon; ?>" alt="Phone" /></figure>
+                                    <!-- wp:image {"width":"16px","linkDestination":"none","className":"dswp-information-contact-socials-card-img"} -->
+                                    <figure class="wp-block-image is-resized dswp-information-contact-socials-card-img">
+                                        <img src="<?php echo $phone_icon; ?>" alt="Phone" style="width:16px" /></figure>
                                     <!-- /wp:image -->
                                 </div>
                                 <!-- /wp:group -->
@@ -118,9 +118,9 @@ $mail_icon = esc_url(get_stylesheet_directory_uri() . '/assets/images/building-s
                             <div class="wp-block-group" style="padding-top:0;padding-bottom:0">
                                 <!-- wp:group {"className":"dswp-information-contact-socials-card-img-group","layout":{"type":"constrained"}} -->
                                 <div class="wp-block-group dswp-information-contact-socials-card-img-group">
-                                    <!-- wp:image {"linkDestination":"none","className":"dswp-information-contact-socials-card-img"} -->
-                                    <figure class="wp-block-image dswp-information-contact-socials-card-img"><img
-                                            src="<?php echo $phone_icon; ?>" alt="Phone" /></figure>
+                                    <!-- wp:image {"width":"16px","linkDestination":"none","className":"dswp-information-contact-socials-card-img"} -->
+                                    <figure class="wp-block-image is-resized dswp-information-contact-socials-card-img">
+                                        <img src="<?php echo $phone_icon; ?>" alt="Phone" style="width:16px" /></figure>
                                     <!-- /wp:image -->
                                 </div>
                                 <!-- /wp:group -->
@@ -132,8 +132,8 @@ $mail_icon = esc_url(get_stylesheet_directory_uri() . '/assets/images/building-s
                                         style="margin-top:0;font-size:16px;line-height:1.68">Phone:</h6>
                                     <!-- /wp:heading -->
                                     <!-- wp:paragraph {"style":{"typography":{"fontSize":"16px","lineHeight":"1.68"}}} -->
-                                    <p style="font-size:16px;line-height:1.68"><a href="tel:1-236-475-3059"
-                                            data-type="internal" data-id="#tel2">1-236-475-3059</a><br>(toll free
+                                    <p style="font-size:16px;line-height:1.68"><a href="tel:1-844-338-3059"
+                                            data-type="internal" data-id="#tel2">1-844-338-3059</a><br>(toll free
                                         outside of Victoria)
                                     </p>
                                     <!-- /wp:paragraph -->
@@ -157,9 +157,10 @@ $mail_icon = esc_url(get_stylesheet_directory_uri() . '/assets/images/building-s
                             <div class="wp-block-group" style="padding-top:0;padding-bottom:0">
                                 <!-- wp:group {"className":"dswp-information-contact-socials-card-img-group","layout":{"type":"constrained"}} -->
                                 <div class="wp-block-group dswp-information-contact-socials-card-img-group">
-                                    <!-- wp:image {"linkDestination":"none","className":"dswp-information-contact-socials-card-img"} -->
-                                    <figure class="wp-block-image dswp-information-contact-socials-card-img"><img
-                                            src="<?php echo $mail_icon; ?>" alt="Address" /></figure>
+                                    <!-- wp:image {"width":"16px","linkDestination":"none","className":"dswp-information-contact-socials-card-img"} -->
+                                    <figure class="wp-block-image is-resized dswp-information-contact-socials-card-img">
+                                        <img src="<?php echo $mail_icon; ?>" alt="Address" style="width:16px" />
+                                    </figure>
                                     <!-- /wp:image -->
                                 </div>
                                 <!-- /wp:group -->
