@@ -69,6 +69,11 @@
                     "name": "HPOROO Accent Primary"
                 },
                 {
+                    "slug": "hporoo-tertiary-light-blue-80",
+                    "color": "#E6F0F8CC",
+                    "name": "HPOROO Tertiary Light Blue (80%)"
+                },
+                {
                     "slug": "hporoo-footer-border",
                     "color": "#1fbaaa",
                     "name": "HPOROO Footer Border"
