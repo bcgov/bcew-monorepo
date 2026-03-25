@@ -60,9 +60,9 @@ jobs:
             - name: Push subtree branch to target repo
               run: |
                   cd $(npx nx show project ${{ matrix.project }} --json  | jq -r .root)
+                  git remote add target https://x-access-token:${{ secrets.PUBLISH_REPO_TOKEN }}@github.com/bcgov/${{ matrix.project }}.git
                   git add -f dist
                   git commit -m "chore: publish build output" || echo "No changes"
-                  git remote add target https://x-access-token:${{ secrets.PUBLISH_REPO_TOKEN }}@github.com/bcgov/${{ matrix.project }}.git
                   git push -f target split-branch:${{ github.head_ref || github.ref_name }} 
 
 
