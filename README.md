@@ -61,6 +61,38 @@ pnpm run wp-env:cleanup
 
 ---
 
+### Setting up wp-env sync infrastructure
+
+Use this generator to scaffold centralized wp-env version management files and commands.
+
+From the monorepo root:
+
+```shell
+pnpm nx build monorepo-plugin
+pnpm nx generate monorepo-plugin:setup-wp-env-sync
+```
+
+The generator creates/updates:
+
+- `tools/wp-env/config.json`
+- `tools/wp-env/cli.js`
+- root `package.json` script `wp-env:sync`
+- `wp-env-sync` target in `nx.json`
+
+After setup, run sync manually when you want to propagate version changes:
+
+```shell
+pnpm run wp-env:sync
+```
+
+You can override initial generator values when needed:
+
+```shell
+pnpm nx generate monorepo-plugin:setup-wp-env-sync --wordPressVersion="WordPress/WordPress#6.8" --phpVersion="7.4"
+```
+
+---
+
 ## Contributing
 
 ### Adding an Existing Repository to the Monorepo

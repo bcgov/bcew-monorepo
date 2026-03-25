@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "title": "Setup wp-env-sync",
+  "description": "Set up centralized wp-env version management infrastructure",
+  "type": "object",
+  "properties": {
+    "wordPressVersion": {
+      "type": "string",
+      "description": "Default WordPress version (GitHub ref)",
+      "default": "WordPress/WordPress#6.8"
+    },
+    "phpVersion": {
+      "type": "string",
+      "description": "Default PHP version",
+      "default": "7.4"
+    }
+  }
+}

@@ -72,6 +72,7 @@
         "format": "wp-scripts format",
         "check-engines": "wp-scripts check-engines",
         "check-licenses": "wp-scripts check-licenses --prod",
-        "wp-env": "wp-env"
+        "wp-env": "wp-env",
+        "wp-env:sync": "node tools/wp-env/cli.js"
     }
 }
