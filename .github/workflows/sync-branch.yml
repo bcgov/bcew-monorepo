@@ -56,6 +56,7 @@ jobs:
             - name: Split subdirectory into branch
               run: |
                   git subtree split -P $(npx nx show project ${{ matrix.project }} --json  | jq -r .root) -b split-branch
+                  git checkout split-branch
 
             - name: Push subtree branch to target repo
               run: |
