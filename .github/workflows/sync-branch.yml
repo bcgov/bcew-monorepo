@@ -55,7 +55,7 @@ jobs:
                   git subtree split -P $(npx nx show project ${{ matrix.project }} --json  | jq -r .root) -b split-branch
 
             - name: Build
-              run: npx nx build
+              run: npx nx run ${{ matrix.project }}:build
 
             - name: Push subtree branch to target repo
               run: |
