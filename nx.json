@@ -17,6 +17,7 @@
             },
             "dependsOn": [ "^build" ],
             "cache": true,
+            "inputs": [ "{workspaceRoot}/" ],
             "outputs": [ "{workspaceRoot}/dist" ]
         },
         "start": {
@@ -26,6 +27,7 @@
             },
             "dependsOn": [ "^build" ],
             "continuous": true,
+            "inputs": [ "{workspaceRoot}/" ],
             "outputs": [ "{workspaceRoot}/dist" ]
         },
         "test-integration": {

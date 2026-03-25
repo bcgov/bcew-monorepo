@@ -52,14 +52,14 @@ jobs:
 
             - name: Split subdirectory into branch
               run: |
-                  git subtree split -P $(npx nx show project ${{ matrix.project }} --json  | jq -r .root) -b split-branch
+                  cd $(npx nx show project ${{ matrix.project }} --json  | jq -r .root)
+                  git subtree split -P ./ -b split-branch
 
             - name: Build
-              run: npx nx run ${{ matrix.project }}:build
+              run: npx nx build
 
             - name: Push subtree branch to target repo
               run: |
-                  cd $(npx nx show project ${{ matrix.project }} --json  | jq -r .root)
                   git add -f dist
                   git commit -m "chore: publish build output" || echo "No changes"
                   git remote add target https://x-access-token:${{ secrets.PUBLISH_REPO_TOKEN }}@github.com/bcgov/${{ matrix.project }}.git
