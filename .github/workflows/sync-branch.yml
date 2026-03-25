@@ -57,6 +57,8 @@ jobs:
               run: |
                   git subtree split -P $(npx nx show project ${{ matrix.project }} --json  | jq -r .root) -b split-branch
                   git checkout split-branch
+                  git add -f dist
+                  git commit -m "chore: publish build output" || echo "No changes"
 
             - name: Push subtree branch to target repo
               run: |
