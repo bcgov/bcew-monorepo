@@ -72,6 +72,7 @@
         "format": "wp-scripts format",
         "check-engines": "wp-scripts check-engines",
         "check-licenses": "wp-scripts check-licenses --prod",
-        "wp-env": "wp-env"
+        "wp-env": "wp-env",
+        "migrate:wp-env-versions": "nx reset && nx build monorepo-plugin && nx migrate --run-migrations=migrations.json --verbose"
     }
 }

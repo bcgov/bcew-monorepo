@@ -42,7 +42,8 @@
     "files": [
         "dist",
         "!**/*.tsbuildinfo",
-        "generators.json"
+        "generators.json",
+        "migrations.json"
     ],
     "main": "./dist/index.js",
     "module": "./dist/index.js",
@@ -56,8 +57,11 @@
         }
     },
     "types": "./dist/index.d.ts",
-        "dependencies": {
+    "dependencies": {
         "@nx/devkit": "22.5.4",
         "tslib": "^2.3.0"
+    },
+    "nx-migrations": {
+        "migrations": "./migrations.json"
     }
 }

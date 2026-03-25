@@ -1,0 +1,9 @@
+{
+    "generators": {
+        "changePhpAndWpVersions": {
+            "version": "0.0.2",
+            "description": "Changes the PHP version to 7.4 and the WordPress core version to 6.8",
+            "implementation": "./dist/migrations/change-wp-env-versions"
+        }
+    }
+}

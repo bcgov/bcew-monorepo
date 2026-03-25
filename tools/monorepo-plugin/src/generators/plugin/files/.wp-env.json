@@ -1,7 +1,7 @@
 {
-	"core": "WordPress/WordPress#6.8",
-	"phpVersion": "7.4",
-	"plugins": [
-		"."
-	]
+  "core": "WordPress/WordPress#6.8",
+  "phpVersion": "7.4",
+  "plugins": [
+    "."
+  ]
 }

@@ -61,6 +61,35 @@ pnpm run wp-env:cleanup
 
 ---
 
+### Run wp-env version migration
+
+This monorepo includes an Nx migration that updates `.wp-env.json` files under:
+
+- `plugins/`
+- `themes/`
+- `tools/monorepo-plugin/src/generators/`
+- repository root (`.wp-env.json`)
+
+The migration sets:
+
+- `core` to `WordPress/WordPress#6.8`
+- `phpVersion` to `7.4`
+
+From the monorepo root:
+
+```shell
+nx reset
+nx build monorepo-plugin
+nx migrate --run-migrations=migrations.json --verbose
+```
+
+Notes:
+
+- The root `migrations.json` is configured to run `changePhpAndWpVersions` from `./tools/monorepo-plugin`.
+- If output says `No changes were made`, all matched files were already at the target versions.
+
+---
+
 ## Contributing
 
 ### Adding an Existing Repository to the Monorepo
