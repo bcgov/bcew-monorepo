@@ -57,6 +57,11 @@ jobs:
             - name: Build
               run: npx nx run ${{ matrix.project }}:build
 
+            - name: Configure git author
+              run: |
+                  git config user.name "github-actions[bot]"
+                  git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
             - name: Push subtree branch to target repo
               run: |
                   cd $(npx nx show project ${{ matrix.project }} --json  | jq -r .root)
