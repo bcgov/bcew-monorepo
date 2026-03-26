@@ -68,45 +68,7 @@ jobs:
 
     detect-affected-projects:
         name: Detect affected sub-projects
-        runs-on: ubuntu-latest
-        outputs:
-            projects: ${{ steps.compute.outputs.projects }}
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v4
-              with:
-                  fetch-depth: 0
-
-            - name: Install pnpm
-              uses: pnpm/action-setup@v4
-              with:
-                  version: 10
-                  cache: true
-            
-            - name: Setup Node.js 24
-              uses: actions/setup-node@v4
-              with:
-                  node-version: 24
-                  cache: "pnpm"
-
-            - name: Install dependencies
-              run: pnpm install
-
-            - name: Get affected projects
-              id: compute
-              shell: bash
-              run: |
-                  # Determine correct base/head for PRs
-                  if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-                    git fetch origin "${{ github.base_ref }}:origin/${{ github.base_ref }}"
-                    BASE="origin/${{ github.base_ref }}"
-                    HEAD="${{ github.sha }}"
-                  else
-                    BASE="${{ github.event.before }}"
-                    HEAD="${{ github.sha }}"
-                  fi
-
-                  echo "projects=$(npx nx show projects --base=$BASE --head=$HEAD --affected --json)" >> "$GITHUB_OUTPUT"
+        uses: ./.github/workflows/detect-affected-projects.yml
 
     build-and-test:
         name: Build and Test ${{ matrix.project }}

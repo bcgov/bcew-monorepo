@@ -1,0 +1,72 @@
+name: Sync branch to standalone repositories
+
+on:
+    push:
+
+concurrency:
+    group: sync-branch-${{ github.ref }}
+    cancel-in-progress: true
+
+permissions:
+    contents: read
+
+jobs:
+    detect-affected-projects:
+        name: Detect affected sub-projects
+        uses: ./.github/workflows/detect-affected-projects.yml
+
+    build-and-sync:
+        name: Build and sync ${{ matrix.project }}
+        needs: detect-affected-projects
+        if: ${{ needs.detect-affected-projects.outputs.projects != '' && needs.detect-affected-projects.outputs.projects != '[]' }}
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                project: ${{ fromJSON(needs.detect-affected-projects.outputs.projects) }}
+        permissions:
+            contents: write
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                persist-credentials: false
+
+            - name: Install pnpm 
+              uses: pnpm/action-setup@v4
+              with:
+                  version: 10
+                  cache: true
+
+            - name: Setup Node.js 24
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+                  cache: "pnpm"
+
+            - name: Install dependencies
+              run: pnpm install
+
+            - name: Install Composer dependencies
+              run: npx nx run ${{ matrix.project }}:composer-install
+
+            - name: Push subtree branch to target repo
+              run: |
+                THEME_ROOT=$(npx nx show project ${{ matrix.project }} --json | jq -r .root)
+
+                git subtree split -P "$THEME_ROOT" -b split-branch
+
+                git checkout split-branch
+
+                git config user.name "github-actions[bot]"
+                git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+                # Todo: Use nx build script here instead of hardcoded wp-scripts build.
+                npx wp-scripts build --output-path=dist
+
+                git add dist
+                git commit -m "chore: publish build output" || echo "No changes"
+
+                git remote remove target 2>/dev/null || true
+                git remote add target https://x-access-token:${{ secrets.PUBLISH_REPO_TOKEN }}@github.com/bcgov/${{ matrix.project }}.git
+                git push -f target split-branch:${{ github.head_ref || github.ref_name }} 

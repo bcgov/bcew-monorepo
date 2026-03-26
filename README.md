@@ -59,6 +59,16 @@ If `wp-env start` fails with `port is already allocated` (for example `8888`), r
 pnpm run wp-env:cleanup
 ```
 
+### Syncing to mirror repos
+
+In order for the syncing to the mirror repos (standalone, readonly theme or plugin repositories) to work correctly for testing on the test server or performing releases, we need to add authentication for a bot user to be allowed to push to those repos. This involves:
+
+1. Create the mirror repo if it doesn't exist already.
+2. Set up branch protection rules to disallow commits from any user other than the bot user that will be pushing to it. It's not intended for users to make any changes to the mirror repos.
+   1. See settings on the [Belleville Terminal repository](https://github.com/bcgov/design-system-wordpress-child-theme-belleville-terminal) for an example.
+3. Update the [Personal Access Token](https://github.com/settings/personal-access-tokens) to add the new mirror repo under `Repository access` > `Only select repositories`.
+   1. Note that the PAT is what is stored in the monorepo's `PUBLISH_REPO_TOKEN`. If we change which user's PAT we want to use for authentication, we must update this secret with the new token.
+
 ---
 
 ## Contributing

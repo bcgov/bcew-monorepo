@@ -1,0 +1,51 @@
+name: Delete branch from standalone repositories
+
+on:
+    delete:
+
+concurrency:
+    group: delete-branch-${{ github.ref }}
+    cancel-in-progress: true
+
+permissions:
+    contents: read
+
+jobs:
+    list-projects:
+        if: >
+            github.event.ref_type == 'branch' &&
+            startsWith(github.event.ref, 'feature/')
+        name: List all sub-projects
+        runs-on: ubuntu-latest
+        outputs:
+            projects: ${{ steps.compute.outputs.projects }}
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: List projects
+              id: compute
+              shell: bash
+              run: echo "projects=$(npx nx show projects --type app --json)" >> "$GITHUB_OUTPUT"
+
+    delete-branch:
+        name: Delete branch from ${{ matrix.project }}
+        needs: list-projects
+        if: ${{ needs.list-projects.outputs.projects != '' && needs.list-projects.outputs.projects != '[]' }}
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                project: ${{ fromJSON(needs.list-projects.outputs.projects) }}
+        permissions:
+            contents: write
+        steps:
+            - name: Delete branch from target repo
+              run: |
+                git push \
+                    https://x-access-token:${{ secrets.PUBLISH_REPO_TOKEN }}@github.com/bcgov/${{ matrix.project }}.git \
+                    --delete ${{ github.event.ref }}
+
+
