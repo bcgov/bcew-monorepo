@@ -42,8 +42,8 @@
         },
         "test-integration": {
             "options": {
-                "command": "wp-env run tests-cli --env-cwd=wp-content/plugins/test-plugin composer test ./ --",
-                "cwd": "plugins/test-plugin"
+                "command": "wp-env run tests-cli --env-cwd=wp-content/plugins/<%= slug %> composer test ./ --",
+                "cwd": "plugins/<%= slug %>"
             }
         },
         "wp-env-start": {
