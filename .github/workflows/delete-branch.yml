@@ -12,6 +12,9 @@ permissions:
 
 jobs:
     list-projects:
+        if: >
+            github.event.ref_type == 'branch' &&
+            startsWith(github.event.ref, 'feature/')
         name: List all sub-projects
         runs-on: ubuntu-latest
         outputs:
@@ -25,7 +28,7 @@ jobs:
             - name: List projects
               id: compute
               shell: bash
-              run: echo "projects=$(npx nx show projects --json)" >> "$GITHUB_OUTPUT"
+              run: echo "projects=$(npx nx show projects --type app --json)" >> "$GITHUB_OUTPUT"
 
     delete-branch:
         name: Delete branch from ${{ matrix.project }}
@@ -41,7 +44,8 @@ jobs:
         steps:
             - name: Delete branch from target repo
               run: |
-                  git remote add target https://github.com/bcgov/${{ matrix.project }}
-                  git branch -D ${{ github.head_ref || github.ref_name }} 
+                git push \
+                    https://x-access-token:${{ secrets.PUBLISH_REPO_TOKEN }}@github.com/bcgov/${{ matrix.project }}.git \
+                    --delete ${{ github.event.ref }}
 
 
