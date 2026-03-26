@@ -13,7 +13,7 @@
         }
     ],
     "require-dev": {
-        "wordpress-monorepo/phpunit-config": "dev-main",
+        "wordpress-monorepo/phpunit-config": "*",
         "phpunit/phpunit": "^9.5"
     },
     "autoload": {
