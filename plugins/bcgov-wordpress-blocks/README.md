@@ -1,19 +1,18 @@
-# === <%= name %> ===
+# === Bcgov WordPress Blocks ===
 
-Contributors:      The BCGov Custom Web team
-Tags:              block
-Tested up to:      6.8
-Stable tag:        0.0.1
-License:           GPL-2.0-or-later
+Contributors: The BCGov Custom Web team
+Tags: block
+Tested up to: 6.8
+Stable tag: 0.0.1
+License: GPL-2.0-or-later
 
-## == <%= description %> ==
+## == Plugin containing blocks intended to be used with the Design System WordPress Theme suite of products. ==
 
 This is the long description. No limit, and you can use Markdown (as well as in the following sections).
 
-
 ## == Installation ==
 
-1. Upload the plugin files to the `/wp-content/plugins/<%= slug %>` directory.
+1. Upload the plugin files to the `/wp-content/plugins/bcgov-wordpress-blocks` directory.
 2. Activate the plugin through the 'Plugins' screen in WordPress.
 
 ## == Local Development ==
@@ -31,17 +30,17 @@ This is the long description. No limit, and you can use Markdown (as well as in 
 
 = Ports =
 
-* `port` sets the main local WordPress site port (default in this template: `8888`).
+- `port` sets the main local WordPress site port (default in this template: `8888`).
 
 = Config constants =
 
-* `WP_ENVIRONMENT_TYPE`: marks the site as `local` so code can branch behavior by environment.
-* `WP_DEBUG`: enables WordPress debug mode.
-* `WP_DEBUG_LOG`: writes debug output to `wp-content/debug.log`.
-* `WP_DEBUG_DISPLAY`: controls whether debug messages are shown in page output.
-* `SCRIPT_DEBUG`: forces non-minified core scripts and styles for easier debugging.
-* `DISALLOW_FILE_MODS`: disables plugin/theme/core installs and updates in wp-admin.
-* `AUTOMATIC_UPDATER_DISABLED`: turns off automatic background updates.
+- `WP_ENVIRONMENT_TYPE`: marks the site as `local` so code can branch behavior by environment.
+- `WP_DEBUG`: enables WordPress debug mode.
+- `WP_DEBUG_LOG`: writes debug output to `wp-content/debug.log`.
+- `WP_DEBUG_DISPLAY`: controls whether debug messages are shown in page output.
+- `SCRIPT_DEBUG`: forces non-minified core scripts and styles for easier debugging.
+- `DISALLOW_FILE_MODS`: disables plugin/theme/core installs and updates in wp-admin.
+- `AUTOMATIC_UPDATER_DISABLED`: turns off automatic background updates.
 
 These defaults are aimed at reproducible local environments and safer team workflows.
 
@@ -53,7 +52,6 @@ This template includes Playwright screenshot tests in `tests/screenshot` for cat
 2. Start WordPress: `pnpm run wp-env:start`
 3. Generate baseline screenshots: `pnpm run test:screenshot:update`
 4. Run visual regression checks: `pnpm run test:screenshot`
-
 
 ## == Frequently Asked Questions ==
 
@@ -68,8 +66,7 @@ Answer to foo bar dilemma.
 ## == Screenshots ==
 
 1. This screen shot description corresponds to screenshot-1.(png|jpg|jpeg|gif). Note that the screenshot is taken from
-the /assets directory or the directory that contains the stable readme.txt (tags or trunk). Screenshots in the /assets
-directory take precedence. For example, `/assets/screenshot-1.png` would win over `/tags/4.3/screenshot-1.png`
-(or jpg, jpeg, gif).
+   the /assets directory or the directory that contains the stable readme.txt (tags or trunk). Screenshots in the /assets
+   directory take precedence. For example, `/assets/screenshot-1.png` would win over `/tags/4.3/screenshot-1.png`
+   (or jpg, jpeg, gif).
 2. This is the second screen shot
-

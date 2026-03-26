@@ -13,7 +13,8 @@
         "build": {
             "executor": "nx:run-commands",
             "options": {
-                "command": "wp-scripts build"
+                "command": "wp-scripts build",
+                "blocks-manifest": ""
             },
             "dependsOn": [ "^build" ],
             "cache": true,
@@ -22,7 +23,8 @@
         "start": {
             "executor": "nx:run-commands",
             "options": {
-                "command": "wp-scripts start"
+                "command": "wp-scripts start",
+                "blocks-manifest": ""
             },
             "dependsOn": [ "^build" ],
             "continuous": true,

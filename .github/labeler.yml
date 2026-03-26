@@ -17,3 +17,8 @@ theme:
 themes/child-theme-belleville-terminal:
     - changed-files:
           - any-glob-to-any-file: 'themes/design-system-wordpress-child-theme-belleville-terminal/**'
+
+plugins/bcgov-wordpress-blocks:
+    - changed-files:
+        - any-glob-to-any-file: 'plugins/bcgov-wordpress-blocks/**'
+        

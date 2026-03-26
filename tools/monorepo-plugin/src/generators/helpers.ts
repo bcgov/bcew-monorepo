@@ -18,13 +18,13 @@ export enum WordPressProjectType {
 
 /**
  * Updates .github/labeler.yml with the new project.
- * @param {Tree}                     tree   Filesystem tree.
- * @param {WordPressGeneratorSchema} schema Options from schema.json.
- * @param {WordPressProjectType}     type   WordPress project type.
+ * @param {Tree}                 tree Filesystem tree.
+ * @param {string}               slug Hyphen-separated project slug.
+ * @param {WordPressProjectType} type WordPress project type.
  */
 export const updateLabeler = async (
     tree: Tree,
-    schema: WordPressGeneratorSchema,
+    slug: string,
     type: WordPressProjectType = WordPressProjectType.Theme
 ) => {
     const filePath = `.github/labeler.yml`;
@@ -36,9 +36,9 @@ export const updateLabeler = async (
         type === WordPressProjectType.Theme ? 'themes' : 'plugins';
     const newContents = contents.toString().concat(
         `
-${ pathPrefix }/${ schema.slug }:
+${ pathPrefix }/${ slug }:
     - changed-files:
-        - any-glob-to-any-file: '${ pathPrefix }/${ schema.slug }/**'
+        - any-glob-to-any-file: '${ pathPrefix }/${ slug }/**'
 
         `
     );

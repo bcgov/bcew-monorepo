@@ -18,7 +18,9 @@ import { useBlockProps } from '@wordpress/block-editor';
 const save = () => {
     return (
         <p { ...useBlockProps.save() }>
-            { '<%= name %> Sample Block – hello from the saved content!' }
+            {
+                'Bcgov WordPress Blocks Sample Block – hello from the saved content!'
+            }
         </p>
     );
 };

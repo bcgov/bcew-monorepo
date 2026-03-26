@@ -32,7 +32,7 @@ export const themeGenerator = async (
         projectRoot,
         options
     );
-    updateLabeler( tree, options );
+    updateLabeler( tree, options.slug );
     await formatFiles( tree );
 };
 

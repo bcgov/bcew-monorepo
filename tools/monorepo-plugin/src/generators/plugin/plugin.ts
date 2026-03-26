@@ -6,6 +6,7 @@ import {
 } from '@nx/devkit';
 import * as path from 'path';
 import { PluginGeneratorSchema } from './schema';
+import { updateLabeler, WordPressProjectType } from '../helpers';
 
 /**
  * Generates a WordPress plugin.
@@ -41,6 +42,7 @@ export const pluginGenerator = async (
         phpSafeSlug,
         phpNamespace,
     } );
+    updateLabeler( tree, slug, WordPressProjectType.Plugin );
     await formatFiles( tree );
 };
 

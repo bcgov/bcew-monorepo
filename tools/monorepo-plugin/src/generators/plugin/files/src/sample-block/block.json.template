@@ -3,7 +3,7 @@
 	"apiVersion": 3,
 	"name": "<%= slug %>/sample-block",
 	"version": "0.0.1",
-	"title": "<%= name %>",
+	"title": "Sample Block",
 	"category": "widgets",
 	"icon": "media-document",
 	"description": "<%= description %>",

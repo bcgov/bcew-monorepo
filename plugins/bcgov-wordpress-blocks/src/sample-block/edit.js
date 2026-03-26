@@ -33,8 +33,8 @@ const Edit = () => {
     return (
         <p { ...useBlockProps() }>
             { __(
-                '<%= name %> Sample Block – hello from the editor!',
-                '<%= slug %>'
+                'Bcgov WordPress Blocks Sample Block – hello from the editor!',
+                'bcgov-wordpress-blocks'
             ) }
         </p>
     );

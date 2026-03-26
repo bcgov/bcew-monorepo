@@ -1,0 +1,62 @@
+{
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "name": "bcgov-wordpress-blocks",
+    "root": "plugins/bcgov-wordpress-blocks",
+    "sourceRoot": "plugins/bcgov-wordpress-blocks/src",
+    "projectType": "application",
+    "generators": {
+        "wordpress-monorepo:plugin": {
+            "name": "Bcgov WordPress Blocks",
+            "description": "Plugin containing blocks intended to be used with the Design System WordPress Theme suite of products."
+        }
+    },
+    "targets": {
+        "composer-install": {
+            "options": {
+                "cwd": "plugins/bcgov-wordpress-blocks"
+            }
+        },
+        "build": {
+            "options": {
+                "source-path": "plugins/bcgov-wordpress-blocks/src",
+                "output-path": "plugins/bcgov-wordpress-blocks/dist"
+            }
+        },
+        "start": {
+            "options": {
+                "source-path": "plugins/bcgov-wordpress-blocks/src",
+                "output-path": "plugins/bcgov-wordpress-blocks/dist"
+            }
+        },
+        "test-e2e": {
+            "options": {
+                "config": "playwright.config.js",
+                "cwd": "plugins/bcgov-wordpress-blocks"
+            }
+        },
+        "test-screenshot": {
+            "options": {
+                "config": "playwright.regression.config.js",
+                "cwd": "plugins/bcgov-wordpress-blocks"
+            }
+        },
+        "test-integration": {
+            "options": {
+                "command": "wp-env run tests-cli --env-cwd=wp-content/plugins/test-plugin composer test ./ --",
+                "cwd": "plugins/test-plugin"
+            }
+        },
+        "wp-env-start": {
+            "options": {
+                "cwd": "plugins/bcgov-wordpress-blocks"
+            }
+        },
+        "wp-env-clean": {
+            "options": {
+                "cwd": "plugins/bcgov-wordpress-blocks"
+            }
+        }
+    },
+    "implicitDependencies": ["packages/phpunit-config/"],
+    "tags": ["type:wp-plugin"]
+}

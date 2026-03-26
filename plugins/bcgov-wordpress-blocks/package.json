@@ -1,0 +1,29 @@
+{
+    "name": "bcgov-wordpress-blocks",
+    "version": "1.0.0",
+    "description": "Plugin containing blocks intended to be used with the Design System WordPress Theme suite of products.",
+    "author": "The WordPress Contributors",
+    "license": "GPL-2.0-or-later",
+    "keywords": [
+        "WordPress",
+        "block",
+        "Block Plugin",
+        "BCGov",
+        "Gutenberg",
+        "plugin"
+    ],
+    "homepage": "https://github.com/bcgov/wordpress-monorepo",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/bcgov/bcgov-wordpress-blocks.git"
+    },
+    "bugs": {
+        "url": "https://github.com/bcgov/bcgov-wordpress-blocks#readme",
+        "email": "govwordpress@gov.bc.ca"
+    },
+    "dependencies": {
+        "@wordpress/block-editor": "latest",
+        "@wordpress/blocks": "latest",
+        "@wordpress/i18n": "latest"
+    }
+}
