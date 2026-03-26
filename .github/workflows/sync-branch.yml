@@ -62,7 +62,7 @@ jobs:
                 git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
                 # Todo: Use nx build script here instead of hardcoded wp-scripts build.
-                npx wp-scripts build --output-path=dist
+                npx wp-scripts build --blocks-manifest --output-path=dist
 
                 git add dist
                 git commit -m "chore: publish build output" || echo "No changes"
