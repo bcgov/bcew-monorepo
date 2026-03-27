@@ -65,54 +65,17 @@ jobs:
             - name: Run package.json lint
               run: pnpm run lint-pkg-json
 
-    detect-affected-projects:
-        name: Detect affected sub-projects
-        uses: ./.github/workflows/detect-affected-projects.yml
-
-    build-and-test:
-        name: Build and Test ${{ matrix.project }}
-        needs: detect-affected-projects
-        if: ${{ needs.detect-affected-projects.outputs.projects != '' && needs.detect-affected-projects.outputs.projects != '[]' }}
-        runs-on: ubuntu-latest
-        strategy:
-            fail-fast: false
-            matrix:
-                project: ${{ fromJSON(needs.detect-affected-projects.outputs.projects) }}
-        permissions:
-            contents: write
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v4
-
-            - name: Install pnpm 
-              uses: pnpm/action-setup@v4
-              with:
-                  version: 10
-                  cache: true
-
-            - name: Setup Node.js 24
-              uses: actions/setup-node@v4
-              with:
-                  node-version: 24
-                  cache: "pnpm"
-
-            - name: Install dependencies
-              run: pnpm install
-
-            - name: Install Composer dependencies
-              run: npx nx run-many -p ${{ matrix.project }} -t composer-install
-
             - name: Install Playwright dependencies
               run: npx playwright install --with-deps
 
             - name: Build
-              run: npx nx run-many -p ${{ matrix.project }} -t build
+              run: npx nx affected -t build
 
             - name: Start wp-env
-              run: npx nx run-many -p ${{ matrix.project }} -t wp-env-start
+              run: npx nx affected -t wp-env-start
 
             - name: Run e2e tests
-              run: npx nx run-many -p ${{ matrix.project }} -t test-e2e
+              run: npx nx affected -t test-e2e
 
             - uses: actions/upload-artifact@v4
               if: ${{ !cancelled() }}
@@ -122,10 +85,10 @@ jobs:
                   retention-days: 30
 
             - name: Run screenshot updates
-              run: npx nx run-many -p ${{ matrix.project }} -t test-screenshot
+              run: npx nx affected -t test-screenshot
 
             - name: Run PHP integration tests
-              run: npx nx run-many -p ${{ matrix.project }} -t test-integration
+              run: npx nx affected -t test-integration
 
             # Todo: Determine how to allow bot commits without retriggering default CodeQL check.
             # - name: Commit and push updates
