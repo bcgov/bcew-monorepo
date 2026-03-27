@@ -9,6 +9,8 @@
         "."
         <% } %>
     ],
+    "port": <%= wpEnvPort %>,
+    "testsPort": <%= wpEnvPort + 1 %>,
     "lifecycleScripts": {
         "afterStart": "wp-env run tests-cli wp theme activate <%= slug %>"
     }

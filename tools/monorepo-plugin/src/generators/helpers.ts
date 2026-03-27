@@ -5,7 +5,7 @@ import { Tree } from '@nx/devkit';
  */
 export interface WordPressGeneratorSchema {
     name: string;
-    slug: string;
+    wpEnvPort: number;
 }
 
 /**

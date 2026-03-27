@@ -22,6 +22,15 @@
             },
             "x-prompt": "What slug would you like to use?"
         },
+        "wpEnvPort": {
+            "type": "number",
+            "description": "A free port to use for wp-env to serve on. Example: 9002",
+            "$default": {
+                "$source": "argv",
+                "index": 0
+            },
+            "x-prompt": "What port should wp-env serve on?"
+        },
         "parentTheme": {
             "type": "string",
             "description": "The parent theme, if this is a child theme.",
@@ -42,5 +51,5 @@
             }
         }
     },
-    "required": [ "name", "slug", "parentTheme" ]
+    "required": [ "name", "slug", "wpEnvPort", "parentTheme" ]
 }
