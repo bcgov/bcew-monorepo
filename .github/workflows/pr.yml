@@ -48,7 +48,7 @@ jobs:
               run: pnpm install
 
             - name: Install Composer dependencies
-              run: npx nx affected --base="origin/${{ github.base_ref }}" -t composer-install
+              run: composer i
 
             - name: Run php lint
               run: pnpm run lint-php
