@@ -24,7 +24,7 @@ jobs:
                   sync-labels: true
 
     lint:
-        name: Lint monorepo
+        name: Lint monorepo and test affected projects
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
@@ -48,7 +48,7 @@ jobs:
               run: pnpm install
 
             - name: Install Composer dependencies
-              run: composer i
+              run: npx nx affected --base="origin/${{ github.base_ref }}" -t composer-install
 
             - name: Run php lint
               run: pnpm run lint-php
