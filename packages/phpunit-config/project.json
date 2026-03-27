@@ -1,4 +1,4 @@
 {
-  "root": "packages/phpunit-config/",
-  "projectType": "library"
+    "root": "packages/phpunit-config/",
+    "projectType": "library"
 }

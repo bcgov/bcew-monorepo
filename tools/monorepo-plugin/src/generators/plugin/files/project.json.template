@@ -11,51 +11,18 @@
         }
     },
     "targets": {
-        "composer-install": {
-            "options": {
-                "cwd": "plugins/<%= slug %>"
-            }
-        },
-        "build": {
-            "options": {
-                "source-path": "plugins/<%= slug %>/src",
-                "output-path": "plugins/<%= slug %>/dist"
-            }
-        },
-        "start": {
-            "options": {
-                "source-path": "plugins/<%= slug %>/src",
-                "output-path": "plugins/<%= slug %>/dist"
-            }
-        },
-        "test-e2e": {
-            "options": {
-                "config": "playwright.config.js",
-                "cwd": "plugins/<%= slug %>"
-            }
-        },
-        "test-screenshot": {
-            "options": {
-                "config": "playwright.regression.config.js",
-                "cwd": "plugins/<%= slug %>"
-            }
-        },
+        "composer-install": {},
+        "build": {},
+        "start": {},
+        "test-e2e": {},
+        "test-screenshot": {},
         "test-integration": {
             "options": {
-                "command": "wp-env run tests-cli --env-cwd=wp-content/plugins/<%= slug %> composer test ./ --",
-                "cwd": "plugins/<%= slug %>"
+                "command": "wp-env run tests-cli --env-cwd=wp-content/plugins/<%= slug %> composer test ./",
             }
         },
-        "wp-env-start": {
-            "options": {
-                "cwd": "plugins/<%= slug %>"
-            }
-        },
-        "wp-env-clean": {
-            "options": {
-                "cwd": "plugins/<%= slug %>"
-            }
-        }
+        "wp-env-start": {},
+        "wp-env-clean": {}
     },
     "implicitDependencies": ["packages/phpunit-config/"],
     "tags": ["type:wp-plugin"]

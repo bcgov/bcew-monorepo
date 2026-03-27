@@ -11,51 +11,18 @@
         }
     },
     "targets": {
-        "composer-install": {
-            "options": {
-                "cwd": "plugins/bcgov-wordpress-blocks"
-            }
-        },
-        "build": {
-            "options": {
-                "source-path": "plugins/bcgov-wordpress-blocks/src",
-                "output-path": "plugins/bcgov-wordpress-blocks/dist"
-            }
-        },
-        "start": {
-            "options": {
-                "source-path": "plugins/bcgov-wordpress-blocks/src",
-                "output-path": "plugins/bcgov-wordpress-blocks/dist"
-            }
-        },
-        "test-e2e": {
-            "options": {
-                "config": "playwright.config.js",
-                "cwd": "plugins/bcgov-wordpress-blocks"
-            }
-        },
-        "test-screenshot": {
-            "options": {
-                "config": "playwright.regression.config.js",
-                "cwd": "plugins/bcgov-wordpress-blocks"
-            }
-        },
+        "composer-install": {},
+        "build": {},
+        "start": {},
+        "test-e2e": {},
+        "test-screenshot": {},
         "test-integration": {
             "options": {
-                "command": "wp-env run tests-cli --env-cwd=wp-content/plugins/bcgov-wordpress-blocks composer test ./ --",
-                "cwd": "plugins/bcgov-wordpress-blocks"
+                "command": "wp-env run tests-cli --env-cwd=wp-content/plugins/bcgov-wordpress-blocks composer test ./"
             }
         },
-        "wp-env-start": {
-            "options": {
-                "cwd": "plugins/bcgov-wordpress-blocks"
-            }
-        },
-        "wp-env-clean": {
-            "options": {
-                "cwd": "plugins/bcgov-wordpress-blocks"
-            }
-        }
+        "wp-env-start": {},
+        "wp-env-clean": {}
     },
     "implicitDependencies": ["packages/phpunit-config/"],
     "tags": ["type:wp-plugin"]

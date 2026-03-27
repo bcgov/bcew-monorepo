@@ -11,39 +11,12 @@
         }
     },
     "targets": {
-        "composer-install": {
-            "options": {
-                "cwd": "themes/<%= slug %>"
-            }
-        },
-        "build": {
-            "options": {
-                "source-path": "themes/<%= slug %>/src",
-                "output-path": "themes/<%= slug %>/dist"
-            }
-        },
-        "start": {
-            "options": {
-                "source-path": "themes/<%= slug %>/src",
-                "output-path": "themes/<%= slug %>/dist"
-            }
-        },
-        "test-screenshot": {
-            "options": {
-                "config": "playwright.regression.config.js",
-                "cwd": "themes/<%= slug %>"
-            }
-        },
-        "wp-env-start": {
-            "options": {
-                "cwd": "themes/<%= slug %>"
-            }
-        },
-        "wp-env-clean": {
-            "options": {
-                "cwd": "themes/<%= slug %>"
-            }
-        }
+        "composer-install": {},
+        "build": {},
+        "start": {},
+        "test-screenshot": {},
+        "wp-env-start": {},
+        "wp-env-clean": {}
     },
     "implicitDependencies": ["packages/phpunit-config/"],
     "tags": ["type:wp-theme"]

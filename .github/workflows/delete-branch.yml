@@ -25,6 +25,21 @@ jobs:
               with:
                   fetch-depth: 0
 
+            - name: Install pnpm
+              uses: pnpm/action-setup@v4
+              with:
+                  version: 10
+                  cache: true
+
+            - name: Setup Node.js 24
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+                  cache: 'pnpm'
+
+            - name: Install dependencies
+              run: pnpm install
+
             - name: List projects
               id: compute
               shell: bash

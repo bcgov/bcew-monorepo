@@ -28,17 +28,17 @@
     ],
     "dependencies": {
         "@nx/devkit": "22.5.4",
-        "@nx/plugin": "^22.6.1",
+        "@nx/plugin": "^22.6.2",
         "@playwright/test": "^1.58.2",
         "@swc-node/register": "~1.11.1",
         "@swc/cli": "~0.8.0",
-        "@swc/core": "~1.15.18",
-        "@swc/helpers": "~0.5.19",
+        "@swc/core": "~1.15.21",
+        "@swc/helpers": "~0.5.20",
         "@types/jest": "^30.0.0",
         "@types/node": "20.19.9",
         "@wordpress-monorepo/e2e": "workspace:*",
-        "@wordpress/e2e-test-utils-playwright": "^1.41.0",
-        "@wordpress/env": "^10.39.0",
+        "@wordpress/e2e-test-utils-playwright": "^1.42.0",
+        "@wordpress/env": "^11.2.0",
         "@wordpress/scripts": "^31.7.0",
         "@wordpress/stylelint-config": "^23.34.0",
         "eslint-plugin-playwright": "^2.10.1",
@@ -69,9 +69,9 @@
         "lint-md": "wp-scripts lint-md-docs",
         "fix-md": "wp-scripts lint-md-docs --fix",
         "lint-pkg-json": "wp-scripts lint-pkg-json",
-        "format": "wp-scripts format",
         "check-engines": "wp-scripts check-engines",
         "check-licenses": "wp-scripts check-licenses --prod",
-        "wp-env": "wp-env"
+        "wp-env": "wp-env",
+        "wp-env-clean": "npx nx run-many -t wp-env-clean"
     }
 }

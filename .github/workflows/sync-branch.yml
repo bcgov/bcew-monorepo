@@ -61,8 +61,7 @@ jobs:
                 git config user.name "github-actions[bot]"
                 git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-                # Todo: Use nx build script here instead of hardcoded wp-scripts build.
-                npx wp-scripts build --blocks-manifest --output-path=dist
+                npx nx run-many -p ${{ matrix.project }} -t build
 
                 git add dist
                 git commit -m "chore: publish build output" || echo "No changes"

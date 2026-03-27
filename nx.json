@@ -4,79 +4,84 @@
         "composer-install": {
             "executor": "nx:run-commands",
             "options": {
-                "command": "composer install"
+                "command": "composer install",
+                "cwd": "{projectRoot}"
             },
             "cache": true,
-            "inputs": [ "{workspaceRoot}/composer.json" ],
-            "outputs": [ "{workspaceRoot}/vendor" ]
+            "inputs": ["{projectRoot}/composer.json"],
+            "outputs": ["{projectRoot}/vendor"]
         },
         "build": {
             "executor": "nx:run-commands",
             "options": {
                 "command": "wp-scripts build",
+                "cwd": "{projectRoot}",
+                "output-path": "dist",
                 "blocks-manifest": ""
             },
-            "dependsOn": [ "^build" ],
+            "dependsOn": ["^build"],
             "cache": true,
-            "inputs": [ "{workspaceRoot}/" ],
-            "outputs": [ "{workspaceRoot}/dist" ]
+            "inputs": ["{projectRoot}"],
+            "outputs": ["{projectRoot}/dist"]
         },
         "start": {
             "executor": "nx:run-commands",
             "options": {
                 "command": "wp-scripts start",
+                "cwd": "{projectRoot}",
+                "output-path": "dist",
                 "blocks-manifest": ""
             },
-            "dependsOn": [ "^build" ],
+            "dependsOn": ["^build"],
             "continuous": true,
-            "inputs": [ "{workspaceRoot}/" ],
-            "outputs": [ "{workspaceRoot}/dist" ]
+            "inputs": ["{projectRoot}"],
+            "outputs": ["{projectRoot}/dist"]
         },
         "test-integration": {
             "executor": "nx:run-commands",
             "options": {
                 "command": "wp-env run tests-cli composer run test",
-                "configuration": "vendor/wordpress-monorepo/phpunit-config/phpunit.integration.xml",
-                "cwd": "{workspaceRoot}"
+                "cwd": "{projectRoot}",
+                "configuration": "vendor/wordpress-monorepo/phpunit-config/phpunit.integration.xml"
             },
-            "dependsOn": [ "composer-install", "wp-env-start" ]
+            "dependsOn": ["composer-install", "wp-env-start"]
         },
         "test-e2e": {
             "executor": "nx:run-commands",
             "options": {
                 "command": "wp-scripts test-playwright",
-                "cwd": "{workspaceRoot}",
-                "parallel": false
+                "cwd": "{projectRoot}"
             },
-            "dependsOn": [ "^build", "wp-env-start" ]
+            "dependsOn": ["^build", "wp-env-start"]
         },
         "test-screenshot": {
             "executor": "nx:run-commands",
             "options": {
-                "command": "npx playwright test",
-                "update-snapshots": "all",
-                "parallel": false
+                "command": "wp-scripts test-playwright",
+                "cwd": "{projectRoot}",
+                "config": "playwright.regression.config.js",
+                "update-snapshots": "all"
             },
-            "dependsOn": [ "^build", "wp-env-start" ] 
+            "dependsOn": ["^build", "wp-env-start"]
         },
         "wp-env-start": {
             "executor": "nx:run-commands",
             "options": {
                 "command": "wp-env start",
-                "xdebug": "coverage",
-                "parallel": false
+                "cwd": "{projectRoot}",
+                "xdebug": "coverage"
             }
         },
         "wp-env-clean": {
             "executor": "nx:run-commands",
             "options": {
                 "command": "wp-env clean",
-                "parallel": false
+                "cwd": "{projectRoot}"
             }
         }
     },
     "namedInputs": {
-        "default": [ "{projectRoot}/**/*", "sharedGlobals" ],
+        "default": ["{projectRoot}/**/*", "sharedGlobals"],
         "sharedGlobals": []
     },
     "release": {
