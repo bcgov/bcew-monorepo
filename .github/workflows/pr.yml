@@ -69,13 +69,10 @@ jobs:
               run: npx playwright install --with-deps
 
             - name: Build
-              run: npx nx affected -t build
-
-            - name: Start wp-env
-              run: npx nx affected -t wp-env-start
+              run: npx nx affected --base="origin/${{ github.base_ref }}" -t build
 
             - name: Run e2e tests
-              run: npx nx affected -t test-e2e
+              run: npx nx affected --base="origin/${{ github.base_ref }}" -t test-e2e
 
             - uses: actions/upload-artifact@v4
               if: ${{ !cancelled() }}
@@ -85,10 +82,10 @@ jobs:
                   retention-days: 30
 
             - name: Run screenshot updates
-              run: npx nx affected -t test-screenshot
+              run: npx nx affected --base="origin/${{ github.base_ref }}" -t test-screenshot
 
             - name: Run PHP integration tests
-              run: npx nx affected -t test-integration
+              run: npx nx affected --base="origin/${{ github.base_ref }}" -t test-integration
 
             # Todo: Determine how to allow bot commits without retriggering default CodeQL check.
             # - name: Commit and push updates
