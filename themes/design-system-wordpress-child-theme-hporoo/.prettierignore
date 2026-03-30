@@ -1,0 +1,12 @@
+# Ignore artifacts:
+build
+dist
+
+# Ignore all non-html php files:
+blocks/*.php
+src/*.php
+tests/*.php
+
+# PHP/HTML files (use js-beautify currently as prettier causes WP block recovery issues)
+*.php
+*.html
