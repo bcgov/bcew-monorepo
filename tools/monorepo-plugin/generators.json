@@ -9,6 +9,11 @@
             "factory": "./dist/generators/plugin/plugin",
             "schema": "./dist/generators/plugin/schema.json",
             "description": "Generate a WordPress block plugin"
+        },
+        "block-version-update": {
+            "factory": "./dist/generators/block-version-update/block-version-update",
+            "schema": "./dist/generators/block-version-update/schema.json",
+            "description": "block-version-update generator"
         }
     }
 }
