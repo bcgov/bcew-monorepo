@@ -63,9 +63,9 @@ const aboutUsContent = PAGE_CONTENT;
 
 let aboutUsPageId = wp(`post list --post_type=page --name=about-us --post_status=publish,draft,pending,future,private --field=ID --format=ids`).trim();
 if (!aboutUsPageId) {
-  aboutUsPageId = wp(`post create --post_type=page --post_title="About Us" --post_name=about-us --post_status=publish --post_content="${aboutUsContent.replace(/"/g, '\\"')}" --porcelain`).trim();
+  aboutUsPageId = wp(`post create --post_type=page --post_title="About Us" --post_name=about-us --post_status=publish --post_content="${escapeForDoubleQuotedShellArg(aboutUsContent)}" --porcelain`).trim();
 } else {
-  wp(`post update ${aboutUsPageId} --post_status=publish --post_content="${aboutUsContent.replace(/"/g, '\\"')}"`);
+  wp(`post update ${aboutUsPageId} --post_status=publish --post_content="${escapeForDoubleQuotedShellArg(aboutUsContent)}"`);
 }
 
 // Create Contact Us page
@@ -73,9 +73,9 @@ const contactUsContent = PAGE_CONTENT;
 
 let contactUsPageId = wp(`post list --post_type=page --name=contact-us --post_status=publish,draft,pending,future,private --field=ID --format=ids`).trim();
 if (!contactUsPageId) {
-  contactUsPageId = wp(`post create --post_type=page --post_title="Contact Us" --post_name=contact-us --post_status=publish --post_content="${contactUsContent.replace(/"/g, '\\"')}" --porcelain`).trim();
+  contactUsPageId = wp(`post create --post_type=page --post_title="Contact Us" --post_name=contact-us --post_status=publish --post_content="${escapeForDoubleQuotedShellArg(contactUsContent)}" --porcelain`).trim();
 } else {
-  wp(`post update ${contactUsPageId} --post_status=publish --post_content="${contactUsContent.replace(/"/g, '\\"')}"`);
+  wp(`post update ${contactUsPageId} --post_status=publish --post_content="${escapeForDoubleQuotedShellArg(contactUsContent)}"`);
 }
 
 // Create a blog post
@@ -83,9 +83,9 @@ const postContent = PAGE_CONTENT;
 
 let postId = wp(`post list --post_type=post --name=hello-world --post_status=publish,draft,pending,future,private --field=ID --format=ids`).trim();
 if (!postId) {
-  postId = wp(`post create --post_type=post --post_title="Hello World" --post_name=hello-world --post_status=publish --post_content="${postContent.replace(/"/g, '\\"')}" --porcelain`).trim();
+  postId = wp(`post create --post_type=post --post_title="Hello World" --post_name=hello-world --post_status=publish --post_content="${escapeForDoubleQuotedShellArg(postContent)}" --porcelain`).trim();
 } else {
-  wp(`post update ${postId} --post_status=publish --post_content="${postContent.replace(/"/g, '\\"')}"`);
+  wp(`post update ${postId} --post_status=publish --post_content="${escapeForDoubleQuotedShellArg(postContent)}"`);
 }
 
 // Set the front page to the Home page.
