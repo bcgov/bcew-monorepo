@@ -175,7 +175,7 @@ This configuration:
 From the repository root:
 
 ```bash
-npm install
+pnpm install
 ```
 
 This installs root tooling and all workspace dependencies. There is no need to run `npm install` inside individual packages.

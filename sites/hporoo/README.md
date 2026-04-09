@@ -77,12 +77,13 @@ wp db import db/dev-backup.sql
 wp db import db/test-backup.sql
 exit
 ```
+
 > note: renaming is optional of course, if you want to interactively restore.
 
 
 ## Notes
 
-### If environment state gets out of sync, reset and start again:
+### If environment state gets out of sync, reset and start again
 
 ```shell
 wp-env cleanup --force
