@@ -7,6 +7,13 @@ function wp(command) {
   return execSync(`npx wp-env run cli wp ${command}`, { encoding: 'utf8' });
 }
 
+// Escape a value for safe inclusion inside a double-quoted shell argument.
+function escapeForDoubleQuotedShellArg(value) {
+  return value
+    .replace(/\\/g, '\\\\')
+    .replace(/"/g, '\\"');
+}
+
 // Activate the child theme so the local environment matches the theme's development environment.
 const THEME_SLUG = "design-system-wordpress-child-theme-hporoo";
 wp(`theme activate "${THEME_SLUG}"`);
@@ -33,9 +40,9 @@ let HOME_PAGE_CONTENT = PAGE_CONTENT;
 
 let homePageId = wp(`post list --post_type=page --name="${HOME_PAGE_SLUG}" --post_status=publish,draft,pending,future,private --field=ID --format=ids`).trim();
 if (!homePageId) {
-  homePageId = wp(`post create --post_type=page --post_title="${HOME_PAGE_TITLE}" --post_name="${HOME_PAGE_SLUG}" --post_status=publish --post_content="${HOME_PAGE_CONTENT.replace(/"/g, '\\"')}" --porcelain`).trim();
+  homePageId = wp(`post create --post_type=page --post_title="${HOME_PAGE_TITLE}" --post_name="${HOME_PAGE_SLUG}" --post_status=publish --post_content="${escapeForDoubleQuotedShellArg(HOME_PAGE_CONTENT)}" --porcelain`).trim();
 } else {
-  wp(`post update ${homePageId} --post_status=publish --post_content="${HOME_PAGE_CONTENT.replace(/"/g, '\\"')}"`);
+  wp(`post update ${homePageId} --post_status=publish --post_content="${escapeForDoubleQuotedShellArg(HOME_PAGE_CONTENT)}"`);
 }
 
 let postsPageId = wp(`post list --post_type=page --name="${POSTS_PAGE_SLUG}" --post_status=publish,draft,pending,future,private --field=ID --format=ids`).trim();
