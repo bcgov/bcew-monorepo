@@ -1,0 +1,26 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/wp-env.json",
+    "core": "WordPress/WordPress#6.8",
+    "phpVersion": "7.4",
+    "testsEnvironment": true,
+    "plugins": [
+        "bcgov/design-system-wordpress-plugin",
+        "bcgov/wordpress-document-repository"
+    ],
+    "themes": [
+        "bcgov/design-system-wordpress-child-theme-hporoo",
+        "bcgov/design-system-wordpress-theme"
+    ],
+    "mappings": {
+        "scripts/after-start.js": "./scripts/after-start.js",
+        "db": "./db"
+    },
+    "config": {
+        "WP_DEBUG_DISPLAY": true,
+        "WP_SITEURL": "http://127.0.0.1:8888",
+        "WP_HOME": "http://127.0.0.1:8888"
+    },
+    "lifecycleScripts": {
+        "afterStart": "node ./scripts/after-start.js"
+    }
+}

@@ -72,6 +72,12 @@
         "check-engines": "wp-scripts check-engines",
         "check-licenses": "wp-scripts check-licenses --prod",
         "wp-env": "wp-env",
-        "wp-env-clean": "npx nx run-many -t wp-env-clean"
+        "wp-env-start": "wp-env start --debug --update",
+        "wp-env-clean": "npx nx run-many -t wp-env-clean",
+        "wp-env-export-test-db": "cd sites/hporoo && npx wp-env run tests-cli wp db export - > db/tests-backup-$(date +%Y%m%d).sql",
+        "wp-env-export-dev-db": "cd sites/hporoo && npx wp-env run cli wp db export - > db/dev-backup-$(date +%Y%m%d).sql",
+        "wp-env-import-test-db": "cd sites/hporoo && npx wp-env run tests-cli wp db import db/tests-backup.sql",
+        "wp-env-import-dev-db": "cd sites/hporoo && npx wp-env run cli wp db import db/dev-backup.sql",
+        "wp-env-force-cleanup": "npm run wp-env cleanup --force && npm run wp-env start"
     }
 }
