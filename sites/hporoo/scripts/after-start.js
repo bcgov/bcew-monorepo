@@ -12,7 +12,7 @@ const starterDbPath = path.resolve( __dirname, '../db/starter.sql' );
  * Run a WP-CLI command against a wp-env environment.
  *
  * @param {string} environment wp-env target, such as cli or tests-cli.
- * @param {string} command WP-CLI arguments to run.
+ * @param {string} command     WP-CLI arguments to run.
  */
 const wp = ( environment, command ) => {
     execSync( `npx wp-env run ${ environment } wp ${ command }`, {
@@ -23,7 +23,7 @@ const wp = ( environment, command ) => {
 /**
  * Activate the theme and import the starter database for a wp-env target.
  *
- * @param {string} label Friendly label for log output.
+ * @param {string} label       Friendly label for log output.
  * @param {string} environment wp-env target, such as cli or tests-cli.
  */
 const bootstrapEnvironment = ( label, environment ) => {
