@@ -16,76 +16,74 @@ npx wp-env start --debug --update
 
 ## What Local Bootstrap Does
 
-When `wp-env` starts, `.wp-env.json` runs `scripts/after-start.js` in the `cli` container.
+When `wp-env` starts from `sites/hporoo`, `.wp-env.json` runs `scripts/after-start.js` on the host.
 
 The bootstrap script:
 
-1. Activates `design-system-wordpress-child-theme-hporoo`.
-1. Applies default local settings (permalinks, timezone, blog visibility, reading options).
-1. Creates or updates a homepage with lorem ipsum content.
-1. Creates or updates the posts page (`news`).
-1. Sets Reading settings so homepage/posts point to those pages.
-1. Creates additional pages: About Us, Contact Us with lorem ipsum content.
-1. Creates a sample blog post with lorem ipsum content.
+1. Activates `design-system-wordpress-child-theme-hporoo` in both `cli` and `tests-cli`.
+1. Imports `db/starter.sql` into both environments with `wp db import` when that file exists.
 
 ## Re-run Bootstrap Only
 
-If WordPress is already running and you only want to re-apply seed/config:
+If WordPress is already running and you want to re-apply the starter import:
 
 ```shell
-wp-env run cli bash -c "node scripts/after-start.js"
+node scripts/after-start.js
 ```
 
-## Verify Homepage Setup
+## Verify Bootstrap
 
 ```shell
-wp-env run cli wp option get page_on_front
-wp-env run cli wp option get page_for_posts
-wp-env run cli wp post get $(wp-env run cli wp option get page_on_front) --field=post_title
+wp-env run cli wp theme list --status=active
+wp-env run tests-cli wp theme list --status=active
 ```
 
-## Backup and Restore (Dev DB)
+## Starter Database Workflow
 
-Export:
+Create or refresh the reusable starter backup:
 
 ```shell
 # dev environment
-npx wp-env run cli wp db export - > ./db/dev-backup-$(date +%Y%m%d).sql
-
-# test environment
-npx wp-env run tests-cli wp db export - > ./db/tests-backup-$(date +%Y%m%d).sql
-
+npx wp-env run cli wp db export - > ./db/starter.sql
 ```
 
+If you prefer keeping dated backups, export to a dated filename first and then rename or copy the one you want to keep as `db/starter.sql`.
 
-Restore:
+On every `npx wp-env start --debug --update`, `scripts/after-start.js` imports `db/starter.sql` into both the dev and test databases automatically.
 
-1. rename your database backup depending on its puprpose
-    - `test-backup.sql` for test environment
-    - `dev-backup.sql` for dev environment
-2. save it in the root of your theme
-3. run `npx wp-env run cli wp db import db/dev-backup.sql`
-4. for interactivive use, run the following commands
+## Common wp-env Commands
+
+Run these from `sites/hporoo`:
 
 ```shell
-npx wp-env run cli bash
+# start
+npx wp-env start --debug --update
 
-#dev restore
-wp db import db/dev-backup.sql
+# clean
+npx wp-env clean
 
-#tests restore
-wp db import db/test-backup.sql
-exit
+# export the test database
+npx wp-env run tests-cli wp db export - > ./db/tests-backup-$(date +%Y%m%d).sql
+
+# export the dev database
+npx wp-env run cli wp db export - > ./db/dev-backup-$(date +%Y%m%d).sql
+
+# import the test database from starter.sql
+npx wp-env run tests-cli wp db import db/starter.sql
+
+# import the dev database from starter.sql
+npx wp-env run cli wp db import db/starter.sql
+
+# force cleanup and start fresh
+npx wp-env cleanup --force
+npx wp-env start --debug --update
 ```
-
-> note: renaming is optional of course, if you want to interactively restore.
-
 
 ## Notes
 
 ### If environment state gets out of sync, reset and start again
 
 ```shell
-wp-env cleanup --force
-wp-env start --debug --update
+npx wp-env cleanup --force
+npx wp-env start --debug --update
 ```

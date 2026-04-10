@@ -15,11 +15,6 @@
         "scripts/after-start.js": "./scripts/after-start.js",
         "db": "./db"
     },
-    "config": {
-        "WP_DEBUG_DISPLAY": true,
-        "WP_SITEURL": "http://127.0.0.1:8888",
-        "WP_HOME": "http://127.0.0.1:8888"
-    },
     "lifecycleScripts": {
         "afterStart": "node ./scripts/after-start.js"
     }
