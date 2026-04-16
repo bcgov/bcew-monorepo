@@ -84,16 +84,16 @@ importers:
   plugins/bcgov-wordpress-blocks:
     dependencies:
       '@wordpress/block-editor':
-        specifier: ^15.17.0
+        specifier: 15.17.0
         version: 15.17.0(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(@types/react-dom@18.3.7(@types/react@18.3.28))(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.9.3))
       '@wordpress/blocks':
-        specifier: ^15.17.0
+        specifier: 15.17.0
         version: 15.17.0(react@18.3.1)
       '@wordpress/dom-ready':
-        specifier: ^4.44.0
+        specifier: 4.44.0
         version: 4.44.0
       '@wordpress/i18n':
-        specifier: ^6.17.0
+        specifier: 6.17.0
         version: 6.17.0
 
   themes/design-system-wordpress-child-theme-belleville-terminal: {}
