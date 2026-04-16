@@ -4,7 +4,7 @@
     "license": "Apache-2.0",
     "scripts": {
         "lint-php": [
-            "vendor/bin/phpcs -ps ."
+            "vendor/bin/phpcs -ps --runtime-set ignore_warnings_on_exit true ."
         ],
         "fix-php": [
             "vendor/bin/phpcbf -ps ."

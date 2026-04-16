@@ -15,10 +15,11 @@
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly.
+    exit; // Exit if accessed directly.
 }
 
 add_filter( 'get_block_type_variations', 'custom_cover_variation', 10, 2 );
+
 /**
  * Adds a custom variation for the core/cover block.
  *
@@ -33,77 +34,142 @@ add_filter( 'get_block_type_variations', 'custom_cover_variation', 10, 2 );
  * @return array Modified block variations.
  */
 function custom_cover_variation( $variations, $block_type ) {
-	// Only modify variations for the cover block.
-	if ( 'core/cover' !== $block_type->name ) {
-		return $variations;
-	}
+    // Only modify variations for the cover block.
+    if ( 'core/cover' !== $block_type->name ) {
+        return $variations;
+    }
 
-	// Add a custom variation.
-	$variations[] = [
-		'name'        => 'hero-image',
-		'title'       => __( 'Hero Image', 'textdomain' ),
-		'description' => __( 'A Hero Image variation on the cover block', 'textdomain' ),
-		'scope'       => [ 'inserter' ],
-		'isDefault'   => false,
-		'attributes'  => [
-			'align'  => 'full',
-			'layout' => [
-				'type'        => 'constrained',
-				'contentSize' => '468px',
-			],
-		],
-		'innerBlocks' => [
-			[
-				'core/group',
-				[
-					'layout' => [
-						'type'        => 'constrained',
-						'contentSize' => '468px',
-					],
-					'style'  => [
-						'color'  => [
-							'background' => '#013366B3',
-						],
-						'border' => [
-							'left' => [
-								'width' => '0.5rem',
-								'color' => '#fcba19',
-								'style' => 'solid',
-							],
-						],
-					],
-				],
-				[
-					[
-						'core/heading',
-						[
-							'level'   => 1,
-							'content' => 'Hero title',
-							'style'   => [ 'color' => [ 'text' => '#ffffff' ] ],
-						],
-					],
-					[
-						'core/paragraph',
-						[
-							'content' => 'Hero description',
-							'style'   => [ 'color' => [ 'text' => '#ffffff' ] ],
-						],
-					],
-					[
-						'core/paragraph',
-						[
-							'content' => 'Visit <a href="/some-page">another page</a>',
-							'style'   => [ 'color' => [ 'text' => '#ffffff' ] ],
-						],
-					],
-				],
-			],
-		],
-		'icon'        => 'star-filled',
-	];
+    // Add a custom variation.
+    $variations[] = [
+        'name'        => 'hero-image',
+        'title'       => __( 'Hero Image', 'textdomain' ),
+        'description' => __( 'A Hero Image variation on the cover block', 'textdomain' ),
+        'scope'       => [ 'inserter' ],
+        'isDefault'   => false,
+        'attributes'  => [
+            'metadata'        => [
+                'name' => 'Hero image',
+            ],
+            'align'           => 'full',
+            'contentPosition' => 'center left',
+            'layout'          => [
+                'type' => 'constrained',
+            ],
+            'templateLock'    => 'contentOnly',
+            'isDark'          => true,
+            'style'           => [
+                'color' => [
+                    'text' => 'var:preset|color|white',
+                ],
+            ],
+        ],
+        'innerBlocks' => [
+            [
+                'core/group',
+                [
+                    'metadata' => [
+                        'name' => 'Overlay',
+                    ],
+                    'layout'   => [
+                        'type'           => 'constrained',
+                        'contentSize'    => '468px',
+                        'justifyContent' => 'left',
+                    ],
+                    'style'    => [
+                        'color'   => [
+                            'background' => 'var:custom|dswp|surface-color-background-dark',
+                        ],
+                        'spacing' => [
+                            'padding' => [
+                                'top'    => 'var:preset|spacing|40',
+                                'right'  => 'var:preset|spacing|40',
+                                'bottom' => 'var:preset|spacing|40',
+                                'left'   => 'var:preset|spacing|40',
+                            ],
+                        ],
+                        'border'  => [
+                            'left'   => [
+                                'width' => '0.5rem',
+                                'color' => 'var:preset|color|accent-primary',
+                                'style' => 'solid',
+                            ],
+                            'radius' => '5px',
+                        ],
+                    ],
+                ],
+                [
+                    [
+                        // Could be a Title block to use the post title directly.
+                        'core/heading',
+                        [
+                            'metadata'    => [
+                                'name' => 'Title',
+                            ],
+                            'placeholder' => 'Title',
+                            'level'       => 1,
+                        ],
+                    ],
+                    [
+                        // Could be an Excerpt block to use the post excerpt directly.
+                        'core/paragraph',
+                        [
+                            'metadata'    => [
+                                'name' => 'Description',
+                            ],
+                            'placeholder' => 'Description. Should be 100 or fewer characters.',
+                        ],
+                    ],
+                    [
+                        'core/buttons',
+                        [],
+                        [
+                            [
+                                'core/button',
+                                [
+                                    'className'   => 'is-style-link',
+                                    'placeholder' => 'Action',
+                                    'metadata'    => [
+                                        'name' => 'Action',
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ],
+        'icon'        => 'star-filled',
+    ];
 
-	return $variations;
+    return $variations;
 }
+
+/**
+ * Register link block style for button.
+ *
+ * @todo Move to theme.
+ * @return void
+ */
+function custom_register_block_styles() {
+    register_block_style(
+        'core/button',
+        [
+            'name'         => 'link',
+            'label'        => __( 'Link', 'themeslug' ),
+            'inline_style' => '.wp-block-button.is-style-link > * {
+            background: none;
+            border: none;
+            padding: 0;
+            font: inherit;
+            cursor: pointer;
+            outline: inherit;
+            text-decoration: underline;
+		}',
+        ]
+    );
+}
+
+add_action( 'init', 'custom_register_block_styles' );
 
 /**
  * Registers the block(s) metadata from the `blocks-manifest.php` and registers the block type(s)
