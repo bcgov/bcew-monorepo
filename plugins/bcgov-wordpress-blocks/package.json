@@ -22,9 +22,9 @@
         "email": "govwordpress@gov.bc.ca"
     },
     "dependencies": {
-        "@wordpress/block-editor": "latest",
-        "@wordpress/blocks": "latest",
-        "@wordpress/dom-ready": "latest",
-        "@wordpress/i18n": "latest"
+        "@wordpress/block-editor": "15.17.0",
+        "@wordpress/blocks": "15.17.0",
+        "@wordpress/dom-ready": "4.44.0",
+        "@wordpress/i18n": "6.17.0"
     }
 }

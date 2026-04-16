@@ -22,6 +22,8 @@ const defaultConfig = require( '@wordpress/scripts/config/webpack.config' );
 /**
  * Adds an additional 'index' entry point to the webpack configuration.
  * This ensures src/index.js gets built alongside any block.json-based entries.
+ * @param {Object} config - The webpack configuration object.
+ * @return {Object} The modified webpack configuration with additional entry point.
  */
 const withEditorEntry = ( config ) => {
     return {
