@@ -18,17 +18,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
+add_filter( 'get_block_type_variations', 'custom_cover_variation', 10, 2 );
 /**
- * Adds a block variation on the core/cover block to be used as the default variation when inserting a cover block in the editor. This allows us to set custom default attributes for the cover block, such as a custom background color, and to use a custom template for the block variation.
+ * Adds a custom variation for the core/cover block.
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-variations/#registering-block-variations
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-variations/#block-variation-attributes
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-variations
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-variations/#block-variation-template
  * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-variations/#setting-a-default-block-variation
- * @return void
+ *
+ * @param array         $variations Existing block variations.
+ * @param WP_Block_Type $block_type Block type being filtered.
+ * @return array Modified block variations.
  */
-add_filter( 'get_block_type_variations', 'custom_cover_variation', 10, 2 );
 function custom_cover_variation( $variations, $block_type ) {
 	// Only modify variations for the cover block.
 	if ( 'core/cover' !== $block_type->name ) {
@@ -43,8 +46,8 @@ function custom_cover_variation( $variations, $block_type ) {
 		'scope'       => [ 'inserter' ],
 		'isDefault'   => false,
 		'attributes'  => [
-			'align'              => 'full',
-			'layout'             => [
+			'align'  => 'full',
+			'layout' => [
 				'type'        => 'constrained',
 				'contentSize' => '468px',
 			],
@@ -71,13 +74,32 @@ function custom_cover_variation( $variations, $block_type ) {
 					],
 				],
 				[
-					[ 'core/heading', [ 'level' => 1, 'content' => 'Hero title', 'style' => [ 'color' => [ 'text' => '#ffffff' ] ] ] ],
-					[ 'core/paragraph', [ 'content' => 'Hero description', 'style' => [ 'color' => [ 'text' => '#ffffff' ] ] ] ],
-					[ 'core/paragraph', [ 'content' => 'Visit <a href="/some-page">another page</a>', 'style' => [ 'color' => [ 'text' => '#ffffff' ] ] ] ],
+					[
+						'core/heading',
+						[
+							'level'   => 1,
+							'content' => 'Hero title',
+							'style'   => [ 'color' => [ 'text' => '#ffffff' ] ],
+						],
+					],
+					[
+						'core/paragraph',
+						[
+							'content' => 'Hero description',
+							'style'   => [ 'color' => [ 'text' => '#ffffff' ] ],
+						],
+					],
+					[
+						'core/paragraph',
+						[
+							'content' => 'Visit <a href="/some-page">another page</a>',
+							'style'   => [ 'color' => [ 'text' => '#ffffff' ] ],
+						],
+					],
 				],
 			],
 		],
-		'icon' => 'star-filled',
+		'icon'        => 'star-filled',
 	];
 
 	return $variations;
