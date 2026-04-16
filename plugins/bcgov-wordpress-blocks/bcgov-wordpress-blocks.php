@@ -17,15 +17,41 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
+
 /**
- * Registers the block(s) metadata from the `blocks-manifest.php` and registers the block type(s)
- * based on the registered block metadata. Behind the scenes, it registers also all assets so they can be enqueued
- * through the block editor in the corresponding context.
- *
- * @see https://make.wordpress.org/core/2025/03/13/more-efficient-block-type-registration-in-6-8/
- * @see https://make.wordpress.org/core/2024/10/17/new-block-type-registration-apis-to-improve-performance-in-wordpress-6-7/
+ * Enqueues the editor assets for the plugin.
+ */
+function bcgov_wordpress_blocks_enqueue_editor_assets() {
+	$asset_path = __DIR__ . '/dist/index.asset.php';
+
+	if ( ! file_exists( $asset_path ) ) {
+		return;
+	}
+
+	$asset = require $asset_path;
+
+	wp_enqueue_script(
+		'bcgov-wordpress-blocks-editor',
+		plugins_url( 'dist/index.js', __FILE__ ),
+		$asset['dependencies'],
+		$asset['version'],
+		true
+	);
+
+	wp_set_script_translations(
+		'bcgov-wordpress-blocks-editor',
+		'bcgov-wordpress-blocks'
+	);
+}
+add_action( 'enqueue_block_editor_assets', 'bcgov_wordpress_blocks_enqueue_editor_assets' );
+
+/**
+ * Registers the block(s) metadata from the blocks manifest.
  */
 function bcgov_wordpress_blocks_init() {
-    wp_register_block_types_from_metadata_collection( __DIR__ . '/dist', __DIR__ . '/dist/blocks-manifest.php' );
+	wp_register_block_types_from_metadata_collection(
+		__DIR__ . '/dist',
+		__DIR__ . '/dist/blocks-manifest.php'
+	);
 }
 add_action( 'init', 'bcgov_wordpress_blocks_init' );

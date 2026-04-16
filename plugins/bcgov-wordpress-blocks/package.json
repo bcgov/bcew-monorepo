@@ -24,6 +24,7 @@
     "dependencies": {
         "@wordpress/block-editor": "latest",
         "@wordpress/blocks": "latest",
+        "@wordpress/dom-ready": "latest",
         "@wordpress/i18n": "latest"
     }
 }
