@@ -1,7 +1,10 @@
 {
+    "$schema": "https://schemas.wp.org/trunk/wp-env.json",
     "core": "WordPress/WordPress#6.8",
     "phpVersion": "7.4",
-    "plugins": ["."],
-    "port": 9000,
-    "testsPort": 9001
+    "plugins": [ "." ],
+    "themes": [ "bcgov/design-system-wordpress-theme" ],
+    "lifecycleScripts": {
+        "afterStart": "wp theme activate design-system-wordpress-theme"
+    }
 }
