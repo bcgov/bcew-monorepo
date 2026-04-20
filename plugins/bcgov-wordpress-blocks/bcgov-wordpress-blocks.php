@@ -55,7 +55,7 @@ function custom_cover_variation( $variations, $block_type ) {
             'layout'          => [
                 'type' => 'constrained',
             ],
-            'templateLock'    => 'contentOnly',
+            // 'templateLock'    => 'contentOnly', //look that up
             'isDark'          => true,
             'style'           => [
                 'color' => [
@@ -78,6 +78,7 @@ function custom_cover_variation( $variations, $block_type ) {
                     'style'    => [
                         'color'   => [
                             'background' => 'var:custom|dswp|surface-color-background-dark',
+                            'opacity'    => '0.5',
                         ],
                         'spacing' => [
                             'padding' => [
@@ -89,7 +90,7 @@ function custom_cover_variation( $variations, $block_type ) {
                         ],
                         'border'  => [
                             'left'   => [
-                                'width' => '0.5rem',
+                                'width' => '0.5rem', // design systems tokens: use one of the spacing tokens for border width to ensure consistency with spacing and ease of maintenance.
                                 'color' => 'var:preset|color|accent-primary',
                                 'style' => 'solid',
                             ],

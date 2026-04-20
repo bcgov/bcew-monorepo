@@ -48,10 +48,16 @@ These defaults are aimed at reproducible local environments and safer team workf
 
 This template includes Playwright screenshot tests in `tests/screenshot` for catching visual regressions.
 
-1. Build assets: `pnpm run build`
-2. Start WordPress: `pnpm run wp-env:start`
-3. Generate baseline screenshots: `pnpm run test:screenshot:update`
-4. Run visual regression checks: `pnpm run test:screenshot`
+1. Start in this directory: `cd plugins/bcgov-wordpress-blocks`
+2. Run visual regression checks: `npx nx run test-screenshot`
+    - This will perform some initial setup:
+
+    ```shell
+        `npx nx build` # builds assets
+        `npx nx wp-env-start` # start WordPress
+    ```
+
+    - it should also update all snapshots (see nx.json in the root of the monorepo)
 
 ## == Frequently Asked Questions ==
 
