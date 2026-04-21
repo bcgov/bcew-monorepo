@@ -55,7 +55,7 @@ function custom_cover_variation( $variations, $block_type ) {
             'layout'          => [
                 'type' => 'constrained',
             ],
-            // 'templateLock'    => 'contentOnly', //look that up
+            'templateLock'    => 'contentOnly', //look that up
             'isDark'          => true,
             'style'           => [
                 'color' => [
