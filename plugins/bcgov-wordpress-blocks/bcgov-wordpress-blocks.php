@@ -50,87 +50,101 @@ function custom_cover_variation( $variations, $block_type ) {
             'metadata'        => [
                 'name' => 'Hero image',
             ],
-            'align'           => 'full',
-            'contentPosition' => 'center left',
+            'align'           => 'wide',
+            // 'contentPosition' => 'center left',
             'layout'          => [
                 'type' => 'constrained',
             ],
-            'templateLock'    => 'contentOnly',
+            // 'templateLock'    => 'contentOnly',
             'isDark'          => true,
             'style'           => [
                 'color' => [
                     'text' => 'var:preset|color|white',
                 ],
+                'dimensions' => [
+                    'width' => '468px',
+                ],
             ],
         ],
         'innerBlocks' => [
+            // This group sets up a centered layout for the content and adds a name to the block for easier identification in the editor.
             [
                 'core/group',
                 [
                     'metadata' => [
-                        'name' => 'Overlay',
+                        'name' => 'Layout Container to center content and set width',
                     ],
                     'layout'   => [
                         'type'           => 'constrained',
                         'contentSize'    => '468px',
                         'justifyContent' => 'left',
                     ],
-                    'style'    => [
-                        'color'   => [
-                            'background' => 'var:custom|dswp|surface-color-background-dark',
-                            'opacity'    => '0.5',
-                        ],
-                        'spacing' => [
-                            'padding' => [
-                                'top'    => 'var:preset|spacing|40',
-                                'right'  => 'var:preset|spacing|40',
-                                'bottom' => 'var:preset|spacing|40',
-                                'left'   => 'var:preset|spacing|40',
-                            ],
-                        ],
-                        'border'  => [
-                            'left'   => [
-                                'width' => '0.5rem', // design systems tokens: use one of the spacing tokens for border width to ensure consistency with spacing and ease of maintenance.
-                                'color' => 'var:preset|color|accent-primary',
-                                'style' => 'solid',
-                            ],
-                            'radius' => '5px',
-                        ],
-                    ],
                 ],
                 [
+                    // This group is used to create a colored background behind the title, description, and action button.
                     [
-                        // Could be a Title block to use the post title directly.
-                        'core/heading',
+                        'core/group',
                         [
-                            'metadata'    => [
-                                'name' => 'Title',
+                            'metadata' => [
+                                'name' => 'Card Container',
                             ],
-                            'placeholder' => 'Title',
-                            'level'       => 1,
-                        ],
-                    ],
-                    [
-                        // Could be an Excerpt block to use the post excerpt directly.
-                        'core/paragraph',
-                        [
-                            'metadata'    => [
-                                'name' => 'Description',
+                            'style'    => [
+                                'color' => [
+                                    'background' => 'var:custom|dswp|surface-color-background-dark',
+                                ],
+                                'border'  => [
+                                    'left'   => [
+                                        'width' => '0.5rem',
+                                        'color' => 'var:preset|color|accent-primary',
+                                        'style' => 'solid',
+                                    ],
+                                    'radius' => '5px',
+                                ],
+                                'spacing' => [
+                                    'padding' => [
+                                        'top'    => 'var:preset|spacing|40',
+                                        'right'  => 'var:preset|spacing|40',
+                                        'bottom' => 'var:preset|spacing|40',
+                                        'left'   => 'var:preset|spacing|40',
+                                    ],
+                                ],
                             ],
-                            'placeholder' => 'Description. Should be 100 or fewer characters.',
                         ],
-                    ],
-                    [
-                        'core/buttons',
-                        [],
                         [
                             [
-                                'core/button',
+                                // Could be a Title block to use the post title directly.
+                                'core/heading',
                                 [
-                                    'className'   => 'is-style-link',
-                                    'placeholder' => 'Action',
                                     'metadata'    => [
-                                        'name' => 'Action',
+                                        'name' => 'Title',
+                                    ],
+                                    'placeholder' => 'Title',
+                                    'level'       => 1,
+                                ],
+                            ],
+                            [
+                                // Could be an Excerpt block to use the post excerpt directly.
+                                'core/paragraph',
+                                [
+                                    'metadata'    => [
+                                        'name' => 'Description',
+                                    ],
+                                    'placeholder' => 'Description. Should be 100 or fewer characters.',
+                                ],
+                            ],
+                            [
+                                'core/buttons',
+                                [],
+                                [
+                                    [
+                                        'core/button',
+                                        [
+                                            'className'   => 'is-style-link',
+                                            'placeholder' => 'Action',
+                                            'metadata'    => [
+                                                'name' => 'Action',
+                                            ],
+                                        ],
                                     ],
                                 ],
                             ],
@@ -139,7 +153,7 @@ function custom_cover_variation( $variations, $block_type ) {
                 ],
             ],
         ],
-        'icon'        => 'star-filled',
+        'icon'        => 'cover-image',
     ];
 
     return $variations;
