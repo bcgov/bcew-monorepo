@@ -47,24 +47,14 @@ function custom_cover_variation( $variations, $block_type ) {
         'scope'       => [ 'inserter' ],
         'isDefault'   => false,
         'attributes'  => [
-            'metadata'        => [
+            'metadata' => [
                 'name' => 'Hero image',
             ],
-            'align'           => 'wide',
-            // 'contentPosition' => 'center left',
-            'layout'          => [
+            'layout'   => [
                 'type' => 'constrained',
             ],
             // 'templateLock'    => 'contentOnly',
-            'isDark'          => true,
-            'style'           => [
-                'color' => [
-                    'text' => 'var:preset|color|white',
-                ],
-                'dimensions' => [
-                    'width' => '468px',
-                ],
-            ],
+            'isDark'   => true,
         ],
         'innerBlocks' => [
             // This group sets up a centered layout for the content and adds a name to the block for easier identification in the editor.
@@ -89,7 +79,7 @@ function custom_cover_variation( $variations, $block_type ) {
                                 'name' => 'Card Container',
                             ],
                             'style'    => [
-                                'color' => [
+                                'color'   => [
                                     'background' => 'var:custom|dswp|surface-color-background-dark',
                                 ],
                                 'border'  => [
@@ -98,14 +88,14 @@ function custom_cover_variation( $variations, $block_type ) {
                                         'color' => 'var:preset|color|accent-primary',
                                         'style' => 'solid',
                                     ],
-                                    'radius' => '5px',
+                                    'radius' => '4px',
                                 ],
                                 'spacing' => [
                                     'padding' => [
-                                        'top'    => 'var:preset|spacing|40',
-                                        'right'  => 'var:preset|spacing|40',
-                                        'bottom' => 'var:preset|spacing|40',
-                                        'left'   => 'var:preset|spacing|40',
+                                        'top'    => '0.5rem',
+                                        'right'  => '2rem',
+                                        'bottom' => '1rem',
+                                        'left'   => '2rem',
                                     ],
                                 ],
                             ],
@@ -120,6 +110,14 @@ function custom_cover_variation( $variations, $block_type ) {
                                     ],
                                     'placeholder' => 'Title',
                                     'level'       => 1,
+                                    'style' => [
+                                        'spacing' => [
+                                            'padding'  => [
+                                                'top'    => '1.5rem',
+                                                'bottom' => '1.5rem',
+                                            ],
+                                        ],
+                                    ],
                                 ],
                             ],
                             [
@@ -130,6 +128,13 @@ function custom_cover_variation( $variations, $block_type ) {
                                         'name' => 'Description',
                                     ],
                                     'placeholder' => 'Description. Should be 100 or fewer characters.',
+                                    'style' => [
+                                        'spacing' => [
+                                            'padding'  => [
+                                                'bottom' => 'var:preset|spacing|30',
+                                            ],
+                                        ],
+                                    ],
                                 ],
                             ],
                             [
@@ -143,6 +148,16 @@ function custom_cover_variation( $variations, $block_type ) {
                                             'placeholder' => 'Action',
                                             'metadata'    => [
                                                 'name' => 'Action',
+                                            ],
+                                            'style' => [
+                                                'spacing' => [
+                                                    'padding'  => [
+                                                        'top'    => 0,
+                                                        'right'  => 'var:preset|spacing|50',
+                                                        'bottom' => 'var:preset|spacing|30',
+                                                        'left'   => 0,
+                                                    ],
+                                                ],
                                             ],
                                         ],
                                     ],
