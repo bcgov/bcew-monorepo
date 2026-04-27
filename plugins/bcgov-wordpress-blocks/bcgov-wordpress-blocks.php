@@ -3,7 +3,7 @@
  * Plugin Name:       Bcgov WordPress Blocks
  * Plugin URI:        https://github.com/bcgov/bcgov-wordpress-blocks
  * Description:       Plugin containing blocks intended to be used with the Design System WordPress Theme suite of products.
- * Version:           0.0.1
+ * Version:           1.0.0
  * Requires at least: 6.8
  * Requires PHP:      7.4
  * Author:            govwordpress@gov.bc.ca
@@ -47,15 +47,16 @@ function custom_cover_variation( $variations, $block_type ) {
         'scope'       => [ 'inserter' ],
         'isDefault'   => false,
         'attributes'  => [
-            'metadata' => [
+            'metadata'     => [
                 'name' => 'Hero image',
             ],
-            'layout'   => [
+            'layout'       => [
                 'type' => 'constrained',
             ],
-            // 'templateLock'    => 'contentOnly',
-            'isDark'   => true,
+            'templateLock' => 'contentOnly',
+            'isDark'       => true,
         ],
+        'icon'        => 'cover-image',
         'innerBlocks' => [
             // This group sets up a centered layout for the content and adds a name to the block for easier identification in the editor.
             [
@@ -80,7 +81,8 @@ function custom_cover_variation( $variations, $block_type ) {
                             ],
                             'style'    => [
                                 'color'   => [
-                                    'background' => 'var:custom|dswp|surface-color-background-dark',
+                                    'background' => ' #013366B2', // dswp-surface-color-background-dark-blue, but with 70% opacity.
+                                    'text'       => 'var:preset|color|white',
                                 ],
                                 'border'  => [
                                     'left'   => [
@@ -103,16 +105,16 @@ function custom_cover_variation( $variations, $block_type ) {
                         [
                             [
                                 // Could be a Title block to use the post title directly.
-                                'core/heading',
+                                'core/post-title',
                                 [
                                     'metadata'    => [
                                         'name' => 'Title',
                                     ],
                                     'placeholder' => 'Title',
                                     'level'       => 1,
-                                    'style' => [
+                                    'style'       => [
                                         'spacing' => [
-                                            'padding'  => [
+                                            'padding' => [
                                                 'top'    => '1.5rem',
                                                 'bottom' => '1.5rem',
                                             ],
@@ -128,12 +130,17 @@ function custom_cover_variation( $variations, $block_type ) {
                                         'name' => 'Description',
                                     ],
                                     'placeholder' => 'Description. Should be 100 or fewer characters.',
-                                    'style' => [
-                                        'spacing' => [
-                                            'padding'  => [
-                                                'bottom' => 'var:preset|spacing|30',
+                                    'style'       => [
+                                        'spacing'    => [
+                                            'padding' => [
+                                                'bottom' => '1rem',
                                             ],
                                         ],
+                                        'typography' => [
+                                            'fontSize'   => '1.125rem',
+                                            'lineHeight' => '1.7',
+                                        ],
+
                                     ],
                                 ],
                             ],
@@ -149,12 +156,12 @@ function custom_cover_variation( $variations, $block_type ) {
                                             'metadata'    => [
                                                 'name' => 'Action',
                                             ],
-                                            'style' => [
+                                            'style'       => [
                                                 'spacing' => [
                                                     'padding'  => [
                                                         'top'    => 0,
-                                                        'right'  => 'var:preset|spacing|50',
-                                                        'bottom' => 'var:preset|spacing|30',
+                                                        'right'  => '1.5rem',
+                                                        'bottom' => '1rem',
                                                         'left'   => 0,
                                                     ],
                                                 ],
@@ -168,7 +175,6 @@ function custom_cover_variation( $variations, $block_type ) {
                 ],
             ],
         ],
-        'icon'        => 'cover-image',
     ];
 
     return $variations;
@@ -177,24 +183,24 @@ function custom_cover_variation( $variations, $block_type ) {
 /**
  * Register link block style for button.
  *
- * @todo Move to theme.
  * @return void
  */
 function custom_register_block_styles() {
+    // Use the Link button style from the DSWP theme.
     register_block_style(
         'core/button',
         [
             'name'         => 'link',
             'label'        => __( 'Link', 'themeslug' ),
             'inline_style' => '.wp-block-button.is-style-link > * {
-            background: none;
-            border: none;
-            padding: 0;
-            font: inherit;
-            cursor: pointer;
-            outline: inherit;
-            text-decoration: underline;
-		}',
+                background: none;
+                border: none;
+                padding: 0;
+                font: inherit;
+                cursor: pointer;
+                outline: inherit;
+                text-decoration: underline;
+		    }',
         ]
     );
 }
