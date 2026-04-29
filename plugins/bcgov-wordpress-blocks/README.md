@@ -2,7 +2,7 @@
 
 Contributors: The BCGov Custom Web team
 Tags: block
-Tested up to: 6.8
+Tested up to: 6.7.4
 Stable tag: 0.0.1
 License: GPL-2.0-or-later
 

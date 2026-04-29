@@ -1,5 +1,5 @@
 {
-    "core": "WordPress/WordPress#6.8",
+    "core": "WordPress/WordPress#6.7.4",
     "phpVersion": "7.4",
     "plugins": ["."],
     "port": 9000,

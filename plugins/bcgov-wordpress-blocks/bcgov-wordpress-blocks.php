@@ -4,7 +4,7 @@
  * Plugin URI:        https://github.com/bcgov/bcgov-wordpress-blocks
  * Description:       Plugin containing blocks intended to be used with the Design System WordPress Theme suite of products.
  * Version:           1.0.0
- * Requires at least: 6.8
+ * Requires at least: 6.7.4
  * Requires PHP:      7.4
  * Author:            govwordpress@gov.bc.ca
  * License:           Apache Licence version 2.0
@@ -22,10 +22,15 @@ if ( ! defined( 'ABSPATH' ) ) {
  * based on the registered block metadata. Behind the scenes, it registers also all assets so they can be enqueued
  * through the block editor in the corresponding context.
  *
- * @see https://make.wordpress.org/core/2025/03/13/more-efficient-block-type-registration-in-6-8/
  * @see https://make.wordpress.org/core/2024/10/17/new-block-type-registration-apis-to-improve-performance-in-wordpress-6-7/
  */
 function bcgov_wordpress_blocks_init() {
-    wp_register_block_types_from_metadata_collection( __DIR__ . '/dist', __DIR__ . '/dist/blocks-manifest.php' );
+	$dist_path     = __DIR__ . '/dist';
+	// WordPress 6.7.4-compatible registration from each block folder.
+	foreach ( glob( $dist_path . '/*', GLOB_ONLYDIR ) as $block_dir ) {
+		if ( file_exists( $block_dir . '/block.json' ) ) {
+			register_block_type( $block_dir );
+		}
+	}
 }
 add_action( 'init', 'bcgov_wordpress_blocks_init' );
