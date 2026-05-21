@@ -7,6 +7,7 @@ import {
 import * as path from 'path';
 import { ThemeGeneratorSchema } from './schema';
 import { updateLabeler } from '../helpers';
+import { getNextWpEnvPorts } from '../wp-env-ports';
 
 /**
  * Generates a WordPress theme.
@@ -18,6 +19,7 @@ export const themeGenerator = async (
     options: ThemeGeneratorSchema
 ) => {
     const projectRoot = `themes/${ options.slug }`;
+    const wpEnvPort = options.wpEnvPort ?? getNextWpEnvPorts( tree ).port;
     // Todo: Detect existing project and update instead of initializing new project.
     // @see https://nx.dev/docs/extending-nx/migration-generators
     const phpNamespace = options.slug
@@ -34,6 +36,7 @@ export const themeGenerator = async (
     generateFiles( tree, path.join( __dirname, 'files' ), projectRoot, {
         ...options,
         phpNamespace,
+        wpEnvPort,
     } );
     updateLabeler( tree, options.slug );
     await formatFiles( tree );

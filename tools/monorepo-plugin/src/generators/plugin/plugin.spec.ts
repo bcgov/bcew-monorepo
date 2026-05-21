@@ -102,6 +102,11 @@ describe( 'plugin generator', () => {
     } );
 
     it( 'should generate a supported wp-env config', async () => {
+        tree.write(
+            'plugins/existing/.wp-env.json',
+            JSON.stringify( { port: 9004, testsPort: 9005 }, null, 4 )
+        );
+
         const options: PluginGeneratorSchema = {
             name: 'WP Env Plugin',
             description: 'Description',
@@ -114,6 +119,8 @@ describe( 'plugin generator', () => {
 
         expect( wpEnvConfig.testsEnvironment ).toBeUndefined();
         expect( wpEnvConfig.plugins ).toEqual( [ '.' ] );
+        expect( wpEnvConfig.port ).toBe( 9006 );
+        expect( wpEnvConfig.testsPort ).toBe( 9007 );
     } );
 
     it( 'should scaffold sample block e2e smoke coverage', async () => {

@@ -24,12 +24,7 @@
         },
         "wpEnvPort": {
             "type": "number",
-            "description": "A free port to use for wp-env to serve on. Example: 9002",
-            "$default": {
-                "$source": "argv",
-                "index": 0
-            },
-            "x-prompt": "What port should wp-env serve on?"
+            "description": "Optional override for wp-env dev port. When omitted, the next available port is chosen from existing .wp-env.json files in the monorepo."
         },
         "parentTheme": {
             "type": "string",
@@ -51,5 +46,5 @@
             }
         }
     },
-    "required": [ "name", "slug", "wpEnvPort", "parentTheme" ]
+    "required": [ "name", "slug", "parentTheme" ]
 }
