@@ -2,5 +2,11 @@
     "name": "bcgov-theme/design-system-wordpress-child-theme-ticorp",
     "description": "Design System Wordpress Child Theme TI-Corp",
     "type": "wordpress-theme",
-    "license": "Apache-2.0"
+    "license": "Apache-2.0",
+    "autoload": {
+        "psr-4": {
+            "Bcgov\\DesignSystemTicorp\\": "src/",
+            "Bcgov\\DesignSystemTicorp\\Test\\": "tests/"
+        }
+    }
 }
