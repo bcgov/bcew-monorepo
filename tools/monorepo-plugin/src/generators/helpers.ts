@@ -18,7 +18,7 @@ export const toTitle = ( value: string ) =>
  */
 export interface WordPressGeneratorSchema {
     name: string;
-    wpEnvPort: number;
+    wpEnvPort?: number;
 }
 
 /**

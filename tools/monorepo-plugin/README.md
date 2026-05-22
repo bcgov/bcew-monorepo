@@ -17,8 +17,10 @@ By default, this creates a plugin with one initial `sample-block`.
 Create a plugin with the default `sample-block`:
 
 ```shell
-npx nx generate monorepo-plugin:plugin --name="My Plugin" --wpEnvPort=9002 --description="My plugin description"
+npx nx generate monorepo-plugin:plugin --name="My Plugin" --description="My plugin description"
 ```
+
+`wp-env` ports are assigned automatically by scanning existing `.wp-env.json` files in the monorepo and using the next free port pair (`port` and `testsPort`). Override with `--wpEnvPort=9010` only when you need a specific port.
 
 #### Build For Gutenberg Registration
 

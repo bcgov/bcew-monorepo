@@ -114,6 +114,28 @@ describe( 'plugin generator', () => {
 
         expect( wpEnvConfig.testsEnvironment ).toBeUndefined();
         expect( wpEnvConfig.plugins ).toEqual( [ '.' ] );
+        expect( wpEnvConfig.port ).toBe( 9002 );
+        expect( wpEnvConfig.testsPort ).toBe( 9003 );
+    } );
+
+    it( 'should assign the next available wp-env ports', async () => {
+        tree.write(
+            'plugins/existing-wp-env/.wp-env.json',
+            JSON.stringify( { port: 8884, testsPort: 8885 } )
+        );
+
+        const options: PluginGeneratorSchema = {
+            name: 'Next Port Plugin',
+            description: 'Description',
+        };
+
+        await pluginGenerator( tree, options );
+
+        const wpEnvPath = 'plugins/next-port-plugin/.wp-env.json';
+        const wpEnvConfig = JSON.parse( tree.read( wpEnvPath )!.toString() );
+
+        expect( wpEnvConfig.port ).toBe( 8886 );
+        expect( wpEnvConfig.testsPort ).toBe( 8887 );
     } );
 
     it( 'should scaffold sample block e2e smoke coverage', async () => {

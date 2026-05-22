@@ -7,6 +7,7 @@ import {
 import * as path from 'path';
 import { PluginGeneratorSchema } from './schema';
 import { updateLabeler, WordPressProjectType } from '../helpers';
+import { getNextWpEnvPorts } from '../wp-env-ports';
 
 /**
  * Generates a WordPress plugin.
@@ -22,6 +23,10 @@ export const pluginGenerator = async (
         .replace( /\s+/g, '-' )
         .replace( /[^a-z0-9-]/g, '' );
     const description = options.description ?? '';
+    const { port: wpEnvPort } =
+        options.wpEnvPort !== undefined
+            ? { port: options.wpEnvPort }
+            : getNextWpEnvPorts( tree );
     const projectRoot = `plugins/${ slug }`;
     const phpSafeSlug = slug.replace( /-/g, '_' );
     const phpNamespace = slug
@@ -41,6 +46,7 @@ export const pluginGenerator = async (
         description,
         phpSafeSlug,
         phpNamespace,
+        wpEnvPort,
     } );
     updateLabeler( tree, slug, WordPressProjectType.Plugin );
     await formatFiles( tree );

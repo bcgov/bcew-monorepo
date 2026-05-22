@@ -6,7 +6,11 @@ import { ThemeGeneratorSchema } from './schema';
 
 describe( 'theme generator', () => {
     let tree: Tree;
-    const options: ThemeGeneratorSchema = { name: 'test' };
+    const options: ThemeGeneratorSchema = {
+        name: 'Test Theme',
+        slug: 'test-theme',
+        parentTheme: 'none',
+    };
 
     beforeEach( () => {
         tree = createTreeWithEmptyWorkspace();
@@ -14,7 +18,7 @@ describe( 'theme generator', () => {
 
     it( 'should run successfully', async () => {
         await themeGenerator( tree, options );
-        const config = readProjectConfiguration( tree, 'test' );
+        const config = readProjectConfiguration( tree, 'test-theme' );
         expect( config ).toBeDefined();
     } );
 } );
