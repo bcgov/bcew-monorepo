@@ -143,42 +143,7 @@ importers:
         specifier: ^1.42.0
         version: 1.42.0(@playwright/test@1.58.2)(@types/node@20.19.9)
 
-  themes/bcew-theme-2:
-    dependencies:
-      '@bcgov/design-tokens':
-        specifier: ^3.0.1
-        version: 3.2.0
-      '@wordpress/icons':
-        specifier: ^11.4.0
-        version: 11.8.0(react@18.3.1)
-    devDependencies:
-      '@bcgov/bc-sans':
-        specifier: ^2.1.0
-        version: 2.1.0
-      '@bcgov/wordpress-eslint':
-        specifier: github:bcgov/wordpress-eslint#semver:1.x
-        version: https://codeload.github.com/bcgov/wordpress-eslint/tar.gz/29d35c91d885da57071ed15678499d0fbff15a7d(eslint@8.57.1)
-      '@bcgov/wordpress-stylelintrc':
-        specifier: github:bcgov/wordpress-stylelintrc#semver:1.x
-        version: https://codeload.github.com/bcgov/wordpress-stylelintrc/tar.gz/34eab0fd3f32296a7705c7f17cbc5bc234fdfbbc(postcss@8.5.12)(stylelint@16.26.1(typescript@5.9.3))
-      '@playwright/test':
-        specifier: ^1.57.0
-        version: 1.58.2
-      '@wordpress/base-styles':
-        specifier: ^5.7.0
-        version: 5.23.0
-      '@wordpress/e2e-test-utils-playwright':
-        specifier: ^1.35.0
-        version: 1.42.0(@playwright/test@1.58.2)(@types/node@20.19.9)
-      '@wordpress/env':
-        specifier: ^10.35.0
-        version: 10.39.0(@types/node@20.19.9)
-      '@wordpress/scripts':
-        specifier: ^31.2.0
-        version: 31.7.0(@playwright/test@1.58.2)(@swc/core@1.15.21(@swc/helpers@0.5.20))(@types/eslint@9.6.1)(@types/node@20.19.9)(@types/webpack@4.41.40)(@wordpress/env@10.39.0(@types/node@20.19.9))(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass-embedded@1.97.3)(stylelint-scss@6.14.0(stylelint@16.26.1(typescript@5.9.3)))(type-fest@4.41.0)(typescript@5.9.3)
-      prettier:
-        specifier: ^3.7.4
-        version: 3.8.3
+  themes/bcew-theme-2: {}
 
   themes/design-system-wordpress-child-theme-belleville-terminal: {}
 
