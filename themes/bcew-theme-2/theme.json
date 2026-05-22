@@ -1,0 +1,472 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/theme.json",
+    "version": 3,
+    "title": "Design System WordPress Theme",
+    "customTemplates": [
+        {
+            "name": "secondary",
+            "title": "Pages Secondary"
+        }
+    ],
+    "templateParts": [
+        {
+            "name": "header",
+            "title": "Header",
+            "area": "header"
+        },
+        {
+            "name": "footer",
+            "title": "footer",
+            "area": "footer"
+        },
+        {
+            "name": "copyright",
+            "title": "Copyright",
+            "area": "footer"
+        },
+        {
+            "name": "footer-info-text",
+            "title": "Footer Info Text",
+            "area": "footer"
+        },
+        {
+            "name": "footer-logo",
+            "title": "Footer Logo",
+            "area": "footer"
+        },
+        {
+            "name": "footer-navigation",
+            "title": "Footer Navigation",
+            "area": "footer"
+        },
+        {
+            "name": "territorial-acknowledgement",
+            "title": "Territorial Acknowledgement",
+            "area": "footer"
+        },
+        {
+            "name": "search-bar",
+            "title": "Search Bar (Core)",
+            "area": "uncategorized"
+        },
+        {
+            "name": "search-bar-with-search-plugin",
+            "title": "Search Bar with Search Plugin",
+            "area": "uncategorized"
+        },
+        {
+            "name": "search-with-search-plugin",
+            "title": "Search with Search Plugin",
+            "area": "uncategorized"
+        },
+        {
+            "name": "search",
+            "title": "Standard Search",
+            "area": "uncategorized"
+        },
+        {
+            "name": "taxonomy-filters",
+            "title": "Search Taxonomy Filters",
+            "area": "uncategorized"
+        }
+    ],
+    "styles": {
+        "blocks": {
+            "core/button": {
+                "variations": {
+                    "outline": {
+                        "color": {
+                            "text": "var(--wp--custom--dswp--typography-color-button-secondary-default)",
+                            "background": "var(--wp--custom--dswp--surface-color-secondary-button-default)"
+                        },
+                        ":hover": {
+                            "color": {
+                                "text": "var(--wp--custom--dswp--typography-color-button-secondary-hover)",
+                                "background": "var(--wp--custom--dswp--surface-color-secondary-button-hover)"
+                            }
+                        },
+                        "border": {
+                            "color": "var(--wp--custom--dswp--surface-color-border-dark)",
+                            "radius": "4px",
+                            "width": "1px"
+                        }
+                    }
+                }
+            },
+            "core/paragraph": {
+                "spacing": {
+                    "margin": {
+                        "top": "0",
+                        "bottom": "0",
+                        "left": "0",
+                        "right": "0"
+                    },
+                    "padding": {
+                        "top": "0",
+                        "bottom": "0",
+                        "left": "0",
+                        "right": "0"
+                    }
+                }
+            },
+            "core/heading": {
+                "spacing": {
+                    "margin": {
+                        "top": "0",
+                        "bottom": "0",
+                        "left": "0",
+                        "right": "0"
+                    },
+                    "padding": {
+                        "top": "0",
+                        "bottom": "0",
+                        "left": "0",
+                        "right": "0"
+                    }
+                }
+            }
+        },
+        "color": {
+            "text": "var(--dswp-typography-color-primary)",
+            "background": "var(--dswp-surface-color-background-white)"
+        },
+        "typography": {
+            "fontFamily": "var(--dswp-typography-font-families-bc-sans), Noto Sans, Verdana, Arial, sans-serif",
+            "fontSize": "var(--dswp-typography-font-size-body)"
+        },
+        "spacing": {
+            "blockGap": "0px",
+            "padding": {
+                "top": "var(--dswp-layout-padding-none)",
+                "right": "var(--dswp-layout-margin-xlarge)",
+                "bottom": "var(--dswp-layout-padding-none)",
+                "left": "var(--dswp-layout-margin-xlarge)"
+            }
+        },
+        "elements": {
+            "heading": {
+                "color": {
+                    "text": "var(--dswp-typography-color-primary)"
+                }
+            },
+            "button": {
+                ":hover": {
+                    "color": {
+                        "background": "var(--wp--custom--dswp--surface-color-primary-button-hover)"
+                    }
+                },
+                "color": {
+                    "text": "var(--wp--custom--dswp--typography-color-button-primary-default)",
+                    "background": "var(--wp--custom--dswp--surface-color-primary-button-default)"
+                },
+                "border": {
+                    "color": "var(--wp--custom--dswp--surface-color-border-dark)",
+                    "radius": "4px",
+                    "width": "1px"
+                },
+                "typography": {
+                    "fontSize": "var(--dswp-typography-font-size-body)"
+                }
+            },
+            "caption": {
+                "color": {
+                    "text": "var(--dswp-typography-color-primary)"
+                }
+            },
+            "link": {
+                "color": {
+                    "text": "var(--dswp-typography-color-link)"
+                }
+            },
+            "h6": {
+                "typography": {
+                    "fontSize": "var(--dswp-typography-font-size-h6)"
+                }
+            },
+            "h5": {
+                "typography": {
+                    "fontSize": "var(--dswp-typography-font-size-h5)"
+                }
+            },
+            "h4": {
+                "typography": {
+                    "fontSize": "var(--dswp-typography-font-size-h4)"
+                }
+            },
+            "h3": {
+                "typography": {
+                    "fontSize": "var(--dswp-typography-font-size-h3)"
+                }
+            },
+            "h2": {
+                "typography": {
+                    "fontSize": "var(--dswp-typography-font-size-h2)"
+                }
+            },
+            "h1": {
+                "typography": {
+                    "fontSize": "var(--dswp-typography-font-size-h1)"
+                }
+            }
+        }
+    },
+    "settings": {
+        "appearanceTools": false,
+        "useRootPaddingAwareAlignments": true,
+        "blocks": {
+            "core/button": {
+                "border": {
+                    "radius": false
+                }
+            },
+            "core/image": {
+                "spacing": {
+                    "margin": false,
+                    "padding": false
+                }
+            }
+        },
+        "layout": {
+            "contentSize": "var(--dswp-layout-content-size)",
+            "wideSize": "var(--dswp-layout-content-size)"
+        },
+        "custom": {
+            "dswp": {
+                "surface":{
+                    "color":{
+                        "border":{
+                            "default": "var(--bcds-surface-color-border-default)"
+                        }
+                    }
+                },
+                "surfaceColorPrimaryButtonDefault": "var(--bcds-surface-color-primary-button-default)",
+                "surfaceColorPrimaryButtonHover": "var(--bcds-surface-color-primary-button-hover)",
+                "surfaceColorSecondaryButtonDefault": "var(--bcds-surface-color-secondary-button-default)",
+                "surfaceColorSecondaryButtonHover": "var(--bcds-surface-color-secondary-button-hover)",
+                "surfaceColorMenusDefault": "var(--bcds-surface-color-menus-default)",
+                "surfaceColorMenusHover": "var(--bcds-surface-color-menus-hover)",
+                "surfaceColorPrimaryDefault": "var(--bcds-surface-color-primary-default)",
+                "surfaceColorSecondaryDefault": "var(--bcds-surface-color-secondary-default)",
+                "surfaceColorBackgroundPrimary": "var(--bcds-surface-color-background-light-gray)",
+                "surfaceColorBackgroundSecondary": "var(--bcds-surface-color-background-light-blue)",
+                "surfaceColorBackgroundTeritiary": "var(--bcds-surface-color-background-white)",
+                "surfaceColorBackgroundDark": "var(--bcds-surface-color-background-dark-blue)",
+                "surfaceColorBorderMedium": "var(--bcds-surface-color-border-medium)",
+                "surfaceColorBorderDark": "var(--bcds-surface-color-border-dark)",
+                "surfaceColorOverlayDefault": "var(--bcds-surface-color-overlay-default)",
+                "typographyColorPrimary": "var(--bcds-typography-color-primary)",
+                "typographyColorSecondary": "var(--bcds-typography-color-secondary)",
+                "typographyColorDisabled": "var(--bcds-typography-color-disabled)",
+                "typographyColorLinkDefault": "var(--bcds-typography-color-link)",
+                "typographyColorLinkHover": "var(--bcds-theme-blue-80)",
+                "typographyColorLinkPressed": "var(--bcds-theme-blue-100)",
+                "typographyColorButtonPrimaryDefault": "var(--bcds-typography-color-primary-invert)",
+                "typographyColorButtonPrimaryHover": "var(--bcds-typography-color-primary-invert)",
+                "typographyColorButtonPrimaryPressed": "var(--bcds-typography-color-primary-invert)",
+                "typographyColorButtonSecondaryDefault": "var(--bcds-surface-color-primary-default)",
+                "typographyColorButtonSecondaryHover": "var(--bcds-surface-color-primary-hover)",
+                "typographyColorButtonSecondaryPressed": "var(--bcds-surface-color-primary-pressed)"
+            }
+        },
+        "shadow": {
+            "defaultPresets": false,
+            "presets": []
+        },
+        "border": {
+            "radius": false
+        },
+        "typography": {
+            "customFontFamily": false,
+            "defaultFontFamilies": false,
+            "customFontSize": false,
+            "defaultFontSizes": false,
+            "dropCap": false,
+            "lineHeight": false,
+            "letterSpacing": false,
+            "fontStyle": false,
+            "fontWeight": false,
+            "textTransform": false,
+            "textDecoration": false,
+            "writingMode": false,
+            "fontFamilies": [
+                {
+                    "fontFamily": "var(--dswp-typography-font-families-bc-sans), Noto Sans, Verdana, Arial, sans-serif",
+                    "name": "BC Sans",
+                    "slug": "bcsans"
+                }
+            ],
+            "fontSizes": [
+                {
+                    "slug": "bcds-h6",
+                    "size": "var(--dswp-typography-font-size-h6)",
+                    "name": "H6"
+                },
+                {
+                    "slug": "bcds-h5",
+                    "size": "var(--dswp-typography-font-size-h5)",
+                    "name": "H5"
+                },
+                {
+                    "slug": "bcds-h4",
+                    "size": "var(--dswp-typography-font-size-h4)",
+                    "name": "H4"
+                },
+                {
+                    "slug": "bcds-h3",
+                    "size": "var(--dswp-typography-font-size-h3)",
+                    "name": "H3"
+                },
+                {
+                    "slug": "bcds-h2",
+                    "size": "var(--dswp-typography-font-size-h2)",
+                    "name": "H2"
+                },
+                {
+                    "slug": "bcds-h1",
+                    "size": "var(--dswp-typography-font-size-h1)",
+                    "name": "H1"
+                },
+                {
+                    "slug": "bcds-label",
+                    "size": "var(--dswp-typography-font-size-label)",
+                    "name": "Label"
+                },
+                {
+                    "slug": "bcds-small-body",
+                    "size": "var(--dswp-typography-font-size-small-body)",
+                    "name": "Small Body"
+                },
+                {
+                    "slug": "bcds-body",
+                    "size": "var(--dswp-typography-font-size-body)",
+                    "name": "Body"
+                },
+                {
+                    "slug": "bcds-large-body",
+                    "size": "var(--dswp-typography-font-size-large-body)",
+                    "name": "Large Body"
+                },
+                {
+                    "slug": "bcds-display",
+                    "size": "var(--dswp-typography-font-size-display)",
+                    "name": "Display"
+                }
+            ]
+        },
+        "spacing": {
+            "blockGap": true,
+            "margin": false,
+            "padding": false
+        },
+        "color": {
+            "background": false,
+            "text": false,
+            "link": false,
+            "gradients": [],
+            "duotone": [],
+            "custom": false,
+            "customGradient": false,
+            "customDuotone": false,
+            "defaultDuotone": false,
+            "defaultGradients": false,
+            "defaultPalette": false,
+            "palette": [
+                {
+                    "slug": "bar-color",
+                    "color": "var(--dswp-surface-color-border-default)",
+                    "name": "Bar Color"
+                },
+                {
+                    "slug": "typography-color-primary",
+                    "color": "var(--dswp-theme-primary-blue)",
+                    "name": "Typography Color Primary"
+                },
+                {
+                    "slug": "typography-color-secondary",
+                    "color": "var(--dswp-typography-color-secondary)",
+                    "name": "Typography Color Secondary"
+                },
+                {
+                    "slug": "primary-color",
+                    "color": "var(--dswp-theme-primary-blue:)",
+                    "name": "Primary Color"
+                },
+                {
+                    "slug": "primary-color-footer",
+                    "color": "var(--dswp-footer-color-primary)",
+                    "name": "Footer Color Primary "
+                },
+                {
+                    "slug": "secondary-color-footer",
+                    "color": "var(--dswp-footer-color-secondary)",
+                    "name": "Footer Color Secondary"
+                },
+                {
+                    "slug": "tertiary",
+                    "color": "var(--dswp-tertiary-color)",
+                    "name": "Tertiary"
+                },
+                {
+                    "slug": "accent-primary",
+                    "color": "var(--dswp-theme-primary-gold)",
+                    "name": "Accent Primary"
+                },
+                {
+                    "slug": "bcgov-gold-accent",
+                    "color": "var(--dswp-theme-primary-gold)",
+                    "name": "BCGov Gold Accent"
+                },
+                {
+                    "slug": "banner-background-dark",
+                    "color": "var(--dswp-banner-background-dark)",
+                    "name": "Banner background dark"
+                },
+                {
+                    "slug": "typography-primary-color",
+                    "color": "var(--dswp-theme-primary-blue)",
+                    "name": "Primary color"
+                },
+                {
+                    "slug": "background-light-gray",
+                    "color": "var(--dswp-surface-color-background-light-gray)",
+                    "name": "Background light gray"
+                },
+                {
+                    "slug": "border-default",
+                    "color": "var(--dswp-surface-color-border-default)",
+                    "name": "Border default"
+                },
+                {
+                    "slug": "background-light-gray-blue",
+                    "color": "var(--dswp-surface-color-background-light-gray-blue)",
+                    "name": "Background Light Gray Blue"
+                },
+                {
+                    "slug": "background-white",
+                    "color": "var(--dswp-surface-color-background-white)",
+                    "name": "Background White"
+                },
+                {
+                    "slug": "font dark",
+                    "color": "var(--dswp-font-dark)",
+                    "name": "Font Dark"
+                },
+                {
+                    "slug": "border-dark",
+                    "color": "var(--dswp-theme-gray-110)",
+                    "name": "Border Dark"
+                },
+                {
+                    "slug": "background-medium-gray",
+                    "color": "var(--bcds-theme-gray-70)",
+                    "name": "Background medium gray"
+                },
+                {
+                    "slug": "background-dark-blue",
+                    "color": "var(--dswp-surface-color-background-dark-blue)",
+                    "name": "Background dark blue"
+                }                
+            ]
+        }
+    }
+}
