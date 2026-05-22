@@ -1,0 +1,24 @@
+{
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "name": "bcew-theme-2",
+    "root": "themes/bcew-theme-2",
+    "sourceRoot": "themes/bcew-theme-2/src",
+    "projectType": "application",
+    "generators": {
+        "wordpress-monorepo:theme": {
+            "name": "BCEW Theme 2",
+            "slug": "bcew-theme-2"
+        }
+    },
+    "targets": {
+        "composer-install": {},
+        "build": {},
+        "start": {},
+        "test-screenshot": {},
+        "wp-env-start": {},
+        "wp-env-clean": {},
+        "wp-env-stop": {}
+    },
+    "implicitDependencies": ["packages/phpunit-config/"],
+    "tags": ["type:wp-theme"]
+}

@@ -25,3 +25,7 @@ plugins/bcgov-wordpress-blocks:
 themes/child-theme-ticorp:
     - changed-files:
           - any-glob-to-any-file: 'themes/design-system-wordpress-child-theme-ticorp/**'
+
+themes/bcew-theme-2:
+    - changed-files:
+          - any-glob-to-any-file: 'themes/bcew-theme-2/**'
