@@ -55,11 +55,11 @@
     "typescript": "~5.9.3"
   },
   "devDependencies": {
+    "@nx/playwright": "22.5.0",
     "chokidar-cli": "^3.0.0",
     "concurrently": "^9.2.1",
-    "vitepress": "2.0.0-alpha.17",
     "nx": "22.5.0",
-    "@nx/playwright": "22.5.0"
+    "vitepress": "2.0.0-alpha.17"
   },
   "scripts": {
     "composer-install": "npx nx run-many -t composer-install",
