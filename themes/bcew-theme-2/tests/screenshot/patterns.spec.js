@@ -1,40 +1,13 @@
-import { test } from '@wordpress/e2e-test-utils-playwright';
+import { test, expect } from '@wordpress/e2e-test-utils-playwright';
 
 test.describe('pattern', () => {
-    // TODO: Run e2e tests in Playwright Docker container for consistency.
     test.beforeEach(async ({ admin }) => {
         // Create a new post before each test
         await admin.createNewPost();
     });
 
-    [
-        { name: 'bc-gov-logo-light' },
-        { name: 'dswp-bullet-list' },
-        { name: 'dswp-call-to-action' },
-        { name: 'dswp-card-with-hyperlinks-list' },
-        { name: 'dswp-default-heading' },
-        { name: 'dswp-footer-with-territorial-acknowledgement' },
-        { name: 'dswp-h1-with-divider' },
-        { name: 'dswp-heading-with-paragraphs' },
-        { name: 'dswp-hero-image-with-title' },
-        { name: 'dswp-horizontal-card' },
-        { name: 'dswp-horizontal-card-large-img-left' },
-        { name: 'dswp-horizontal-card-large-img-no-shadow' },
-        { name: 'dswp-horizontal-card-large-img-right' },
-        { name: 'dswp-horizontal-card-reversed' },
-        { name: 'dswp-icon-with-excerpt' },
-        { name: 'dswp-image-text-flipped' },
-        { name: 'dswp-image-text' },
-        { name: 'dswp-information-contact-socials' },
-        { name: 'dswp-link-with-arrow' },
-        { name: 'dswp-post-pattern-horizontal-card-large-img-right' },
-        { name: 'dswp-secondary-hero-image-with-title' },
-        { name: 'dswp-team-pattern' },
-        { name: 'dswp-vertical-cards-with-icon' },
-        { name: 'dswp-vertical-cards' },
-    ].forEach(({ name }) => {
+    [{ name: 'sample' }].forEach(({ name }) => {
         test(name, async ({ editor }) => {
-            // TODO: There's probably a faster way to add a pattern than this.
             await editor.page
                 .getByRole('button', { name: 'Options', exact: true })
                 .click();
@@ -43,38 +16,14 @@ test.describe('pattern', () => {
                 .click();
             await editor.page
                 .getByRole('textbox', { name: 'Type text or HTML' })
-                .fill(
-                    `<!-- wp:pattern {"slug":"design-system-wordpress-theme/${name}"} /-->`
-                );
+                .fill(`<!-- wp:pattern {"slug":"bcew-theme-2/${name}"} /-->`);
             await editor.page
                 .getByRole('button', { name: 'Exit code editor' })
                 .click();
-
-            // Capture editor canvas (inside editor iframe)
-            await editor.page.waitForSelector('iframe[name="editor-canvas"]');
-            const frame = editor.page.frameLocator(
-                'iframe[name="editor-canvas"]'
-            );
-            const canvas = frame.locator('.editor-styles-wrapper');
-            await canvas.waitFor();
-            await canvas.screenshot({
-                animations: 'disabled',
-                path:
-                    'tests/screenshot/__snapshots__/pattern-' +
-                    name +
-                    '-editor.png',
-            });
-
-            // Capture frontend content.
-            const previewPage = await editor.openPreviewPage();
-            const preview = previewPage.locator('.entry-content').first();
-            await preview.screenshot({
-                animations: 'disabled',
-                path:
-                    'tests/screenshot/__snapshots__/pattern-' +
-                    name +
-                    '-frontend.png',
-            });
+            const preview = (await editor.openPreviewPage())
+                .locator('.entry-content')
+                .first();
+            await expect(preview).toHaveScreenshot();
         });
     });
 });

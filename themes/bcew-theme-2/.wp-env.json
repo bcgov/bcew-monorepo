@@ -1,8 +1,10 @@
 {
-    "core": "WordPress/WordPress#6.8",
+    "core": "WordPress/WordPress#6.7.2",
     "phpVersion": "7.4",
-    "themes": [ "." ],
+    "themes": ["."],
+    "port": 9008,
+    "testsPort": 9009,
     "lifecycleScripts": {
-        "afterStart": "wp-env run tests-cli wp theme activate design-system-wordpress-theme"
+        "afterStart": "wp-env run tests-cli wp theme activate bcew-theme-2"
     }
 }
