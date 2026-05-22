@@ -24,6 +24,10 @@ export const themeGenerator = async (
         .split( '-' )
         .map( ( part ) => part.charAt( 0 ).toUpperCase() + part.slice( 1 ) )
         .join( '' );
+    const phpPackage = options.slug
+        .split( '-' )
+        .map( ( part ) => part.charAt( 0 ).toUpperCase() + part.slice( 1 ) )
+        .join( '_' );
 
     addProjectConfiguration( tree, options.slug, {
         root: projectRoot,
@@ -34,6 +38,7 @@ export const themeGenerator = async (
     generateFiles( tree, path.join( __dirname, 'files' ), projectRoot, {
         ...options,
         phpNamespace,
+        phpPackage,
     } );
     updateLabeler( tree, options.slug );
     await formatFiles( tree );
