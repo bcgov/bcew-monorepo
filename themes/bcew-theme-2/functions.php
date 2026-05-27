@@ -6,6 +6,15 @@
  */
 
 /**
+ * Disables the default patterns from WordPress.
+ */
+function design_system_disable_default_block_patterns() {
+    remove_theme_support( 'core-block-patterns' );
+}
+add_action( 'init', 'design_system_disable_default_block_patterns' );
+
+
+/**
  * Load Composer autoloader and verify required class exists.
  * If the autoloader or the required class is missing, halt plugin execution.
  */

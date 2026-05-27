@@ -3,6 +3,10 @@
     "description": "BCEW Theme 2",
     "type": "wordpress-theme",
     "license": "Apache-2.0",
+    "scripts": {
+        "lint-php": "../../vendor/bin/phpcs --standard=../../phpcs.xml -ps .",
+        "fix-php": "../../vendor/bin/phpcbf --standard=../../phpcs.xml -ps ."
+    },
     "autoload": {
         "psr-4": {
             "Bcgov\\BcewTheme2\\": "src/",
