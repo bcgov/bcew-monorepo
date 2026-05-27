@@ -15,6 +15,7 @@
         "build": {},
         "start": {},
         "test-screenshot": {},
+        "test-screenshot-generate": {},
         "wp-env-start": {},
         "wp-env-clean": {},
         "wp-env-stop": {}
