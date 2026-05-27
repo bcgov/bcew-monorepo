@@ -3,6 +3,7 @@ packages:
   - 'plugins/*'
   - 'packages/*'
   - 'tools/*'
+minimumReleaseAge: 1440
 allowBuilds:
   '@parcel/watcher': false
   '@swc/core': false
