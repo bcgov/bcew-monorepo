@@ -45,3 +45,14 @@ function extended_web_enable_appearance_tools_for_super_admins( $theme_json ) {
     );
 }
 add_filter( 'wp_theme_json_data_theme', 'extended_web_enable_appearance_tools_for_super_admins', 20 );
+
+/**
+ * Restrict access to the locking UI to Administrators.
+ *
+ * @param array $settings Default editor settings.
+ */
+function design_system_restrict_locking_unlocking_blocks( $settings ) {
+    $settings['canLockBlocks'] = current_user_can( 'activate_plugins' );
+    return $settings;
+}
+add_filter( 'block_editor_settings_all', 'design_system_restrict_locking_unlocking_blocks', 10, 2 );
