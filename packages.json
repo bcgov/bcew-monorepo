@@ -1,0 +1,29 @@
+{
+    "packages": {
+        "bcgov-plugin/bcgov-wordpress-blocks": {
+            "99.99.98": {
+                "name": "bcgov-plugin/bcgov-wordpress-blocks",
+                "description": "Plugin containing blocks intended to be used with the Design System WordPress Theme suite of products.",
+                "type": "wordpress-plugin",
+                "license": "Apache-2.0",
+                "autoload": {
+                    "psr-4": {
+                        "Bcgov\\BcgovWordpressBlocks\\": "src/",
+                        "Bcgov\\BcgovWordpressBlocks\\Test\\": "tests/php/"
+                    }
+                },
+                "version": "99.99.98",
+                "dist": {
+                    "url": "https://github.com/bcgov/wordpress-monorepo/releases/download/bcgov-wordpress-blocks/v99.99.98/dist.zip",
+                    "type": "zip",
+                    "reference": "bcgov-wordpress-blocks/v99.99.98"
+                },
+                "source": {
+                    "type": "git",
+                    "url": "https://github.com/bcgov/wordpress-monorepo.git",
+                    "reference": "bcgov-wordpress-blocks/v99.99.98"
+                }
+            }
+        }
+    }
+}
