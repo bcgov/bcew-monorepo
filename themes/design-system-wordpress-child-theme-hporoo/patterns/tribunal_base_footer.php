@@ -7,9 +7,9 @@
  * @package Design-System-WordPress-Theme
  */
 
-$phone_icon = esc_url(get_stylesheet_directory_uri() . '/assets/images/phone-solid-full.svg');
-$email_icon = esc_url(get_stylesheet_directory_uri() . '/assets/images/envelope-open-solid-full.svg');
-$mail_icon = esc_url(get_stylesheet_directory_uri() . '/assets/images/building-solid-full.svg');
+$phone_icon = esc_url( get_stylesheet_directory_uri() . '/assets/images/phone-solid-full.svg' );
+$email_icon = esc_url( get_stylesheet_directory_uri() . '/assets/images/envelope-open-solid-full.svg' );
+$mail_icon  = esc_url( get_stylesheet_directory_uri() . '/assets/images/building-solid-full.svg' );
 ?>
 
 <!-- wp:group {"style":{"spacing":{"padding":{"right":"var:preset|spacing|40","left":"var:preset|spacing|40"},"margin":{"bottom":"var:preset|spacing|60"}}},"layout":{"type":"constrained"}} -->
@@ -50,7 +50,7 @@ $mail_icon = esc_url(get_stylesheet_directory_uri() . '/assets/images/building-s
                                     <!-- wp:image {"width":"16px","linkDestination":"none","className":"dswp-information-contact-socials-card-img is-style-default"} -->
                                     <figure
                                         class="wp-block-image is-resized dswp-information-contact-socials-card-img is-style-default">
-                                        <img src="<?php echo $email_icon; ?>" alt="Email" style="width:16px" />
+                                        <img src="<?php echo esc_attr( $email_icon ); ?>" alt="Email" style="width:16px" />
                                     </figure>
                                     <!-- /wp:image -->
                                 </div>
@@ -90,7 +90,7 @@ $mail_icon = esc_url(get_stylesheet_directory_uri() . '/assets/images/building-s
                                 <div class="wp-block-group dswp-information-contact-socials-card-img-group">
                                     <!-- wp:image {"width":"16px","linkDestination":"none","className":"dswp-information-contact-socials-card-img"} -->
                                     <figure class="wp-block-image is-resized dswp-information-contact-socials-card-img">
-                                        <img src="<?php echo $phone_icon; ?>" alt="Phone" style="width:16px" /></figure>
+                                        <img src="<?php echo esc_attr( $phone_icon ); ?>" alt="Phone" style="width:16px" /></figure>
                                     <!-- /wp:image -->
                                 </div>
                                 <!-- /wp:group -->
@@ -120,7 +120,7 @@ $mail_icon = esc_url(get_stylesheet_directory_uri() . '/assets/images/building-s
                                 <div class="wp-block-group dswp-information-contact-socials-card-img-group">
                                     <!-- wp:image {"width":"16px","linkDestination":"none","className":"dswp-information-contact-socials-card-img"} -->
                                     <figure class="wp-block-image is-resized dswp-information-contact-socials-card-img">
-                                        <img src="<?php echo $phone_icon; ?>" alt="Phone" style="width:16px" /></figure>
+                                        <img src="<?php echo esc_attr( $phone_icon ); ?>" alt="Phone" style="width:16px" /></figure>
                                     <!-- /wp:image -->
                                 </div>
                                 <!-- /wp:group -->
@@ -159,7 +159,7 @@ $mail_icon = esc_url(get_stylesheet_directory_uri() . '/assets/images/building-s
                                 <div class="wp-block-group dswp-information-contact-socials-card-img-group">
                                     <!-- wp:image {"width":"16px","linkDestination":"none","className":"dswp-information-contact-socials-card-img"} -->
                                     <figure class="wp-block-image is-resized dswp-information-contact-socials-card-img">
-                                        <img src="<?php echo $mail_icon; ?>" alt="Address" style="width:16px" />
+                                        <img src="<?php echo esc_attr( $mail_icon ); ?>" alt="Address" style="width:16px" />
                                     </figure>
                                     <!-- /wp:image -->
                                 </div>

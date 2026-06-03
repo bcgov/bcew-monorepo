@@ -17,6 +17,7 @@ coverage
 .vscode/**
 ./
 artifacts
+.github/copilot-instructions.md
 
 # documentation
 documentation/docs/.vuepress/.temp
