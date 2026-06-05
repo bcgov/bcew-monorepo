@@ -49,7 +49,7 @@
     "exports": {
         "./package.json": "./package.json",
         ".": {
-            "bcgov-wordpress-monorepo": "./src/index.ts",
+            "bcgov-bcew-monorepo": "./src/index.ts",
             "types": "./dist/index.d.ts",
             "import": "./dist/index.js",
             "default": "./dist/index.js"

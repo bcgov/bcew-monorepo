@@ -36,7 +36,7 @@
             "options": {
                 "command": "wp-env run tests-cli composer run test",
                 "cwd": "{projectRoot}",
-                "configuration": "vendor/wordpress-monorepo/phpunit-config/phpunit.integration.xml"
+                "configuration": "vendor/bcew-monorepo/phpunit-config/phpunit.integration.xml"
             },
             "dependsOn": ["composer-install", "wp-env-start"]
         },

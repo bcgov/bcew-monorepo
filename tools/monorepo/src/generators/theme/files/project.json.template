@@ -5,7 +5,7 @@
     "sourceRoot": "themes/<%= slug %>/src",
     "projectType": "application",
     "generators": {
-        "wordpress-monorepo:theme": {
+        "bcew-monorepo:theme": {
             "name": "<%= name %>",
             "slug": "<%= slug %>"
         }

@@ -5,7 +5,7 @@
     "sourceRoot": "plugins/bcgov-wordpress-blocks/src",
     "projectType": "application",
     "generators": {
-        "wordpress-monorepo:plugin": {
+        "bcew-monorepo:plugin": {
             "name": "Bcgov WordPress Blocks",
             "description": "Plugin containing blocks intended to be used with the Design System WordPress Theme suite of products."
         }

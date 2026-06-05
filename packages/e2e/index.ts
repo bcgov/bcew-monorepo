@@ -1,5 +1,5 @@
 /**
- * Shared Playwright test utilities for the WordPress monorepo.
+ * Shared Playwright test utilities for the BCEW monorepo.
  *
  * Common helpers for e2e tests across themes and plugins.
  */

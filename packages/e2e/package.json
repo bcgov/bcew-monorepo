@@ -1,5 +1,5 @@
 {
-    "name": "@wordpress-monorepo/e2e",
+    "name": "@bcew-monorepo/e2e",
     "version": "1.0.0",
     "private": true,
     "description": "Utilities for writing e2e tests for WordPress plugins and themes",

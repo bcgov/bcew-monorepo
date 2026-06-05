@@ -1,5 +1,5 @@
 {
-    "name": "bcgov/wordpress-monorepo",
+    "name": "bcgov/bcew-monorepo",
     "description": "A monorepo for BC government WordPress plugins and themes",
     "license": "Apache-2.0",
     "scripts": {

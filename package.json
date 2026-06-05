@@ -1,8 +1,8 @@
 {
-    "name": "bcgov-wordpress-monorepo",
+    "name": "bcgov-bcew-monorepo",
     "version": "0.0.1",
     "private": true,
-    "description": "BC Government WordPress themes and plugins monorepo",
+    "description": "A monorepo for BC government WordPress plugins and themes",
     "author": "govwordpress@gov.bc.ca",
     "license": "GPL-2.0-or-later",
     "keywords": [
@@ -12,12 +12,12 @@
         "plugins",
         "themes"
     ],
-    "homepage": "https://github.com/bcgov/wordpress-monorepo",
+    "homepage": "https://github.com/bcgov/bcew-monorepo",
     "repository": {
         "type": "git",
-        "url": "https://github.com/bcgov/wordpress-monorepo"
+        "url": "https://github.com/bcgov/bcew-monorepo"
     },
-    "bugs": "https://github.com/bcgov/wordpress-monorepo/issues",
+    "bugs": "https://github.com/bcgov/bcew-monorepo/issues",
     "engines": {
         "node": "^24.12.0"
     },
@@ -37,7 +37,7 @@
         "@swc/helpers": "~0.5.20",
         "@types/jest": "^30.0.0",
         "@types/node": "20.19.9",
-        "@wordpress-monorepo/e2e": "workspace:*",
+        "@bcew-monorepo/e2e": "workspace:*",
         "@wordpress/block-editor": "15.17.0",
         "@wordpress/blocks": "15.17.0",
         "@wordpress/e2e-test-utils-playwright": "^1.42.0",

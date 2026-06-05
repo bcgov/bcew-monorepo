@@ -12,7 +12,7 @@
         "Gutenberg",
         "plugin"
     ],
-    "homepage": "https://github.com/bcgov/wordpress-monorepo",
+    "homepage": "https://github.com/bcgov/bcew-monorepo",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/bcgov/bcgov-wordpress-blocks.git"
@@ -32,7 +32,7 @@
     },
     "devDependencies": {
         "@playwright/test": "^1.58.2",
-        "@wordpress-monorepo/e2e": "workspace:*",
+        "@bcew-monorepo/e2e": "workspace:*",
         "@wordpress/e2e-test-utils-playwright": "^1.42.0"
     }
 }

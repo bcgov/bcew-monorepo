@@ -2368,7 +2368,7 @@
             "time": "2025-11-17T20:03:58+00:00"
         },
         {
-            "name": "wordpress-monorepo/phpunit-config",
+            "name": "bcew-monorepo/phpunit-config",
             "version": "dev-main",
             "dist": {
                 "type": "path",
@@ -2457,7 +2457,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "wordpress-monorepo/phpunit-config": 20
+        "bcew-monorepo/phpunit-config": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

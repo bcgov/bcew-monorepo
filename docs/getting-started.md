@@ -12,8 +12,8 @@ Run the commands below from the **monorepo root** (the directory that contains `
 ## Clone and install
 
 ```bash
-git clone https://github.com/bcgov/wordpress-monorepo.git
-cd wordpress-monorepo
+git clone https://github.com/bcgov/bcew-monorepo.git
+cd bcew-monorepo
 
 pnpm install
 composer install

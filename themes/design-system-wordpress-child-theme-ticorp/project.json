@@ -5,7 +5,7 @@
     "sourceRoot": "themes/design-system-wordpress-child-theme-ticorp/src",
     "projectType": "application",
     "generators": {
-        "wordpress-monorepo:theme": {
+        "bcew-monorepo:theme": {
             "name": "Design System Wordpress Child Theme TI-Corp",
             "slug": "design-system-wordpress-child-theme-ticorp"
         }

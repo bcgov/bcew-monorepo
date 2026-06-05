@@ -12,8 +12,8 @@ Use this checklist to confirm the documentation and repo are sufficient for a ne
 ## Clone and install
 
 ```bash
-git clone https://github.com/bcgov/wordpress-monorepo.git
-cd wordpress-monorepo
+git clone https://github.com/bcgov/bcew-monorepo.git
+cd bcew-monorepo
 pnpm install
 composer install
 pnpm composer-install

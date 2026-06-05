@@ -4,7 +4,7 @@ The monorepo publishes a **single static documentation site** built with [VitePr
 
 ## URLs
 
-- **Published site:** [https://bcgov.github.io/wordpress-monorepo/docs/](https://bcgov.github.io/wordpress-monorepo/docs/) (base path `/wordpress-monorepo/` on GitHub Pages)
+- **Published site:** [https://bcgov.github.io/bcew-monorepo/docs/](https://bcgov.github.io/bcew-monorepo/docs/) (base path `/bcew-monorepo/` on GitHub Pages)
 - **Source:** `docs/` at the monorepo root, plus synced content under `docs/content/` (generated)
 
 ## Local development
@@ -20,6 +20,6 @@ This runs `docs:sync` once, then watches package docs and rebuilds the site. See
 
 ## Deployment
 
-The workflow [`.github/workflows/deploy-docs.yml`](https://github.com/bcgov/wordpress-monorepo/blob/main/.github/workflows/deploy-docs.yml) builds the site on pushes to `main` (when docs-related paths change) and deploys the output to the `docs/` folder on the `gh-pages` branch for GitHub Pages.
+The workflow [`.github/workflows/deploy-docs.yml`](https://github.com/bcgov/bcew-monorepo/blob/main/.github/workflows/deploy-docs.yml) builds the site on pushes to `main` (when docs-related paths change) and deploys the output to the `docs/` folder on the `gh-pages` branch for GitHub Pages.
 
 **Ownership:** Contributors who change workflows or docs layout should confirm Pages settings and branch protection with repository administrators.

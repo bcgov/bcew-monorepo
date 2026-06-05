@@ -64,7 +64,7 @@ const monorepoGuideItems = [
 
 export default defineConfig({
   base: process.env.DOCS_BASE ?? '/',
-  title: 'WordPress Monorepo Docs',
+  title: 'BCEW Monorepo Docs',
   description: 'Shared docs for themes, plugins, and monorepo workflows',
   srcExclude: ['**/README.md'],
   cleanUrls: true,
@@ -86,7 +86,7 @@ export default defineConfig({
       provider: 'local'
     },
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/bcgov/wordpress-monorepo' }
+      { icon: 'github', link: 'https://github.com/bcgov/bcew-monorepo' }
     ]
   }
 });

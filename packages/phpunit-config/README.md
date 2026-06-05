@@ -23,6 +23,6 @@ And:
 
 ```json
     "require-dev": {
-        "wordpress-monorepo/phpunit-config": "dev-main",
+        "bcew-monorepo/phpunit-config": "dev-main",
     }
 ```

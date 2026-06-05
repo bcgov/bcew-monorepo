@@ -16,7 +16,7 @@
         "skipLibCheck": true,
         "strict": true,
         "target": "es2022",
-        "customConditions": [ "bcgov-wordpress-monorepo" ],
+        "customConditions": [ "bcgov-bcew-monorepo" ],
         "types": ["@playwright/test", "node"]
     },
     "include": ["**/tests/**/*", "e2e-test-utils"]

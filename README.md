@@ -1,4 +1,4 @@
-# WordPress Monorepo
+# BCEW Monorepo
 
 This repository contains WordPress themes and plugins managed in a single Git monorepo. Goals include **shared tooling**, **consistent standards**, **maintainability**, and **preserved history** when importing legacy projects.
 
@@ -6,7 +6,7 @@ This repository contains WordPress themes and plugins managed in a single Git mo
 
 **Primary documentation (onboarding, architecture, CI/CD, releases, versioning):**
 
-[https://bcgov.github.io/wordpress-monorepo/docs/](https://bcgov.github.io/wordpress-monorepo/docs/)
+[https://bcgov.github.io/bcew-monorepo/docs/](https://bcgov.github.io/bcew-monorepo/docs/)
 
 The site is built from the `docs/` folder with **VitePress** (see [Documentation site](docs/documentation-site.md)). Package-level docs live under `plugins/<slug>/docs/` and `themes/<slug>/docs/` and are synced into the site before build.
 
@@ -15,8 +15,8 @@ The site is built from the `docs/` folder with **VitePress** (see [Documentation
 **Requirements:** Node.js (see `engines` in `package.json`), pnpm, PHP, Composer, Docker (for `wp-env`).
 
 ```bash
-git clone https://github.com/bcgov/wordpress-monorepo.git
-cd wordpress-monorepo
+git clone https://github.com/bcgov/bcew-monorepo.git
+cd bcew-monorepo
 pnpm install
 composer install
 pnpm composer-install
@@ -45,7 +45,7 @@ Root `package.json` defines monorepo-wide commands. Common examples:
 | `pnpm wp-env-stop` | `wp-env stop` via Nx for applicable projects |
 | `pnpm wp-env-clean` | `wp-env clean` via Nx for applicable projects |
 
-Full tables and target semantics live in the **[docs site](https://bcgov.github.io/wordpress-monorepo/docs/)** (architecture, shared tooling, CI/CD).
+Full tables and target semantics live in the **[docs site](https://bcgov.github.io/bcew-monorepo/docs/)** (architecture, shared tooling, CI/CD).
 
 ---
 

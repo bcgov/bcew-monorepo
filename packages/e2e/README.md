@@ -8,14 +8,14 @@ In the plugin or theme `package.json`:
 
 ```json
   "devDependencies": {
-    "@wordpress-monorepo/e2e": "workspace:*",
+    "@bcew-monorepo/e2e": "workspace:*",
   },
 ```
 
 Then in a JS file:
 
 ```js
-import { PageHelpers } from '@wordpress-monorepo/e2e';
+import { PageHelpers } from '@bcew-monorepo/e2e';
 
 const helpers = new PageHelpers();
 ```

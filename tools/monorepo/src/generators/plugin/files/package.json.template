@@ -2,7 +2,7 @@
     "name": "<%= slug %>",
     "version": "1.0.0",
     "description": "<%= description %>",
-    "author": "The WordPress Contributors",
+    "author": "govwordpress@gov.bc.ca",
     "license": "GPL-2.0-or-later",
     "keywords": [
         "WordPress",
@@ -12,7 +12,7 @@
         "Gutenberg",
         "plugin"
     ],
-    "homepage": "https://github.com/bcgov/wordpress-monorepo",
+    "homepage": "https://github.com/bcgov/bcew-monorepo",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/bcgov/<%= slug %>.git"

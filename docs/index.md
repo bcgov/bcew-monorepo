@@ -1,12 +1,12 @@
-# WordPress Monorepo Documentation
+# BCEW Monorepo Documentation
 
-Welcome to the documentation portal for the BC Government WordPress monorepo: themes, plugins, shared packages, and automation.
+Welcome to the documentation portal for the BC Government BCEW monorepo: themes, plugins, shared packages, and automation.
 
 ## Published site
 
 The latest version of this documentation is published to GitHub Pages:
 
-**[https://bcgov.github.io/wordpress-monorepo/](https://bcgov.github.io/wordpress-monorepo/)**
+**[https://bcgov.github.io/bcew-monorepo/](https://bcgov.github.io/bcew-monorepo/)**
 
 ## Start here
 

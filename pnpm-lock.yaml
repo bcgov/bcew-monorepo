@@ -38,7 +38,7 @@ importers:
       '@types/node':
         specifier: 20.19.9
         version: 20.19.9
-      '@wordpress-monorepo/e2e':
+      '@bcew-monorepo/e2e':
         specifier: workspace:*
         version: link:packages/e2e
       '@wordpress/block-editor':
@@ -133,7 +133,7 @@ importers:
       '@playwright/test':
         specifier: ^1.58.2
         version: 1.58.2
-      '@wordpress-monorepo/e2e':
+      '@bcew-monorepo/e2e':
         specifier: workspace:*
         version: link:../../packages/e2e
       '@wordpress/e2e-test-utils-playwright':

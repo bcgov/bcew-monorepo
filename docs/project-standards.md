@@ -17,7 +17,7 @@ A **valid** monorepo package in this repository is a workspace member that Nx ca
    - Path repositories to monorepo packages (for example `packages/phpunit-config`) must be explicit where needed.
 
 4. **Targets and scripts**
-   Implement the targets your project needs, aligned with [`nx.json` defaults](https://github.com/bcgov/wordpress-monorepo/blob/main/nx.json):
+   Implement the targets your project needs, aligned with [`nx.json` defaults](https://github.com/bcgov/bcew-monorepo/blob/main/nx.json):
 
    | Target | Typical use |
    | --- | --- |
@@ -50,8 +50,8 @@ Scaffold new work with the internal Nx plugin:
 - **Plugin:** `npx nx generate monorepo:plugin` then `pnpm install`
 - **Block in existing plugin:** `npx nx generate monorepo:block <plugin> <block-name>`
 
-See the [monorepo README](https://github.com/bcgov/wordpress-monorepo/blob/main/tools/monorepo/README.md) for details.
+See the [monorepo README](https://github.com/bcgov/bcew-monorepo/blob/main/tools/monorepo/README.md) for details.
 
 ## Labeler configuration
 
-When adding a new top-level plugin or theme folder, update [`.github/labeler.yml`](https://github.com/bcgov/wordpress-monorepo/blob/main/.github/labeler.yml) so pull requests receive accurate area labels.
+When adding a new top-level plugin or theme folder, update [`.github/labeler.yml`](https://github.com/bcgov/bcew-monorepo/blob/main/.github/labeler.yml) so pull requests receive accurate area labels.

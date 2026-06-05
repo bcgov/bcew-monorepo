@@ -4,7 +4,7 @@
 $existing_json = file_exists( 'packages.json' ) ? json_decode( file_get_contents( 'packages.json' ), true ) : [ 'packages' => [] ];
 
 // These variables would be passed from the GH Action environment.
-$repository         = getenv( 'REPOSITORY' ); // e.g., "bcgov/wordpress-monorepo".
+$repository         = getenv( 'REPOSITORY' ); // e.g., "bcgov/bcew-monorepo".
 $tag_name           = getenv( 'TAG' ); // e.g., "bcgov-wordpress-blocks/v1.2.0".
 $version            = getenv( 'VERSION' ); // e.g., "v1.2.0".
 $normalized_version = ltrim( $version, 'v' ); // e.g., "1.2.0".

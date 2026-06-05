@@ -6,7 +6,7 @@
     "properties": {
         "name": {
             "type": "string",
-            "description": "Human-readable plugin name. Example: WordPress Search Plugin",
+            "description": "Human-readable plugin name. Example: BCEW Search Plugin",
             "$default": {
                 "$source": "argv",
                 "index": 0

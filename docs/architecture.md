@@ -2,7 +2,7 @@
 
 ## Why this monorepo exists
 
-The BC Government WordPress monorepo brings **themes, plugins, and shared packages** into one Git repository so teams can:
+The BC Government BCEW monorepo brings **WordPress themes, plugins, and shared packages** into one Git repository so teams can:
 
 - **Share tooling** — One set of lint, test, and build commands (`@wordpress/scripts`, PHPCS, Playwright, PHPUnit) instead of per-repo copies that drift apart.
 - **Enforce consistency** — Root-level configuration and Nx task defaults keep project structure and scripts aligned.
@@ -25,7 +25,7 @@ The BC Government WordPress monorepo brings **themes, plugins, and shared packag
 **Nx** is the task runner and project graph engine:
 
 - Each **application** (theme or plugin) has a `project.json` at its root declaring the project `name`, `root`, and which **targets** it implements (`build`, `composer-install`, `wp-env-start`, and so on).
-- Default target behavior (commands, caching, `dependsOn`) lives in [`nx.json`](https://github.com/bcgov/wordpress-monorepo/blob/main/nx.json) under `targetDefaults`.
+- Default target behavior (commands, caching, `dependsOn`) lives in [`nx.json`](https://github.com/bcgov/bcew-monorepo/blob/main/nx.json) under `targetDefaults`.
 - **Discover projects:** `npx nx show projects`
 - **Graph (local):** `npx nx graph`
 - **Affected projects (for a branch):** `npx nx show projects --affected` (compare with `defaultBase`, usually `origin/main`)

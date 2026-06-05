@@ -92,7 +92,7 @@ jobs:
           VERSION: ${{ steps.vars.outputs.version }}
           PROJECT_PATH: ${{ steps.vars.outputs.project_path }}
         run: |
-          curl -sL https://${{ github.repository_owner }}.github.io/wordpress-monorepo/packages.json -o packages.json || echo '{"packages":{}}' > packages.json
+          curl -sL https://${{ github.repository_owner }}.github.io/bcew-monorepo/packages.json -o packages.json || echo '{"packages":{}}' > packages.json
 
           mkdir public
 
