@@ -18,9 +18,9 @@ themes/child-theme-belleville-terminal:
     - changed-files:
           - any-glob-to-any-file: 'themes/design-system-wordpress-child-theme-belleville-terminal/**'
 
-plugins/bcgov-wordpress-blocks:
+plugins/bcew-blocks:
     - changed-files:
-          - any-glob-to-any-file: 'plugins/bcgov-wordpress-blocks/**'
+          - any-glob-to-any-file: 'plugins/bcew-blocks/**'
 
 themes/child-theme-ticorp:
     - changed-files:

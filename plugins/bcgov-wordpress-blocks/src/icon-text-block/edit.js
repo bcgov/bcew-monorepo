@@ -11,7 +11,7 @@ import './editor.scss';
 
 const INNER_BLOCKS_TEMPLATE = [
     [
-        'bcgov-wordpress-blocks/icon',
+        'bcew-blocks/icon',
         {
             lock: {
                 move: true,
@@ -85,7 +85,7 @@ const INNER_BLOCKS_TEMPLATE = [
 ];
 
 const ALLOWED_BLOCKS = [
-    'bcgov-wordpress-blocks/icon',
+    'bcew-blocks/icon',
     'core/heading',
     'core/paragraph',
     'core/list',
@@ -125,28 +125,22 @@ const Edit = ( { attributes = {}, setAttributes = () => {} } = {} ) => {
     return (
         <>
             <InspectorControls>
-                <PanelBody
-                    title={ __( 'Layout', 'bcgov-wordpress-blocks' ) }
-                    initialOpen
-                >
+                <PanelBody title={ __( 'Layout', 'bcew-blocks' ) } initialOpen>
                     <RadioControl
-                        label={ __(
-                            'Icon/Text arrangement',
-                            'bcgov-wordpress-blocks'
-                        ) }
+                        label={ __( 'Icon/Text arrangement', 'bcew-blocks' ) }
                         selected={ layout }
                         options={ [
                             {
                                 label: __(
                                     'Icon left, content right',
-                                    'bcgov-wordpress-blocks'
+                                    'bcew-blocks'
                                 ),
                                 value: 'icon-left',
                             },
                             {
                                 label: __(
                                     'Icon top, content below',
-                                    'bcgov-wordpress-blocks'
+                                    'bcew-blocks'
                                 ),
                                 value: 'icon-top',
                             },

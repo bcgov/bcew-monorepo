@@ -2,8 +2,8 @@ import { test, expect } from '@wordpress/e2e-test-utils-playwright';
 import path from 'node:path';
 
 test.describe( 'media-text-layout visual regression', () => {
-    const BLOCK_NAME = 'bcgov-wordpress-blocks/media-text-layout';
-    const BLOCK_CLASS = '.wp-block-bcgov-wordpress-blocks-media-text-layout';
+    const BLOCK_NAME = 'bcew-blocks/media-text-layout';
+    const BLOCK_CLASS = '.wp-block-bcew-blocks-media-text-layout';
     const MOBILE_VIEWPORT = { width: 390, height: 844 };
     const IMAGE_PATH = path.resolve(
         process.cwd(),

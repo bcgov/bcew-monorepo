@@ -6,7 +6,7 @@
     "properties": {
         "project": {
             "type": "string",
-            "description": "The Nx project name to tag (e.g. bcgov-wordpress-blocks).",
+            "description": "The Nx project name to tag (e.g. bcew-blocks).",
             "$default": {
                 "$source": "argv",
                 "index": 0

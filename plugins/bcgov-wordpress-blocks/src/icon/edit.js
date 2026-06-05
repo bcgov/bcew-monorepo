@@ -47,19 +47,19 @@ const Edit = ( { attributes, setAttributes } ) => {
     const sizeSelectOptions = [
         {
             value: 'small',
-            label: __( 'Small', 'bcgov-wordpress-blocks' ),
+            label: __( 'Small', 'bcew-blocks' ),
         },
         {
             value: 'medium',
-            label: __( 'Medium', 'bcgov-wordpress-blocks' ),
+            label: __( 'Medium', 'bcew-blocks' ),
         },
         {
             value: 'large',
-            label: __( 'Large', 'bcgov-wordpress-blocks' ),
+            label: __( 'Large', 'bcew-blocks' ),
         },
         {
             value: 'xlarge',
-            label: __( 'XLarge', 'bcgov-wordpress-blocks' ),
+            label: __( 'XLarge', 'bcew-blocks' ),
         },
     ];
     const filteredIcons = ICON_ALLOWLIST.filter( ( option ) => {
@@ -83,7 +83,7 @@ const Edit = ( { attributes, setAttributes } ) => {
                 aria-hidden
             />
             <span className="bcgov-wp-blocks-icon__placeholder-text">
-                { __( 'Select icon', 'bcgov-wordpress-blocks' ) }
+                { __( 'Select icon', 'bcew-blocks' ) }
             </span>
         </span>
     );
@@ -100,30 +100,24 @@ const Edit = ( { attributes, setAttributes } ) => {
     return (
         <>
             <InspectorControls>
-                <PanelBody
-                    title={ __( 'Icon', 'bcgov-wordpress-blocks' ) }
-                    initialOpen
-                >
+                <PanelBody title={ __( 'Icon', 'bcew-blocks' ) } initialOpen>
                     <BaseControl
                         id="bcgov-wp-blocks-icon-search"
-                        label={ __( 'Pick an icon', 'bcgov-wordpress-blocks' ) }
+                        label={ __( 'Pick an icon', 'bcew-blocks' ) }
                         __nextHasNoMarginBottom
                     >
                         <SearchControl
                             __nextHasNoMarginBottom
                             value={ iconQuery }
                             onChange={ setIconQuery }
-                            placeholder={ __(
-                                'Search icons',
-                                'bcgov-wordpress-blocks'
-                            ) }
+                            placeholder={ __( 'Search icons', 'bcew-blocks' ) }
                         />
                         <p className="bcgov-wp-blocks-icon-picker-meta">
                             { sprintf(
                                 /* translators: 1: number of shown icons, 2: total icons */
                                 __(
                                     'Showing %1$d of %2$d icons',
-                                    'bcgov-wordpress-blocks'
+                                    'bcew-blocks'
                                 ),
                                 filteredIconCount,
                                 totalIconCount
@@ -150,7 +144,7 @@ const Edit = ( { attributes, setAttributes } ) => {
                             <p className="bcgov-wp-blocks-icon-picker-empty">
                                 { __(
                                     'No icons match your search.',
-                                    'bcgov-wordpress-blocks'
+                                    'bcew-blocks'
                                 ) }
                             </p>
                         ) : null }
@@ -158,7 +152,7 @@ const Edit = ( { attributes, setAttributes } ) => {
                     <SelectControl
                         __next40pxDefaultSize
                         __nextHasNoMarginBottom
-                        label={ __( 'Icon size', 'bcgov-wordpress-blocks' ) }
+                        label={ __( 'Icon size', 'bcew-blocks' ) }
                         value={ iconSize }
                         options={ sizeSelectOptions }
                         onChange={ ( value ) =>
@@ -167,10 +161,10 @@ const Edit = ( { attributes, setAttributes } ) => {
                     />
                     <ToggleControl
                         __nextHasNoMarginBottom
-                        label={ __( 'Decorative', 'bcgov-wordpress-blocks' ) }
+                        label={ __( 'Decorative', 'bcew-blocks' ) }
                         help={ __(
                             'Decorative icons are hidden from assistive technology when implemented.',
-                            'bcgov-wordpress-blocks'
+                            'bcew-blocks'
                         ) }
                         checked={ decorative }
                         onChange={ ( value ) =>
@@ -181,13 +175,10 @@ const Edit = ( { attributes, setAttributes } ) => {
                         <TextControl
                             __next40pxDefaultSize
                             __nextHasNoMarginBottom
-                            label={ __(
-                                'Accessible name',
-                                'bcgov-wordpress-blocks'
-                            ) }
+                            label={ __( 'Accessible name', 'bcew-blocks' ) }
                             help={ __(
                                 'Short description for screen readers when the icon is meaningful. Leave empty to use the icon’s picker label (e.g. Home).',
-                                'bcgov-wordpress-blocks'
+                                'bcew-blocks'
                             ) }
                             value={ accessibleName }
                             onChange={ ( value ) =>
@@ -195,10 +186,7 @@ const Edit = ( { attributes, setAttributes } ) => {
                             }
                             placeholder={
                                 selectedIcon?.label ||
-                                __(
-                                    'Uses icon label if empty',
-                                    'bcgov-wordpress-blocks'
-                                )
+                                __( 'Uses icon label if empty', 'bcew-blocks' )
                             }
                         />
                     ) : null }

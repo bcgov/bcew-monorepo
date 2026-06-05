@@ -1,13 +1,13 @@
 {
     "$schema": "../../node_modules/nx/schemas/project-schema.json",
-    "name": "bcgov-wordpress-blocks",
-    "root": "plugins/bcgov-wordpress-blocks",
-    "sourceRoot": "plugins/bcgov-wordpress-blocks/src",
+    "name": "bcew-blocks",
+    "root": "plugins/bcew-blocks",
+    "sourceRoot": "plugins/bcew-blocks/src",
     "projectType": "application",
     "generators": {
         "bcew-monorepo:plugin": {
-            "name": "Bcgov WordPress Blocks",
-            "description": "Plugin containing blocks intended to be used with the Design System WordPress Theme suite of products."
+            "name": "BCEW Blocks",
+            "description": "Plugin containing blocks intended to be used with the BC Extended Web suite of products."
         }
     },
     "targets": {
@@ -19,7 +19,7 @@
         "test-screenshot-generate": {},
         "test-integration": {
             "options": {
-                "command": "wp-env run tests-cli --env-cwd=wp-content/plugins/bcgov-wordpress-blocks composer test ./"
+                "command": "wp-env run tests-cli --env-cwd=wp-content/plugins/bcew-blocks composer test ./"
             }
         },
         "wp-env-start": {},

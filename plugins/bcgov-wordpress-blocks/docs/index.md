@@ -1,6 +1,6 @@
-# Bcgov WordPress Blocks
+# BCEW Blocks
 
-Plugin block reference for blocks provided by `bcgov-wordpress-blocks`.
+Plugin block reference for blocks provided by `bcew-blocks`.
 
 ## Notes
 
@@ -9,7 +9,7 @@ Plugin block reference for blocks provided by `bcgov-wordpress-blocks`.
 
 ## Plugin Instructions
 
-1. Install and activate the `bcgov-wordpress-blocks` plugin in WordPress.
+1. Install and activate the `bcew-blocks` plugin in WordPress.
 2. Ensure plugin assets are built so blocks are registered (`build/` output must exist).
 3. In the editor, insert blocks using the block inserter and search for the block name.
 4. Configure block settings in the sidebar and publish/update the page.
@@ -19,7 +19,7 @@ Plugin block reference for blocks provided by `bcgov-wordpress-blocks`.
 This plugin includes its own `.wp-env.json`, so you can run WordPress from the plugin directory.
 
 ```bash
-cd plugins/bcgov-wordpress-blocks
+cd plugins/bcew-blocks
 pnpm install
 pnpm wp-env start
 pnpm start

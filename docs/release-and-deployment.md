@@ -39,7 +39,7 @@ Example (adjust package name and version):
     }
   ],
   "require": {
-    "bcgov-plugin/bcgov-wordpress-blocks": "^1.0"
+    "bcgov-plugin/bcew-blocks": "^1.0"
   }
 }
 ```

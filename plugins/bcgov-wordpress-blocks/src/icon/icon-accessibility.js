@@ -18,9 +18,7 @@ export const getInformativeLabel = ( { accessibleName, iconId } ) => {
     const trimmed =
         'string' === typeof accessibleName ? accessibleName.trim() : '';
     const selectedIcon = ICON_ALLOWLIST_MAP[ iconId ];
-    return (
-        trimmed || selectedIcon?.label || __( 'Icon', 'bcgov-wordpress-blocks' )
-    );
+    return trimmed || selectedIcon?.label || __( 'Icon', 'bcew-blocks' );
 };
 
 /**

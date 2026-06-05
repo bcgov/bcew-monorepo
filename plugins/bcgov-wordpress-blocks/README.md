@@ -1,4 +1,4 @@
-# Bcgov WordPress Blocks
+# BCEW Blocks
 
 Plugin containing blocks intended to be used with the Design System WordPress Theme suite of products.
 
@@ -21,41 +21,41 @@ These tests are also executed in GitHub CI on pull requests. See .github/workflo
 1. Start the plugin test environment (optional - the nx target will run this automatically):
 
     ```bash
-    npx nx run bcgov-wordpress-blocks:wp-env-start
+    npx nx run bcew-blocks:wp-env-start
     ```
 
 1. Run all e2e tests:
 
     ```bash
-    npx nx run bcgov-wordpress-blocks:test-e2e
+    npx nx run bcew-blocks:test-e2e
     ```
 
 1. Run one e2e spec file:
 
     ```bash
-    npx nx run bcgov-wordpress-blocks:test-e2e -- ./tests/e2e/media-text-layout.spec.ts
+    npx nx run bcew-blocks:test-e2e -- ./tests/e2e/media-text-layout.spec.ts
     ```
 
 1. Run one e2e spec file in Playwright debug mode:
 
     ```bash
-    npx nx run bcgov-wordpress-blocks:test-e2e -- --debug ./tests/e2e/media-text-layout.spec.ts
+    npx nx run bcew-blocks:test-e2e -- --debug ./tests/e2e/media-text-layout.spec.ts
     ```
 
 1. Run all visual regression tests:
 
     ```bash
-    npx nx run bcgov-wordpress-blocks:test-screenshot
+    npx nx run bcew-blocks:test-screenshot
     ```
 
 1. Run one visual regression spec file:
 
     ```bash
-    npx nx run bcgov-wordpress-blocks:test-screenshot -- ./tests/screenshot/media-text-layout.spec.js
+    npx nx run bcew-blocks:test-screenshot -- ./tests/screenshot/media-text-layout.spec.js
     ```
 
 1. Run one visual regression spec file in Playwright debug mode:
 
     ```bash
-    npx nx run bcgov-wordpress-blocks:test-screenshot -- --debug ./tests/screenshot/media-text-layout.spec.js
+    npx nx run bcew-blocks:test-screenshot -- --debug ./tests/screenshot/media-text-layout.spec.js
     ```

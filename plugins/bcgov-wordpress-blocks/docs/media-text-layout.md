@@ -4,7 +4,7 @@ Presents media and text side-by-side with configurable image placement.
 
 ## Notes
 
-- Block name: `bcgov-wordpress-blocks/media-text-layout`
+- Block name: `bcew-blocks/media-text-layout`
 - Category: `media`
 - Intended use: paired media and narrative content sections
 

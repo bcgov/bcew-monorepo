@@ -43,7 +43,7 @@ const save = ( { attributes } ) => {
                 aria-hidden
             />
             <span className="bcgov-wp-blocks-icon__placeholder-text">
-                { __( 'Select icon', 'bcgov-wordpress-blocks' ) }
+                { __( 'Select icon', 'bcew-blocks' ) }
             </span>
         </span>
     );

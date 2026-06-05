@@ -15,7 +15,7 @@ const insertAndSelectIconBlock = async (
 ) => {
     await editor.insertBlock( { name: blockName } );
     const iconBlock = editor.canvas
-        .locator( '[data-type="bcgov-wordpress-blocks/icon"]' )
+        .locator( '[data-type="bcew-blocks/icon"]' )
         .first();
 
     await expect( iconBlock ).toBeVisible();
@@ -67,8 +67,8 @@ const captureResponsiveScreenshots = async (
 };
 
 test.describe( 'icon-text-block visual regression', () => {
-    const BLOCK_NAME = 'bcgov-wordpress-blocks/icon-text-block';
-    const BLOCK_CLASS = '.wp-block-bcgov-wordpress-blocks-icon-text-block';
+    const BLOCK_NAME = 'bcew-blocks/icon-text-block';
+    const BLOCK_CLASS = '.wp-block-bcew-blocks-icon-text-block';
     const SCREENSHOT_SNAPSHOTS = [
         {
             name: 'desktop',

@@ -1,8 +1,8 @@
 const { test, expect } = require( '@wordpress/e2e-test-utils-playwright' );
 
 test.describe( 'Icon block', () => {
-    const BLOCK_NAME = 'bcgov-wordpress-blocks/icon';
-    const BLOCK_CLASS = '.wp-block-bcgov-wordpress-blocks-icon';
+    const BLOCK_NAME = 'bcew-blocks/icon';
+    const BLOCK_CLASS = '.wp-block-bcew-blocks-icon';
 
     test( 'complete icon block workflow - editor to published page', async ( {
         admin,

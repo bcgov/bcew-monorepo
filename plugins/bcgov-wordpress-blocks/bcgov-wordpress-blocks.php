@@ -1,7 +1,7 @@
 <?php
 /**
- * Plugin Name:       Bcgov WordPress Blocks
- * Plugin URI:        https://github.com/bcgov/bcgov-wordpress-blocks
+ * Plugin Name:       BCEW Blocks
+ * Plugin URI:        https://github.com/bcgov/bcew-blocks
  * Description:       Plugin containing blocks intended to be used with the Design System WordPress Theme suite of products.
  * Version:           1.0.0
  * Requires at least: 6.7
@@ -9,9 +9,9 @@
  * Author:            govwordpress@gov.bc.ca
  * License:           Apache Licence version 2.0
  * License URI:       https://www.apache.org/licenses/LICENSE-2.0
- * Text Domain:       bcgov-wordpress-blocks
+ * Text Domain:       bcew-blocks
  *
- * @package bcgov-wordpress-blocks
+ * @package bcew-blocks
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

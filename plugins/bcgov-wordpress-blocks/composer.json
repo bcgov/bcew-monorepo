@@ -1,5 +1,5 @@
 {
-    "name": "bcgov-plugin/bcgov-wordpress-blocks",
+    "name": "bcgov-plugin/bcew-blocks",
     "description": "Plugin containing blocks intended to be used with the Design System WordPress Theme suite of products.",
     "type": "wordpress-plugin",
     "license": "Apache-2.0",

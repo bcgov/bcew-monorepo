@@ -11,7 +11,7 @@ $style = sprintf(
 ?>
 
 <div
-    class="<?php echo esc_attr( 'wp-block-bcgov-wordpress-blocks-media-text-layout is-image-' . $image_position ); ?>"
+    class="<?php echo esc_attr( 'wp-block-bcew-blocks-media-text-layout is-image-' . $image_position ); ?>"
     style="<?php echo esc_attr( $style ); ?>"
 >
 

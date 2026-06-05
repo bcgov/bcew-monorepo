@@ -1,4 +1,4 @@
-.editor-styles-wrapper .wp-block-bcgov-wordpress-blocks-icon-text-block {
+.editor-styles-wrapper .wp-block-bcew-blocks-icon-text-block {
     --bcgov-icon-text-card-padding: 1.5rem;
     --bcgov-icon-text-card-shadow:
         0 0.6px 1.8px 0 rgba(0, 0, 0, 0.1),
@@ -14,16 +14,16 @@
         grid-template-columns: auto minmax(0, 1fr);
     }
 
-    .bcgov-wp-blocks-icon-text-block__layout-shell > .wp-block-bcgov-wordpress-blocks-icon,
-    .bcgov-wp-blocks-icon-text-block__layout-shell > [data-type='bcgov-wordpress-blocks/icon'] {
+    .bcgov-wp-blocks-icon-text-block__layout-shell > .wp-block-bcew-blocks-icon,
+    .bcgov-wp-blocks-icon-text-block__layout-shell > [data-type='bcew-blocks/icon'] {
         grid-column: 1;
         grid-row: 1 / -1;
         padding: 0;
         margin: 0;
     }
 
-    .bcgov-wp-blocks-icon-text-block__layout-shell > *:not(.wp-block-bcgov-wordpress-blocks-icon):not(
-            [data-type='bcgov-wordpress-blocks/icon']
+    .bcgov-wp-blocks-icon-text-block__layout-shell > *:not(.wp-block-bcew-blocks-icon):not(
+            [data-type='bcew-blocks/icon']
         ) {
         grid-column: 2;
     }
@@ -34,14 +34,14 @@
             grid-template-columns: minmax(0, 1fr);
         }
 
-        .bcgov-wp-blocks-icon-text-block__layout-shell > .wp-block-bcgov-wordpress-blocks-icon,
-        .bcgov-wp-blocks-icon-text-block__layout-shell > [data-type='bcgov-wordpress-blocks/icon'] {
+        .bcgov-wp-blocks-icon-text-block__layout-shell > .wp-block-bcew-blocks-icon,
+        .bcgov-wp-blocks-icon-text-block__layout-shell > [data-type='bcew-blocks/icon'] {
             grid-column: 1;
             grid-row: auto;
         }
 
-        .bcgov-wp-blocks-icon-text-block__layout-shell > *:not(.wp-block-bcgov-wordpress-blocks-icon):not(
-                [data-type='bcgov-wordpress-blocks/icon']
+        .bcgov-wp-blocks-icon-text-block__layout-shell > *:not(.wp-block-bcew-blocks-icon):not(
+                [data-type='bcew-blocks/icon']
             ) {
             grid-column: 1;
             grid-row: auto;
@@ -56,14 +56,14 @@
                 grid-template-columns: minmax(0, 1fr);
             }
 
-            .bcgov-wp-blocks-icon-text-block__layout-shell > .wp-block-bcgov-wordpress-blocks-icon,
-            .bcgov-wp-blocks-icon-text-block__layout-shell > [data-type='bcgov-wordpress-blocks/icon'] {
+            .bcgov-wp-blocks-icon-text-block__layout-shell > .wp-block-bcew-blocks-icon,
+            .bcgov-wp-blocks-icon-text-block__layout-shell > [data-type='bcew-blocks/icon'] {
                 grid-column: 1;
                 grid-row: auto;
             }
 
-            .bcgov-wp-blocks-icon-text-block__layout-shell > *:not(.wp-block-bcgov-wordpress-blocks-icon):not(
-                    [data-type='bcgov-wordpress-blocks/icon']
+            .bcgov-wp-blocks-icon-text-block__layout-shell > *:not(.wp-block-bcew-blocks-icon):not(
+                    [data-type='bcew-blocks/icon']
                 ) {
                 grid-column: 1;
                 grid-row: auto;
@@ -72,38 +72,38 @@
     }
 
     .bcgov-wp-blocks-icon-text-block__layout-shell
-        > *:not(.wp-block-bcgov-wordpress-blocks-icon):not([data-type='bcgov-wordpress-blocks/icon'])
+        > *:not(.wp-block-bcew-blocks-icon):not([data-type='bcew-blocks/icon'])
         > * {
         margin-block-start: 0;
         margin-block-end: 0;
     }
 
     .bcgov-wp-blocks-icon-text-block__layout-shell
-        > *:not(.wp-block-bcgov-wordpress-blocks-icon):not([data-type='bcgov-wordpress-blocks/icon'])
+        > *:not(.wp-block-bcew-blocks-icon):not([data-type='bcew-blocks/icon'])
         > .wp-block-heading
         + .wp-block-paragraph {
         margin-top: 1.25rem;
     }
 
     .bcgov-wp-blocks-icon-text-block__layout-shell
-        > *:not(.wp-block-bcgov-wordpress-blocks-icon):not([data-type='bcgov-wordpress-blocks/icon'])
+        > *:not(.wp-block-bcew-blocks-icon):not([data-type='bcew-blocks/icon'])
         > .wp-block-paragraph
         + .wp-block-list {
         margin-top: 1rem;
     }
 
     .bcgov-wp-blocks-icon-text-block__layout-shell
-        > *:not(.wp-block-bcgov-wordpress-blocks-icon):not([data-type='bcgov-wordpress-blocks/icon'])
+        > *:not(.wp-block-bcew-blocks-icon):not([data-type='bcew-blocks/icon'])
         > .wp-block-list
         + .wp-block-buttons {
         margin-top: 2rem;
     }
 
     .bcgov-wp-blocks-icon-text-block__layout-shell
-        > *:not(.wp-block-bcgov-wordpress-blocks-icon):not([data-type='bcgov-wordpress-blocks/icon'])
+        > *:not(.wp-block-bcew-blocks-icon):not([data-type='bcew-blocks/icon'])
         ul,
     .bcgov-wp-blocks-icon-text-block__layout-shell
-        > *:not(.wp-block-bcgov-wordpress-blocks-icon):not([data-type='bcgov-wordpress-blocks/icon'])
+        > *:not(.wp-block-bcew-blocks-icon):not([data-type='bcew-blocks/icon'])
         ol {
         margin-block: 0.5rem;
         padding-inline-start: 1.25rem;
@@ -111,15 +111,15 @@
     }
 
     .bcgov-wp-blocks-icon-text-block__layout-shell
-        > *:not(.wp-block-bcgov-wordpress-blocks-icon):not([data-type='bcgov-wordpress-blocks/icon'])
+        > *:not(.wp-block-bcew-blocks-icon):not([data-type='bcew-blocks/icon'])
         .wp-block-list
         li,
     .bcgov-wp-blocks-icon-text-block__layout-shell
-        > *:not(.wp-block-bcgov-wordpress-blocks-icon):not([data-type='bcgov-wordpress-blocks/icon'])
+        > *:not(.wp-block-bcew-blocks-icon):not([data-type='bcew-blocks/icon'])
         ul
         li,
     .bcgov-wp-blocks-icon-text-block__layout-shell
-        > *:not(.wp-block-bcgov-wordpress-blocks-icon):not([data-type='bcgov-wordpress-blocks/icon'])
+        > *:not(.wp-block-bcew-blocks-icon):not([data-type='bcew-blocks/icon'])
         ol
         li {
         line-height: 1.688;

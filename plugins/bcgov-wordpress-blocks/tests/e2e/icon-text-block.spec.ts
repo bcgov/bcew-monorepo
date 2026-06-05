@@ -1,8 +1,8 @@
 import { test, expect } from '@wordpress/e2e-test-utils-playwright';
 import { FrameLocator, Locator, Page } from '@playwright/test';
 
-const BLOCK_NAME = 'bcgov-wordpress-blocks/icon-text-block';
-const BLOCK_CLASS = '.wp-block-bcgov-wordpress-blocks-icon-text-block';
+const BLOCK_NAME = 'bcew-blocks/icon-text-block';
+const BLOCK_CLASS = '.wp-block-bcew-blocks-icon-text-block';
 const ICON_SIZES = [ 'small', 'medium', 'large', 'xlarge' ] as const;
 
 test.describe( 'Icon/Text block — e2e', () => {
@@ -119,4 +119,4 @@ const assertFrontend = async ( postId: number, page: Page ) => {
 };
 
 const nestedIcon = ( block: Locator ) =>
-    block.locator( '[data-type="bcgov-wordpress-blocks/icon"]' ).first();
+    block.locator( '[data-type="bcew-blocks/icon"]' ).first();

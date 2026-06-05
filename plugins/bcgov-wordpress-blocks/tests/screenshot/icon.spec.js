@@ -1,8 +1,8 @@
 import { test, expect } from '@wordpress/e2e-test-utils-playwright';
 
 test.describe( 'icon visual regression', () => {
-    const BLOCK_NAME = 'bcgov-wordpress-blocks/icon';
-    const BLOCK_CLASS = '.wp-block-bcgov-wordpress-blocks-icon';
+    const BLOCK_NAME = 'bcew-blocks/icon';
+    const BLOCK_CLASS = '.wp-block-bcew-blocks-icon';
 
     test.beforeEach( async ( { admin } ) => {
         await admin.createNewPost();

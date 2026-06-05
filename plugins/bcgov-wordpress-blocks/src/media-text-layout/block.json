@@ -1,7 +1,7 @@
 {
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
-    "name": "bcgov-wordpress-blocks/media-text-layout",
+    "name": "bcew-blocks/media-text-layout",
     "version": "0.0.1",
     "title": "Media & Text Layout",
     "category": "media",
@@ -43,7 +43,7 @@
             "default": 200
         }
     },
-    "textdomain": "bcgov-wordpress-blocks",
+    "textdomain": "bcew-blocks",
     "editorScript": "file:./index.js",
     "editorStyle": "file:./index.css",
     "style": "file:./style-index.css",

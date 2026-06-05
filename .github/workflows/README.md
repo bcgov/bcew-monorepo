@@ -12,7 +12,7 @@ Runs on every new commit in a PR. Features:
 
 ## Tag and release (`tag.yml`)
 
-Runs when a tag matching `**/v*` is pushed (for example `bcgov-wordpress-blocks/v1.1.0`).
+Runs when a tag matching `**/v*` is pushed (for example `bcew-blocks/v1.1.0`).
 
 - Creates a GitHub Release and attaches `dist.zip` built from the tagged project.
 - Updates `packages.json` for the Composer repository on GitHub Pages and deploys it.

@@ -9,8 +9,8 @@ interface Content {
 }
 
 // Constants and shared test data.
-const BLOCK_NAME = 'bcgov-wordpress-blocks/media-text-layout';
-const BLOCK_CLASS = '.wp-block-bcgov-wordpress-blocks-media-text-layout';
+const BLOCK_NAME = 'bcew-blocks/media-text-layout';
+const BLOCK_CLASS = '.wp-block-bcew-blocks-media-text-layout';
 const IMAGE_PATH = path.join(
     __dirname,
     '..',

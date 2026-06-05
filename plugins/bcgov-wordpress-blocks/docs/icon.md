@@ -4,7 +4,7 @@ Displays a single icon with configurable size and accessibility labeling.
 
 ## Notes
 
-- Block name: `bcgov-wordpress-blocks/icon`
+- Block name: `bcew-blocks/icon`
 - Category: `media`
 - Intended use: visual icon element in content layouts
 

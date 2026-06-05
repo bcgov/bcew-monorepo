@@ -48,14 +48,14 @@ This generator is intentionally isolated. It does not create a plugin or compose
 
 Inputs:
 
-- `plugin-name`: the existing Nx project name for the plugin, for example `bcgov-wordpress-blocks`
+- `plugin-name`: the existing Nx project name for the plugin, for example `bcew-blocks`
 - `block-name`: the new block name or slug, for example `hero-banner`
 
 The generator accepts either the Nx project name or a `plugins/...` path:
 
 ```shell
-npx nx generate monorepo:block bcgov-wordpress-blocks hero-banner
-npx nx generate monorepo:block plugins/bcgov-wordpress-blocks hero-banner
+npx nx generate monorepo:block bcew-blocks hero-banner
+npx nx generate monorepo:block plugins/bcew-blocks hero-banner
 ```
 
 Validation rules:
@@ -68,14 +68,14 @@ Validation rules:
 Example:
 
 ```shell
-npx nx generate monorepo:block bcgov-wordpress-blocks hero-banner
+npx nx generate monorepo:block bcew-blocks hero-banner
 ```
 
 This command generates:
 
-- `plugins/bcgov-wordpress-blocks/src/hero-banner/*`
-- `plugins/bcgov-wordpress-blocks/tests/e2e/hero-banner.spec.js`
-- `plugins/bcgov-wordpress-blocks/tests/screenshot/hero-banner.spec.js`
+- `plugins/bcew-blocks/src/hero-banner/*`
+- `plugins/bcew-blocks/tests/e2e/hero-banner.spec.js`
+- `plugins/bcew-blocks/tests/screenshot/hero-banner.spec.js`
 
 The block title is derived automatically from the block name, so `hero-banner` becomes `Hero Banner`.
 
@@ -102,16 +102,16 @@ npx nx generate monorepo:release-tag
 Non-interactive:
 
 ```shell
-npx nx generate monorepo:release-tag bcgov-wordpress-blocks 1.4.2
+npx nx generate monorepo:release-tag bcew-blocks 1.4.2
 ```
 
 Create the tag locally without pushing to origin:
 
 ```shell
-npx nx generate monorepo:release-tag bcgov-wordpress-blocks 1.4.2 --push=false
+npx nx generate monorepo:release-tag bcew-blocks 1.4.2 --push=false
 ```
 
-The created tag (`bcgov-wordpress-blocks/v1.4.2`) triggers the [`tag.yml`](../../.github/workflows/tag.yml) release workflow.
+The created tag (`bcew-blocks/v1.4.2`) triggers the [`tag.yml`](../../.github/workflows/tag.yml) release workflow.
 
 ## Building
 

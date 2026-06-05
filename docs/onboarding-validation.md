@@ -26,7 +26,7 @@ pnpm composer-install
 ## Build at least one project
 
 ```bash
-npx nx run bcgov-wordpress-blocks:build
+npx nx run bcew-blocks:build
 ```
 
 (Or another project name from `npx nx show projects`.)

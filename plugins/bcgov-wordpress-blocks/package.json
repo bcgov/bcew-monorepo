@@ -1,5 +1,5 @@
 {
-    "name": "bcgov-wordpress-blocks",
+    "name": "bcew-blocks",
     "version": "1.0.0",
     "description": "Plugin containing blocks intended to be used with the Design System WordPress Theme suite of products.",
     "author": "The WordPress Contributors",
@@ -15,10 +15,10 @@
     "homepage": "https://github.com/bcgov/bcew-monorepo",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/bcgov/bcgov-wordpress-blocks.git"
+        "url": "git+https://github.com/bcgov/bcew-blocks.git"
     },
     "bugs": {
-        "url": "https://github.com/bcgov/bcgov-wordpress-blocks#readme",
+        "url": "https://github.com/bcgov/bcew-blocks#readme",
         "email": "govwordpress@gov.bc.ca"
     },
     "dependencies": {
