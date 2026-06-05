@@ -27,6 +27,7 @@
         "packages/*"
     ],
 "dependencies": {
+        "@bcew-monorepo/e2e": "workspace:*",
         "@fortawesome/fontawesome-free": "7.2.0",
         "@nx/devkit": "22.5.4",
         "@nx/plugin": "^22.6.2",
@@ -37,7 +38,6 @@
         "@swc/helpers": "~0.5.20",
         "@types/jest": "^30.0.0",
         "@types/node": "20.19.9",
-        "@bcew-monorepo/e2e": "workspace:*",
         "@wordpress/block-editor": "15.17.0",
         "@wordpress/blocks": "15.17.0",
         "@wordpress/e2e-test-utils-playwright": "^1.42.0",
