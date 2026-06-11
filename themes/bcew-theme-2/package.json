@@ -22,6 +22,11 @@
     },
     "main": "index.js",
     "dependencies": {
-        "@bcgov/design-tokens": "^4.0.0 "
+        "@bcgov/bc-sans": "^2.1.0",
+        "@bcgov/design-tokens": "^4.0.0"
+    },
+    "scripts": {
+        "build": "wp-scripts build --output-path=dist",
+        "start": "wp-scripts start --output-path=dist"
     }
 }

@@ -3,204 +3,365 @@
     "version": 3,
     "title": "BCEW Theme 2",
     "settings": {
-        "appearanceTools": false,
-        "layout": {
-            "contentSize": "var(--wp--custom--bcew--content-width)"
-        },
-        "typography": {
-            "fontFamilies": [
-                {
-                    "fontFamily": "var(--wp--custom--bcew--typography--font-family)",
-                    "slug": "bc-sans",
-                    "name": "BC Sans"
-                }
+      "appearanceTools": false,
+      "layout": {
+        "contentSize": "1200px"
+      },
+      "blocks": {
+        "core/list": {
+          "typography": {
+            "defaultFontSizes": false,
+            "customFontSize": false,
+            "fontSizes": [
+              {
+                "name": "Small",
+                "slug": "small",
+                "size": "14px",
+                "fluid": false
+              },
+              {
+                "name": "Medium",
+                "slug": "medium",
+                "size": "16px",
+                "fluid": false
+              },
+              {
+                "name": "Large",
+                "slug": "large",
+                "size": "18px",
+                "fluid": false
+              }
             ]
+          }
         },
-        "custom": {
-            "bcew": {
-                "surface": {
-                    "color": {
-                        "primary": {
-                            "default": "var(--bcds-surface-color-primary-default)",
-                            "hover": "var(--bcds-surface-color-primary-hover)",
-                            "pressed": "var(--bcds-surface-color-primary-pressed)",
-                            "disabled": "var(--bcds-surface-color-primary-disabled)",
-                            "button": {
-                                "default": "var(--bcds-surface-color-primary-button-default)",
-                                "hover": "var(--bcds-surface-color-primary-button-hover)",
-                                "pressed": "var(--bcds-surface-color-primary-pressed)",
-                                "disabled": "var(--bcds-surface-color-primary-button-disabled)"
-                            },
-                            "dangerButton": {
-                                "default": "var(--bcds-surface-color-primary-danger-button-default)",
-                                "hover": "var(--bcds-surface-color-primary-danger-button-hover)",
-                                "disabled": "var(--bcds-surface-color-primary-danger-button-disabled)"
-                            }
-                        },
-                        "secondary": {
-                            "default": "var(--bcds-surface-color-secondary-default)",
-                            "hover": "var(--bcds-surface-color-secondary-hover)",
-                            "pressed": "var(--bcds-surface-color-secondary-pressed)",
-                            "disabled": "var(--bcds-surface-color-secondary-disabled)",
-                            "button": {
-                                "default": "var(--bcds-surface-color-secondary-button-default)",
-                                "hover": "var(--bcds-surface-color-secondary-button-hover)",
-                                "pressed": "var(--bcds-surface-color-secondary-pressed)",
-                                "disabled": "var(--bcds-surface-color-secondary-button-disabled)"
-                            }
-                        },
-                        "tertiary": {
-                            "default": "var(--bcds-surface-color-tertiary-default)",
-                            "hover": "var(--bcds-surface-color-tertiary-hover)",
-                            "pressed": "var(--bcds-surface-color-tertiary-pressed)",
-                            "disabled": "var(--bcds-surface-color-tertiary-disabled)",
-                            "button": {
-                                "default": "var(--bcds-surface-color-tertiary-button-default)",
-                                "hover": "var(--bcds-surface-color-tertiary-button-hover)",
-                                "pressed": "var(--bcds-surface-color-tertiary-pressed)",
-                                "disabled": "var(--bcds-surface-color-tertiary-button-disabled)"
-                            }
-                        },
-                        "background": {
-                            "primary": "var(--bcds-surface-color-background-white)",
-                            "secondary": "var(--bcds-surface-color-background-light-gray)",
-                            "tertiary": "var(--bcds-surface-color-background-light-blue)",
-                            "dark": "var(--bcds-surface-color-background-dark-blue)"
-                        },
-                        "border": {
-                            "default": "var(--bcds-surface-color-border-default)",
-                            "medium": "var(--bcds-surface-color-border-medium)",
-                            "dark": "var(--bcds-surface-color-border-dark)",
-                            "active": "var(--bcds-surface-color-border-active)"
-                        },
-                        "overlay": {
-                            "default": "var(--bcds-surface-color-overlay-default)"
-                        },
-                        "forms": {
-                            "default": "var(--bcds-surface-color-forms-default)",
-                            "hover": "var(--bcds-surface-color-forms-default)",
-                            "disabled": "var(--bcds-surface-color-forms-disabled)"
-                        },
-                        "menus": {
-                            "default": "var(--bcds-surface-color-menus-default)",
-                            "hover": "var(--bcds-surface-color-menus-hover)",
-                            "pressed": "var(--bcds-theme-gray-40)"
-                        }
-                    }
-                },
-                "typography": {
-                    "fontFamily": "var(--bcds-typography-font-families-bc-sans)",
-                    "color": {
-                        "primary": "var(--bcds-typography-color-primary)",
-                        "secondary": "var(--bcds-typography-color-secondary)",
-                        "disabled": "var(--bcds-typography-color-disabled)",
-                        "placeholder": "var(--bcds-typography-color-placeholder)",
-                        "danger": "var(--bcds-typography-color-danger)",
-                        "primaryInvert": "var(--bcds-typography-color-primary-invert)",
-                        "secondaryInvert": "var(--bcds-typography-color-secondary-invert)",
-                        "link": {
-                            "default": "var(--bcds-typography-color-link)",
-                            "hover": "var(--bcds-surface-color-primary-hover)",
-                            "pressed": "var(--bcds-surface-color-primary-pressed)"
-                        },
-                        "button": {
-                            "primary": {
-                                "default": "var(--bcds-typography-color-primary-invert)",
-                                "hover": "var(--bcds-typography-color-primary-invert)",
-                                "pressed": "var(--bcds-typography-color-primary-invert)",
-                                "disabled": "var(--bcds-typography-color-disabled)"
-                            },
-                            "secondary": {
-                                "default": "var(--bcds-typography-color-primary)",
-                                "hover": "var(--bcds-typography-color-primary)",
-                                "pressed": "var(--bcds-typography-color-primary)",
-                                "disabled": "var(--bcds-typography-color-disabled)"
-                            },
-                            "tertiary": {
-                                "default": "var(--bcds-typography-color-primary)",
-                                "hover": "var(--bcds-typography-color-primary)",
-                                "pressed": "var(--bcds-typography-color-primary)",
-                                "disabled": "var(--bcds-surface-color-secondary-disabled)"
-                            },
-                            "danger": {
-                                "default": "var(--bcds-typography-color-primary-invert)",
-                                "hover": "var(--bcds-typography-color-primary-invert)",
-                                "pressed": "var(--bcds-typography-color-primary-invert)",
-                                "disabled": "var(--bcds-typography-color-disabled)"
-                            }
-                        }
-                    }
-                },
-                "contentWidth": "1200px",
-                "layout": {
-                    "margin": {
-                        "none": "var(--bcds-layout-margin-none)",
-                        "hair": "var(--bcds-layout-margin-hair)",
-                        "xsmall": "var(--bcds-layout-margin-xsmall)",
-                        "small": "var(--bcds-layout-margin-small)",
-                        "medium": "var(--bcds-layout-margin-medium)",
-                        "large": "var(--bcds-layout-margin-large)",
-                        "xlarge": "var(--bcds-layout-margin-xlarge)",
-                        "xxlarge": "var(--bcds-layout-margin-xxlarge)",
-                        "xxxlarge": "var(--bcds-layout-margin-xxxlarge)",
-                        "huge": "var(--bcds-layout-margin-huge)"
-                    },
-                    "padding": {
-                        "none": "var(--bcds-layout-padding-none)",
-                        "hair": "var(--bcds-layout-padding-hair)",
-                        "xsmall": "var(--bcds-layout-padding-xsmall)",
-                        "small": "var(--bcds-layout-padding-small)",
-                        "medium": "var(--bcds-layout-padding-medium)",
-                        "large": "var(--bcds-layout-padding-large)",
-                        "xlarge": "var(--bcds-layout-padding-xlarge)"
-                    },
-                    "borderRadius": {
-                        "none": "var(--bcds-layout-border-radius-none)",
-                        "small": "var(--bcds-layout-border-radius-small)",
-                        "default": "var(--bcds-layout-border-radius-medium)",
-                        "large": "var(--bcds-layout-border-radius-large)",
-                        "circular": "var(--bcds-layout-border-radius-circular)"
-                    },
-                    "borderWidth": {
-                        "none": "var(--bcds-layout-border-width-none)",
-                        "small": "var(--bcds-layout-border-width-small)",
-                        "medium": "var(--bcds-layout-border-width-medium)",
-                        "large": "var(--bcds-layout-border-width-large)"
-                    }
-                },
-                "icons": {
-                    "size": {
-                        "small": "var(--bcds-icons-size-small)",
-                        "medium": "var(--bcds-icons-size-medium)",
-                        "large": "var(--bcds-icons-size-large)",
-                        "xlarge": "var(--bcds-icons-size-xlarge)"
-                    },
-                    "color": {
-                        "primary": "var(--bcds-icons-color-primary)",
-                        "primaryInvert": "var(--bcds-icons-color-primary-invert)",
-                        "secondary": "var(--bcds-icons-color-secondary)",
-                        "disabled": "var(--bcds-icons-color-disabled)",
-                        "link": "var(--bcds-icons-color-link)",
-                        "info": "var(--bcds-icons-color-info)",
-                        "danger": "var(--bcds-icons-color-danger)",
-                        "success": "var(--bcds-icons-color-success)",
-                        "warning": "var(--bcds-icons-color-warning)"
-                    }
-                },
-                "theme": {
-                    "color": {
-                        "primary": "var(--bcds-theme-primary-blue)",
-                        "secondary": {
-                            "60": "var(--bcds-theme-gold-60)",
-                            "default": "var(--bcds-theme-primary-gold)"
-                        },
-                        "tertiary": {
-                            "110": "var(--bcds-theme-gray-110)",
-                            "default": "var(--bcds-theme-gray-100)"
-                        }
-                    }
-                }
-            }
+        "core/list-item": {
+          "typography": {
+            "customFontFamily": false,
+            "defaultFontFamilies": false,
+            "customFontSize": false,
+            "defaultFontSizes": false,
+            "fontFamilies": [],
+            "fontSizes": [],
+            "fontStyle": false,
+            "fontWeight": false,
+            "lineHeight": false,
+            "letterSpacing": false,
+            "textDecoration": false,
+            "textTransform": false,
+            "textAlign": false,
+            "writingMode": false
+          }
         }
+      },
+      "typography": {
+        "defaultFontSizes": false,
+        "customFontSize": true,
+        "fontSizes": [
+          {
+            "name": "Small",
+            "slug": "small",
+            "size": "24px",
+            "fluid": false
+          },
+          {
+            "name": "Medium",
+            "slug": "medium",
+            "size": "28px",
+            "fluid": false
+          },
+          {
+            "name": "Large",
+            "slug": "large",
+            "size": "32px",
+            "fluid": false
+          },
+          {
+            "name": "Extra Large",
+            "slug": "x-large",
+            "size": "36px",
+            "fluid": false
+          }
+        ],
+        "fontFamilies": [
+          {
+            "fontFamily": "var(--bcds-typography-font-families-bc-sans), Noto Sans, Verdana, Arial, sans-serif",
+            "slug": "bc-sans",
+            "name": "BC Sans"
+          }
+        ]
+      },
+      "custom": {
+        "bcew": {
+          "surface": {
+            "color": {
+              "primary": {
+                "default": "var(--bcds-surface-color-primary-default)",
+                "hover": "var(--bcds-surface-color-primary-hover)",
+                "pressed": "var(--bcds-surface-color-primary-pressed)",
+                "disabled": "var(--bcds-surface-color-primary-disabled)",
+                "button": {
+                  "default": "var(--bcds-surface-color-primary-button-default)",
+                  "hover": "var(--bcds-surface-color-primary-button-hover)",
+                  "pressed": "var(--bcds-surface-color-primary-pressed)",
+                  "disabled": "var(--bcds-surface-color-primary-button-disabled)"
+                },
+                "dangerButton": {
+                  "default": "var(--bcds-surface-color-primary-danger-button-default)",
+                  "hover": "var(--bcds-surface-color-primary-danger-button-hover)",
+                  "disabled": "var(--bcds-surface-color-primary-danger-button-disabled)"
+                }
+              },
+              "secondary": {
+                "default": "var(--bcds-surface-color-secondary-default)",
+                "hover": "var(--bcds-surface-color-secondary-hover)",
+                "pressed": "var(--bcds-surface-color-secondary-pressed)",
+                "disabled": "var(--bcds-surface-color-secondary-disabled)",
+                "button": {
+                  "default": "var(--bcds-surface-color-secondary-button-default)",
+                  "hover": "var(--bcds-surface-color-secondary-button-hover)",
+                  "pressed": "var(--bcds-surface-color-secondary-pressed)",
+                  "disabled": "var(--bcds-surface-color-secondary-button-disabled)"
+                }
+              },
+              "tertiary": {
+                "default": "var(--bcds-surface-color-tertiary-default)",
+                "hover": "var(--bcds-surface-color-tertiary-hover)",
+                "pressed": "var(--bcds-surface-color-tertiary-pressed)",
+                "disabled": "var(--bcds-surface-color-tertiary-disabled)",
+                "button": {
+                  "default": "var(--bcds-surface-color-tertiary-button-default)",
+                  "hover": "var(--bcds-surface-color-tertiary-button-hover)",
+                  "pressed": "var(--bcds-surface-color-tertiary-pressed)",
+                  "disabled": "var(--bcds-surface-color-tertiary-button-disabled)"
+                }
+              },
+              "background": {
+                "primary": "var(--bcds-surface-color-background-white)",
+                "secondary": "var(--bcds-surface-color-background-light-gray)",
+                "tertiary": "var(--bcds-surface-color-background-light-blue)",
+                "dark": "var(--bcds-surface-color-background-dark-blue)"
+              },
+              "border": {
+                "default": "var(--bcds-surface-color-border-default)",
+                "medium": "var(--bcds-surface-color-border-medium)",
+                "dark": "var(--bcds-surface-color-border-dark)",
+                "active": "var(--bcds-surface-color-border-active)"
+              },
+              "overlay": {
+                "default": "var(--bcds-surface-color-overlay-default)"
+              },
+              "forms": {
+                "default": "var(--bcds-surface-color-forms-default)",
+                "hover": "var(--bcds-surface-color-forms-default)",
+                "disabled": "var(--bcds-surface-color-forms-disabled)"
+              },
+              "menus": {
+                "default": "var(--bcds-surface-color-menus-default)",
+                "hover": "var(--bcds-surface-color-menus-hover)",
+                "pressed": "var(--bcds-theme-gray-40)"
+              }
+            }
+          },
+          "typography": {
+            "fontFamily": "var(--bcds-typography-font-families-bc-sans)",
+            "color": {
+              "primary": "var(--bcds-typography-color-primary)",
+              "secondary": "var(--bcds-typography-color-secondary)",
+              "disabled": "var(--bcds-typography-color-disabled)",
+              "placeholder": "var(--bcds-typography-color-placeholder)",
+              "danger": "var(--bcds-typography-color-danger)",
+              "primaryInvert": "var(--bcds-typography-color-primary-invert)",
+              "secondaryInvert": "var(--bcds-typography-color-secondary-invert)",
+              "link": {
+                "default": "var(--bcds-typography-color-link)",
+                "hover": "var(--bcds-surface-color-primary-hover)",
+                "pressed": "var(--bcds-surface-color-primary-pressed)"
+              },
+              "button": {
+                "primary": {
+                  "default": "var(--bcds-typography-color-primary-invert)",
+                  "hover": "var(--bcds-typography-color-primary-invert)",
+                  "pressed": "var(--bcds-typography-color-primary-invert)",
+                  "disabled": "var(--bcds-typography-color-disabled)"
+                },
+                "secondary": {
+                  "default": "var(--bcds-typography-color-primary)",
+                  "hover": "var(--bcds-typography-color-primary)",
+                  "pressed": "var(--bcds-typography-color-primary)",
+                  "disabled": "var(--bcds-typography-color-disabled)"
+                },
+                "tertiary": {
+                  "default": "var(--bcds-typography-color-primary)",
+                  "hover": "var(--bcds-typography-color-primary)",
+                  "pressed": "var(--bcds-typography-color-primary)",
+                  "disabled": "var(--bcds-surface-color-secondary-disabled)"
+                },
+                "danger": {
+                  "default": "var(--bcds-typography-color-primary-invert)",
+                  "hover": "var(--bcds-typography-color-primary-invert)",
+                  "pressed": "var(--bcds-typography-color-primary-invert)",
+                  "disabled": "var(--bcds-typography-color-disabled)"
+                }
+              }
+            }
+          },
+          "contentWidth": "1200px",
+          "layout": {
+            "margin": {
+              "none": "var(--bcds-layout-margin-none)",
+              "hair": "var(--bcds-layout-margin-hair)",
+              "xsmall": "var(--bcds-layout-margin-xsmall)",
+              "small": "var(--bcds-layout-margin-small)",
+              "medium": "var(--bcds-layout-margin-medium)",
+              "large": "var(--bcds-layout-margin-large)",
+              "xlarge": "var(--bcds-layout-margin-xlarge)",
+              "xxlarge": "var(--bcds-layout-margin-xxlarge)",
+              "xxxlarge": "var(--bcds-layout-margin-xxxlarge)",
+              "huge": "var(--bcds-layout-margin-huge)"
+            },
+            "padding": {
+              "none": "var(--bcds-layout-padding-none)",
+              "hair": "var(--bcds-layout-padding-hair)",
+              "xsmall": "var(--bcds-layout-padding-xsmall)",
+              "small": "var(--bcds-layout-padding-small)",
+              "medium": "var(--bcds-layout-padding-medium)",
+              "large": "var(--bcds-layout-padding-large)",
+              "xlarge": "var(--bcds-layout-padding-xlarge)"
+            },
+            "borderRadius": {
+              "none": "var(--bcds-layout-border-radius-none)",
+              "small": "var(--bcds-layout-border-radius-small)",
+              "default": "var(--bcds-layout-border-radius-medium)",
+              "large": "var(--bcds-layout-border-radius-large)",
+              "circular": "var(--bcds-layout-border-radius-circular)"
+            },
+            "borderWidth": {
+              "none": "var(--bcds-layout-border-width-none)",
+              "small": "var(--bcds-layout-border-width-small)",
+              "medium": "var(--bcds-layout-border-width-medium)",
+              "large": "var(--bcds-layout-border-width-large)"
+            }
+          },
+          "icons": {
+            "size": {
+              "small": "var(--bcds-icons-size-small)",
+              "medium": "var(--bcds-icons-size-medium)",
+              "large": "var(--bcds-icons-size-large)",
+              "xlarge": "var(--bcds-icons-size-xlarge)"
+            },
+            "color": {
+              "primary": "var(--bcds-icons-color-primary)",
+              "primaryInvert": "var(--bcds-icons-color-primary-invert)",
+              "secondary": "var(--bcds-icons-color-secondary)",
+              "disabled": "var(--bcds-icons-color-disabled)",
+              "link": "var(--bcds-icons-color-link)",
+              "info": "var(--bcds-icons-color-info)",
+              "danger": "var(--bcds-icons-color-danger)",
+              "success": "var(--bcds-icons-color-success)",
+              "warning": "var(--bcds-icons-color-warning)"
+            }
+          },
+          "theme": {
+            "color": {
+              "primary": "var(--bcds-theme-primary-blue)",
+              "secondary": {
+                "60": "var(--bcds-theme-gold-60)",
+                "default": "var(--bcds-theme-primary-gold)"
+              },
+              "tertiary": {
+                "110": "var(--bcds-theme-gray-110)",
+                "default": "var(--bcds-theme-gray-100)"
+              }
+            }
+          }
+        }
+      }
+    },
+    "styles": {
+      "typography": {
+        "fontFamily": "var(--bcds-typography-font-families-bc-sans), Noto Sans, Verdana, Arial, sans-serif"
+      },
+      "elements": {
+        "h1": {
+          "typography": {
+            "fontSize": "36px"
+          },
+          "spacing": {
+            "margin": {
+              "top": "1.5rem!important",
+              "bottom": "1.5rem!important"
+            }
+          }
+        },
+        "h2": {
+          "typography": {
+            "fontSize": "32px"
+          },
+          "spacing": {
+            "margin": {
+              "top": "3rem!important"
+            }
+          }
+        },
+        "h3": {
+          "typography": {
+            "fontSize": "28px"
+          },
+          "spacing": {
+            "margin": {
+              "top": "1.25rem!important"
+            }
+          }
+        },
+        "h4": {
+          "typography": {
+            "fontSize": "24px"
+          },
+          "spacing": {
+            "margin": {
+              "top": "1.25rem!important"
+            }
+          }
+        }
+      },
+      "blocks": {
+        "core/button": {
+          "spacing": {
+            "padding": {
+              "top": "0.3rem",
+              "right": "1rem",
+              "bottom": "0.3rem",
+              "left": "1rem"
+            }
+          }
+        },
+        "core/social-links": {
+          "spacing": {
+            "margin": {
+              "top": "0px",
+              "bottom": "0px"
+            }
+          }
+        },
+        "core/latest-comments": {
+          "spacing": {
+            "padding": {
+              "left": "0px"
+            }
+          }
+        },
+        "core/list": {
+          "typography": {
+            "lineHeight": "1.688rem",
+            "fontSize": "1rem"
+          },
+          "spacing": {
+            "margin": {
+              "top": "1.25rem!important"
+            }
+          }
+        }
+      }
     }
-}
+  }
+  

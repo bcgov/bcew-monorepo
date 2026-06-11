@@ -144,8 +144,11 @@ importers:
 
   themes/bcew-theme-2:
     dependencies:
+      '@bcgov/bc-sans':
+        specifier: ^2.1.0
+        version: 2.1.0
       '@bcgov/design-tokens':
-        specifier: '^4.0.0 '
+        specifier: ^4.0.0
         version: 4.0.0
 
   themes/design-system-wordpress-child-theme-ticorp: {}
@@ -985,6 +988,9 @@ packages:
     peerDependenciesMeta:
       '@types/react':
         optional: true
+
+  '@bcgov/bc-sans@2.1.0':
+    resolution: {integrity: sha512-1MesF4NAVpM5dywoJ68wNcBylHbPqg1dDV/FNuQm0BbspETGlPmfX8LG8rtrCjCAPhWuL2qRT/lBYDUMvFTUnw==}
 
   '@bcgov/design-tokens@4.0.0':
     resolution: {integrity: sha512-kcen18Q/snP6M6JQ6XUQTlWXM1Gnm6y8Zk0i29K+T/Y0m/ab4PufmGpl43l/EJKCnYgpOaZFSXDK7CCO6P0INw==}
@@ -13291,6 +13297,8 @@ snapshots:
       use-sync-external-store: 1.6.0(react@18.3.1)
     optionalDependencies:
       '@types/react': 18.3.28
+
+  '@bcgov/bc-sans@2.1.0': {}
 
   '@bcgov/design-tokens@4.0.0': {}
 

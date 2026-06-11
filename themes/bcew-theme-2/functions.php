@@ -13,6 +13,28 @@ function bcew_disable_default_block_patterns() {
 }
 add_action( 'init', 'bcew_disable_default_block_patterns' );
 
+/**
+ * Enqueues BCEW global styles (BC Sans fonts and design tokens) on the frontend and in the editor.
+ */
+function bcew_enqueue_global_styles() {
+	$stylesheet = get_template_directory() . '/dist/index.css';
+
+	if ( ! file_exists( $stylesheet ) ) {
+		return;
+	}
+
+	$asset_file = get_template_directory() . '/dist/index.asset.php';
+	$version    = file_exists( $asset_file ) ? ( include $asset_file )['version'] : filemtime( $stylesheet );
+
+	wp_enqueue_style(
+		'bcew-theme-styles',
+		get_template_directory_uri() . '/dist/index.css',
+		array(),
+		$version
+	);
+}
+add_action( 'enqueue_block_assets', 'bcew_enqueue_global_styles' );
+add_action( 'admin_enqueue_scripts', 'bcew_enqueue_global_styles' );
 
 /**
  * Load Composer autoloader and verify required class exists.
@@ -69,7 +91,7 @@ function bcew_register_post_title_block_styles() {
 		'name'         => 'underline-title',
 		'label'        => __( 'Underline' ),
 		'isDefault'    => false,
-		'style_handle' => 'bc-extended-web-theme-styles',
+		'style_handle' => 'bcew-theme-styles',
 	);
 	register_block_style( $block_name, $style_properties );
 }
