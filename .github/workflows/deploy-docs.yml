@@ -54,7 +54,7 @@ jobs:
 
       - name: Build docs site (VitePress; includes sync)
         env:
-          DOCS_BASE: /bcew-monorepo/
+          DOCS_BASE: /bcew-monorepo/docs
         run: pnpm docs:build
 
       - name: Deploy to gh-pages/docs
