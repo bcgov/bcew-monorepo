@@ -1,8 +1,6 @@
-import { test } from '@wordpress/e2e-test-utils-playwright';
+import { createPatternScreenshotTests } from '@bcew-monorepo/e2e';
 
-test.describe( 'pattern', () => {
-    test.beforeEach( async ( { admin } ) => {
-        // Create a new post before each test
-        await admin.createNewPost();
-    } );
+createPatternScreenshotTests( {
+    patterns: [ { name: 'sample' } ],
+    themeSlug: 'bcew-theme-2',
 } );

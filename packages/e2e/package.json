@@ -11,8 +11,13 @@
     "bugs": "",
     "type": "module",
     "main": "index.js",
+    "exports": {
+        ".": "./index.js",
+        "./playwright.config.js": "./playwright.config.js"
+    },
     "peerDependencies": {
         "@playwright/test": "*",
+        "@wordpress/e2e-test-utils-playwright": "*",
         "@wordpress/scripts": "*"
     }
 }

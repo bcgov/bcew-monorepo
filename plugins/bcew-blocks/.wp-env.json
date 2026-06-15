@@ -3,5 +3,8 @@
     "phpVersion": "7.4",
     "plugins": ["."],
     "port": 9006,
-    "testsPort": 9007
+    "testsPort": 9007,
+    "lifecycleScripts": {
+        "afterStart": "wp-env run tests-cli wp user update admin --user_pass=password"
+    }
 }

@@ -1,8 +1,16 @@
+const { sync: glob } = require( 'fast-glob' );
+
 /**
  * The "global" error severity level. The user can specify that they only want to be
  * warned of linter issues.
  */
 const lintSeverity = process.env.LINT_SEVERITY ?? 'error';
+const workspacePackageDirectories = glob(
+    [ 'themes/*', 'plugins/*', 'packages/*' ],
+    {
+        onlyDirectories: true,
+    }
+);
 
 module.exports = {
     root: true,
@@ -60,7 +68,7 @@ module.exports = {
             'warn',
             {
                 devDependencies: [ '**/*.spec.ts', '**/*.spec.js' ],
-                packageDir: [ '.', './themes/*', './plugins/*' ],
+                packageDir: [ '.', ...workspacePackageDirectories ],
             },
         ],
     },
