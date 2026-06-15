@@ -1,0 +1,10 @@
+// Theme build styles for bcew-belleville-terminal
+// Mobile override for separator width — compiled into dist by wp-scripts
+@media (max-width: 782px) {
+
+  .wp-block-separator.has-alpha-channel-opacity,
+  hr.wp-block-separator.has-alpha-channel-opacity {
+    min-width: 328px;
+    max-width: 100%;
+  }
+}

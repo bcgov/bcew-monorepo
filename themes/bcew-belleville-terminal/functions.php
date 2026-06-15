@@ -78,4 +78,13 @@ add_action(
         add_filter( 'wp_theme_json_data_theme', 'bcew_fix_design_system_theme_json_palette_merge' );
     },
     20
+// Enqueue built dist CSS when available, otherwise fallback to root style.css.
+$dist_path = get_stylesheet_directory() . '/dist/index.css';
+// Always enqueue built dist CSS. Ensure build runs in CI/dev before deploying.
+$version = file_exists( $dist_path ) ? filemtime( $dist_path ) : null;
+wp_enqueue_style(
+    'bcew-belleville-terminal-style',
+    get_stylesheet_directory_uri() . '/dist/index.css',
+    array(),
+    $version
 );

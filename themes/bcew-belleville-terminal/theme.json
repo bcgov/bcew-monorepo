@@ -2,5 +2,36 @@
     "$schema": "https://schemas.wp.org/trunk/theme.json",
     "version": 3,
     "title": "Belleville Terminal Child Theme",
-    "settings": {}
+    "settings": {},
+    "styles": {
+        "blocks": {
+            "core/separator": {
+                "dimensions": {
+                    "maxWidth": "70rem"
+                },
+                "spacing": {
+                    "padding": {
+                        "top": "1.25rem",
+                        "bottom": "1.25rem"
+                    }
+                },
+                "border": {
+                    "color": "var(--dswp-surface-color-border-medium, #D8D8D8)",
+                    "top": {
+                        "style": "none"
+                    },
+                    "right": {
+                        "style": "none"
+                    },
+                    "left": {
+                        "style": "none"
+                    },
+                    "bottom": {
+                        "width": "1px",
+                        "style": "solid"
+                    }
+                }
+            }
+        }
+    }
 }
