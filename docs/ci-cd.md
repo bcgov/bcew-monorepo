@@ -38,12 +38,14 @@ On the GitHub repository, navigate to Actions > Release Subproject and Update pa
 ![Release workflow options](assets/release-workflow.png)
 
 Manual workflow used to create releases, given the following inputs:
+
 - Branch: Dropdown providing all branches from which this workflow can be run. Sometimes you may want to create a release off of a non-main branch if something must be tested remotely before it can be merged. In these cases, it should always be a prerelease. Most of the time releases will be created off the main branch.
 - Project name: Dropdown providing the names of all monorepo projects.
 - Version: Text input for the version to be released, eg. `1.0.1-alpha.1`.
 - Is prerelease: Boolean input determining if it's a prerelease. A prerelease version has a postfix like `alpha.1`. 
 
 What this workflow does:
+
 1. Updates versions in source, eg. updates `style.css` or `{plugin name}.php` version fields.
 2. Generates release notes describing all pull requests merged into the release.
 3. Creates a tag using the project name and version provided as inputs, eg. `bcew-project/v1.0.1-alpha.1`.
