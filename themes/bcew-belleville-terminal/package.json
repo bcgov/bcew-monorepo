@@ -20,5 +20,8 @@
         "url": "https://github.com/bcgov/bcew-monorepo#readme",
         "email": "govwordpress@gov.bc.ca"
     },
-    "main": "index.js"
+    "main": "index.ts",
+    "devDependencies": {
+        "@bcew-monorepo/e2e": "workspace:*"
+    }
 }
