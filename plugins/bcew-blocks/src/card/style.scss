@@ -1,0 +1,9 @@
+.bcew-blocks-card {
+    display: flex;
+    flex-direction: column;
+
+    &__content {
+        display: flex;
+        flex-direction: column;
+    }
+}

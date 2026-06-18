@@ -1,0 +1,20 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "bcew-blocks/card",
+    "version": "0.1.0",
+    "title": "Card",
+    "category": "media",
+    "icon": "index-card",
+    "parent": [ "bcew-blocks/cards" ],
+    "description": "A single card within the Cards block.",
+    "supports": {
+        "html": false,
+        "inserter": false,
+        "reusable": false
+    },
+    "textdomain": "bcew-blocks",
+    "editorScript": "file:./index.js",
+    "editorStyle": "file:./index.css",
+    "style": "file:./style-index.css"
+}

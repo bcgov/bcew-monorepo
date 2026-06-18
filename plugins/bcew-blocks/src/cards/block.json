@@ -1,0 +1,17 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "bcew-blocks/cards",
+    "version": "0.1.0",
+    "title": "Cards",
+    "category": "media",
+    "icon": "grid-view",
+    "description": "A row of cards.",
+    "supports": {
+        "html": false
+    },
+    "textdomain": "bcew-blocks",
+    "editorScript": "file:./index.js",
+    "editorStyle": "file:./index.css",
+    "style": "file:./style-index.css"
+}
