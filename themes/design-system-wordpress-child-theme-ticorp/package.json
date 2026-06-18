@@ -20,5 +20,9 @@
         "url": "https://github.com/bcgov/design-system-wordpress-child-theme-ticorp#readme",
         "email": "govwordpress@gov.bc.ca"
     },
-    "main": "index.js"
+    "main": "index.js",
+    "devDependencies": {
+        "@bcew-monorepo/e2e": "workspace:*",
+        "@playwright/test": "catalog:"
+    }
 }

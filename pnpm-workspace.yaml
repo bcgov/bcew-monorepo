@@ -4,6 +4,8 @@ packages:
   - 'packages/*'
   - 'tools/*'
 catalog:
+  '@bcgov/bc-sans': ^2.1.0
+  '@bcgov/design-tokens': ^4.0.0
   '@fortawesome/fontawesome-free': 7.2.0
   '@nx/devkit': 22.5.4
   '@nx/plugin': ^22.6.2
@@ -16,20 +18,25 @@ catalog:
   '@types/node': 20.19.9
   '@wordpress/block-editor': 15.17.0
   '@wordpress/blocks': 15.17.0
+  '@wordpress/components': 35.0.1
+  '@wordpress/core-data': 7.48.1
+  '@wordpress/data': 10.48.1
   '@wordpress/e2e-test-utils-playwright': ^1.42.0
   '@wordpress/element': 6.44.0
   '@wordpress/env': ^11.2.0
   '@wordpress/i18n': 6.17.0
   '@wordpress/scripts': ^31.7.0
   '@wordpress/stylelint-config': ^23.34.0
+  'chokidar-cli': ^3.0.0
+  'concurrently': ^9.2.1
   'eslint-plugin-playwright': ^2.10.1
   'eslint-plugin-prefer-arrow': ^1.2.3
   'js-beautify': ^1.15.4
-  'nx': 22.5.0
+  'nx': ^23.0.0
   'prettier': ~3.6.2
+  'react': 18.3.1
   'tslib': ^2.8.1
-  'chokidar-cli': ^3.0.0
-  'concurrently': ^9.2.1
+  'typescript': ~5.3.0
   'vitepress': 2.0.0-alpha.17
 minimumReleaseAge: 1440
 allowBuilds:

@@ -22,8 +22,16 @@
         "email": "govwordpress@gov.bc.ca"
     },
     "dependencies": {
-        "@wordpress/block-editor": "latest",
-        "@wordpress/blocks": "latest",
-        "@wordpress/i18n": "latest"
+        "@wordpress/block-editor": "catalog:",
+        "@wordpress/blocks": "catalog:",
+        "@wordpress/components": "catalog:",
+        "@wordpress/core-data": "catalog:",
+        "@wordpress/data": "catalog:",
+        "@wordpress/i18n": "catalog:"
+    },
+    "devDependencies": {
+        "@bcew-monorepo/e2e": "workspace:*",
+        "@playwright/test": "catalog:",
+        "@wordpress/e2e-test-utils-playwright": "catalog:"
     }
 }

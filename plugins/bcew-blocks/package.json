@@ -22,17 +22,17 @@
         "email": "govwordpress@gov.bc.ca"
     },
     "dependencies": {
-        "@fortawesome/fontawesome-free": "latest",
-        "@wordpress/block-editor": "latest",
-        "@wordpress/blocks": "latest",
-        "@wordpress/components": "latest",
-        "@wordpress/core-data": "latest",
-        "@wordpress/data": "latest",
-        "@wordpress/i18n": "latest"
+        "@fortawesome/fontawesome-free": "catalog:",
+        "@wordpress/block-editor": "catalog:",
+        "@wordpress/blocks": "catalog:",
+        "@wordpress/components": "catalog:",
+        "@wordpress/core-data": "catalog:",
+        "@wordpress/data": "catalog:",
+        "@wordpress/i18n": "catalog:"
     },
     "devDependencies": {
         "@bcew-monorepo/e2e": "workspace:*",
-        "@playwright/test": "^1.58.2",
-        "@wordpress/e2e-test-utils-playwright": "^1.42.0"
+        "@playwright/test": "catalog:",
+        "@wordpress/e2e-test-utils-playwright": "catalog:"
     }
 }

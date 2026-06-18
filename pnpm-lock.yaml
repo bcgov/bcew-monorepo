@@ -6,6 +6,15 @@ settings:
 
 catalogs:
   default:
+    '@bcgov/bc-sans':
+      specifier: ^2.1.0
+      version: 2.1.0
+    '@bcgov/design-tokens':
+      specifier: ^4.0.0
+      version: 4.0.0
+    '@fortawesome/fontawesome-free':
+      specifier: 7.2.0
+      version: 7.2.0
     '@nx/devkit':
       specifier: 22.5.4
       version: 22.5.4
@@ -33,6 +42,27 @@ catalogs:
     '@types/node':
       specifier: 20.19.9
       version: 20.19.9
+    '@wordpress/block-editor':
+      specifier: 15.17.0
+      version: 15.17.0
+    '@wordpress/blocks':
+      specifier: 15.17.0
+      version: 15.17.0
+    '@wordpress/components':
+      specifier: 35.0.1
+      version: 35.0.1
+    '@wordpress/core-data':
+      specifier: 7.48.1
+      version: 7.48.1
+    '@wordpress/data':
+      specifier: 10.48.1
+      version: 10.48.1
+    '@wordpress/e2e-test-utils-playwright':
+      specifier: ^1.42.0
+      version: 1.48.1
+    '@wordpress/i18n':
+      specifier: 6.17.0
+      version: 6.17.0
     '@wordpress/scripts':
       specifier: ^31.7.0
       version: 31.8.0
@@ -55,14 +85,20 @@ catalogs:
       specifier: ^1.15.4
       version: 1.15.4
     nx:
-      specifier: 22.5.0
-      version: 22.5.0
+      specifier: ^23.0.0
+      version: 23.0.0
     prettier:
       specifier: ~3.6.2
       version: 3.6.2
+    react:
+      specifier: 18.3.1
+      version: 18.3.1
     tslib:
       specifier: ^2.8.1
       version: 2.8.1
+    typescript:
+      specifier: ~5.3.0
+      version: 5.3.3
     vitepress:
       specifier: 2.0.0-alpha.17
       version: 2.0.0-alpha.17
@@ -73,16 +109,16 @@ importers:
     dependencies:
       '@nx/devkit':
         specifier: 'catalog:'
-        version: 22.5.4(nx@22.5.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))
+        version: 22.5.4(nx@23.0.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))
       '@nx/plugin':
         specifier: 'catalog:'
-        version: 22.6.2(@babel/traverse@7.29.0)(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))(@types/node@20.19.9)(@zkochan/js-yaml@0.0.7)(babel-plugin-macros@3.1.0)(eslint@10.4.0)(nx@22.5.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))(typescript@5.9.3)
+        version: 22.6.2(@babel/traverse@7.29.0)(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))(@types/node@20.19.9)(@zkochan/js-yaml@0.0.7)(babel-plugin-macros@3.1.0)(eslint@10.4.0)(nx@23.0.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))(typescript@5.3.3)
       '@playwright/test':
         specifier: 'catalog:'
         version: 1.58.2
       '@swc-node/register':
         specifier: 'catalog:'
-        version: 1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3)
+        version: 1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3)
       '@swc/cli':
         specifier: 'catalog:'
         version: 0.8.0(@swc/core@1.15.21(@swc/helpers@0.5.20))
@@ -100,10 +136,10 @@ importers:
         version: 20.19.9
       '@wordpress/scripts':
         specifier: 'catalog:'
-        version: 31.8.0(@playwright/test@1.58.2)(@swc/core@1.15.21(@swc/helpers@0.5.20))(@types/eslint@9.6.1)(@types/node@20.19.9)(@wordpress/env@11.6.0(@types/node@20.19.9))(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint-scss@6.14.0(stylelint@16.26.1(typescript@5.9.3)))(type-fest@4.41.0)(typescript@5.9.3)
+        version: 31.8.0(@playwright/test@1.58.2)(@swc/core@1.15.21(@swc/helpers@0.5.20))(@types/eslint@9.6.1)(@types/node@20.19.9)(@wordpress/env@11.6.0(@types/node@20.19.9))(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint-scss@6.14.0(stylelint@16.26.1(typescript@5.3.3)))(type-fest@4.41.0)(typescript@5.3.3)
       '@wordpress/stylelint-config':
         specifier: 'catalog:'
-        version: 23.40.1(postcss@8.5.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint-scss@6.14.0(stylelint@16.26.1(typescript@5.9.3)))(stylelint@16.26.1(typescript@5.9.3))
+        version: 23.40.1(postcss@8.5.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint-scss@6.14.0(stylelint@16.26.1(typescript@5.3.3)))(stylelint@16.26.1(typescript@5.3.3))
       chokidar-cli:
         specifier: 'catalog:'
         version: 3.0.0
@@ -121,82 +157,105 @@ importers:
         version: 1.15.4
       nx:
         specifier: 'catalog:'
-        version: 22.5.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))
+        version: 23.0.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))
       prettier:
         specifier: 'catalog:'
         version: 3.6.2
+      react:
+        specifier: 'catalog:'
+        version: 18.3.1
       tslib:
         specifier: 'catalog:'
         version: 2.8.1
+      typescript:
+        specifier: 'catalog:'
+        version: 5.3.3
       vitepress:
         specifier: 'catalog:'
-        version: 2.0.0-alpha.17(@types/node@20.19.9)(axios@1.16.0)(postcss@8.5.12)(sass@1.98.0)(terser@5.46.1)(typescript@5.9.3)(yaml@2.9.0)
+        version: 2.0.0-alpha.17(@types/node@20.19.9)(axios@1.16.0)(postcss@8.5.12)(sass@1.98.0)(terser@5.46.1)(typescript@5.3.3)(yaml@2.9.0)
 
   packages/e2e:
     dependencies:
       '@playwright/test':
-        specifier: '*'
+        specifier: 'catalog:'
         version: 1.58.2
       '@wordpress/scripts':
-        specifier: '*'
+        specifier: 'catalog:'
         version: 31.8.0(@playwright/test@1.58.2)(@swc/core@1.15.21(@swc/helpers@0.5.20))(@types/eslint@9.6.1)(@types/node@20.19.9)(@wordpress/env@11.6.0(@types/node@20.19.9))(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint-scss@6.14.0(stylelint@16.26.1(typescript@5.9.3)))(type-fest@4.41.0)(typescript@5.9.3)
 
   plugins/bcew-blocks:
     dependencies:
       '@fortawesome/fontawesome-free':
-        specifier: latest
+        specifier: 'catalog:'
         version: 7.2.0
       '@wordpress/block-editor':
-        specifier: latest
-        version: 15.21.1(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(@types/react-dom@18.3.7(@types/react@18.3.28))(date-fns@4.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.9.3))
+        specifier: 'catalog:'
+        version: 15.17.0(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(@types/react-dom@18.3.7(@types/react@18.3.28))(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.9.3))
       '@wordpress/blocks':
-        specifier: latest
-        version: 15.21.1(react@18.3.1)
+        specifier: 'catalog:'
+        version: 15.17.0(react@18.3.1)
       '@wordpress/components':
-        specifier: latest
+        specifier: 'catalog:'
         version: 35.0.1(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.9.3))
       '@wordpress/core-data':
-        specifier: latest
+        specifier: 'catalog:'
         version: 7.48.1(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(@types/react-dom@18.3.7(@types/react@18.3.28))(date-fns@4.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.9.3))
       '@wordpress/data':
-        specifier: latest
+        specifier: 'catalog:'
         version: 10.48.1(react@18.3.1)
       '@wordpress/i18n':
-        specifier: latest
-        version: 6.21.1
+        specifier: 'catalog:'
+        version: 6.17.0
     devDependencies:
       '@bcew-monorepo/e2e':
         specifier: workspace:*
         version: link:../../packages/e2e
       '@playwright/test':
-        specifier: ^1.58.2
+        specifier: 'catalog:'
         version: 1.58.2
       '@wordpress/e2e-test-utils-playwright':
-        specifier: ^1.42.0
-        version: 1.46.0(@playwright/test@1.58.2)(@types/node@20.19.9)
+        specifier: 'catalog:'
+        version: 1.48.1(@playwright/test@1.58.2)(@types/node@20.19.9)
 
   themes/bcew-belleville-terminal:
     devDependencies:
       '@bcew-monorepo/e2e':
         specifier: workspace:*
         version: link:../../packages/e2e
+      '@playwright/test':
+        specifier: 'catalog:'
+        version: 1.58.2
 
   themes/bcew-theme-2:
     dependencies:
       '@bcgov/bc-sans':
-        specifier: ^2.1.0
+        specifier: 'catalog:'
         version: 2.1.0
       '@bcgov/design-tokens':
-        specifier: ^4.0.0
+        specifier: 'catalog:'
         version: 4.0.0
+    devDependencies:
+      '@bcew-monorepo/e2e':
+        specifier: workspace:*
+        version: link:../../packages/e2e
+      '@playwright/test':
+        specifier: 'catalog:'
+        version: 1.58.2
 
-  themes/design-system-wordpress-child-theme-ticorp: {}
+  themes/design-system-wordpress-child-theme-ticorp:
+    devDependencies:
+      '@bcew-monorepo/e2e':
+        specifier: workspace:*
+        version: link:../../packages/e2e
+      '@playwright/test':
+        specifier: 'catalog:'
+        version: 1.58.2
 
   tools/monorepo:
     dependencies:
       '@nx/devkit':
         specifier: 22.5.4
-        version: 22.5.4(nx@22.5.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))
+        version: 22.5.4(nx@23.0.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))
       tslib:
         specifier: ^2.3.0
         version: 2.8.1
@@ -1000,11 +1059,20 @@ packages:
   '@dual-bundle/import-meta-resolve@4.2.1':
     resolution: {integrity: sha512-id+7YRUgoUX6CgV0DtuhirQWodeeA7Lf4i2x71JS/vtA5pRb/hIGWlw+G6MeXvsM+MXrz0VAydTGElX1rAfgPg==}
 
+  '@emnapi/core@1.4.5':
+    resolution: {integrity: sha512-XsLw1dEOpkSX/WucdqUhPWP7hDxSvZiY+fsUC14h+FtQ2Ifni4znbBt8punRX+Uj2JG/uDb8nEHVKvrVlvdZ5Q==}
+
   '@emnapi/core@1.9.1':
     resolution: {integrity: sha512-mukuNALVsoix/w1BJwFzwXBN/dHeejQtuVzcDsfOEsdpCumXb/E9j8w11h5S54tT1xhifGfbbSm/ICrObRb3KA==}
 
+  '@emnapi/runtime@1.4.5':
+    resolution: {integrity: sha512-++LApOtY0pEEz1zrd9vy1/zXVaVJJ/EbAF3u0fXIzPJEDtnITsBGbbK0EkM72amhl/R5b+5xx0Y/QhcVOpuulg==}
+
   '@emnapi/runtime@1.9.1':
     resolution: {integrity: sha512-VYi5+ZVLhpgK4hQ0TAjiQiZ6ol0oe4mBx7mVv7IflsiEp0OWoVsp/+f9Vc1hOhE0TtkORVrI1GvzyreqpgWtkA==}
+
+  '@emnapi/wasi-threads@1.0.4':
+    resolution: {integrity: sha512-PJR+bOmMOPH8AtcTGAyYNiuJ3/Fcoj2XN/gBEWzDIKh254XO+mM9XoXHk5GNEhodxeMznbg7BlRojVbKN+gC6g==}
 
   '@emnapi/wasi-threads@1.2.0':
     resolution: {integrity: sha512-N10dEJNSsUx41Z6pZsXU8FjPjpBEplgH24sfkmITrBED1/U2Esum9F3lfLrMjKHHjmi557zQn7kR9R+XWXu5Rg==}
@@ -1493,14 +1561,6 @@ packages:
       '@types/node':
         optional: true
 
-  '@isaacs/balanced-match@4.0.1':
-    resolution: {integrity: sha512-yzMTt9lEb8Gv7zRioUilSglI0c0smZ9k5D65677DLWLtWJaXIS3CqcGyUFByYKlnUj6TkjLVs54fBl6+TiGQDQ==}
-    engines: {node: 20 || >=22}
-
-  '@isaacs/brace-expansion@5.0.1':
-    resolution: {integrity: sha512-WMz71T1JS624nWj2n2fnYAuPovhv7EUhk69R6i9dsVyzxt5eM3bjwvgk9L+APE1TRscGysAVMANkB0jh0LQZrQ==}
-    engines: {node: 20 || >=22}
-
   '@isaacs/cliui@8.0.2':
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
     engines: {node: '>=12'}
@@ -1529,6 +1589,10 @@ packages:
     peerDependenciesMeta:
       node-notifier:
         optional: true
+
+  '@jest/diff-sequences@30.0.1':
+    resolution: {integrity: sha512-n5H8QLDJ47QqbCNn5SuFjCRDrOLEZ0h8vAHCK5RL9Ls7Xa8AQLa/YxAc9UjFqoEDM48muwtBGjtMY5cr0PLDCw==}
+    engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
 
   '@jest/diff-sequences@30.3.0':
     resolution: {integrity: sha512-cG51MVnLq1ecVUaQ3fr6YuuAOitHK1S4WUJHnsPFE/quQr33ADUx1FfrTCpMCRxvy0Yr9BThKpDjSlcTi91tMA==}
@@ -1869,19 +1933,14 @@ packages:
       verdaccio:
         optional: true
 
-  '@nx/nx-darwin-arm64@22.5.0':
-    resolution: {integrity: sha512-MHnzv6tzucvLsh4oS9FTepj+ct/o8/DPXrQow+9Jid7GSgY59xrDX/8CleJOrwL5lqKEyGW7vv8TR+4wGtEWTA==}
-    cpu: [arm64]
-    os: [darwin]
-
   '@nx/nx-darwin-arm64@22.6.2':
     resolution: {integrity: sha512-pq21tJO3ykatm4P8P8owMThOor/Kg/kDs/y4xsmz+N68NUYKvFPgc3p90SCyJnFKbNohlMSPFJYHY3zxrDUYhQ==}
     cpu: [arm64]
     os: [darwin]
 
-  '@nx/nx-darwin-x64@22.5.0':
-    resolution: {integrity: sha512-/0w43hbR5Kia0XeCDZHDt/18FHhpwQs+Y+8TO8/ZsF1RgCI0knJDCyJieYk1yEZAq6E8dStAJnuzxK9uvETs4A==}
-    cpu: [x64]
+  '@nx/nx-darwin-arm64@23.0.0':
+    resolution: {integrity: sha512-c/rXP3LYXJLC1F+9KDrWE+n1nkDnTEfHnA1KAK3A/CSk8EfgY0RhekcdbGISrHqgbccdVTBRTNUeTdwD+w23Xw==}
+    cpu: [arm64]
     os: [darwin]
 
   '@nx/nx-darwin-x64@22.6.2':
@@ -1889,31 +1948,30 @@ packages:
     cpu: [x64]
     os: [darwin]
 
-  '@nx/nx-freebsd-x64@22.5.0':
-    resolution: {integrity: sha512-d4Pd1VFpD272R7kJTWm/Pj49BIz44GZ+QIVSfxlx3GWxyaPd25X9GBanUngL6qpactS+aLTwcoBmnSbZ4PEcEQ==}
+  '@nx/nx-darwin-x64@23.0.0':
+    resolution: {integrity: sha512-fb1+s0dASz/a+0Ex3Qdw6Y1NssMZ58f8SyQtnr+c7ITM8Yi5njWfNVZMk1tAnAv7CSFvUvltaYekS88GMQ/8lQ==}
     cpu: [x64]
-    os: [freebsd]
+    os: [darwin]
 
   '@nx/nx-freebsd-x64@22.6.2':
     resolution: {integrity: sha512-CUkXPLm9R5Wihv/WgrYNF2l169BEk6NwQbYhl7x4D6A2jpISf0JHKup42PetFoq62TT2KGMjuLRP3xOoVB/Yrg==}
     cpu: [x64]
     os: [freebsd]
 
-  '@nx/nx-linux-arm-gnueabihf@22.5.0':
-    resolution: {integrity: sha512-cCyG23PikIlqE7I6s9j0aHJSqIxnpdOjFOXyRd224XmFyAB8tOyKl7vDD/WugcpAceos28i+Rgz4na189zm48A==}
-    cpu: [arm]
-    os: [linux]
+  '@nx/nx-freebsd-x64@23.0.0':
+    resolution: {integrity: sha512-HYawS59K5IyNu28/0i0ectTAPlyBwPO0vhxw9UMGZ9ni6Yz3WvwPFTGZrWaEVAjGe3pQlQEVVBOr5/0Uw0Sw9A==}
+    cpu: [x64]
+    os: [freebsd]
 
   '@nx/nx-linux-arm-gnueabihf@22.6.2':
     resolution: {integrity: sha512-qV34eeQIZlagodInOXK6mUBfytxA39wK01es5CSHGmdRdYyQlwfaBkPY+GfWSA/sOem33lxYV2eu5H+rxkeRIA==}
     cpu: [arm]
     os: [linux]
 
-  '@nx/nx-linux-arm64-gnu@22.5.0':
-    resolution: {integrity: sha512-vkQw8737fpta6oVEEqskzwq+d0GeZkGhtyl+U3pAcuUcYTdqbsZaofSQACFnGfngsqpYmlJCWJGU5Te00qcPQw==}
-    cpu: [arm64]
+  '@nx/nx-linux-arm-gnueabihf@23.0.0':
+    resolution: {integrity: sha512-GSPVEUKL/PUuKCubNcH+QtOJ+4+VFHSpKDMTFFjizTh//d4SunC+DE6vvwRt5bCervohCW2B7BicQc6IP2V51g==}
+    cpu: [arm]
     os: [linux]
-    libc: [glibc]
 
   '@nx/nx-linux-arm64-gnu@22.6.2':
     resolution: {integrity: sha512-P7EGH74jsFGY/gd881EeHdz6MXSrjkLHDrwes4cs3ETpaa3ZnCSQrG84imFnOeRQucqB3P2QZc1eL44ATc6nVw==}
@@ -1921,11 +1979,11 @@ packages:
     os: [linux]
     libc: [glibc]
 
-  '@nx/nx-linux-arm64-musl@22.5.0':
-    resolution: {integrity: sha512-BkEsFBsnKrDK11N914rr5YKyIJwYoSVItJ7VzsQZIqAX0C7PdJeQ7KzqOGwoezbabdLmzFOBNg6s/o1ujoEYxw==}
+  '@nx/nx-linux-arm64-gnu@23.0.0':
+    resolution: {integrity: sha512-MkpI1SU+OxJ86SL5XcNJLKXsvnxzDwq4uh7Wbehcs62IWXtyGeuxHo1jYGrobYSV8v9f0Aafp3c2GxSxdZX/9Q==}
     cpu: [arm64]
     os: [linux]
-    libc: [musl]
+    libc: [glibc]
 
   '@nx/nx-linux-arm64-musl@22.6.2':
     resolution: {integrity: sha512-qwq2hFBsoR2tJSlflA3mKyrgzo5eNK2CTxcN3gPmBfxVA4jEIa+30pjpbQrK1C+lshhQrItZiPGlvcpL7rOESQ==}
@@ -1933,11 +1991,11 @@ packages:
     os: [linux]
     libc: [musl]
 
-  '@nx/nx-linux-x64-gnu@22.5.0':
-    resolution: {integrity: sha512-Dsqoz4hWmqehMMm8oJY6Q0ckEUeeHz4+T/C8nHyDaaj/REKCSmqYf/+QV6f2Z5Up/CsQ/hoAsWYEhCHZ0tcSFg==}
-    cpu: [x64]
+  '@nx/nx-linux-arm64-musl@23.0.0':
+    resolution: {integrity: sha512-yASOY5MpsuzHKSF4xRyoVCIWv65GDlVs9VxZ+aZIfw5R9XbPgiaHaHRGlLBAm0j7WFw7wBCOB3WOxBK+wjC3dQ==}
+    cpu: [arm64]
     os: [linux]
-    libc: [glibc]
+    libc: [musl]
 
   '@nx/nx-linux-x64-gnu@22.6.2':
     resolution: {integrity: sha512-Ru92V5qOivrvhJqIXbJUaHTv2zS19OGf30+FFdD+gnyCz6EzWtVcozYHAsjVfIQRWtwM0kEql77SpdV7dEnIVQ==}
@@ -1945,11 +2003,11 @@ packages:
     os: [linux]
     libc: [glibc]
 
-  '@nx/nx-linux-x64-musl@22.5.0':
-    resolution: {integrity: sha512-Lcj/61BpsT85Qhm3hNTwQFrqGtsjLC+y4Kk21dh22d1/E5pOdVAwPXBuWrSPNo4lX+ESNoKmwxWjfgW3uoB05g==}
+  '@nx/nx-linux-x64-gnu@23.0.0':
+    resolution: {integrity: sha512-HvDP11Ub00C7kAMC7NvX+sbV8wM5j+OjLQalys0wlyqZ+7SL9OulQv/cyMCEHZSKW8YPt4326G0+omulZDwIGg==}
     cpu: [x64]
     os: [linux]
-    libc: [musl]
+    libc: [glibc]
 
   '@nx/nx-linux-x64-musl@22.6.2':
     resolution: {integrity: sha512-/AIa8MNZZZh6EnPjWEq6EXsYl9B8JwD2QFcPGFRavXfpiYtK8Uk0q3NVSVcmg5L8WEW9ve5sxAY27lswym8cJw==}
@@ -1957,23 +2015,29 @@ packages:
     os: [linux]
     libc: [musl]
 
-  '@nx/nx-win32-arm64-msvc@22.5.0':
-    resolution: {integrity: sha512-0DlnBDLvqNtseCyBBoBst0gwux+N91RBc4E41JDDcLcWpfntcwCQM39D6lA5qdma/0L7U0PUM7MYV9Q6igJMkQ==}
-    cpu: [arm64]
-    os: [win32]
+  '@nx/nx-linux-x64-musl@23.0.0':
+    resolution: {integrity: sha512-t1pSyBrxQ0Dly9VzB8WZXhVQMk044P8AyMRRiZ+NOs1pK4eRqVlmJmwJQw3ZfZZYUhA7B02PV8DHOjactctdag==}
+    cpu: [x64]
+    os: [linux]
+    libc: [musl]
 
   '@nx/nx-win32-arm64-msvc@22.6.2':
     resolution: {integrity: sha512-0y9FHSbUj1bhD7obbQXFgnCYHNGuqajMks+oVhqsd0p48U8kjqLPG0aZchztDNzqPk52UHqIBBSiLeMofIcIzw==}
     cpu: [arm64]
     os: [win32]
 
-  '@nx/nx-win32-x64-msvc@22.5.0':
-    resolution: {integrity: sha512-kMMsU4PxKQ76NvmPFKT0/RlzRTiuUfuNWVJUmsWF1onVcBkXgQNKkmLcSJk3wGwML5/tHChjtlI7Hpo705Uv/g==}
-    cpu: [x64]
+  '@nx/nx-win32-arm64-msvc@23.0.0':
+    resolution: {integrity: sha512-IKTwZZgejzyUZChQjGss2cCSi2rR0J3FnpyQkjt9I4fFYTNd4YCNs5njovrBjQtVLpi/vv3e96fl3ccjbzIUpA==}
+    cpu: [arm64]
     os: [win32]
 
   '@nx/nx-win32-x64-msvc@22.6.2':
     resolution: {integrity: sha512-6rcB7ioI47GP+ocKO7m1NETW9yV6nW88kiEI8kkQv4kU5fPD3t9EcI7Gu5eF0Ms9cCx/EUspFgh1ZDwDDw4Uzg==}
+    cpu: [x64]
+    os: [win32]
+
+  '@nx/nx-win32-x64-msvc@23.0.0':
+    resolution: {integrity: sha512-2LSdp8U5gDaXtXbGLiKRdQM0f4yNCaraCpQrz27yjlQbyrULyCiaB00NPBL2JlhH9eQahx/QRyizhkMQ0hzVBA==}
     cpu: [x64]
     os: [win32]
 
@@ -3940,9 +4004,24 @@ packages:
     resolution: {integrity: sha512-Kkayj4f6KzcMW2TFaahADE0aoDpYeqadIinvIp0hxY6+zn/uqK1Ml7x5idLZ/jbyzzbVlI31eid3HtblGY3+og==}
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
 
+  '@wordpress/base-styles@6.20.0':
+    resolution: {integrity: sha512-Dsug4Zxz2xOFtK6CGThKYXwCqC9Yztw2STKQzwztrX4yW+o6iDbzkxpcwdDhsaVJs0Jt9A4LmJpZPh+pUozzLA==}
+    engines: {node: '>=18.12.0', npm: '>=8.19.2'}
+
+  '@wordpress/base-styles@8.0.0':
+    resolution: {integrity: sha512-livtgwnvBm7xbpm/gaBxwtdZm3KCXq210UNsr48WA8TGfi/OfZ4oOzk4Mp4/ZHsq2baaXzhZ0iXjyR7oyaOTsw==}
+    engines: {node: '>=18.12.0', npm: '>=8.19.2'}
+
   '@wordpress/blob@4.48.1':
     resolution: {integrity: sha512-iK3dtZu/UtnYpKfQ2aGZM2xrLXK5ff88QNU77XlraipaGV/C7zK2M0+sWY6cVL50TfMR7VX9prZ2XCpE5aRzSg==}
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
+
+  '@wordpress/block-editor@15.17.0':
+    resolution: {integrity: sha512-zOQIvhe73K+Q15pClUdWuxL8r4RFHe4QxIyFfsLZK37cXfGzPiQ8QJf68muA5A2rkDFfO5mcT0XFFbDddE5ZUA==}
+    engines: {node: '>=18.12.0', npm: '>=8.19.2'}
+    peerDependencies:
+      react: ^18.0.0
+      react-dom: ^18.0.0
 
   '@wordpress/block-editor@15.21.1':
     resolution: {integrity: sha512-LCHp/NoYsR7MV0e7vPNBAgtjHqK3ST4VtduxF5nOgxl0K0zuyvDvanb14EQtY4KmR2Gjndgo72/aZ/kfdQbddg==}
@@ -3954,6 +4033,12 @@ packages:
   '@wordpress/block-serialization-default-parser@5.48.1':
     resolution: {integrity: sha512-REsjN6tT2lXekrjuiu2O0+FYW13QHhy23j7C458zzSjpYcxROtl/T8AozOJYRvG9SkdC9Og3PkEP/9/nGC4IVw==}
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
+
+  '@wordpress/blocks@15.17.0':
+    resolution: {integrity: sha512-KRhXMcH1Te83A9zsZRkB6NhG7PD9hnXYp0+Fb44mYvLGxYNGpKFQYuPSxgn2Tq8Ie2MxUf+f/4K8nR+r5hV/Gg==}
+    engines: {node: '>=18.12.0', npm: '>=8.19.2'}
+    peerDependencies:
+      react: ^18.0.0
 
   '@wordpress/blocks@15.21.1':
     resolution: {integrity: sha512-9VOQGCuDbmyBEp7/+HNgLKscOJfrqMEV6LYpOjF+LehZ7RwolqR03UGuU+xLSPKSVZw0wvmA0SjTm3a2GBxwjg==}
@@ -3972,12 +4057,32 @@ packages:
       react: ^18.0.0
       react-dom: ^18.0.0
 
+  '@wordpress/components@32.6.0':
+    resolution: {integrity: sha512-MpOr0mGTkKDRjxK5LKm86Uoj9p9Z6KkrvhkNVi5zVKCftyHVMK+tun7wL2Qn/JZVLbxZpB1kW5sJ5aMf3T2ToA==}
+    engines: {node: '>=18.12.0', npm: '>=8.19.2'}
+    peerDependencies:
+      react: ^18.0.0
+      react-dom: ^18.0.0
+
+  '@wordpress/components@33.1.0':
+    resolution: {integrity: sha512-5nFqe2pk7ePIhJhz+nDNS8r1az5hIJrUycuYJzmL3KL9hYgDknAzJDHb6IUNlVcNDPgLUuxzC780YlVG5Bi0LQ==}
+    engines: {node: '>=18.12.0', npm: '>=8.19.2'}
+    peerDependencies:
+      react: ^18.0.0
+      react-dom: ^18.0.0
+
   '@wordpress/components@35.0.1':
     resolution: {integrity: sha512-EiTeufX2spZ09kjI8Aa4c7dG6A3WyRSGyHTcCsVnIoE/ykOnAjtGSxnVRAT1KefrJ9RGI8JaTld48wjrB/CS5A==}
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
     peerDependencies:
       react: ^18.0.0
       react-dom: ^18.0.0
+
+  '@wordpress/compose@7.46.0':
+    resolution: {integrity: sha512-6Yv9Wb6tlA4JYU9bdWWuIWpTTzBAVA1zrYu1GY9x2/mCOckk9iLcEEfbKULxdjwwcMo3SKqvyby4f6kEUw/Wsw==}
+    engines: {node: '>=18.12.0', npm: '>=8.19.2'}
+    peerDependencies:
+      react: ^18.0.0
 
   '@wordpress/compose@8.1.1':
     resolution: {integrity: sha512-AEC9yOS5CuTk34F+oiWebhQrxgICnb/v/KScQBUVm6zbs1AMFtu5ku+Zk0A3YTD0tO/hNzXLbvsXhJdh1bGkRA==}
@@ -3997,6 +4102,13 @@ packages:
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
     peerDependencies:
       react: ^18.0.0
+
+  '@wordpress/dataviews@14.3.0':
+    resolution: {integrity: sha512-2fFSgyatDldjPb2gO+vLDwkbI2Jw+8zd/O0/BwLftQ5QhrrRtAqECFp+eYzcQ8Onh8OMhxq0n7tsaIHE/jWqJQ==}
+    engines: {node: '>=18.12.0', npm: '>=8.19.2'}
+    peerDependencies:
+      react: ^18.0.0
+      react-dom: ^18.0.0
 
   '@wordpress/dataviews@16.0.1':
     resolution: {integrity: sha512-OyDOPvtCIL0AV4wTGSrFHhBVEYwkBJvmfleSjXzGWc09u3BPIiefazoGN4GvtJPJbvieSyelXuVyN+JARIRUug==}
@@ -4026,13 +4138,6 @@ packages:
   '@wordpress/dom@4.48.1':
     resolution: {integrity: sha512-UmouS3KAAUf6q90adAM37FZ3Tq+w+5UfNVUEKRtZjzbH3gMZJTKmYXpG9dkYyLLmicXgOrcG1GQ0qTX91MjAuA==}
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
-
-  '@wordpress/e2e-test-utils-playwright@1.46.0':
-    resolution: {integrity: sha512-Bls5BGRNda0Oo4biTZ/KIwO8iHBeovvfWNfrPXReIsrW1td1UqXw2Z9l0/LaP3euJZFNom2QExHCOba+8eN5lQ==}
-    engines: {node: '>=18.12.0', npm: '>=8.19.2'}
-    peerDependencies:
-      '@playwright/test': '>=1'
-      '@types/node': ^20.17.10
 
   '@wordpress/e2e-test-utils-playwright@1.48.1':
     resolution: {integrity: sha512-jaBTZHZ0SG1MQ/Nb4GdaH7DMcieFp/ysYOoCodmhfoScFoWTI66/e8egPxU8cOs06gXnOYNPvJ9hnCaeCTz3ug==}
@@ -4084,10 +4189,27 @@ packages:
     resolution: {integrity: sha512-Gq6j3yl+m0pc0989jFjAgYbtdwHyUS/5PR39zg+hQfq1IWiqCwfhFlJAqc8ymwx/gSklrxf9mmyhBwmUPWtMcw==}
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
 
+  '@wordpress/i18n@6.17.0':
+    resolution: {integrity: sha512-v1SLBweg7CRzQ+5+WSC1U93i8h9d3AoB0YBvMsd6gWI5vO8Zh4YKlEMexvrHQC++WN83egwqux84fWEdeU0MUA==}
+    engines: {node: '>=18.12.0', npm: '>=8.19.2'}
+    hasBin: true
+
   '@wordpress/i18n@6.21.1':
     resolution: {integrity: sha512-qBbDJTRCtMfEzTVtzOa/fZf8XlU/JY3nI4MSdxyRQKduFanbXvzTRqJSSEIpZS4ACJTyUqafZX8zEZIH5CrNHQ==}
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
     hasBin: true
+
+  '@wordpress/icons@12.2.0':
+    resolution: {integrity: sha512-Fiw7bmfHDNPjTdCrBF23/9K0VN/GUi73d2ZPZaeWdXhTmIX62T9KYvb1c+WnlBkX7GpXgJO6Q8mypQCY9mw5SQ==}
+    engines: {node: '>=18.12.0', npm: '>=8.19.2'}
+    peerDependencies:
+      react: ^18.0.0
+
+  '@wordpress/icons@13.3.0':
+    resolution: {integrity: sha512-Y/iE3aeHQ4XkX0fffiTPCUfjT8wNw1I7hDJkKqpaLmkD+C5NKWixRrDVfRnaJqU/MxY8RdyVC/nGng2MLPNH0A==}
+    engines: {node: '>=18.12.0', npm: '>=8.19.2'}
+    peerDependencies:
+      react: ^18.0.0
 
   '@wordpress/icons@14.0.1':
     resolution: {integrity: sha512-Vf3wXrS8JWwozKGQ3vS8WQBwmzZyk0ih3W92kE+xPDK2K5QPrlW4MjbSV8gYbNAHC6NECPSWrEGI3DmbgvAP3w==}
@@ -4211,6 +4333,10 @@ packages:
     resolution: {integrity: sha512-biMD3eTjoUj5hlmA261kLAlgCN/bjxeeRe7XFrjG/bxQErmYp+hmMSejNTuLpg3j8I11eQ3Vo0iRCjGzn4xFEQ==}
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
 
+  '@wordpress/style-runtime@0.2.0':
+    resolution: {integrity: sha512-9pLmilkgWqTvIlrnnXbW7ECfEPvCSYOve7btXgYGgMOzrGs12ijnG+kSGGg0aJhEV8OCzQ/QdVBh4s1zQZ0bLQ==}
+    engines: {node: '>=20.10.0', npm: '>=10.2.3'}
+
   '@wordpress/style-runtime@0.4.1':
     resolution: {integrity: sha512-guZ0p9a5ZQyyCFPwVqDkhDNVXdXAhIqNkPGSNIGguEtt3OtSOskEMwYJHyXZYX8nlbH0FyKflGJhE4G6QlIWlw==}
     engines: {node: '>=20.10.0', npm: '>=10.2.3'}
@@ -4237,6 +4363,17 @@ packages:
       stylelint:
         optional: true
 
+  '@wordpress/theme@0.13.0':
+    resolution: {integrity: sha512-4Lasso3BPej43c7e+eO+YN/fl/mcg/Q9+nclp1FmV6xdWFiUXvfwAOsEeNQQ/5s5mw5aCgseK3//qX5gydhfUA==}
+    engines: {node: '>=18.12.0', npm: '>=8.19.2'}
+    peerDependencies:
+      react: ^18.0.0
+      react-dom: ^18.0.0
+      stylelint: ^16.8.2
+    peerDependenciesMeta:
+      stylelint:
+        optional: true
+
   '@wordpress/theme@0.15.1':
     resolution: {integrity: sha512-0SqH40Sd4pKH8YkDjQ4JM2NJzdhliO19QTPHAOAGA+tXuh+YwHOwFxX8Mg0v/vvI4XJD11zuiKGr+grBI7icTQ==}
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
@@ -4252,6 +4389,13 @@ packages:
     resolution: {integrity: sha512-hFAqE8xmTpq/4IVs3AHXxVA2FTrQ2BcOQHsdXJ9kELfcazTZWZsPU2hampfIGYZzyzLnTX06dUubuuy2++LUSQ==}
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
 
+  '@wordpress/ui@0.13.0':
+    resolution: {integrity: sha512-NSP/Hh6X3qbN0B7KsWFGZfmiYp28NiVZnxu8uJSspZs9mzVP+qKC9yOgIxPYIjFuGDrXJ6QK9wL3soRXkJMG0w==}
+    engines: {node: '>=20.10.0', npm: '>=10.2.3'}
+    peerDependencies:
+      react: ^18.0.0
+      react-dom: ^18.0.0
+
   '@wordpress/ui@0.15.1':
     resolution: {integrity: sha512-zFErzf84zc7dGXrCa9fPKUpMhYx86B8n5GeshC7Ut/nfE7yp09g/Bono5S7KhY1OJx7Z1Jur9t+4vnv5cocBbA==}
     engines: {node: '>=20.10.0', npm: '>=10.2.3'}
@@ -4263,6 +4407,13 @@ packages:
     resolution: {integrity: sha512-i/yHiUQ5S47yong7FXxIRpJgO1MbItEKfcyp1a3rRe66rw1RVPmAlJxyeKaQg9eZbCXOmmDz5cLzZNPyUDN6uA==}
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
 
+  '@wordpress/upload-media@0.29.0':
+    resolution: {integrity: sha512-ruMjLJGYWC5uSzzYKM+xkmXwpB1C6Ud69VNoupblpUmoG5amcI7I9e7gnQa8oJ0zHIkxFA50/9aHs4C0rsSQPA==}
+    engines: {node: '>=18.12.0', npm: '>=8.19.2'}
+    peerDependencies:
+      react: ^18.0.0
+      react-dom: ^18.0.0
+
   '@wordpress/upload-media@0.33.1':
     resolution: {integrity: sha512-FjHJGZh7tjUyMbHXiPPHT8oRpM24ENwCOYG7OEoWRGP3NSU5v9Ff4TCksI25Ws420TkrNCFnHlU+xmALQAu30w==}
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
@@ -4272,6 +4423,10 @@ packages:
 
   '@wordpress/url@4.48.1':
     resolution: {integrity: sha512-EiTMmEwotXY4Cu6casJ10HEe0ocsdVujkm1iZyA0vvu2qtR5IIQqlSVGxDx96cJBP6cB2b8x2ebGLWfnwow4/Q==}
+    engines: {node: '>=18.12.0', npm: '>=8.19.2'}
+
+  '@wordpress/vips@1.6.0':
+    resolution: {integrity: sha512-TiQYzS5L2hVk6H9Xpk0tSzMu0cpCLUXNCXioiM/LZ2SvzP9ibwp+uXp2QwI2SS32aO06OeECaCJx+qgbIimv3A==}
     engines: {node: '>=18.12.0', npm: '>=8.19.2'}
 
   '@wordpress/vips@2.1.1':
@@ -4736,6 +4891,10 @@ packages:
 
   balanced-match@2.0.0:
     resolution: {integrity: sha512-1ugUSr8BHXRnK23KfuYS+gVMC3LB8QGH9W1iGtDPsNWoQbgtXSExkBu2aDR4epiGWZOjZsj6lDl/N/AqqTC3UA==}
+
+  balanced-match@4.0.3:
+    resolution: {integrity: sha512-1pHv8LX9CpKut1Zp4EXey7Z8OfH11ONNH6Dhi2WDUt31VVZFXZzKwXcysBgqSumFCmR+0dqjMK5v5JiFHzi0+g==}
+    engines: {node: 20 || >=22}
 
   balanced-match@4.0.4:
     resolution: {integrity: sha512-BLrgEcRTwX2o6gGxGOCNyMvGSp35YofuYzw9h1IMTRmKqttAZZVU67bdb9Pr2vUHA8+j3i2tJfjO6C6+4myGTA==}
@@ -5379,6 +5538,9 @@ packages:
   date-fns-jalali@4.1.0-0:
     resolution: {integrity: sha512-hTIP/z+t+qKwBDcmmsnmjWTduxCg+5KfdqWQvb2X/8C9+knYY6epN/pfxdDuyVlSVeFz0sM5eEfwIUQ70U4ckg==}
 
+  date-fns@3.6.0:
+    resolution: {integrity: sha512-fRHTG8g/Gif+kSh50gaGEdToemgfj74aRX3swtiouboip5JDLAyDE9F11nHMIcvOaXeOC6D7SpNhi7uFyB7Uww==}
+
   date-fns@4.1.0:
     resolution: {integrity: sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg==}
 
@@ -5539,6 +5701,10 @@ packages:
   diff3@0.0.4:
     resolution: {integrity: sha512-f1rQ7jXDn/3i37hdwRk9ohqcvLRH3+gEIgmA6qEM280WUOh7cOr3GXV8Jm5sPwUs46Nzl48SE8YNLGJoaLuodg==}
 
+  diff@4.0.4:
+    resolution: {integrity: sha512-X07nttJQkwkfKfvTPG/KSnE2OMdcUCao6+eXF3wmnIQRn2aPAHH3VxDbDOdegkd6JbPsXqShpvEOHfAT+nCNwQ==}
+    engines: {node: '>=0.3.1'}
+
   diff@8.0.4:
     resolution: {integrity: sha512-DPi0FmjiSU5EvQV0++GFDOJ9ASQUVFh5kD+OzOnYdi7n3Wpm9hWWGfB/O2blfHcMVTL5WkQXSnRiK9makhrcnw==}
     engines: {node: '>=0.3.1'}
@@ -5587,6 +5753,10 @@ packages:
     resolution: {integrity: sha512-zIHwmZPRshsCdpMDyVsqGmgyP0yT8GAgXUnkdAoJisxvf33k7yO6OuoKmcTGuXPWSsm8Oh88nZicRLA9Y0rUeA==}
     engines: {node: '>=12'}
 
+  dotenv-expand@12.0.3:
+    resolution: {integrity: sha512-uc47g4b+4k/M/SeaW1y4OApx+mtLWl92l5LMPP0GNXctZqELk+YGgOPIIC5elYmUH4OuoK3JLhuRUYegeySiFA==}
+    engines: {node: '>=12'}
+
   dotenv@16.4.7:
     resolution: {integrity: sha512-47qPchRCykZC03FhkYAhrvwU4xDBFIj1QPqaarj6mdM/hgUzfPHcpkHJOn3mJAufFeeAxAzeGsr5X0M4k6fLZQ==}
     engines: {node: '>=12'}
@@ -5615,6 +5785,11 @@ packages:
   ejs@3.1.10:
     resolution: {integrity: sha512-UeJmFfOrAQS8OJWPZ4qtgHyWExa088/MtK5UEyoJGFH67cDEXkZSviOiKRCZ4Xij0zxI3JECgYs3oKx+AizQBA==}
     engines: {node: '>=0.10.0'}
+    hasBin: true
+
+  ejs@5.0.1:
+    resolution: {integrity: sha512-COqBPFMxuPTPspXl2DkVYaDS3HtrD1GpzOGkNTJ1IYkifq/r9h8SVEFrjA3D9/VJGOEoMQcrlhpntcSUrM8k6A==}
+    engines: {node: '>=0.12.18'}
     hasBin: true
 
   electron-to-chromium@1.5.279:
@@ -7678,10 +7853,6 @@ packages:
   minimalistic-assert@1.0.1:
     resolution: {integrity: sha512-UtJcAD4yEaGtjPezWuO9wC4nwUnVH/8/Im3yEHQP4b67cXlD/Qr9hdITCU1xDbSEXg2XKNaP8jsReV7vQd00/A==}
 
-  minimatch@10.1.1:
-    resolution: {integrity: sha512-enIvLvRAFZYXJzkCYG5RKmPfrFArdLv+R+lbQ53BmIMLIry74bjKzX6iHAm8WYamJkhSSEabrWN5D97XnKObjQ==}
-    engines: {node: 20 || >=22}
-
   minimatch@10.2.4:
     resolution: {integrity: sha512-oRjTw/97aTBN0RHbYCdtF1MQfvusSIBQM0IZEgzl6426+8jSC0nF1a/GmnVLpfB9yyr6g6FTqWqiZVbxrtaCIg==}
     engines: {node: 18 || 20 || >=22}
@@ -7819,9 +7990,6 @@ packages:
   node-int64@0.4.0:
     resolution: {integrity: sha512-O5lz91xSOeoXP6DulyHfllpq+Eg00MWitZIbtPfoSEvqIHdl5gfcY6hYzDWnj0qD5tz52PI08u9qUvSVeUBeHw==}
 
-  node-machine-id@1.1.12:
-    resolution: {integrity: sha512-QNABxbrPa3qEIfrE6GOJ7BYIuignnJw7iQ2YPbc3Nla1HzRJjXzZOiikfF8m7eAMfichLt3M4VgLOetqgDmgGQ==}
-
   node-releases@2.0.27:
     resolution: {integrity: sha512-nmh3lCkYZ3grZvqcCH+fjmQ7X+H0OeZgP40OierEaAptX4XofMh5kwNbWh7lBduUzCcV/8kZ+NDLCwm2iorIlA==}
 
@@ -7878,20 +8046,20 @@ packages:
   nwsapi@2.2.23:
     resolution: {integrity: sha512-7wfH4sLbt4M0gCDzGE6vzQBo0bfTKjU7Sfpqy/7gs1qBfYz2vEJH6vXcBKpO3+6Yu1telwd0t9HpyOoLEQQbIQ==}
 
-  nx@22.5.0:
-    resolution: {integrity: sha512-GOHhDHXvuscD28Hpj1bP38oVrCgZ/+5UWjA8R/VkpbtkfMHgRZ0uHlfKLYXQAZIsjmTq7Tr+e4QchJt0e76n0w==}
+  nx@22.6.2:
+    resolution: {integrity: sha512-Swc/7VUNqXQ9aEU6OzHTqUh6PDQAtsIT6Zgc0pAb2LLDOBYtSr+PO3lMWcZX0SZcu4vEzUZxDYAhkls5b096kw==}
     hasBin: true
     peerDependencies:
-      '@swc-node/register': 1.11.1
-      '@swc/core': 1.15.8
+      '@swc-node/register': ^1.11.1
+      '@swc/core': ^1.15.8
     peerDependenciesMeta:
       '@swc-node/register':
         optional: true
       '@swc/core':
         optional: true
 
-  nx@22.6.2:
-    resolution: {integrity: sha512-Swc/7VUNqXQ9aEU6OzHTqUh6PDQAtsIT6Zgc0pAb2LLDOBYtSr+PO3lMWcZX0SZcu4vEzUZxDYAhkls5b096kw==}
+  nx@23.0.0:
+    resolution: {integrity: sha512-60HZVOQErtSTnR+UVPBYI5sYe8R2nrHttI0tVHhEj91kJpbXvL15gSh+rv6lUcAJtDfPymoEn20jGzN4oOLKAg==}
     hasBin: true
     peerDependencies:
       '@swc-node/register': ^1.11.1
@@ -7983,6 +8151,10 @@ packages:
 
   ora@5.3.0:
     resolution: {integrity: sha512-zAKMgGXUim0Jyd6CXK9lraBnD3H5yPGBPPOkC23a2BG6hsm4Zu6OQSjQuEtV0BHDf4aKHcUFvJiGRrFuW3MG8g==}
+    engines: {node: '>=10'}
+
+  ora@5.4.1:
+    resolution: {integrity: sha512-5b6Y85tPxZZ7QytO+BQzysW31HJku27cRIlkbAXaNx+BdcVi+LlRFmVXzeF6a7JCwJpyw5c4b+YSVImQIrBpuQ==}
     engines: {node: '>=10'}
 
   os-homedir@1.0.2:
@@ -9078,6 +9250,10 @@ packages:
     resolution: {integrity: sha512-94hK0Hh8rPqQl2xXc3HsaBoOXKV20MToPkcXvwbISWLEs+64sBq5kFgn2kJDHb1Pry9yrP0dxrCI9RRci7RXKg==}
     engines: {node: '>= 6.0.0', npm: '>= 3.0.0'}
 
+  smol-toml@1.6.1:
+    resolution: {integrity: sha512-dWUG8F5sIIARXih1DTaQAX4SsiTXhInKf1buxdY9DIg4ZYPZK5nGM1VRIYmEbDbsHt7USo99xSLFu5Q1IqTmsg==}
+    engines: {node: '>= 18'}
+
   snake-case@3.0.4:
     resolution: {integrity: sha512-LAOh4z89bGQvl9pFfNF8V146i7o7/CqFPbqzYgP+yYzDIDeS9HaNFtXABamRW+AQzEVODcvE79ljJ+8a9YSdMg==}
 
@@ -9597,6 +9773,11 @@ packages:
   typedarray@0.0.6:
     resolution: {integrity: sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==}
 
+  typescript@5.3.3:
+    resolution: {integrity: sha512-pXWcraxM0uxAS+tN0AG/BF2TyqmHO014Z070UsJ+pFvYuRSq8KH8DmWpnbXe0pEPDHXZV3FcAbJkijJ5oNEnWw==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+
   typescript@5.9.3:
     resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
     engines: {node: '>=14.17'}
@@ -9738,6 +9919,11 @@ packages:
     deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
     hasBin: true
 
+  uuid@9.0.1:
+    resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
+    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
+    hasBin: true
+
   v8-to-istanbul@9.3.0:
     resolution: {integrity: sha512-kiGUalWN+rgBJ/1OHZsBtU4rXZOfj/7rKQxULKlIzwzQSvMJUUNgPwJEEh7gU6xEVxC0ahoOBvN2YI8GH6FNgA==}
     engines: {node: '>=10.12.0'}
@@ -9836,6 +10022,10 @@ packages:
 
   wasm-feature-detect@1.8.0:
     resolution: {integrity: sha512-zksaLKM2fVlnB5jQQDqKXXwYHLQUVH9es+5TOOHwGOVJOCeRBCiPjwSg+3tN2AdTCzjgli4jijCH290kXb/zWQ==}
+
+  wasm-vips@0.0.16:
+    resolution: {integrity: sha512-4/bEq8noAFt7DX3VT+Vt5AgNtnnOLwvmrDbduWfiv9AV+VYkbUU4f9Dam9e6khRqPinyClFHCqiwATTTJEiGwA==}
+    engines: {node: '>=16.4.0'}
 
   wasm-vips@0.0.17:
     resolution: {integrity: sha512-nhkqUNJDUymImoXGrVfImC4wzIFTb9KfBpAngb7dcEQNPP1gVTx4+WL3VVVDSXQpMsyeacsQDOx0+DM33Rpurg==}
@@ -9970,6 +10160,11 @@ packages:
   which@2.0.2:
     resolution: {integrity: sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==}
     engines: {node: '>= 8'}
+    hasBin: true
+
+  which@3.0.1:
+    resolution: {integrity: sha512-XA1b62dzQzLfaEOSQFTCOd5KFf/1VSzZo7/7TUjnya6u0vGGKzU96UQBZTAThCb2j4/xjBAyii1OhRLJEivHvg==}
+    engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
     hasBin: true
 
   wildcard@2.0.1:
@@ -11220,12 +11415,25 @@ snapshots:
 
   '@dual-bundle/import-meta-resolve@4.2.1': {}
 
+  '@emnapi/core@1.4.5':
+    dependencies:
+      '@emnapi/wasi-threads': 1.0.4
+      tslib: 2.8.1
+
   '@emnapi/core@1.9.1':
     dependencies:
       '@emnapi/wasi-threads': 1.2.0
       tslib: 2.8.1
 
+  '@emnapi/runtime@1.4.5':
+    dependencies:
+      tslib: 2.8.1
+
   '@emnapi/runtime@1.9.1':
+    dependencies:
+      tslib: 2.8.1
+
+  '@emnapi/wasi-threads@1.0.4':
     dependencies:
       tslib: 2.8.1
 
@@ -11701,12 +11909,6 @@ snapshots:
       '@types/node': 20.19.9
     optional: true
 
-  '@isaacs/balanced-match@4.0.1': {}
-
-  '@isaacs/brace-expansion@5.0.1':
-    dependencies:
-      '@isaacs/balanced-match': 4.0.1
-
   '@isaacs/cliui@8.0.2':
     dependencies:
       string-width: 5.1.2
@@ -11778,6 +11980,8 @@ snapshots:
       - babel-plugin-macros
       - supports-color
       - ts-node
+
+  '@jest/diff-sequences@30.0.1': {}
 
   '@jest/diff-sequences@30.3.0': {}
 
@@ -12195,43 +12399,43 @@ snapshots:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.20.1
 
-  '@nx/devkit@22.5.4(nx@22.5.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))':
+  '@nx/devkit@22.5.4(nx@23.0.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))':
     dependencies:
       '@zkochan/js-yaml': 0.0.7
       ejs: 3.1.10
       enquirer: 2.3.6
       minimatch: 10.2.4
-      nx: 22.5.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))
+      nx: 23.0.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))
       semver: 7.7.4
       tslib: 2.8.1
       yargs-parser: 21.1.1
 
-  '@nx/devkit@22.6.2(nx@22.5.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))':
+  '@nx/devkit@22.6.2(nx@22.6.2(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))':
     dependencies:
       '@zkochan/js-yaml': 0.0.7
       ejs: 3.1.10
       enquirer: 2.3.6
       minimatch: 10.2.4
-      nx: 22.5.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))
+      nx: 22.6.2(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))
       semver: 7.7.4
       tslib: 2.8.1
       yargs-parser: 21.1.1
 
-  '@nx/devkit@22.6.2(nx@22.6.2(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))':
+  '@nx/devkit@22.6.2(nx@23.0.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))':
     dependencies:
       '@zkochan/js-yaml': 0.0.7
       ejs: 3.1.10
       enquirer: 2.3.6
       minimatch: 10.2.4
-      nx: 22.6.2(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))
+      nx: 23.0.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))
       semver: 7.7.4
       tslib: 2.8.1
       yargs-parser: 21.1.1
 
-  '@nx/eslint@22.6.2(@babel/traverse@7.29.0)(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))(@zkochan/js-yaml@0.0.7)(eslint@10.4.0)(nx@22.5.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))':
+  '@nx/eslint@22.6.2(@babel/traverse@7.29.0)(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))(@zkochan/js-yaml@0.0.7)(eslint@10.4.0)(nx@23.0.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))':
     dependencies:
-      '@nx/devkit': 22.6.2(nx@22.5.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))
-      '@nx/js': 22.6.2(@babel/traverse@7.29.0)(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))(nx@22.5.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))
+      '@nx/devkit': 22.6.2(nx@23.0.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))
+      '@nx/js': 22.6.2(@babel/traverse@7.29.0)(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))(nx@23.0.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))
       eslint: 10.4.0
       semver: 7.7.4
       tslib: 2.8.1
@@ -12247,13 +12451,13 @@ snapshots:
       - supports-color
       - verdaccio
 
-  '@nx/jest@22.6.2(@babel/traverse@7.29.0)(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))(@types/node@20.19.9)(babel-plugin-macros@3.1.0)(nx@22.5.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))(typescript@5.9.3)':
+  '@nx/jest@22.6.2(@babel/traverse@7.29.0)(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))(@types/node@20.19.9)(babel-plugin-macros@3.1.0)(nx@23.0.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))(typescript@5.3.3)':
     dependencies:
       '@jest/reporters': 30.3.0
       '@jest/test-result': 30.3.0
-      '@nx/devkit': 22.6.2(nx@22.5.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))
-      '@nx/js': 22.6.2(@babel/traverse@7.29.0)(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))(nx@22.5.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))
-      '@phenomnomnominal/tsquery': 6.1.4(typescript@5.9.3)
+      '@nx/devkit': 22.6.2(nx@23.0.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))
+      '@nx/js': 22.6.2(@babel/traverse@7.29.0)(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))(nx@23.0.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))
+      '@phenomnomnominal/tsquery': 6.1.4(typescript@5.3.3)
       identity-obj-proxy: 3.0.0
       jest-config: 30.3.0(@types/node@20.19.9)(babel-plugin-macros@3.1.0)
       jest-resolve: 30.3.0
@@ -12279,7 +12483,7 @@ snapshots:
       - typescript
       - verdaccio
 
-  '@nx/js@22.6.2(@babel/traverse@7.29.0)(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))(nx@22.5.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))':
+  '@nx/js@22.6.2(@babel/traverse@7.29.0)(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))(nx@23.0.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))':
     dependencies:
       '@babel/core': 7.29.0
       '@babel/plugin-proposal-decorators': 7.29.0(@babel/core@7.29.0)
@@ -12288,8 +12492,8 @@ snapshots:
       '@babel/preset-env': 7.29.2(@babel/core@7.29.0)
       '@babel/preset-typescript': 7.28.5(@babel/core@7.29.0)
       '@babel/runtime': 7.29.2
-      '@nx/devkit': 22.6.2(nx@22.5.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))
-      '@nx/workspace': 22.6.2(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))
+      '@nx/devkit': 22.6.2(nx@23.0.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))
+      '@nx/workspace': 22.6.2(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))
       '@zkochan/js-yaml': 0.0.7
       babel-plugin-const-enum: 1.2.0(@babel/core@7.29.0)
       babel-plugin-macros: 3.1.0
@@ -12315,72 +12519,72 @@ snapshots:
       - nx
       - supports-color
 
-  '@nx/nx-darwin-arm64@22.5.0':
-    optional: true
-
   '@nx/nx-darwin-arm64@22.6.2':
     optional: true
 
-  '@nx/nx-darwin-x64@22.5.0':
+  '@nx/nx-darwin-arm64@23.0.0':
     optional: true
 
   '@nx/nx-darwin-x64@22.6.2':
     optional: true
 
-  '@nx/nx-freebsd-x64@22.5.0':
+  '@nx/nx-darwin-x64@23.0.0':
     optional: true
 
   '@nx/nx-freebsd-x64@22.6.2':
     optional: true
 
-  '@nx/nx-linux-arm-gnueabihf@22.5.0':
+  '@nx/nx-freebsd-x64@23.0.0':
     optional: true
 
   '@nx/nx-linux-arm-gnueabihf@22.6.2':
     optional: true
 
-  '@nx/nx-linux-arm64-gnu@22.5.0':
+  '@nx/nx-linux-arm-gnueabihf@23.0.0':
     optional: true
 
   '@nx/nx-linux-arm64-gnu@22.6.2':
     optional: true
 
-  '@nx/nx-linux-arm64-musl@22.5.0':
+  '@nx/nx-linux-arm64-gnu@23.0.0':
     optional: true
 
   '@nx/nx-linux-arm64-musl@22.6.2':
     optional: true
 
-  '@nx/nx-linux-x64-gnu@22.5.0':
+  '@nx/nx-linux-arm64-musl@23.0.0':
     optional: true
 
   '@nx/nx-linux-x64-gnu@22.6.2':
     optional: true
 
-  '@nx/nx-linux-x64-musl@22.5.0':
+  '@nx/nx-linux-x64-gnu@23.0.0':
     optional: true
 
   '@nx/nx-linux-x64-musl@22.6.2':
     optional: true
 
-  '@nx/nx-win32-arm64-msvc@22.5.0':
+  '@nx/nx-linux-x64-musl@23.0.0':
     optional: true
 
   '@nx/nx-win32-arm64-msvc@22.6.2':
     optional: true
 
-  '@nx/nx-win32-x64-msvc@22.5.0':
+  '@nx/nx-win32-arm64-msvc@23.0.0':
     optional: true
 
   '@nx/nx-win32-x64-msvc@22.6.2':
     optional: true
 
-  '@nx/plugin@22.6.2(@babel/traverse@7.29.0)(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))(@types/node@20.19.9)(@zkochan/js-yaml@0.0.7)(babel-plugin-macros@3.1.0)(eslint@10.4.0)(nx@22.5.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))(typescript@5.9.3)':
+  '@nx/nx-win32-x64-msvc@23.0.0':
+    optional: true
+
+  '@nx/plugin@22.6.2(@babel/traverse@7.29.0)(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))(@types/node@20.19.9)(@zkochan/js-yaml@0.0.7)(babel-plugin-macros@3.1.0)(eslint@10.4.0)(nx@23.0.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))(typescript@5.3.3)':
     dependencies:
-      '@nx/devkit': 22.6.2(nx@22.5.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))
-      '@nx/eslint': 22.6.2(@babel/traverse@7.29.0)(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))(@zkochan/js-yaml@0.0.7)(eslint@10.4.0)(nx@22.5.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))
-      '@nx/jest': 22.6.2(@babel/traverse@7.29.0)(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))(@types/node@20.19.9)(babel-plugin-macros@3.1.0)(nx@22.5.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))(typescript@5.9.3)
-      '@nx/js': 22.6.2(@babel/traverse@7.29.0)(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))(nx@22.5.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))
+      '@nx/devkit': 22.6.2(nx@23.0.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))
+      '@nx/eslint': 22.6.2(@babel/traverse@7.29.0)(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))(@zkochan/js-yaml@0.0.7)(eslint@10.4.0)(nx@23.0.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))
+      '@nx/jest': 22.6.2(@babel/traverse@7.29.0)(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))(@types/node@20.19.9)(babel-plugin-macros@3.1.0)(nx@23.0.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))(typescript@5.3.3)
+      '@nx/js': 22.6.2(@babel/traverse@7.29.0)(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))(nx@23.0.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))
       tslib: 2.8.1
     transitivePeerDependencies:
       - '@babel/traverse'
@@ -12399,13 +12603,13 @@ snapshots:
       - typescript
       - verdaccio
 
-  '@nx/workspace@22.6.2(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))':
+  '@nx/workspace@22.6.2(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))':
     dependencies:
-      '@nx/devkit': 22.6.2(nx@22.6.2(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))
+      '@nx/devkit': 22.6.2(nx@22.6.2(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)))
       '@zkochan/js-yaml': 0.0.7
       chalk: 4.1.2
       enquirer: 2.3.6
-      nx: 22.6.2(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))
+      nx: 22.6.2(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20))
       picomatch: 4.0.2
       semver: 7.7.4
       tslib: 2.8.1
@@ -12974,11 +13178,11 @@ snapshots:
       legacy-javascript: 0.0.1
       third-party-web: 0.29.2
 
-  '@phenomnomnominal/tsquery@6.1.4(typescript@5.9.3)':
+  '@phenomnomnominal/tsquery@6.1.4(typescript@5.3.3)':
     dependencies:
       '@types/esquery': 1.5.4
       esquery: 1.7.0
-      typescript: 5.9.3
+      typescript: 5.3.3
 
   '@php-wasm/cli-util@3.1.13':
     dependencies:
@@ -13623,6 +13827,18 @@ snapshots:
 
   '@standard-schema/spec@1.1.0': {}
 
+  '@stylistic/stylelint-plugin@3.1.3(stylelint@16.26.1(typescript@5.3.3))':
+    dependencies:
+      '@csstools/css-parser-algorithms': 3.0.5(@csstools/css-tokenizer@3.0.4)
+      '@csstools/css-tokenizer': 3.0.4
+      '@csstools/media-query-list-parser': 3.0.1(@csstools/css-parser-algorithms@3.0.5(@csstools/css-tokenizer@3.0.4))(@csstools/css-tokenizer@3.0.4)
+      is-plain-object: 5.0.0
+      postcss: 8.5.12
+      postcss-selector-parser: 6.1.2
+      postcss-value-parser: 4.2.0
+      style-search: 0.1.0
+      stylelint: 16.26.1(typescript@5.3.3)
+
   '@stylistic/stylelint-plugin@3.1.3(stylelint@16.26.1(typescript@5.9.3))':
     dependencies:
       '@csstools/css-parser-algorithms': 3.0.5(@csstools/css-tokenizer@3.0.4)
@@ -13679,6 +13895,17 @@ snapshots:
       '@svgr/babel-plugin-transform-react-native-svg': 8.1.0(@babel/core@7.29.0)
       '@svgr/babel-plugin-transform-svg-component': 8.0.0(@babel/core@7.29.0)
 
+  '@svgr/core@8.1.0(typescript@5.3.3)':
+    dependencies:
+      '@babel/core': 7.29.0
+      '@svgr/babel-preset': 8.1.0(@babel/core@7.29.0)
+      camelcase: 6.3.0
+      cosmiconfig: 8.3.6(typescript@5.3.3)
+      snake-case: 3.0.4
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
+
   '@svgr/core@8.1.0(typescript@5.9.3)':
     dependencies:
       '@babel/core': 7.29.0
@@ -13695,23 +13922,46 @@ snapshots:
       '@babel/types': 7.29.0
       entities: 4.5.0
 
-  '@svgr/plugin-jsx@8.1.0(@svgr/core@8.1.0(typescript@5.9.3))':
+  '@svgr/plugin-jsx@8.1.0(@svgr/core@8.1.0(typescript@5.3.3))':
     dependencies:
       '@babel/core': 7.29.0
       '@svgr/babel-preset': 8.1.0(@babel/core@7.29.0)
-      '@svgr/core': 8.1.0(typescript@5.9.3)
+      '@svgr/core': 8.1.0(typescript@5.3.3)
       '@svgr/hast-util-to-babel-ast': 8.0.0
       svg-parser: 2.0.4
     transitivePeerDependencies:
       - supports-color
 
-  '@svgr/plugin-svgo@8.1.0(@svgr/core@8.1.0(typescript@5.9.3))(typescript@5.9.3)':
+  '@svgr/plugin-svgo@8.1.0(@svgr/core@8.1.0(typescript@5.3.3))(typescript@5.3.3)':
     dependencies:
-      '@svgr/core': 8.1.0(typescript@5.9.3)
+      '@svgr/core': 8.1.0(typescript@5.3.3)
+      cosmiconfig: 8.3.6(typescript@5.3.3)
+      deepmerge: 4.3.1
+      svgo: 3.3.2
+    transitivePeerDependencies:
+      - typescript
+
+  '@svgr/plugin-svgo@8.1.0(@svgr/core@8.1.0(typescript@5.3.3))(typescript@5.9.3)':
+    dependencies:
+      '@svgr/core': 8.1.0(typescript@5.3.3)
       cosmiconfig: 8.3.6(typescript@5.9.3)
       deepmerge: 4.3.1
       svgo: 3.3.2
     transitivePeerDependencies:
+      - typescript
+
+  '@svgr/webpack@8.1.0(typescript@5.3.3)':
+    dependencies:
+      '@babel/core': 7.29.0
+      '@babel/plugin-transform-react-constant-elements': 7.27.1(@babel/core@7.29.0)
+      '@babel/preset-env': 7.29.2(@babel/core@7.29.0)
+      '@babel/preset-react': 7.28.5(@babel/core@7.29.0)
+      '@babel/preset-typescript': 7.28.5(@babel/core@7.29.0)
+      '@svgr/core': 8.1.0(typescript@5.3.3)
+      '@svgr/plugin-jsx': 8.1.0(@svgr/core@8.1.0(typescript@5.3.3))
+      '@svgr/plugin-svgo': 8.1.0(@svgr/core@8.1.0(typescript@5.3.3))(typescript@5.3.3)
+    transitivePeerDependencies:
+      - supports-color
       - typescript
 
   '@svgr/webpack@8.1.0(typescript@5.9.3)':
@@ -13722,8 +13972,8 @@ snapshots:
       '@babel/preset-react': 7.28.5(@babel/core@7.29.0)
       '@babel/preset-typescript': 7.28.5(@babel/core@7.29.0)
       '@svgr/core': 8.1.0(typescript@5.9.3)
-      '@svgr/plugin-jsx': 8.1.0(@svgr/core@8.1.0(typescript@5.9.3))
-      '@svgr/plugin-svgo': 8.1.0(@svgr/core@8.1.0(typescript@5.9.3))(typescript@5.9.3)
+      '@svgr/plugin-jsx': 8.1.0(@svgr/core@8.1.0(typescript@5.3.3))
+      '@svgr/plugin-svgo': 8.1.0(@svgr/core@8.1.0(typescript@5.3.3))(typescript@5.9.3)
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -13733,7 +13983,7 @@ snapshots:
       '@swc/core': 1.15.21(@swc/helpers@0.5.20)
       '@swc/types': 0.1.26
 
-  '@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3)':
+  '@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3)':
     dependencies:
       '@swc-node/core': 1.14.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)
       '@swc-node/sourcemap-support': 0.6.1
@@ -13743,7 +13993,7 @@ snapshots:
       oxc-resolver: 11.19.1
       pirates: 4.0.7
       tslib: 2.8.1
-      typescript: 5.9.3
+      typescript: 5.3.3
     transitivePeerDependencies:
       - '@swc/types'
       - supports-color
@@ -14157,16 +14407,16 @@ snapshots:
       '@types/node': 20.19.9
     optional: true
 
-  '@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@10.4.0)(typescript@5.9.3)':
+  '@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@10.4.0)(typescript@5.3.3))(eslint@8.57.1)(typescript@5.9.3)':
     dependencies:
       '@eslint-community/regexpp': 4.12.2
-      '@typescript-eslint/parser': 6.21.0(eslint@10.4.0)(typescript@5.9.3)
+      '@typescript-eslint/parser': 6.21.0(eslint@10.4.0)(typescript@5.3.3)
       '@typescript-eslint/scope-manager': 6.21.0
       '@typescript-eslint/type-utils': 6.21.0(eslint@8.57.1)(typescript@5.9.3)
       '@typescript-eslint/utils': 6.21.0(eslint@8.57.1)(typescript@5.9.3)
       '@typescript-eslint/visitor-keys': 6.21.0
       debug: 4.4.3
-      eslint: 10.4.0
+      eslint: 8.57.1
       graphemer: 1.4.0
       ignore: 5.3.2
       natural-compare: 1.4.0
@@ -14177,14 +14427,47 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/parser@6.21.0(eslint@10.4.0)(typescript@5.9.3)':
+  '@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.3.3))(eslint@10.4.0)(typescript@5.3.3)':
+    dependencies:
+      '@eslint-community/regexpp': 4.12.2
+      '@typescript-eslint/parser': 6.21.0(eslint@10.4.0)(typescript@5.3.3)
+      '@typescript-eslint/scope-manager': 6.21.0
+      '@typescript-eslint/type-utils': 6.21.0(eslint@8.57.1)(typescript@5.3.3)
+      '@typescript-eslint/utils': 6.21.0(eslint@8.57.1)(typescript@5.3.3)
+      '@typescript-eslint/visitor-keys': 6.21.0
+      debug: 4.4.3
+      eslint: 10.4.0
+      graphemer: 1.4.0
+      ignore: 5.3.2
+      natural-compare: 1.4.0
+      semver: 7.7.4
+      ts-api-utils: 1.4.3(typescript@5.3.3)
+    optionalDependencies:
+      typescript: 5.3.3
+    transitivePeerDependencies:
+      - supports-color
+
+  '@typescript-eslint/parser@6.21.0(eslint@10.4.0)(typescript@5.3.3)':
+    dependencies:
+      '@typescript-eslint/scope-manager': 6.21.0
+      '@typescript-eslint/types': 6.21.0
+      '@typescript-eslint/typescript-estree': 6.21.0(typescript@5.3.3)
+      '@typescript-eslint/visitor-keys': 6.21.0
+      debug: 4.4.3
+      eslint: 10.4.0
+    optionalDependencies:
+      typescript: 5.3.3
+    transitivePeerDependencies:
+      - supports-color
+
+  '@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3)':
     dependencies:
       '@typescript-eslint/scope-manager': 6.21.0
       '@typescript-eslint/types': 6.21.0
       '@typescript-eslint/typescript-estree': 6.21.0(typescript@5.9.3)
       '@typescript-eslint/visitor-keys': 6.21.0
       debug: 4.4.3
-      eslint: 10.4.0
+      eslint: 8.57.1
     optionalDependencies:
       typescript: 5.9.3
     transitivePeerDependencies:
@@ -14199,6 +14482,18 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 6.21.0
       '@typescript-eslint/visitor-keys': 6.21.0
+
+  '@typescript-eslint/type-utils@6.21.0(eslint@8.57.1)(typescript@5.3.3)':
+    dependencies:
+      '@typescript-eslint/typescript-estree': 6.21.0(typescript@5.3.3)
+      '@typescript-eslint/utils': 6.21.0(eslint@8.57.1)(typescript@5.3.3)
+      debug: 4.4.3
+      eslint: 8.57.1
+      ts-api-utils: 1.4.3(typescript@5.3.3)
+    optionalDependencies:
+      typescript: 5.3.3
+    transitivePeerDependencies:
+      - supports-color
 
   '@typescript-eslint/type-utils@6.21.0(eslint@8.57.1)(typescript@5.9.3)':
     dependencies:
@@ -14216,6 +14511,20 @@ snapshots:
 
   '@typescript-eslint/types@6.21.0': {}
 
+  '@typescript-eslint/typescript-estree@5.62.0(typescript@5.3.3)':
+    dependencies:
+      '@typescript-eslint/types': 5.62.0
+      '@typescript-eslint/visitor-keys': 5.62.0
+      debug: 4.4.3
+      globby: 11.1.0
+      is-glob: 4.0.3
+      semver: 7.7.4
+      tsutils: 3.21.0(typescript@5.3.3)
+    optionalDependencies:
+      typescript: 5.3.3
+    transitivePeerDependencies:
+      - supports-color
+
   '@typescript-eslint/typescript-estree@5.62.0(typescript@5.9.3)':
     dependencies:
       '@typescript-eslint/types': 5.62.0
@@ -14227,6 +14536,21 @@ snapshots:
       tsutils: 3.21.0(typescript@5.9.3)
     optionalDependencies:
       typescript: 5.9.3
+    transitivePeerDependencies:
+      - supports-color
+
+  '@typescript-eslint/typescript-estree@6.21.0(typescript@5.3.3)':
+    dependencies:
+      '@typescript-eslint/types': 6.21.0
+      '@typescript-eslint/visitor-keys': 6.21.0
+      debug: 4.4.3
+      globby: 11.1.0
+      is-glob: 4.0.3
+      minimatch: 9.0.3
+      semver: 7.7.4
+      ts-api-utils: 1.4.3(typescript@5.3.3)
+    optionalDependencies:
+      typescript: 5.3.3
     transitivePeerDependencies:
       - supports-color
 
@@ -14245,6 +14569,21 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@typescript-eslint/utils@5.62.0(eslint@8.57.1)(typescript@5.3.3)':
+    dependencies:
+      '@eslint-community/eslint-utils': 4.9.1(eslint@8.57.1)
+      '@types/json-schema': 7.0.15
+      '@types/semver': 7.7.1
+      '@typescript-eslint/scope-manager': 5.62.0
+      '@typescript-eslint/types': 5.62.0
+      '@typescript-eslint/typescript-estree': 5.62.0(typescript@5.3.3)
+      eslint: 8.57.1
+      eslint-scope: 5.1.1
+      semver: 7.7.4
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
+
   '@typescript-eslint/utils@5.62.0(eslint@8.57.1)(typescript@5.9.3)':
     dependencies:
       '@eslint-community/eslint-utils': 4.9.1(eslint@8.57.1)
@@ -14255,6 +14594,20 @@ snapshots:
       '@typescript-eslint/typescript-estree': 5.62.0(typescript@5.9.3)
       eslint: 8.57.1
       eslint-scope: 5.1.1
+      semver: 7.7.4
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
+
+  '@typescript-eslint/utils@6.21.0(eslint@8.57.1)(typescript@5.3.3)':
+    dependencies:
+      '@eslint-community/eslint-utils': 4.9.1(eslint@8.57.1)
+      '@types/json-schema': 7.0.15
+      '@types/semver': 7.7.1
+      '@typescript-eslint/scope-manager': 6.21.0
+      '@typescript-eslint/types': 6.21.0
+      '@typescript-eslint/typescript-estree': 6.21.0(typescript@5.3.3)
+      eslint: 8.57.1
       semver: 7.7.4
     transitivePeerDependencies:
       - supports-color
@@ -14352,11 +14705,11 @@ snapshots:
       '@use-gesture/core': 10.3.1
       react: 18.3.1
 
-  '@vitejs/plugin-vue@6.0.6(vite@7.3.2(@types/node@20.19.9)(sass@1.98.0)(terser@5.46.1)(yaml@2.9.0))(vue@3.5.33(typescript@5.9.3))':
+  '@vitejs/plugin-vue@6.0.6(vite@7.3.2(@types/node@20.19.9)(sass@1.98.0)(terser@5.46.1)(yaml@2.9.0))(vue@3.5.33(typescript@5.3.3))':
     dependencies:
       '@rolldown/pluginutils': 1.0.0-rc.13
       vite: 7.3.2(@types/node@20.19.9)(sass@1.98.0)(terser@5.46.1)(yaml@2.9.0)
-      vue: 3.5.33(typescript@5.9.3)
+      vue: 3.5.33(typescript@5.3.3)
 
   '@vue/compiler-core@3.5.33':
     dependencies:
@@ -14417,35 +14770,35 @@ snapshots:
       '@vue/shared': 3.5.33
       csstype: 3.2.3
 
-  '@vue/server-renderer@3.5.33(vue@3.5.33(typescript@5.9.3))':
+  '@vue/server-renderer@3.5.33(vue@3.5.33(typescript@5.3.3))':
     dependencies:
       '@vue/compiler-ssr': 3.5.33
       '@vue/shared': 3.5.33
-      vue: 3.5.33(typescript@5.9.3)
+      vue: 3.5.33(typescript@5.3.3)
 
   '@vue/shared@3.5.33': {}
 
-  '@vueuse/core@14.2.1(vue@3.5.33(typescript@5.9.3))':
+  '@vueuse/core@14.2.1(vue@3.5.33(typescript@5.3.3))':
     dependencies:
       '@types/web-bluetooth': 0.0.21
       '@vueuse/metadata': 14.2.1
-      '@vueuse/shared': 14.2.1(vue@3.5.33(typescript@5.9.3))
-      vue: 3.5.33(typescript@5.9.3)
+      '@vueuse/shared': 14.2.1(vue@3.5.33(typescript@5.3.3))
+      vue: 3.5.33(typescript@5.3.3)
 
-  '@vueuse/integrations@14.2.1(axios@1.16.0)(focus-trap@8.1.0)(vue@3.5.33(typescript@5.9.3))':
+  '@vueuse/integrations@14.2.1(axios@1.16.0)(focus-trap@8.1.0)(vue@3.5.33(typescript@5.3.3))':
     dependencies:
-      '@vueuse/core': 14.2.1(vue@3.5.33(typescript@5.9.3))
-      '@vueuse/shared': 14.2.1(vue@3.5.33(typescript@5.9.3))
-      vue: 3.5.33(typescript@5.9.3)
+      '@vueuse/core': 14.2.1(vue@3.5.33(typescript@5.3.3))
+      '@vueuse/shared': 14.2.1(vue@3.5.33(typescript@5.3.3))
+      vue: 3.5.33(typescript@5.3.3)
     optionalDependencies:
       axios: 1.16.0
       focus-trap: 8.1.0
 
   '@vueuse/metadata@14.2.1': {}
 
-  '@vueuse/shared@14.2.1(vue@3.5.33(typescript@5.9.3))':
+  '@vueuse/shared@14.2.1(vue@3.5.33(typescript@5.3.3))':
     dependencies:
-      vue: 3.5.33(typescript@5.9.3)
+      vue: 3.5.33(typescript@5.3.3)
 
   '@webassemblyjs/ast@1.14.1':
     dependencies:
@@ -14574,7 +14927,74 @@ snapshots:
 
   '@wordpress/base-styles@10.0.1': {}
 
+  '@wordpress/base-styles@6.20.0': {}
+
+  '@wordpress/base-styles@8.0.0': {}
+
   '@wordpress/blob@4.48.1': {}
+
+  '@wordpress/block-editor@15.17.0(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(@types/react-dom@18.3.7(@types/react@18.3.28))(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.9.3))':
+    dependencies:
+      '@react-spring/web': 9.7.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@wordpress/a11y': 4.48.1
+      '@wordpress/base-styles': 6.20.0
+      '@wordpress/blob': 4.48.1
+      '@wordpress/block-serialization-default-parser': 5.48.1
+      '@wordpress/blocks': 15.21.1(react@18.3.1)
+      '@wordpress/commands': 1.48.1(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(@types/react-dom@18.3.7(@types/react@18.3.28))(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.9.3))
+      '@wordpress/components': 32.6.0(@emotion/is-prop-valid@1.4.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@wordpress/compose': 7.46.0(react@18.3.1)
+      '@wordpress/data': 10.48.1(react@18.3.1)
+      '@wordpress/dataviews': 14.3.0(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.9.3))
+      '@wordpress/date': 5.48.1
+      '@wordpress/deprecated': 4.48.1
+      '@wordpress/dom': 4.48.1
+      '@wordpress/element': 6.46.0
+      '@wordpress/escape-html': 3.48.1
+      '@wordpress/global-styles-engine': 1.15.1(react@18.3.1)
+      '@wordpress/hooks': 4.48.1
+      '@wordpress/html-entities': 4.48.1
+      '@wordpress/i18n': 6.21.1
+      '@wordpress/icons': 12.2.0(react@18.3.1)
+      '@wordpress/image-cropper': 1.12.1(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.9.3))
+      '@wordpress/interactivity': 6.48.1
+      '@wordpress/is-shallow-equal': 5.48.1
+      '@wordpress/keyboard-shortcuts': 5.48.1(react@18.3.1)
+      '@wordpress/keycodes': 4.48.1
+      '@wordpress/notices': 5.48.1(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.9.3))
+      '@wordpress/preferences': 4.48.1(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.9.3))
+      '@wordpress/priority-queue': 3.48.1
+      '@wordpress/private-apis': 1.48.1
+      '@wordpress/rich-text': 7.48.1(react@18.3.1)
+      '@wordpress/style-engine': 2.48.1
+      '@wordpress/token-list': 3.48.1
+      '@wordpress/upload-media': 0.29.0(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.9.3))
+      '@wordpress/url': 4.48.1
+      '@wordpress/warning': 3.48.1
+      '@wordpress/wordcount': 4.48.1
+      change-case: 4.1.2
+      clsx: 2.1.1
+      colord: 2.9.3
+      deepmerge: 4.3.1
+      diff: 4.0.4
+      fast-deep-equal: 3.1.3
+      memize: 2.1.1
+      parsel-js: 1.2.2
+      postcss: 8.5.12
+      postcss-prefix-selector: 1.16.1(postcss@8.5.12)
+      postcss-urlrebase: 1.4.0(postcss@8.5.12)
+      react: 18.3.1
+      react-autosize-textarea: 7.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react-dom: 18.3.1(react@18.3.1)
+      react-easy-crop: 5.5.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      remove-accents: 0.5.0
+    transitivePeerDependencies:
+      - '@date-fns/tz'
+      - '@emotion/is-prop-valid'
+      - '@types/react'
+      - '@types/react-dom'
+      - stylelint
+      - supports-color
 
   '@wordpress/block-editor@15.21.1(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(@types/react-dom@18.3.7(@types/react@18.3.28))(date-fns@4.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.9.3))':
     dependencies:
@@ -14643,6 +15063,36 @@ snapshots:
 
   '@wordpress/block-serialization-default-parser@5.48.1': {}
 
+  '@wordpress/blocks@15.17.0(react@18.3.1)':
+    dependencies:
+      '@wordpress/autop': 4.48.1
+      '@wordpress/blob': 4.48.1
+      '@wordpress/block-serialization-default-parser': 5.48.1
+      '@wordpress/data': 10.48.1(react@18.3.1)
+      '@wordpress/deprecated': 4.48.1
+      '@wordpress/dom': 4.48.1
+      '@wordpress/element': 6.46.0
+      '@wordpress/hooks': 4.48.1
+      '@wordpress/html-entities': 4.48.1
+      '@wordpress/i18n': 6.21.1
+      '@wordpress/is-shallow-equal': 5.48.1
+      '@wordpress/private-apis': 1.48.1
+      '@wordpress/rich-text': 7.48.1(react@18.3.1)
+      '@wordpress/shortcode': 4.48.1
+      '@wordpress/warning': 3.48.1
+      change-case: 4.1.2
+      colord: 2.9.3
+      fast-deep-equal: 3.1.3
+      hpq: 1.4.0
+      is-plain-object: 5.0.0
+      memize: 2.1.1
+      react: 18.3.1
+      react-is: 18.3.1
+      remove-accents: 0.5.0
+      showdown: 1.9.1
+      simple-html-tokenizer: 0.5.11
+      uuid: 9.0.1
+
   '@wordpress/blocks@15.21.1(react@18.3.1)':
     dependencies:
       '@types/react': 18.3.28
@@ -14700,7 +15150,7 @@ snapshots:
       - stylelint
       - supports-color
 
-  '@wordpress/components@35.0.1(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.9.3))':
+  '@wordpress/components@32.6.0(@emotion/is-prop-valid@1.4.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@ariakit/react': 0.4.24(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@date-fns/utc': 2.1.1
@@ -14711,6 +15161,121 @@ snapshots:
       '@emotion/styled': 11.14.1(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react@18.3.1)
       '@emotion/utils': 1.4.2
       '@floating-ui/react-dom': 2.0.8(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@types/gradient-parser': 1.1.0
+      '@types/highlight-words-core': 1.2.1
+      '@types/react': 18.3.28
+      '@use-gesture/react': 10.3.1(react@18.3.1)
+      '@wordpress/a11y': 4.48.1
+      '@wordpress/base-styles': 6.20.0
+      '@wordpress/compose': 7.46.0(react@18.3.1)
+      '@wordpress/date': 5.48.1
+      '@wordpress/deprecated': 4.48.1
+      '@wordpress/dom': 4.48.1
+      '@wordpress/element': 6.46.0
+      '@wordpress/escape-html': 3.48.1
+      '@wordpress/hooks': 4.48.1
+      '@wordpress/html-entities': 4.48.1
+      '@wordpress/i18n': 6.21.1
+      '@wordpress/icons': 12.2.0(react@18.3.1)
+      '@wordpress/is-shallow-equal': 5.48.1
+      '@wordpress/keycodes': 4.48.1
+      '@wordpress/primitives': 4.48.1(react@18.3.1)
+      '@wordpress/private-apis': 1.48.1
+      '@wordpress/rich-text': 7.48.1(react@18.3.1)
+      '@wordpress/warning': 3.48.1
+      change-case: 4.1.2
+      clsx: 2.1.1
+      colord: 2.9.3
+      csstype: 3.2.3
+      date-fns: 3.6.0
+      deepmerge: 4.3.1
+      fast-deep-equal: 3.1.3
+      framer-motion: 11.18.2(@emotion/is-prop-valid@1.4.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      gradient-parser: 1.1.1
+      highlight-words-core: 1.2.3
+      is-plain-object: 5.0.0
+      memize: 2.1.1
+      path-to-regexp: 6.3.0
+      re-resizable: 6.11.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react: 18.3.1
+      react-colorful: 5.6.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react-day-picker: 9.14.0(react@18.3.1)
+      react-dom: 18.3.1(react@18.3.1)
+      remove-accents: 0.5.0
+      uuid: 9.0.1
+    transitivePeerDependencies:
+      - '@emotion/is-prop-valid'
+      - supports-color
+
+  '@wordpress/components@33.1.0(@emotion/is-prop-valid@1.4.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@ariakit/react': 0.4.24(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@date-fns/utc': 2.1.1
+      '@emotion/cache': 11.14.0
+      '@emotion/css': 11.13.5
+      '@emotion/react': 11.14.0(@types/react@18.3.28)(react@18.3.1)
+      '@emotion/serialize': 1.3.3
+      '@emotion/styled': 11.14.1(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react@18.3.1)
+      '@emotion/utils': 1.4.2
+      '@floating-ui/react-dom': 2.0.8(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@types/gradient-parser': 1.1.0
+      '@types/highlight-words-core': 1.2.1
+      '@types/react': 18.3.28
+      '@use-gesture/react': 10.3.1(react@18.3.1)
+      '@wordpress/a11y': 4.48.1
+      '@wordpress/base-styles': 8.0.0
+      '@wordpress/compose': 7.46.0(react@18.3.1)
+      '@wordpress/date': 5.48.1
+      '@wordpress/deprecated': 4.48.1
+      '@wordpress/dom': 4.48.1
+      '@wordpress/element': 6.46.0
+      '@wordpress/escape-html': 3.48.1
+      '@wordpress/hooks': 4.48.1
+      '@wordpress/html-entities': 4.48.1
+      '@wordpress/i18n': 6.21.1
+      '@wordpress/icons': 13.3.0(react@18.3.1)
+      '@wordpress/is-shallow-equal': 5.48.1
+      '@wordpress/keycodes': 4.48.1
+      '@wordpress/primitives': 4.48.1(react@18.3.1)
+      '@wordpress/private-apis': 1.48.1
+      '@wordpress/rich-text': 7.48.1(react@18.3.1)
+      '@wordpress/style-runtime': 0.2.0
+      '@wordpress/warning': 3.48.1
+      change-case: 4.1.2
+      clsx: 2.1.1
+      colord: 2.9.3
+      csstype: 3.2.3
+      date-fns: 4.1.0
+      deepmerge: 4.3.1
+      fast-deep-equal: 3.1.3
+      framer-motion: 11.18.2(@emotion/is-prop-valid@1.4.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      gradient-parser: 1.1.1
+      highlight-words-core: 1.2.3
+      is-plain-object: 5.0.0
+      memize: 2.1.1
+      path-to-regexp: 6.3.0
+      re-resizable: 6.11.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react: 18.3.1
+      react-colorful: 5.6.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react-day-picker: 9.14.0(react@18.3.1)
+      react-dom: 18.3.1(react@18.3.1)
+      remove-accents: 0.5.0
+      uuid: 14.0.0
+    transitivePeerDependencies:
+      - '@emotion/is-prop-valid'
+      - supports-color
+
+  '@wordpress/components@35.0.1(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.9.3))':
+    dependencies:
+      '@ariakit/react': 0.4.24(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@date-fns/utc': 2.1.1
+      '@emotion/cache': 11.14.0
+      '@emotion/css': 11.13.5
+      '@emotion/react': 11.14.0(@types/react@18.3.28)(react@18.3.1)
+      '@emotion/serialize': 1.3.3
+      '@emotion/styled': 11.14.1(@emotion/react@11.14.0(@types/react@18.3.28)(react@18.3.1))(@types/react@18.3.28)(react@18.3.1)
+      '@emotion/utils': 1.4.2
+      '@floating-ui/react-dom': 2.1.8(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@types/gradient-parser': 1.1.0
       '@types/highlight-words-core': 1.2.1
       '@types/react': 18.3.28
@@ -14760,6 +15325,21 @@ snapshots:
       - '@emotion/is-prop-valid'
       - stylelint
       - supports-color
+
+  '@wordpress/compose@7.46.0(react@18.3.1)':
+    dependencies:
+      '@types/mousetrap': 1.6.15
+      '@wordpress/deprecated': 4.48.1
+      '@wordpress/dom': 4.48.1
+      '@wordpress/element': 6.46.0
+      '@wordpress/is-shallow-equal': 5.48.1
+      '@wordpress/keycodes': 4.48.1
+      '@wordpress/priority-queue': 3.48.1
+      '@wordpress/undo-manager': 1.48.1
+      change-case: 4.1.2
+      mousetrap: 1.6.5
+      react: 18.3.1
+      use-memo-one: 1.1.3(react@18.3.1)
 
   '@wordpress/compose@8.1.1(react@18.3.1)':
     dependencies:
@@ -14831,6 +15411,38 @@ snapshots:
       rememo: 4.0.2
       use-memo-one: 1.1.3(react@18.3.1)
 
+  '@wordpress/dataviews@14.3.0(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.9.3))':
+    dependencies:
+      '@ariakit/react': 0.4.24(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@wordpress/base-styles': 8.0.0
+      '@wordpress/components': 33.1.0(@emotion/is-prop-valid@1.4.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@wordpress/compose': 7.46.0(react@18.3.1)
+      '@wordpress/data': 10.48.1(react@18.3.1)
+      '@wordpress/date': 5.48.1
+      '@wordpress/deprecated': 4.48.1
+      '@wordpress/element': 6.46.0
+      '@wordpress/i18n': 6.21.1
+      '@wordpress/icons': 13.3.0(react@18.3.1)
+      '@wordpress/keycodes': 4.48.1
+      '@wordpress/primitives': 4.48.1(react@18.3.1)
+      '@wordpress/private-apis': 1.48.1
+      '@wordpress/ui': 0.13.0(@date-fns/tz@1.4.1)(@types/react@18.3.28)(date-fns@4.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.9.3))
+      '@wordpress/warning': 3.48.1
+      clsx: 2.1.1
+      colord: 2.9.3
+      date-fns: 4.1.0
+      deepmerge: 4.3.1
+      fast-deep-equal: 3.1.3
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      remove-accents: 0.5.0
+    transitivePeerDependencies:
+      - '@date-fns/tz'
+      - '@emotion/is-prop-valid'
+      - '@types/react'
+      - stylelint
+      - supports-color
+
   '@wordpress/dataviews@16.0.1(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.9.3))':
     dependencies:
       '@ariakit/react': 0.4.24(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -14883,23 +15495,6 @@ snapshots:
   '@wordpress/dom@4.48.1':
     dependencies:
       '@wordpress/deprecated': 4.48.1
-
-  '@wordpress/e2e-test-utils-playwright@1.46.0(@playwright/test@1.58.2)(@types/node@20.19.9)':
-    dependencies:
-      '@playwright/test': 1.58.2
-      '@types/node': 20.19.9
-      change-case: 4.1.2
-      get-port: 5.1.1
-      lighthouse: 12.8.2
-      mime: 3.0.0
-      web-vitals: 4.2.4
-    transitivePeerDependencies:
-      - bare-abort-controller
-      - bare-buffer
-      - bufferutil
-      - react-native-b4a
-      - supports-color
-      - utf-8-validate
 
   '@wordpress/e2e-test-utils-playwright@1.48.1(@playwright/test@1.58.2)(@types/node@20.19.9)':
     dependencies:
@@ -14963,24 +15558,60 @@ snapshots:
 
   '@wordpress/escape-html@3.48.1': {}
 
+  '@wordpress/eslint-plugin@24.5.0(@babel/core@7.25.7)(@types/eslint@9.6.1)(eslint@8.57.1)(jest@29.7.0(@types/node@20.19.9)(babel-plugin-macros@3.1.0))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.3.3))(typescript@5.3.3)(wp-prettier@3.0.3)':
+    dependencies:
+      '@babel/core': 7.25.7
+      '@babel/eslint-parser': 7.25.7(@babel/core@7.25.7)(eslint@8.57.1)
+      '@typescript-eslint/eslint-plugin': 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.3.3))(eslint@10.4.0)(typescript@5.3.3)
+      '@typescript-eslint/parser': 6.21.0(eslint@10.4.0)(typescript@5.3.3)
+      '@wordpress/babel-preset-default': 8.48.1
+      '@wordpress/prettier-config': 4.48.1(wp-prettier@3.0.3)
+      '@wordpress/theme': 0.10.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.3.3))
+      cosmiconfig: 7.1.0
+      eslint: 8.57.1
+      eslint-config-prettier: 8.10.2(eslint@10.4.0)
+      eslint-import-resolver-typescript: 4.4.4(eslint-plugin-import@2.32.0)(eslint@8.57.1)
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.3.3))(eslint@10.4.0)
+      eslint-plugin-jest: 27.9.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.3.3))(eslint@8.57.1)(typescript@5.3.3))(eslint@10.4.0)(jest@29.7.0(@types/node@20.19.9)(babel-plugin-macros@3.1.0))(typescript@5.3.3)
+      eslint-plugin-jsdoc: 46.10.1(eslint@8.57.1)
+      eslint-plugin-jsx-a11y: 6.10.2(eslint@8.57.1)
+      eslint-plugin-playwright: 0.15.3(eslint-plugin-jest@27.9.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.3.3))(eslint@8.57.1)(typescript@5.3.3))(eslint@8.57.1)(jest@29.7.0(@types/node@20.19.9)(babel-plugin-macros@3.1.0))(typescript@5.3.3))(eslint@8.57.1)
+      eslint-plugin-prettier: 5.5.5(@types/eslint@9.6.1)(eslint-config-prettier@8.10.2(eslint@8.57.1))(eslint@8.57.1)(wp-prettier@3.0.3)
+      eslint-plugin-react: 7.37.5(eslint@8.57.1)
+      eslint-plugin-react-hooks: 4.6.2(eslint@8.57.1)
+      globals: 13.24.0
+      requireindex: 1.2.0
+    optionalDependencies:
+      prettier: wp-prettier@3.0.3
+      typescript: 5.3.3
+    transitivePeerDependencies:
+      - '@types/eslint'
+      - eslint-import-resolver-webpack
+      - eslint-plugin-import-x
+      - jest
+      - react
+      - react-dom
+      - stylelint
+      - supports-color
+
   '@wordpress/eslint-plugin@24.5.0(@babel/core@7.25.7)(@types/eslint@9.6.1)(eslint@8.57.1)(jest@29.7.0(@types/node@20.19.9)(babel-plugin-macros@3.1.0))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.9.3))(typescript@5.9.3)(wp-prettier@3.0.3)':
     dependencies:
       '@babel/core': 7.25.7
       '@babel/eslint-parser': 7.25.7(@babel/core@7.25.7)(eslint@8.57.1)
-      '@typescript-eslint/eslint-plugin': 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@10.4.0)(typescript@5.9.3)
-      '@typescript-eslint/parser': 6.21.0(eslint@10.4.0)(typescript@5.9.3)
+      '@typescript-eslint/eslint-plugin': 6.21.0(@typescript-eslint/parser@6.21.0(eslint@10.4.0)(typescript@5.3.3))(eslint@8.57.1)(typescript@5.9.3)
+      '@typescript-eslint/parser': 6.21.0(eslint@8.57.1)(typescript@5.9.3)
       '@wordpress/babel-preset-default': 8.48.1
       '@wordpress/prettier-config': 4.48.1(wp-prettier@3.0.3)
       '@wordpress/theme': 0.10.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.9.3))
       cosmiconfig: 7.1.0
       eslint: 8.57.1
-      eslint-config-prettier: 8.10.2(eslint@10.4.0)
+      eslint-config-prettier: 8.10.2(eslint@8.57.1)
       eslint-import-resolver-typescript: 4.4.4(eslint-plugin-import@2.32.0)(eslint@8.57.1)
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@10.4.0)
-      eslint-plugin-jest: 27.9.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint@10.4.0)(jest@29.7.0(@types/node@20.19.9)(babel-plugin-macros@3.1.0))(typescript@5.9.3)
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@6.21.0(eslint@10.4.0)(typescript@5.3.3))(eslint-import-resolver-typescript@4.4.4)(eslint@8.57.1)
+      eslint-plugin-jest: 27.9.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.3.3))(eslint@10.4.0)(typescript@5.3.3))(eslint@8.57.1)(jest@29.7.0(@types/node@20.19.9)(babel-plugin-macros@3.1.0))(typescript@5.9.3)
       eslint-plugin-jsdoc: 46.10.1(eslint@8.57.1)
       eslint-plugin-jsx-a11y: 6.10.2(eslint@8.57.1)
-      eslint-plugin-playwright: 0.15.3(eslint-plugin-jest@27.9.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(jest@29.7.0(@types/node@20.19.9)(babel-plugin-macros@3.1.0))(typescript@5.9.3))(eslint@8.57.1)
+      eslint-plugin-playwright: 0.15.3(eslint-plugin-jest@27.9.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.3.3))(eslint@8.57.1)(typescript@5.3.3))(eslint@8.57.1)(jest@29.7.0(@types/node@20.19.9)(babel-plugin-macros@3.1.0))(typescript@5.3.3))(eslint@8.57.1)
       eslint-plugin-prettier: 5.5.5(@types/eslint@9.6.1)(eslint-config-prettier@8.10.2(eslint@8.57.1))(eslint@8.57.1)(wp-prettier@3.0.3)
       eslint-plugin-react: 7.37.5(eslint@8.57.1)
       eslint-plugin-react-hooks: 4.6.2(eslint@8.57.1)
@@ -15017,6 +15648,14 @@ snapshots:
 
   '@wordpress/html-entities@4.48.1': {}
 
+  '@wordpress/i18n@6.17.0':
+    dependencies:
+      '@tannin/sprintf': 1.3.3
+      '@wordpress/hooks': 4.48.1
+      gettext-parser: 1.4.0
+      memize: 2.1.1
+      tannin: 1.2.0
+
   '@wordpress/i18n@6.21.1':
     dependencies:
       '@tannin/sprintf': 1.3.3
@@ -15024,6 +15663,20 @@ snapshots:
       gettext-parser: 1.4.0
       memize: 2.1.1
       tannin: 1.2.0
+
+  '@wordpress/icons@12.2.0(react@18.3.1)':
+    dependencies:
+      '@wordpress/element': 6.46.0
+      '@wordpress/primitives': 4.48.1(react@18.3.1)
+      change-case: 4.1.2
+      react: 18.3.1
+
+  '@wordpress/icons@13.3.0(react@18.3.1)':
+    dependencies:
+      '@wordpress/element': 8.0.1
+      '@wordpress/primitives': 4.48.1(react@18.3.1)
+      change-case: 4.1.2
+      react: 18.3.1
 
   '@wordpress/icons@14.0.1(react@18.3.1)':
     dependencies:
@@ -15100,9 +15753,9 @@ snapshots:
       - stylelint
       - supports-color
 
-  '@wordpress/npm-package-json-lint-config@5.48.1(npm-package-json-lint@6.4.0(typescript@5.9.3))':
+  '@wordpress/npm-package-json-lint-config@5.48.1(npm-package-json-lint@6.4.0(typescript@5.3.3))':
     dependencies:
-      npm-package-json-lint: 6.4.0(typescript@5.9.3)
+      npm-package-json-lint: 6.4.0(typescript@5.3.3)
 
   '@wordpress/postcss-plugins-preset@5.48.1(postcss@8.5.12)':
     dependencies:
@@ -15175,6 +15828,104 @@ snapshots:
       memize: 2.1.1
       react: 18.3.1
 
+  '@wordpress/scripts@31.8.0(@playwright/test@1.58.2)(@swc/core@1.15.21(@swc/helpers@0.5.20))(@types/eslint@9.6.1)(@types/node@20.19.9)(@wordpress/env@11.6.0(@types/node@20.19.9))(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint-scss@6.14.0(stylelint@16.26.1(typescript@5.3.3)))(type-fest@4.41.0)(typescript@5.3.3)':
+    dependencies:
+      '@babel/core': 7.25.7
+      '@playwright/test': 1.58.2
+      '@pmmmwh/react-refresh-webpack-plugin': 0.5.17(react-refresh@0.14.2)(type-fest@4.41.0)(webpack-dev-server@4.15.2)(webpack@5.105.4)
+      '@svgr/webpack': 8.1.0(typescript@5.3.3)
+      '@wordpress/babel-preset-default': 8.48.1
+      '@wordpress/browserslist-config': 6.48.1
+      '@wordpress/dependency-extraction-webpack-plugin': 6.48.1(webpack@5.105.4)
+      '@wordpress/e2e-test-utils-playwright': 1.48.1(@playwright/test@1.58.2)(@types/node@20.19.9)
+      '@wordpress/eslint-plugin': 24.5.0(@babel/core@7.25.7)(@types/eslint@9.6.1)(eslint@8.57.1)(jest@29.7.0(@types/node@20.19.9)(babel-plugin-macros@3.1.0))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.3.3))(typescript@5.3.3)(wp-prettier@3.0.3)
+      '@wordpress/jest-preset-default': 12.48.1(@babel/core@7.25.7)(jest@29.7.0(@types/node@20.19.9)(babel-plugin-macros@3.1.0))
+      '@wordpress/npm-package-json-lint-config': 5.48.1(npm-package-json-lint@6.4.0(typescript@5.3.3))
+      '@wordpress/postcss-plugins-preset': 5.48.1(postcss@8.5.12)
+      '@wordpress/prettier-config': 4.48.1(wp-prettier@3.0.3)
+      '@wordpress/stylelint-config': 23.40.1(postcss@8.5.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint-scss@6.14.0(stylelint@16.26.1(typescript@5.3.3)))(stylelint@16.26.1(typescript@5.3.3))
+      adm-zip: 0.5.16
+      babel-jest: 29.7.0(@babel/core@7.25.7)
+      babel-loader: 9.2.1(@babel/core@7.25.7)(webpack@5.105.4)
+      browserslist: 4.28.1
+      chalk: 4.1.2
+      check-node-version: 4.2.1
+      copy-webpack-plugin: 10.2.4(webpack@5.105.4)
+      cross-spawn: 7.0.6
+      css-loader: 6.11.0(webpack@5.105.4)
+      cssnano: 6.1.2(postcss@8.5.12)
+      cwd: 0.10.0
+      dir-glob: 3.0.1
+      eslint: 8.57.1
+      expect-puppeteer: 4.4.0
+      fast-glob: 3.3.3
+      filenamify: 4.3.0
+      jest: 29.7.0(@types/node@20.19.9)(babel-plugin-macros@3.1.0)
+      jest-dev-server: 10.1.4
+      jest-environment-jsdom: 30.3.0
+      jest-environment-node: 29.7.0
+      json2php: 0.0.9
+      markdownlint-cli: 0.31.1
+      merge-deep: 3.0.3
+      mini-css-extract-plugin: 2.10.2(webpack@5.105.4)
+      minimist: 1.2.8
+      npm-package-json-lint: 6.4.0(typescript@5.3.3)
+      npm-packlist: 3.0.0
+      postcss: 8.5.12
+      postcss-loader: 6.2.1(postcss@8.5.12)(webpack@5.105.4)
+      prettier: wp-prettier@3.0.3
+      puppeteer-core: 23.11.1
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      react-refresh: 0.14.2
+      read-pkg-up: 7.0.1
+      resolve-bin: 0.4.3
+      rtlcss: 4.3.0
+      sass: 1.98.0
+      sass-loader: 16.0.7(sass@1.98.0)(webpack@5.105.4)
+      schema-utils: 4.3.3
+      source-map-loader: 3.0.2(webpack@5.105.4)
+      stylelint: 16.26.1(typescript@5.3.3)
+      terser-webpack-plugin: 5.4.0(@swc/core@1.15.21(@swc/helpers@0.5.20))(webpack@5.105.4)
+      url-loader: 4.1.1(webpack@5.105.4)
+      webpack: 5.105.4(@swc/core@1.15.21(@swc/helpers@0.5.20))(webpack-cli@5.1.4)
+      webpack-bundle-analyzer: 4.10.2
+      webpack-cli: 5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@4.15.2)(webpack@5.105.4)
+      webpack-dev-server: 4.15.2(webpack-cli@5.1.4)(webpack@5.105.4)
+    optionalDependencies:
+      '@wordpress/env': 11.6.0(@types/node@20.19.9)
+    transitivePeerDependencies:
+      - '@rspack/core'
+      - '@swc/core'
+      - '@types/eslint'
+      - '@types/node'
+      - '@types/webpack'
+      - '@webpack-cli/generators'
+      - babel-plugin-macros
+      - bare-abort-controller
+      - bare-buffer
+      - bufferutil
+      - canvas
+      - debug
+      - esbuild
+      - eslint-import-resolver-webpack
+      - eslint-plugin-import-x
+      - file-loader
+      - node-notifier
+      - node-sass
+      - react-native-b4a
+      - sass-embedded
+      - sockjs-client
+      - stylelint-scss
+      - supports-color
+      - ts-node
+      - type-fest
+      - typescript
+      - uglify-js
+      - utf-8-validate
+      - webpack-hot-middleware
+      - webpack-plugin-serve
+
   '@wordpress/scripts@31.8.0(@playwright/test@1.58.2)(@swc/core@1.15.21(@swc/helpers@0.5.20))(@types/eslint@9.6.1)(@types/node@20.19.9)(@wordpress/env@11.6.0(@types/node@20.19.9))(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint-scss@6.14.0(stylelint@16.26.1(typescript@5.9.3)))(type-fest@4.41.0)(typescript@5.9.3)':
     dependencies:
       '@babel/core': 7.25.7
@@ -15187,7 +15938,7 @@ snapshots:
       '@wordpress/e2e-test-utils-playwright': 1.48.1(@playwright/test@1.58.2)(@types/node@20.19.9)
       '@wordpress/eslint-plugin': 24.5.0(@babel/core@7.25.7)(@types/eslint@9.6.1)(eslint@8.57.1)(jest@29.7.0(@types/node@20.19.9)(babel-plugin-macros@3.1.0))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.9.3))(typescript@5.9.3)(wp-prettier@3.0.3)
       '@wordpress/jest-preset-default': 12.48.1(@babel/core@7.25.7)(jest@29.7.0(@types/node@20.19.9)(babel-plugin-macros@3.1.0))
-      '@wordpress/npm-package-json-lint-config': 5.48.1(npm-package-json-lint@6.4.0(typescript@5.9.3))
+      '@wordpress/npm-package-json-lint-config': 5.48.1(npm-package-json-lint@6.4.0(typescript@5.3.3))
       '@wordpress/postcss-plugins-preset': 5.48.1(postcss@8.5.12)
       '@wordpress/prettier-config': 4.48.1(wp-prettier@3.0.3)
       '@wordpress/stylelint-config': 23.40.1(postcss@8.5.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint-scss@6.14.0(stylelint@16.26.1(typescript@5.9.3)))(stylelint@16.26.1(typescript@5.9.3))
@@ -15282,7 +16033,22 @@ snapshots:
       '@types/react': 18.3.28
       change-case: 4.1.2
 
+  '@wordpress/style-runtime@0.2.0': {}
+
   '@wordpress/style-runtime@0.4.1': {}
+
+  '@wordpress/stylelint-config@23.40.1(postcss@8.5.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint-scss@6.14.0(stylelint@16.26.1(typescript@5.3.3)))(stylelint@16.26.1(typescript@5.3.3))':
+    dependencies:
+      '@stylistic/stylelint-plugin': 3.1.3(stylelint@16.26.1(typescript@5.3.3))
+      '@wordpress/theme': 0.15.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.3.3))
+      stylelint: 16.26.1(typescript@5.3.3)
+      stylelint-config-recommended: 14.0.1(stylelint@16.26.1(typescript@5.3.3))
+      stylelint-config-recommended-scss: 14.1.0(postcss@8.5.12)(stylelint@16.26.1(typescript@5.3.3))
+      stylelint-scss: 6.14.0(stylelint@16.26.1(typescript@5.3.3))
+    transitivePeerDependencies:
+      - postcss
+      - react
+      - react-dom
 
   '@wordpress/stylelint-config@23.40.1(postcss@8.5.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint-scss@6.14.0(stylelint@16.26.1(typescript@5.9.3)))(stylelint@16.26.1(typescript@5.9.3))':
     dependencies:
@@ -15309,6 +16075,17 @@ snapshots:
       y-protocols: 1.0.7(yjs@13.6.29)
       yjs: 13.6.29
 
+  '@wordpress/theme@0.10.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.3.3))':
+    dependencies:
+      '@wordpress/element': 6.46.0
+      '@wordpress/private-apis': 1.48.1
+      colorjs.io: 0.6.1
+      memize: 2.1.1
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+    optionalDependencies:
+      stylelint: 16.26.1(typescript@5.3.3)
+
   '@wordpress/theme@0.10.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.9.3))':
     dependencies:
       '@wordpress/element': 6.46.0
@@ -15319,6 +16096,31 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
     optionalDependencies:
       stylelint: 16.26.1(typescript@5.9.3)
+
+  '@wordpress/theme@0.13.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.9.3))':
+    dependencies:
+      '@wordpress/element': 6.46.0
+      '@wordpress/private-apis': 1.48.1
+      '@wordpress/style-runtime': 0.2.0
+      colorjs.io: 0.6.1
+      memize: 2.1.1
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+    optionalDependencies:
+      stylelint: 16.26.1(typescript@5.9.3)
+
+  '@wordpress/theme@0.15.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.3.3))':
+    dependencies:
+      '@types/react': 18.3.28
+      '@wordpress/element': 8.0.1
+      '@wordpress/private-apis': 1.48.1
+      '@wordpress/style-runtime': 0.4.1
+      colorjs.io: 0.6.1
+      memize: 2.1.1
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+    optionalDependencies:
+      stylelint: 16.26.1(typescript@5.3.3)
 
   '@wordpress/theme@0.15.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.9.3))':
     dependencies:
@@ -15334,6 +16136,29 @@ snapshots:
       stylelint: 16.26.1(typescript@5.9.3)
 
   '@wordpress/token-list@3.48.1': {}
+
+  '@wordpress/ui@0.13.0(@date-fns/tz@1.4.1)(@types/react@18.3.28)(date-fns@4.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.9.3))':
+    dependencies:
+      '@base-ui/react': 1.5.0(@date-fns/tz@1.4.1)(@types/react@18.3.28)(date-fns@4.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@wordpress/a11y': 4.48.1
+      '@wordpress/compose': 7.46.0(react@18.3.1)
+      '@wordpress/element': 6.46.0
+      '@wordpress/i18n': 6.21.1
+      '@wordpress/icons': 13.3.0(react@18.3.1)
+      '@wordpress/keycodes': 4.48.1
+      '@wordpress/primitives': 4.48.1(react@18.3.1)
+      '@wordpress/private-apis': 1.48.1
+      '@wordpress/style-runtime': 0.2.0
+      '@wordpress/theme': 0.13.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.9.3))
+      clsx: 2.1.1
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      tabbable: 6.4.0
+    transitivePeerDependencies:
+      - '@date-fns/tz'
+      - '@types/react'
+      - date-fns
+      - stylelint
 
   '@wordpress/ui@0.15.1(@date-fns/tz@1.4.1)(date-fns@4.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.9.3))':
     dependencies:
@@ -15362,6 +16187,26 @@ snapshots:
     dependencies:
       '@wordpress/is-shallow-equal': 5.48.1
 
+  '@wordpress/upload-media@0.29.0(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.9.3))':
+    dependencies:
+      '@wordpress/blob': 4.48.1
+      '@wordpress/compose': 7.46.0(react@18.3.1)
+      '@wordpress/data': 10.48.1(react@18.3.1)
+      '@wordpress/element': 6.46.0
+      '@wordpress/i18n': 6.21.1
+      '@wordpress/preferences': 4.48.1(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.9.3))
+      '@wordpress/private-apis': 1.48.1
+      '@wordpress/url': 4.48.1
+      '@wordpress/vips': 1.6.0
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      uuid: 9.0.1
+    transitivePeerDependencies:
+      - '@date-fns/tz'
+      - '@emotion/is-prop-valid'
+      - stylelint
+      - supports-color
+
   '@wordpress/upload-media@0.33.1(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.9.3))':
     dependencies:
       '@types/react': 18.3.28
@@ -15386,6 +16231,11 @@ snapshots:
   '@wordpress/url@4.48.1':
     dependencies:
       remove-accents: 0.5.0
+
+  '@wordpress/vips@1.6.0':
+    dependencies:
+      '@wordpress/worker-threads': 1.8.1
+      wasm-vips: 0.0.16
 
   '@wordpress/vips@2.1.1':
     dependencies:
@@ -16132,6 +16982,8 @@ snapshots:
 
   balanced-match@2.0.0: {}
 
+  balanced-match@4.0.3: {}
+
   balanced-match@4.0.4: {}
 
   bare-events@2.8.2: {}
@@ -16687,6 +17539,15 @@ snapshots:
       path-type: 4.0.0
       yaml: 1.10.3
 
+  cosmiconfig@8.3.6(typescript@5.3.3):
+    dependencies:
+      import-fresh: 3.3.1
+      js-yaml: 4.1.1
+      parse-json: 5.2.0
+      path-type: 4.0.0
+    optionalDependencies:
+      typescript: 5.3.3
+
   cosmiconfig@8.3.6(typescript@5.9.3):
     dependencies:
       import-fresh: 3.3.1
@@ -16695,6 +17556,15 @@ snapshots:
       path-type: 4.0.0
     optionalDependencies:
       typescript: 5.9.3
+
+  cosmiconfig@9.0.0(typescript@5.3.3):
+    dependencies:
+      env-paths: 2.2.1
+      import-fresh: 3.3.1
+      js-yaml: 4.1.1
+      parse-json: 5.2.0
+    optionalDependencies:
+      typescript: 5.3.3
 
   cosmiconfig@9.0.0(typescript@5.9.3):
     dependencies:
@@ -16866,6 +17736,8 @@ snapshots:
 
   date-fns-jalali@4.1.0-0: {}
 
+  date-fns@3.6.0: {}
+
   date-fns@4.1.0: {}
 
   debounce@1.2.1: {}
@@ -16984,6 +17856,8 @@ snapshots:
   diff3@0.0.4:
     optional: true
 
+  diff@4.0.4: {}
+
   diff@8.0.4: {}
 
   dir-glob@3.0.1:
@@ -17038,6 +17912,10 @@ snapshots:
     dependencies:
       dotenv: 16.4.7
 
+  dotenv-expand@12.0.3:
+    dependencies:
+      dotenv: 16.4.7
+
   dotenv@16.4.7: {}
 
   dunder-proto@1.0.1:
@@ -17067,6 +17945,8 @@ snapshots:
   ejs@3.1.10:
     dependencies:
       jake: 10.9.4
+
+  ejs@5.0.1: {}
 
   electron-to-chromium@1.5.279: {}
 
@@ -17280,6 +18160,10 @@ snapshots:
     dependencies:
       eslint: 10.4.0
 
+  eslint-config-prettier@8.10.2(eslint@8.57.1):
+    dependencies:
+      eslint: 8.57.1
+
   eslint-import-context@0.1.9(unrs-resolver@1.11.1):
     dependencies:
       get-tsconfig: 4.13.0
@@ -17306,22 +18190,22 @@ snapshots:
       tinyglobby: 0.2.15
       unrs-resolver: 1.11.1
     optionalDependencies:
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@10.4.0)
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.3.3))(eslint@10.4.0)
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.12.1(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@4.4.4)(eslint@8.57.1):
+  eslint-module-utils@2.12.1(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@4.4.4)(eslint@8.57.1):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
-      '@typescript-eslint/parser': 6.21.0(eslint@10.4.0)(typescript@5.9.3)
+      '@typescript-eslint/parser': 6.21.0(eslint@10.4.0)(typescript@5.3.3)
       eslint: 8.57.1
       eslint-import-resolver-node: 0.3.9
       eslint-import-resolver-typescript: 4.4.4(eslint-plugin-import@2.32.0)(eslint@8.57.1)
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@10.4.0):
+  eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@10.4.0)(typescript@5.3.3))(eslint-import-resolver-typescript@4.4.4)(eslint@8.57.1):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.9
@@ -17330,9 +18214,9 @@ snapshots:
       array.prototype.flatmap: 1.3.3
       debug: 3.2.7
       doctrine: 2.1.0
-      eslint: 10.4.0
+      eslint: 8.57.1
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.12.1(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@4.4.4)(eslint@8.57.1)
+      eslint-module-utils: 2.12.1(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@4.4.4)(eslint@8.57.1)
       hasown: 2.0.2
       is-core-module: 2.16.1
       is-glob: 4.0.3
@@ -17344,18 +18228,58 @@ snapshots:
       string.prototype.trimend: 1.0.9
       tsconfig-paths: 3.15.0
     optionalDependencies:
-      '@typescript-eslint/parser': 6.21.0(eslint@10.4.0)(typescript@5.9.3)
+      '@typescript-eslint/parser': 6.21.0(eslint@10.4.0)(typescript@5.3.3)
     transitivePeerDependencies:
       - eslint-import-resolver-typescript
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-plugin-jest@27.9.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint@10.4.0)(jest@29.7.0(@types/node@20.19.9)(babel-plugin-macros@3.1.0))(typescript@5.9.3):
+  eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.3.3))(eslint@10.4.0):
+    dependencies:
+      '@rtsao/scc': 1.1.0
+      array-includes: 3.1.9
+      array.prototype.findlastindex: 1.2.6
+      array.prototype.flat: 1.3.3
+      array.prototype.flatmap: 1.3.3
+      debug: 3.2.7
+      doctrine: 2.1.0
+      eslint: 10.4.0
+      eslint-import-resolver-node: 0.3.9
+      eslint-module-utils: 2.12.1(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@4.4.4)(eslint@8.57.1)
+      hasown: 2.0.2
+      is-core-module: 2.16.1
+      is-glob: 4.0.3
+      minimatch: 3.1.5
+      object.fromentries: 2.0.8
+      object.groupby: 1.0.3
+      object.values: 1.2.1
+      semver: 6.3.1
+      string.prototype.trimend: 1.0.9
+      tsconfig-paths: 3.15.0
+    optionalDependencies:
+      '@typescript-eslint/parser': 6.21.0(eslint@10.4.0)(typescript@5.3.3)
+    transitivePeerDependencies:
+      - eslint-import-resolver-typescript
+      - eslint-import-resolver-webpack
+      - supports-color
+
+  eslint-plugin-jest@27.9.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.3.3))(eslint@10.4.0)(typescript@5.3.3))(eslint@8.57.1)(jest@29.7.0(@types/node@20.19.9)(babel-plugin-macros@3.1.0))(typescript@5.9.3):
     dependencies:
       '@typescript-eslint/utils': 5.62.0(eslint@8.57.1)(typescript@5.9.3)
+      eslint: 8.57.1
+    optionalDependencies:
+      '@typescript-eslint/eslint-plugin': 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.3.3))(eslint@10.4.0)(typescript@5.3.3)
+      jest: 29.7.0(@types/node@20.19.9)(babel-plugin-macros@3.1.0)
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
+
+  eslint-plugin-jest@27.9.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.3.3))(eslint@8.57.1)(typescript@5.3.3))(eslint@10.4.0)(jest@29.7.0(@types/node@20.19.9)(babel-plugin-macros@3.1.0))(typescript@5.3.3):
+    dependencies:
+      '@typescript-eslint/utils': 5.62.0(eslint@8.57.1)(typescript@5.3.3)
       eslint: 10.4.0
     optionalDependencies:
-      '@typescript-eslint/eslint-plugin': 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@10.4.0)(typescript@5.9.3)
+      '@typescript-eslint/eslint-plugin': 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.3.3))(eslint@10.4.0)(typescript@5.3.3)
       jest: 29.7.0(@types/node@20.19.9)(babel-plugin-macros@3.1.0)
     transitivePeerDependencies:
       - supports-color
@@ -17395,11 +18319,11 @@ snapshots:
       safe-regex-test: 1.1.0
       string.prototype.includes: 2.0.1
 
-  eslint-plugin-playwright@0.15.3(eslint-plugin-jest@27.9.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(jest@29.7.0(@types/node@20.19.9)(babel-plugin-macros@3.1.0))(typescript@5.9.3))(eslint@8.57.1):
+  eslint-plugin-playwright@0.15.3(eslint-plugin-jest@27.9.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.3.3))(eslint@8.57.1)(typescript@5.3.3))(eslint@8.57.1)(jest@29.7.0(@types/node@20.19.9)(babel-plugin-macros@3.1.0))(typescript@5.3.3))(eslint@8.57.1):
     dependencies:
       eslint: 8.57.1
     optionalDependencies:
-      eslint-plugin-jest: 27.9.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(eslint@10.4.0)(jest@29.7.0(@types/node@20.19.9)(babel-plugin-macros@3.1.0))(typescript@5.9.3)
+      eslint-plugin-jest: 27.9.0(@typescript-eslint/eslint-plugin@6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.3.3))(eslint@8.57.1)(typescript@5.3.3))(eslint@10.4.0)(jest@29.7.0(@types/node@20.19.9)(babel-plugin-macros@3.1.0))(typescript@5.3.3)
 
   eslint-plugin-playwright@2.10.1(eslint@10.4.0):
     dependencies:
@@ -19813,10 +20737,6 @@ snapshots:
 
   minimalistic-assert@1.0.1: {}
 
-  minimatch@10.1.1:
-    dependencies:
-      '@isaacs/brace-expansion': 5.0.1
-
   minimatch@10.2.4:
     dependencies:
       brace-expansion: 5.0.5
@@ -19936,8 +20856,6 @@ snapshots:
 
   node-int64@0.4.0: {}
 
-  node-machine-id@1.1.12: {}
-
   node-releases@2.0.27: {}
 
   nopt@7.2.1:
@@ -19972,6 +20890,29 @@ snapshots:
       npm-normalize-package-bin: 1.0.1
 
   npm-normalize-package-bin@1.0.1: {}
+
+  npm-package-json-lint@6.4.0(typescript@5.3.3):
+    dependencies:
+      ajv: 6.15.0
+      ajv-errors: 1.0.1(ajv@6.15.0)
+      chalk: 4.1.2
+      cosmiconfig: 8.3.6(typescript@5.3.3)
+      debug: 4.4.3
+      globby: 11.1.0
+      ignore: 5.3.2
+      is-plain-obj: 3.0.0
+      jsonc-parser: 3.3.1
+      log-symbols: 4.1.0
+      meow: 9.0.0
+      plur: 4.0.0
+      semver: 7.7.4
+      slash: 3.0.0
+      strip-json-comments: 3.1.1
+      type-fest: 3.13.1
+      validate-npm-package-name: 5.0.1
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
 
   npm-package-json-lint@6.4.0(typescript@5.9.3):
     dependencies:
@@ -20013,61 +20954,7 @@ snapshots:
 
   nwsapi@2.2.23: {}
 
-  nx@22.5.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)):
-    dependencies:
-      '@napi-rs/wasm-runtime': 0.2.4
-      '@yarnpkg/lockfile': 1.1.0
-      '@yarnpkg/parsers': 3.0.2
-      '@zkochan/js-yaml': 0.0.7
-      axios: 1.16.0
-      cli-cursor: 3.1.0
-      cli-spinners: 2.6.1
-      cliui: 8.0.1
-      dotenv: 16.4.7
-      dotenv-expand: 11.0.7
-      ejs: 3.1.10
-      enquirer: 2.3.6
-      figures: 3.2.0
-      flat: 5.0.2
-      front-matter: 4.0.2
-      ignore: 7.0.5
-      jest-diff: 30.3.0
-      jsonc-parser: 3.2.0
-      lines-and-columns: 2.0.3
-      minimatch: 10.1.1
-      node-machine-id: 1.1.12
-      npm-run-path: 4.0.1
-      open: 8.4.2
-      ora: 5.3.0
-      picocolors: 1.1.1
-      resolve.exports: 2.0.3
-      semver: 7.7.4
-      string-width: 4.2.3
-      tar-stream: 2.2.0
-      tmp: 0.2.6
-      tree-kill: 1.2.2
-      tsconfig-paths: 4.2.0
-      tslib: 2.8.1
-      yaml: 2.9.0
-      yargs: 17.7.2
-      yargs-parser: 21.1.1
-    optionalDependencies:
-      '@nx/nx-darwin-arm64': 22.5.0
-      '@nx/nx-darwin-x64': 22.5.0
-      '@nx/nx-freebsd-x64': 22.5.0
-      '@nx/nx-linux-arm-gnueabihf': 22.5.0
-      '@nx/nx-linux-arm64-gnu': 22.5.0
-      '@nx/nx-linux-arm64-musl': 22.5.0
-      '@nx/nx-linux-x64-gnu': 22.5.0
-      '@nx/nx-linux-x64-musl': 22.5.0
-      '@nx/nx-win32-arm64-msvc': 22.5.0
-      '@nx/nx-win32-x64-msvc': 22.5.0
-      '@swc-node/register': 1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3)
-      '@swc/core': 1.15.21(@swc/helpers@0.5.20)
-    transitivePeerDependencies:
-      - debug
-
-  nx@22.6.2(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)):
+  nx@22.6.2(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)):
     dependencies:
       '@ltd/j-toml': 1.38.0
       '@napi-rs/wasm-runtime': 0.2.4
@@ -20116,7 +21003,136 @@ snapshots:
       '@nx/nx-linux-x64-musl': 22.6.2
       '@nx/nx-win32-arm64-msvc': 22.6.2
       '@nx/nx-win32-x64-msvc': 22.6.2
-      '@swc-node/register': 1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.9.3)
+      '@swc-node/register': 1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3)
+      '@swc/core': 1.15.21(@swc/helpers@0.5.20)
+    transitivePeerDependencies:
+      - debug
+
+  nx@23.0.0(@swc-node/register@1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3))(@swc/core@1.15.21(@swc/helpers@0.5.20)):
+    dependencies:
+      '@emnapi/core': 1.4.5
+      '@emnapi/runtime': 1.4.5
+      '@emnapi/wasi-threads': 1.0.4
+      '@jest/diff-sequences': 30.0.1
+      '@napi-rs/wasm-runtime': 0.2.4
+      '@tybys/wasm-util': 0.9.0
+      '@yarnpkg/lockfile': 1.1.0
+      '@zkochan/js-yaml': 0.0.7
+      ansi-colors: 4.1.3
+      ansi-regex: 5.0.1
+      ansi-styles: 4.3.0
+      argparse: 2.0.1
+      asynckit: 0.4.0
+      axios: 1.16.0
+      balanced-match: 4.0.3
+      base64-js: 1.5.1
+      bl: 4.1.0
+      brace-expansion: 5.0.6
+      buffer: 5.7.1
+      call-bind-apply-helpers: 1.0.2
+      chalk: 4.1.2
+      cli-cursor: 3.1.0
+      cli-spinners: 2.6.1
+      cliui: 8.0.1
+      clone: 1.0.4
+      color-convert: 2.0.1
+      color-name: 1.1.4
+      combined-stream: 1.0.8
+      defaults: 1.0.4
+      define-lazy-prop: 2.0.0
+      delayed-stream: 1.0.0
+      dotenv: 16.4.7
+      dotenv-expand: 12.0.3
+      dunder-proto: 1.0.1
+      ejs: 5.0.1
+      emoji-regex: 8.0.0
+      end-of-stream: 1.4.5
+      enquirer: 2.3.6
+      es-define-property: 1.0.1
+      es-errors: 1.3.0
+      es-object-atoms: 1.1.1
+      es-set-tostringtag: 2.1.0
+      escalade: 3.2.0
+      escape-string-regexp: 1.0.5
+      figures: 3.2.0
+      flat: 5.0.2
+      follow-redirects: 1.16.0
+      form-data: 4.0.5
+      fs-constants: 1.0.0
+      function-bind: 1.1.2
+      get-caller-file: 2.0.5
+      get-intrinsic: 1.3.0
+      get-proto: 1.0.1
+      gopd: 1.2.0
+      has-flag: 4.0.0
+      has-symbols: 1.1.0
+      has-tostringtag: 1.0.2
+      hasown: 2.0.2
+      ieee754: 1.2.1
+      ignore: 7.0.5
+      inherits: 2.0.4
+      is-docker: 2.2.1
+      is-fullwidth-code-point: 3.0.0
+      is-interactive: 1.0.0
+      is-unicode-supported: 0.1.0
+      is-wsl: 2.2.0
+      isexe: 2.0.0
+      json5: 2.2.3
+      jsonc-parser: 3.3.1
+      lines-and-columns: 2.0.3
+      log-symbols: 4.1.0
+      math-intrinsics: 1.1.0
+      mime-db: 1.52.0
+      mime-types: 2.1.35
+      mimic-fn: 2.1.0
+      minimatch: 10.2.5
+      minimist: 1.2.8
+      npm-run-path: 4.0.1
+      once: 1.4.0
+      onetime: 5.1.2
+      open: 8.4.2
+      ora: 5.4.1
+      path-key: 3.1.1
+      picocolors: 1.1.1
+      proxy-from-env: 2.1.0
+      readable-stream: 3.6.2
+      require-directory: 2.1.1
+      resolve.exports: 2.0.3
+      restore-cursor: 3.1.0
+      safe-buffer: 5.2.1
+      semver: 7.7.4
+      signal-exit: 3.0.7
+      smol-toml: 1.6.1
+      string-width: 4.2.3
+      string_decoder: 1.3.0
+      strip-ansi: 6.0.1
+      strip-bom: 3.0.0
+      supports-color: 7.2.0
+      tar-stream: 2.2.0
+      tmp: 0.2.6
+      tsconfig-paths: 4.2.0
+      tslib: 2.8.1
+      util-deprecate: 1.0.2
+      wcwidth: 1.0.1
+      which: 3.0.1
+      wrap-ansi: 7.0.0
+      wrappy: 1.0.2
+      y18n: 5.0.8
+      yaml: 2.9.0
+      yargs: 17.7.2
+      yargs-parser: 21.1.1
+    optionalDependencies:
+      '@nx/nx-darwin-arm64': 23.0.0
+      '@nx/nx-darwin-x64': 23.0.0
+      '@nx/nx-freebsd-x64': 23.0.0
+      '@nx/nx-linux-arm-gnueabihf': 23.0.0
+      '@nx/nx-linux-arm64-gnu': 23.0.0
+      '@nx/nx-linux-arm64-musl': 23.0.0
+      '@nx/nx-linux-x64-gnu': 23.0.0
+      '@nx/nx-linux-x64-musl': 23.0.0
+      '@nx/nx-win32-arm64-msvc': 23.0.0
+      '@nx/nx-win32-x64-msvc': 23.0.0
+      '@swc-node/register': 1.11.1(@swc/core@1.15.21(@swc/helpers@0.5.20))(@swc/types@0.1.26)(typescript@5.3.3)
       '@swc/core': 1.15.21(@swc/helpers@0.5.20)
     transitivePeerDependencies:
       - debug
@@ -20239,6 +21255,18 @@ snapshots:
       cli-cursor: 3.1.0
       cli-spinners: 2.9.2
       is-interactive: 1.0.0
+      log-symbols: 4.1.0
+      strip-ansi: 6.0.1
+      wcwidth: 1.0.1
+
+  ora@5.4.1:
+    dependencies:
+      bl: 4.1.0
+      chalk: 4.1.2
+      cli-cursor: 3.1.0
+      cli-spinners: 2.9.2
+      is-interactive: 1.0.0
+      is-unicode-supported: 0.1.0
       log-symbols: 4.1.0
       strip-ansi: 6.0.1
       wcwidth: 1.0.1
@@ -21426,6 +22454,8 @@ snapshots:
 
   smart-buffer@4.2.0: {}
 
+  smol-toml@1.6.1: {}
+
   snake-case@3.0.4:
     dependencies:
       dot-case: 3.0.4
@@ -21709,6 +22739,15 @@ snapshots:
       postcss: 8.5.12
       postcss-selector-parser: 6.1.2
 
+  stylelint-config-recommended-scss@14.1.0(postcss@8.5.12)(stylelint@16.26.1(typescript@5.3.3)):
+    dependencies:
+      postcss-scss: 4.0.9(postcss@8.5.12)
+      stylelint: 16.26.1(typescript@5.3.3)
+      stylelint-config-recommended: 14.0.1(stylelint@16.26.1(typescript@5.3.3))
+      stylelint-scss: 6.14.0(stylelint@16.26.1(typescript@5.3.3))
+    optionalDependencies:
+      postcss: 8.5.12
+
   stylelint-config-recommended-scss@14.1.0(postcss@8.5.12)(stylelint@16.26.1(typescript@5.9.3)):
     dependencies:
       postcss-scss: 4.0.9(postcss@8.5.12)
@@ -21718,9 +22757,25 @@ snapshots:
     optionalDependencies:
       postcss: 8.5.12
 
+  stylelint-config-recommended@14.0.1(stylelint@16.26.1(typescript@5.3.3)):
+    dependencies:
+      stylelint: 16.26.1(typescript@5.3.3)
+
   stylelint-config-recommended@14.0.1(stylelint@16.26.1(typescript@5.9.3)):
     dependencies:
       stylelint: 16.26.1(typescript@5.9.3)
+
+  stylelint-scss@6.14.0(stylelint@16.26.1(typescript@5.3.3)):
+    dependencies:
+      css-tree: 3.2.1
+      is-plain-object: 5.0.0
+      known-css-properties: 0.37.0
+      mdn-data: 2.27.1
+      postcss-media-query-parser: 0.2.3
+      postcss-resolve-nested-selector: 0.1.6
+      postcss-selector-parser: 7.1.1
+      postcss-value-parser: 4.2.0
+      stylelint: 16.26.1(typescript@5.3.3)
 
   stylelint-scss@6.14.0(stylelint@16.26.1(typescript@5.9.3)):
     dependencies:
@@ -21733,6 +22788,51 @@ snapshots:
       postcss-selector-parser: 7.1.1
       postcss-value-parser: 4.2.0
       stylelint: 16.26.1(typescript@5.9.3)
+
+  stylelint@16.26.1(typescript@5.3.3):
+    dependencies:
+      '@csstools/css-parser-algorithms': 3.0.5(@csstools/css-tokenizer@3.0.4)
+      '@csstools/css-syntax-patches-for-csstree': 1.0.26
+      '@csstools/css-tokenizer': 3.0.4
+      '@csstools/media-query-list-parser': 4.0.3(@csstools/css-parser-algorithms@3.0.5(@csstools/css-tokenizer@3.0.4))(@csstools/css-tokenizer@3.0.4)
+      '@csstools/selector-specificity': 5.0.0(postcss-selector-parser@7.1.1)
+      '@dual-bundle/import-meta-resolve': 4.2.1
+      balanced-match: 2.0.0
+      colord: 2.9.3
+      cosmiconfig: 9.0.0(typescript@5.3.3)
+      css-functions-list: 3.2.3
+      css-tree: 3.2.1
+      debug: 4.4.3
+      fast-glob: 3.3.3
+      fastest-levenshtein: 1.0.16
+      file-entry-cache: 11.1.2
+      global-modules: 2.0.0
+      globby: 11.1.0
+      globjoin: 0.1.4
+      html-tags: 3.3.1
+      ignore: 7.0.5
+      imurmurhash: 0.1.4
+      is-plain-object: 5.0.0
+      known-css-properties: 0.37.0
+      mathml-tag-names: 2.1.3
+      meow: 13.2.0
+      micromatch: 4.0.8
+      normalize-path: 3.0.0
+      picocolors: 1.1.1
+      postcss: 8.5.12
+      postcss-resolve-nested-selector: 0.1.6
+      postcss-safe-parser: 7.0.1(postcss@8.5.12)
+      postcss-selector-parser: 7.1.1
+      postcss-value-parser: 4.2.0
+      resolve-from: 5.0.0
+      string-width: 4.2.3
+      supports-hyperlinks: 3.2.0
+      svg-tags: 1.0.0
+      table: 6.9.0
+      write-file-atomic: 5.0.1
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
 
   stylelint@16.26.1(typescript@5.9.3):
     dependencies:
@@ -21979,6 +23079,10 @@ snapshots:
     dependencies:
       escape-string-regexp: 1.0.5
 
+  ts-api-utils@1.4.3(typescript@5.3.3):
+    dependencies:
+      typescript: 5.3.3
+
   ts-api-utils@1.4.3(typescript@5.9.3):
     dependencies:
       typescript: 5.9.3
@@ -21999,6 +23103,11 @@ snapshots:
   tslib@1.14.1: {}
 
   tslib@2.8.1: {}
+
+  tsutils@3.21.0(typescript@5.3.3):
+    dependencies:
+      tslib: 1.14.1
+      typescript: 5.3.3
 
   tsutils@3.21.0(typescript@5.9.3):
     dependencies:
@@ -22067,6 +23176,8 @@ snapshots:
 
   typedarray@0.0.6:
     optional: true
+
+  typescript@5.3.3: {}
 
   typescript@5.9.3: {}
 
@@ -22216,6 +23327,8 @@ snapshots:
 
   uuid@8.3.2: {}
 
+  uuid@9.0.1: {}
+
   v8-to-istanbul@9.3.0:
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
@@ -22256,7 +23369,7 @@ snapshots:
       terser: 5.46.1
       yaml: 2.9.0
 
-  vitepress@2.0.0-alpha.17(@types/node@20.19.9)(axios@1.16.0)(postcss@8.5.12)(sass@1.98.0)(terser@5.46.1)(typescript@5.9.3)(yaml@2.9.0):
+  vitepress@2.0.0-alpha.17(@types/node@20.19.9)(axios@1.16.0)(postcss@8.5.12)(sass@1.98.0)(terser@5.46.1)(typescript@5.3.3)(yaml@2.9.0):
     dependencies:
       '@docsearch/css': 4.6.3
       '@docsearch/js': 4.6.3
@@ -22266,17 +23379,17 @@ snapshots:
       '@shikijs/transformers': 3.23.0
       '@shikijs/types': 3.23.0
       '@types/markdown-it': 14.1.2
-      '@vitejs/plugin-vue': 6.0.6(vite@7.3.2(@types/node@20.19.9)(sass@1.98.0)(terser@5.46.1)(yaml@2.9.0))(vue@3.5.33(typescript@5.9.3))
+      '@vitejs/plugin-vue': 6.0.6(vite@7.3.2(@types/node@20.19.9)(sass@1.98.0)(terser@5.46.1)(yaml@2.9.0))(vue@3.5.33(typescript@5.3.3))
       '@vue/devtools-api': 8.1.1
       '@vue/shared': 3.5.33
-      '@vueuse/core': 14.2.1(vue@3.5.33(typescript@5.9.3))
-      '@vueuse/integrations': 14.2.1(axios@1.16.0)(focus-trap@8.1.0)(vue@3.5.33(typescript@5.9.3))
+      '@vueuse/core': 14.2.1(vue@3.5.33(typescript@5.3.3))
+      '@vueuse/integrations': 14.2.1(axios@1.16.0)(focus-trap@8.1.0)(vue@3.5.33(typescript@5.3.3))
       focus-trap: 8.1.0
       mark.js: 8.11.1
       minisearch: 7.2.0
       shiki: 3.23.0
       vite: 7.3.2(@types/node@20.19.9)(sass@1.98.0)(terser@5.46.1)(yaml@2.9.0)
-      vue: 3.5.33(typescript@5.9.3)
+      vue: 3.5.33(typescript@5.3.3)
     optionalDependencies:
       postcss: 8.5.12
     transitivePeerDependencies:
@@ -22304,15 +23417,15 @@ snapshots:
       - universal-cookie
       - yaml
 
-  vue@3.5.33(typescript@5.9.3):
+  vue@3.5.33(typescript@5.3.3):
     dependencies:
       '@vue/compiler-dom': 3.5.33
       '@vue/compiler-sfc': 3.5.33
       '@vue/runtime-dom': 3.5.33
-      '@vue/server-renderer': 3.5.33(vue@3.5.33(typescript@5.9.3))
+      '@vue/server-renderer': 3.5.33(vue@3.5.33(typescript@5.3.3))
       '@vue/shared': 3.5.33
     optionalDependencies:
-      typescript: 5.9.3
+      typescript: 5.3.3
 
   w3c-xmlserializer@5.0.0:
     dependencies:
@@ -22334,6 +23447,8 @@ snapshots:
 
   wasm-feature-detect@1.8.0:
     optional: true
+
+  wasm-vips@0.0.16: {}
 
   wasm-vips@0.0.17: {}
 
@@ -22555,6 +23670,10 @@ snapshots:
       isexe: 2.0.0
 
   which@2.0.2:
+    dependencies:
+      isexe: 2.0.0
+
+  which@3.0.1:
     dependencies:
       isexe: 2.0.0
 

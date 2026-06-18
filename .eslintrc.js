@@ -65,6 +65,6 @@ module.exports = {
         '**/dist/**',
         '**/coverage/**',
         'tools/monorepo/src/generators/**/files/**',
-        '{plugins,themes}/**/build/**',
+        'tools/monorepo/src/generators/block/templates/**',
     ],
 };
