@@ -30,6 +30,7 @@
         "@nx/devkit": "catalog:",
         "@nx/plugin": "catalog:",
         "@playwright/test": "catalog:",
+        "@wordpress/env": "catalog:",
         "@wordpress/scripts": "catalog:",
         "@wordpress/stylelint-config": "catalog:",
         "chokidar-cli": "catalog:",
