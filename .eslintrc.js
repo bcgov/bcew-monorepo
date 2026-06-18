@@ -55,14 +55,6 @@ module.exports = {
         'jsdoc/require-param-name': lintSeverity,
         'jsdoc/require-param-type': lintSeverity,
         'jsdoc/require-returns': lintSeverity,
-        // Todo: Fix this rule to accept project-level imports.
-        'import/no-extraneous-dependencies': [
-            'warn',
-            {
-                devDependencies: [ '**/*.spec.ts', '**/*.spec.js' ],
-                packageDir: [ '.', './themes/*', './plugins/*' ],
-            },
-        ],
     },
     settings: {
         react: {

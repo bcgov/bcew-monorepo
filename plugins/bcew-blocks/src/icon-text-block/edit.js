@@ -4,9 +4,7 @@ import {
     useBlockProps,
     useInnerBlocksProps,
 } from '@wordpress/block-editor';
-/* eslint-disable import/no-extraneous-dependencies -- @wordpress/components is provided in the monorepo workspace */
 import { PanelBody, RadioControl } from '@wordpress/components';
-/* eslint-enable import/no-extraneous-dependencies */
 import './editor.scss';
 
 const INNER_BLOCKS_TEMPLATE = [

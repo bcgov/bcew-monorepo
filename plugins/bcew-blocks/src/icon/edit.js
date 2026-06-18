@@ -3,7 +3,6 @@
  */
 import { __, sprintf } from '@wordpress/i18n';
 import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
-/* eslint-disable import/no-extraneous-dependencies -- @wordpress/components is provided in the monorepo workspace */
 import {
     BaseControl,
     Button,
@@ -13,7 +12,6 @@ import {
     TextControl,
     ToggleControl,
 } from '@wordpress/components';
-/* eslint-enable import/no-extraneous-dependencies */
 
 /**
  * Internal dependencies
