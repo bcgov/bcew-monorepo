@@ -14,13 +14,18 @@ if ( file_exists( $autoloader_path ) ) {
     require_once $autoloader_path;
 }
 
-// Enqueue built dist CSS when available, otherwise fallback to root style.css.
-$dist_path = get_stylesheet_directory() . '/dist/index.css';
-// Always enqueue built dist CSS. Ensure build runs in CI/dev before deploying.
-$version = file_exists( $dist_path ) ? filemtime( $dist_path ) : null;
-wp_enqueue_style(
-    'bcew-belleville-terminal-style',
-    get_stylesheet_directory_uri() . '/dist/index.css',
-    array(),
-    $version
-);
+/**
+ * Enqueue theme styles.
+ */
+function bcew_belleville_terminal_enqueue_styles() {
+    $dist_path = get_stylesheet_directory() . '/dist/index.css';
+    $version   = file_exists( $dist_path ) ? filemtime( $dist_path ) : null;
+    wp_enqueue_style(
+        'bcew-belleville-terminal-style',
+        get_stylesheet_directory_uri() . '/dist/index.css',
+        array(),
+        $version
+    );
+}
+
+add_action( 'wp_enqueue_scripts', 'bcew_belleville_terminal_enqueue_styles' );

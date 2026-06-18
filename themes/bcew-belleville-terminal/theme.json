@@ -2,9 +2,87 @@
     "$schema": "https://schemas.wp.org/trunk/theme.json",
     "version": 3,
     "title": "Belleville Terminal Child Theme",
-    "settings": {},
+
+    "settings": {
+        "color": {
+            "palette": [
+                {
+                    "slug": "belleville-primary",
+                    "color": "#234075",
+                    "name": "Belleville Primary"
+                },
+                {
+                    "slug": "belleville-secondary",
+                    "color": "#00BBDA",
+                    "name": "Belleville Secondary"
+                },
+                {
+                    "slug": "belleville-tertiary",
+                    "color": "#6BCCE3",
+                    "name": "Belleville Tertiary"
+                }
+            ]
+        }
+    },
+
     "styles": {
+        "elements": {
+            "h1": {
+                "typography": {
+                    "fontSize": "36px"
+                },
+                "spacing": {
+                    "margin": {
+                        "top": "1.5rem!important",
+                        "bottom": "1.5rem!important"
+                    }
+                }
+            },
+            "h2": {
+                "typography": {
+                    "fontSize": "32px"
+                },
+                "spacing": {
+                    "margin": {
+                        "top": "3rem!important"
+                    }
+                }
+            },
+            "h3": {
+                "typography": {
+                    "fontSize": "28px"
+                },
+                "spacing": {
+                    "margin": {
+                        "top": "1.25rem!important"
+                    }
+                }
+            },
+            "h4": {
+                "typography": {
+                    "fontSize": "24px"
+                },
+                "spacing": {
+                    "margin": {
+                        "top": "1.25rem!important"
+                    }
+                }
+            }
+        },
+
         "blocks": {
+            "core/list": {
+                "typography": {
+                    "fontSize": "1rem",
+                    "lineHeight": "1.688rem"
+                },
+                "spacing": {
+                    "margin": {
+                        "top": "1.25rem!important"
+                    }
+                }
+            },
+
             "core/separator": {
                 "dimensions": {
                     "maxWidth": "70rem"
