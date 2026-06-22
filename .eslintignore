@@ -1,0 +1,16 @@
+# Dist and build directories
+**/dist/**
+**/coverage/**
+**/build/**
+
+# Node modules
+node_modules/
+vendor/
+
+# Generators
+tools/monorepo/src/generators/**/files/**
+tools/monorepo/src/generators/block/templates/**
+
+# Test and artifact directories
+artifacts/
+test-results/

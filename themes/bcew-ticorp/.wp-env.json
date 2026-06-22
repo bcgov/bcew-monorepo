@@ -8,6 +8,6 @@
     "port": 9004,
     "testsPort": 9005,
     "lifecycleScripts": {
-        "afterStart": "wp-env run tests-cli wp theme activate design-system-wordpress-child-theme-ticorp"
+        "afterStart": "wp-env run tests-cli wp theme activate bcew-ticorp"
     }
 }

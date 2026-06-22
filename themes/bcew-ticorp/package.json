@@ -1,7 +1,7 @@
 {
-    "name": "design-system-wordpress-child-theme-ticorp",
+    "name": "bcew-ticorp",
     "version": "1.2.0",
-    "description": "Design System Wordpress Child Theme TI-Corp",
+    "description": "TI-Corp Child Theme",
     "author": "govwordpress@gov.bc.ca",
     "license": "GPL-2.0-or-later",
     "keywords": [
@@ -11,13 +11,13 @@
         "DesignSystem",
         "Gutenberg"
     ],
-    "homepage": "https://github.com/bcgov/design-system-wordpress-child-theme-ticorp",
+    "homepage": "https://github.com/bcgov/bcew-monorepo",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/bcgov/design-system-wordpress-child-theme-ticorp.git"
+        "url": "git+https://github.com/bcgov/bcew-monorepo.git"
     },
     "bugs": {
-        "url": "https://github.com/bcgov/design-system-wordpress-child-theme-ticorp#readme",
+        "url": "https://github.com/bcgov/bcew-monorepo#readme",
         "email": "govwordpress@gov.bc.ca"
     },
     "main": "index.js",

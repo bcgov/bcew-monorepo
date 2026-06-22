@@ -41,6 +41,9 @@
         "nx": "catalog:",
         "vitepress": "catalog:"
     },
+    "devDependencies": {
+        "eslint": "^8.57.1"
+    },
     "peerDependencies": {
         "@swc-node/register": "catalog:",
         "@swc/cli": "catalog:",

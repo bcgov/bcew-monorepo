@@ -22,9 +22,9 @@ plugins/bcew-blocks:
     - changed-files:
           - any-glob-to-any-file: 'plugins/bcew-blocks/**'
 
-themes/child-theme-ticorp:
+themes/bcew-ticorp:
     - changed-files:
-          - any-glob-to-any-file: 'themes/design-system-wordpress-child-theme-ticorp/**'
+          - any-glob-to-any-file: 'themes/bcew-ticorp/**'
 
 themes/bcew-theme-2:
     - changed-files:
