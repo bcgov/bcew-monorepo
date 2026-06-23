@@ -10,7 +10,7 @@ on:
           - bcew-blocks
           - bcew-belleville-terminal
           - bcew-theme-2
-          - design-system-wordpress-child-theme-ticorp
+          - bcew-ticorp
       version:
         description: 'Version to release (for example: 1.2.3)'
         required: true

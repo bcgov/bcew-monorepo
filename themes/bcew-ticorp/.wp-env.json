@@ -5,6 +5,7 @@
         ".",
         "bcgov/design-system-wordpress-theme"
     ],
+    "plugins": [ "bcgov/design-system-wordpress-plugin" ],
     "port": 9004,
     "testsPort": 9005,
     "lifecycleScripts": {
