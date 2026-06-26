@@ -134,46 +134,42 @@
         }
     }
 
-    /* ================= Image + Text (5-row model) =================
-       row 1 heading, row 2 paragraph, row 3 list, row 4 spacer (1fr),
-       row 5 button. The image spans column 1 full height; text rows are
-       carried down the content column. */
+    /* ============== Image + Text (stacked, 6-row model) ==============
+       Inside a card the column is narrow, so the block behaves like its
+       mobile layout: the image sits on top and the text stacks beneath it
+       (the card acts like a small "screen"). Rows: 1 image, 2 heading,
+       3 paragraph, 4 list, 5 spacer (1fr), 6 button. The text rows still
+       line up across cards via subgrid, and the spacer keeps the CTAs
+       bottom-aligned. */
     .bcew-blocks-cards--type-media-text {
-        grid-template-rows: auto auto auto 1fr auto;
+        grid-template-rows: auto auto auto auto 1fr auto;
 
         .layout-shell {
             display: grid !important;
             grid-template-rows: subgrid !important;
             grid-row: 1 / -1;
-            grid-template-columns: var(--ratio-image, 30%) minmax(0, 1fr) !important;
+            grid-template-columns: minmax(0, 1fr) !important;
             row-gap: 0;
             min-width: 0 !important;
             max-width: none !important;
             width: 100%;
         }
 
+        /* Image band on top, full card width (like the mobile layout). The
+           height is a single knob so the image bands line up across cards. */
         .layout-shell > .wp-block-image {
             grid-column: 1 !important;
-            grid-row: 1 / -1 !important;
+            grid-row: 1 !important;
+            width: 100%;
             min-width: 0;
-            height: 100%;
+            height: var(--bcew-cards-image-height, 200px);
         }
 
+        /* Text content fills the rows beneath the image. The image position
+           setting (left/right) is irrelevant once stacked, so it is ignored. */
         .layout-shell > .media-text-content {
-            grid-column: 2 !important;
-        }
-
-        /* image on the right */
-        .is-image-right .layout-shell {
-            grid-template-columns: minmax(0, 1fr) var(--ratio-image, 30%) !important;
-        }
-
-        .is-image-right .layout-shell > .wp-block-image {
-            grid-column: 2 !important;
-        }
-
-        .is-image-right .layout-shell > .media-text-content {
             grid-column: 1 !important;
+            grid-row: 2 / -1 !important;
         }
 
         /* Carry the rows down to the leaf blocks. Both contexts end in the
@@ -183,7 +179,15 @@
            layouts inside the list/buttons blocks use
            `.block-editor-block-list__layout` (not `.inner-blocks`) and are left
            untouched. */
-        .media-text-content,
+        .media-text-content {
+            display: grid !important;
+            grid-template-rows: subgrid !important;
+            row-gap: 0;
+            min-width: 0;
+            width: 100%;
+            max-width: 100%;
+        }
+
         .media-text-content .inner-blocks {
             display: grid !important;
             grid-template-rows: subgrid !important;
