@@ -15,6 +15,7 @@
         "build": {},
         "start": {},
         "test-e2e": {},
+        "test-e2e-docker": {},
         "test-screenshot": {},
         "test-screenshot-generate": {},
         "test-integration": {

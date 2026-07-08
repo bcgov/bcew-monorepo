@@ -97,7 +97,7 @@ jobs:
     test-e2e:
         name: Test e2e (affected)
         runs-on: ubuntu-latest
-        timeout-minutes: 2 # Todo: This step is currently stalling out while downloading Playwright browsers. Need to find a fix and properly re-enable it. See issue #101.
+        timeout-minutes: 15
         steps:
             - name: Checkout
               uses: actions/checkout@v4
@@ -124,7 +124,7 @@ jobs:
               run: npx playwright install --with-deps
 
             - name: Run e2e tests
-              run: npx nx affected --base="origin/${{ github.base_ref }}" -t test-e2e
+              run: npx nx affected --base="origin/${{ github.base_ref }}" -t test-e2e-docker
 
             - uses: actions/upload-artifact@v4
               if: ${{ !cancelled() }}

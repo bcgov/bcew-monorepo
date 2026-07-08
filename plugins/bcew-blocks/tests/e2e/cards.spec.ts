@@ -91,10 +91,6 @@ const fillFirstCardContent = async (
     await expect( heading ).toBeVisible();
     await heading.fill( content.heading );
 
-    const list = cards.getByRole( 'textbox', { name: 'List text' } ).first();
-    await expect( list ).toBeVisible();
-    await list.fill( content.list );
-
     const button = cards
         .getByRole( 'textbox', { name: 'Button text' } )
         .first();

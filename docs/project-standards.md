@@ -26,6 +26,7 @@ A **valid** monorepo package in this repository is a workspace member that Nx ca
    | `start` | `wp-scripts start` (watch) |
    | `wp-env-start` / `wp-env-stop` / `wp-env-clean` | Local WordPress via `@wordpress/env` |
    | `test-e2e` | Playwright via `wp-scripts test-playwright` |
+   | `test-e2e-docker` | The above target except it runs inside a docker container running the official Playwright image |
    | `test-integration` | PHPUnit inside `wp-env` |
    | `test-screenshot` | Playwright visual regression tests, comparing with committed screenshots, generally only used by CI/CD. |
    | `test-screenshot-generate` | Generate new Playwright visual regression screenshots, necessary when CI/CD finds mismatch between screenshots. |

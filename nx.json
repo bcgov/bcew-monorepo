@@ -48,10 +48,18 @@
             },
             "dependsOn": ["build", "wp-env-start"]
         },
+        "test-e2e-docker": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "PROJECT_PATH={projectRoot} TEST_COMMAND=\"npx wp-scripts test-playwright\" docker compose up --exit-code-from=playwright"
+            },
+            "parallelism": false,
+            "dependsOn": ["build", "wp-env-start"]
+        },
         "test-screenshot": {
             "executor": "nx:run-commands",
             "options": {
-                "command": "UPDATE_SNAPSHOTS=none PROJECT_PATH={projectRoot} docker compose up --exit-code-from=playwright"
+                "command": "PROJECT_PATH={projectRoot} TEST_COMMAND=\"npx wp-scripts test-playwright --config playwright.regression.config.js --update-snapshots none\" docker compose up --exit-code-from=playwright"
             },
             "parallelism": false,
             "dependsOn": ["build", "wp-env-start"]
@@ -59,7 +67,7 @@
         "test-screenshot-generate": {
             "executor": "nx:run-commands",
             "options": {
-                "command": "UPDATE_SNAPSHOTS=all PROJECT_PATH={projectRoot} docker compose up --exit-code-from=playwright"
+                "command": "PROJECT_PATH={projectRoot} TEST_COMMAND=\"npx wp-scripts test-playwright --config playwright.regression.config.js --update-snapshots all\" docker compose up --exit-code-from=playwright"
             },
             "parallelism": false,
             "dependsOn": ["build", "wp-env-start"]

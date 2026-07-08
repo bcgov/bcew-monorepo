@@ -1,33 +1,28 @@
 services:
   playwright:
     image: mcr.microsoft.com/playwright:v1.58.2-noble
-    container_name: playwright
     working_dir: /workspace
     volumes:
       - .:/workspace
       - node_modules:/workspace/node_modules
       - .pnpm-store:/pnpm-store
     network_mode: host
-    stdin_open: true # equivalent to -i
-    tty: true        # equivalent to -t
+    stdin_open: true
+    tty: true
     environment:
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
       NODE_ENV: test
       WP_ENVIRONMENT: local
       WP_E2E_SKIP_ENV_SETUP: "true"
-      UPDATE_SNAPSHOTS: "all"
       PROJECT_PATH: ""
+      TEST_COMMAND: ""
 
     command: >
       sh -c "
-        ls &&
-        echo \"Installing pnpm\" &&
         npm i -g pnpm &&
-        echo \"Installing dependencies\" &&
         pnpm install --frozen-lockfile --yes &&
-        echo \"Running tests\" &&
-        cd ${PROJECT_PATH}
-        npx wp-scripts test-playwright --config playwright.regression.config.js --update-snapshots ${UPDATE_SNAPSHOTS}
+        cd ${PROJECT_PATH} &&
+        ${TEST_COMMAND}
       "
 
 volumes:
