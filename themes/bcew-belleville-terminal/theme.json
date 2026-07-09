@@ -20,8 +20,33 @@
                     "slug": "belleville-tertiary",
                     "color": "#6BCCE3",
                     "name": "Belleville Tertiary"
+                },
+                {
+                    "slug": "accent-primary",
+                    "color": "#6BCCE3",
+                    "name": "Accent Primary"
+                },
+                {
+                    "slug": "accent-secondary",
+                    "color": "#99E4F0",
+                    "name": "Accent Secondary"
+                },
+                {
+                    "slug": "belleville-footer-background",
+                    "color": "var(--dswp-theme-gray-110)",
+                    "name": "Belleville Footer Background"
                 }
             ]
+        }
+        ,
+        "blocks": {
+            "core/group": {
+                "color": {
+                    "background": true,
+                    "text": true,
+                    "gradients": false
+                }
+            }
         }
     },
 

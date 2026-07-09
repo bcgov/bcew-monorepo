@@ -25,10 +25,25 @@
   line-height: 1.5;
 }
 
+/* Reset block columns spacing inside footer so editor global doesn't add gap */
+.bcgov-footer-container .footer-links-column .wp-block-columns {
+  margin-bottom: 0;
+}
+
+/* Ensure footer link lists have no paragraph bottom margin */
+.bcgov-footer-container .footer-links-column .wp-block-group p,
+.bcgov-footer-container .footer-links-column p {
+  margin-bottom: 0;
+}
+
 .bcgov-footer-container .footer-bottom-row {
   border-top: 1px solid var(--wp--preset--color--border-dark);
   margin-top: 0;
   padding: 2rem 0 0;
+}
+
+.bcgov-footer-container .footer-bottom-row .wp-block-group p {
+  margin: 0 !important;
 }
 
 .bcgov-footer-container .footer-logos .footer-logo {
@@ -48,6 +63,15 @@
   align-items: center;
 }
 
+.wp-block-group.territorial-acknowledgement > p {
+  margin-top: 0 !important;
+}
+
+/* Align outline button text color with parent theme token expectations. */
+:root :where(.wp-block-button.is-style-outline > .wp-block-button__link) {
+  color: var(--dswp-typography-color-button-secondary-default);
+}
+
 @media (max-width: 1200px) {
 
   .bcgov-footer-container.footer-shell {
@@ -59,6 +83,17 @@
     padding-right: 1rem !important;
     padding-left: 1rem !important;
   }
+}
+
+// Belleville Terminal theme styles for heading callout block style
+.is-style-heading-callout:before {
+  background-color: var(--wp--preset--color--belleville-secondary);
+  content: "";
+  height: 4px;
+  left: 0;
+  position: absolute;
+  top: -10px;
+  width: 36px;
 }
 
 @media (max-width: 782px) {
@@ -93,7 +128,6 @@
 
   .bcgov-footer-container .footer-links-column .wp-block-column p {
     margin-top: 0.5rem;
-    margin-bottom: 0;
   }
 
   .wp-block-separator.has-alpha-channel-opacity,
