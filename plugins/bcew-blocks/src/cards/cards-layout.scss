@@ -230,6 +230,18 @@
             box-sizing: border-box;
         }
 
+        /* Borderless row (no shadow toggle): there is no visible card frame to
+           inset against, so drop the left inset and align the text flush with
+           the card's left edge (matching the full-bleed image above it).
+           Shadowed rows keep the inset so the text sits inside the card. */
+        &:not(.has-box-shadow)
+            .bcew-blocks-card__content
+            > .wp-block-bcew-blocks-media-text-layout
+            .layout-shell
+            > .media-text-content {
+            padding-left: 0;
+        }
+
         /* Carry the rows down to the leaf blocks. Both contexts end in the
            unique `.inner-blocks` container whose direct children are the
            heading/paragraph/list/buttons (the editor uses useInnerBlocksProps,
