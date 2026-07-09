@@ -41,9 +41,9 @@ These tests are also executed in GitHub CI on pull requests. See `.github/workfl
 
 1. Run all visual regression tests:
 
-```bash
-npx nx run bcew-belleville-terminal:test-screenshot
-```
+    ```bash
+    npx nx run bcew-belleville-terminal:test-screenshot
+    ```
 
 1. Run one visual regression spec file:
 
