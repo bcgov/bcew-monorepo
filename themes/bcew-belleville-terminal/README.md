@@ -35,24 +35,24 @@ These tests are also executed in GitHub CI on pull requests. See `.github/workfl
 
 1. Start the theme test environment (optional - the nx target will run this automatically):
 
-	```bash
-	npx nx run bcew-belleville-terminal:wp-env-start
-	```
+```bash
+npx nx run bcew-belleville-terminal:wp-env-start
+```
 
 1. Run all visual regression tests:
 
-	```bash
-	npx nx run bcew-belleville-terminal:test-screenshot
-	```
+```bash
+npx nx run bcew-belleville-terminal:test-screenshot
+```
 
 1. Run one visual regression spec file:
 
-	```bash
-	npx nx run bcew-belleville-terminal:test-screenshot -- ./tests/screenshot/example.spec.js
-	```
+```bash
+npx nx run bcew-belleville-terminal:test-screenshot -- ./tests/screenshot/example.spec.js
+```
 
 1. Run one visual regression spec file in Playwright debug mode:
 
-	```bash
-	npx nx run bcew-belleville-terminal:test-screenshot -- --debug ./tests/screenshot/example.spec.js
-	```
+```bash
+npx nx run bcew-belleville-terminal:test-screenshot -- --debug ./tests/screenshot/example.spec.js
+```

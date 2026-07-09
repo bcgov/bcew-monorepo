@@ -1,6 +1,13 @@
 // Theme build styles for bcew-belleville-terminal
 // Compiled into dist by wp-scripts
 
+/*
+  Maintenance note:
+  This file mostly contains targeted overrides for shared WordPress/design-system blocks.
+  Keep selectors scoped to container classes to avoid site-wide regressions.
+*/
+
+/* Footer layout + spacing overrides */
 .bcgov-footer-container.footer-shell {
   padding: 3.5rem 0 1rem;
 }
@@ -25,12 +32,12 @@
   line-height: 1.5;
 }
 
-/* Reset block columns spacing inside footer so editor global doesn't add gap */
+/* Reset footer block-columns spacing so global editor styles do not add extra gap */
 .bcgov-footer-container .footer-links-column .wp-block-columns {
   margin-bottom: 0;
 }
 
-/* Ensure footer link lists have no paragraph bottom margin */
+/* Remove paragraph bottom margins in footer links column to keep columns vertically aligned */
 .bcgov-footer-container .footer-links-column .wp-block-group p,
 .bcgov-footer-container .footer-links-column p {
   margin-bottom: 0;
@@ -57,21 +64,27 @@
   max-width: none;
 }
 
-/* Header navigation spacing to keep the bar at 40px while using 168% line-height */
+/* Header navigation height normalization */
 .bcew-header-nav.wp-block-design-system-wordpress-plugin-navigation {
   max-height: 40px;
   align-items: center;
 }
 
+/* 
+  The territorial acknowledgement block is a wp block that uses the design system plugin. 
+  The plugin sets the margin-top to 1rem on the first paragraph which causes the block to have extra space at the top.
+  This overrides the margin-top to remove the extra space.
+*/
 .wp-block-group.territorial-acknowledgement > p {
   margin-top: 0 !important;
 }
 
-/* Align outline button text color with parent theme token expectations. */
+/* Button text color override for outline style */
 :root :where(.wp-block-button.is-style-outline > .wp-block-button__link) {
   color: var(--dswp-typography-color-button-secondary-default);
 }
 
+/* Tablet/desktop breakpoint adjustments */
 @media (max-width: 1200px) {
 
   .bcgov-footer-container.footer-shell {
@@ -85,8 +98,8 @@
   }
 }
 
-// Belleville Terminal theme styles for heading callout block style
-.is-style-heading-callout:before {
+/* Heading callout decorative bar style override */
+.is-style-heading-callout::before {
   background-color: var(--wp--preset--color--belleville-secondary);
   content: "";
   height: 4px;
@@ -96,6 +109,7 @@
   width: 36px;
 }
 
+/* Mobile footer layout adjustments */
 @media (max-width: 782px) {
 
   .bcgov-footer-container.footer-shell {
