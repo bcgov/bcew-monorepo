@@ -35,9 +35,9 @@ These tests are also executed in GitHub CI on pull requests. See `.github/workfl
 
 1. Start the theme test environment (optional - the nx target will run this automatically):
 
-```bash
-npx nx run bcew-belleville-terminal:wp-env-start
-```
+    ```bash
+    npx nx run bcew-belleville-terminal:wp-env-start
+    ```
 
 1. Run all visual regression tests:
 
