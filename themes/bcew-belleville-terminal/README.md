@@ -47,9 +47,9 @@ These tests are also executed in GitHub CI on pull requests. See `.github/workfl
 
 1. Run one visual regression spec file:
 
-```bash
-npx nx run bcew-belleville-terminal:test-screenshot -- ./tests/screenshot/example.spec.js
-```
+    ```bash
+    npx nx run bcew-belleville-terminal:test-screenshot -- ./tests/screenshot/example.spec.js
+    ```
 
 1. Run one visual regression spec file in Playwright debug mode:
 
