@@ -99,7 +99,11 @@
 }
 
 /* Heading callout decorative bar style override */
-.is-style-heading-callout::before {
+.wp-site-blocks .is-style-heading-callout {
+  position: relative;
+}
+
+.wp-site-blocks .is-style-heading-callout::before {
   background-color: var(--wp--preset--color--belleville-secondary);
   content: "";
   height: 4px;
