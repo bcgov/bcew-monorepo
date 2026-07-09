@@ -37,8 +37,7 @@
                     "name": "Belleville Footer Background"
                 }
             ]
-        }
-        ,
+        },
         "blocks": {
             "core/group": {
                 "color": {
