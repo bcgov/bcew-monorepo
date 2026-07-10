@@ -9,6 +9,9 @@
         "."
         <% } %>
     ],
+    "config": {
+        "WP_AUTO_UPDATE_CORE": false
+    },
     "port": <%= wpEnvPort %>,
     "testsPort": <%= wpEnvPort + 1 %>,
     "lifecycleScripts": {

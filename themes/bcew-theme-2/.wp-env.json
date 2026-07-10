@@ -2,6 +2,9 @@
     "core": "WordPress/WordPress#6.7.2",
     "phpVersion": "7.4",
     "themes": ["."],
+    "config": {
+        "WP_AUTO_UPDATE_CORE": false
+    },
     "port": 9008,
     "testsPort": 9009,
     "lifecycleScripts": {
