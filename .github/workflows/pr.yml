@@ -120,8 +120,12 @@ jobs:
             - name: Install Composer dependencies
               run: composer i
 
-            - name: Install Playwright dependencies
-              run: npx playwright install --with-deps
+            - name: Cache pnpm store
+              uses: actions/cache@v6.1.0
+              with:
+                  path: .pnpm-store
+                  key: pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+                  restore-keys: pnpm-store-
 
             - name: Run e2e tests
               run: npx nx affected --base="origin/${{ github.base_ref }}" -t test-e2e-docker
@@ -162,7 +166,7 @@ jobs:
               run: composer i
 
             - name: Cache pnpm store
-              uses: actions/cache@v4
+              uses: actions/cache@v6.1.0
               with:
                   path: .pnpm-store
                   key: pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
