@@ -20,7 +20,7 @@ jobs:
         runs-on: ubuntu-latest
         timeout-minutes: 15
         steps:
-            - uses: actions/checkout@v5
+            - uses: actions/checkout@v7
             - uses: actions/labeler@v6
               with:
                   sync-labels: true
@@ -31,17 +31,17 @@ jobs:
         timeout-minutes: 15
         steps:
             - name: Checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@v7
               with:
                   ref: ${{ github.head_ref }}
 
             - name: Setup Node.js 24
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v6.4.0
               with:
                   node-version: 24
 
             - name: Install pnpm
-              uses: pnpm/action-setup@v4
+              uses: pnpm/action-setup@v6.0.9
               with:
                   version: 10
                   run_install: true
@@ -71,18 +71,18 @@ jobs:
         timeout-minutes: 15
         steps:
             - name: Checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@v7
               with:
                   fetch-depth: 0
                   ref: ${{ github.head_ref }}
 
             - name: Setup Node.js 24
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v6.4.0
               with:
                   node-version: 24
 
             - name: Install pnpm
-              uses: pnpm/action-setup@v4
+              uses: pnpm/action-setup@v6.0.9
               with:
                   version: 10
                   run_install: true
@@ -100,18 +100,18 @@ jobs:
         timeout-minutes: 15
         steps:
             - name: Checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@v7
               with:
                   fetch-depth: 0
                   ref: ${{ github.head_ref }}
 
             - name: Setup Node.js 24
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v6.4.0
               with:
                   node-version: 24
 
             - name: Install pnpm
-              uses: pnpm/action-setup@v4
+              uses: pnpm/action-setup@v6.0.9
               with:
                   version: 10
                   run_install: true
@@ -120,13 +120,17 @@ jobs:
             - name: Install Composer dependencies
               run: composer i
 
-            - name: Install Playwright dependencies
-              run: npx playwright install --with-deps
+            - name: Cache pnpm store
+              uses: actions/cache@v6.1.0
+              with:
+                  path: .pnpm-store
+                  key: pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+                  restore-keys: pnpm-store-
 
             - name: Run e2e tests
               run: npx nx affected --base="origin/${{ github.base_ref }}" -t test-e2e-docker
 
-            - uses: actions/upload-artifact@v4
+            - uses: actions/upload-artifact@v7.0.1
               if: ${{ !cancelled() }}
               with:
                   name: playwright-e2e-report
@@ -141,18 +145,18 @@ jobs:
         timeout-minutes: 15
         steps:
             - name: Checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@v7
               with:
                   fetch-depth: 0
                   ref: ${{ github.head_ref }}
 
             - name: Setup Node.js 24
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v6.4.0
               with:
                   node-version: 24
 
             - name: Install pnpm
-              uses: pnpm/action-setup@v4
+              uses: pnpm/action-setup@v6.0.9
               with:
                   version: 10
                   run_install: true
@@ -162,7 +166,7 @@ jobs:
               run: composer i
 
             - name: Cache pnpm store
-              uses: actions/cache@v4
+              uses: actions/cache@v6.1.0
               with:
                   path: .pnpm-store
                   key: pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
@@ -171,7 +175,7 @@ jobs:
             - name: Run screenshot tests
               run: npx nx affected --base="origin/${{ github.base_ref }}" -t test-screenshot
 
-            - uses: actions/upload-artifact@v4
+            - uses: actions/upload-artifact@v7.0.1
               if: ${{ !cancelled() }}
               with:
                   name: playwright-screenshot-report
