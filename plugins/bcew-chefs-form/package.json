@@ -1,0 +1,14 @@
+{
+    "name": "bcew-chefs-form",
+    "version": "1.0.0",
+    "description": "Embed CHEFS forms in WordPress",
+    "author": "govwordpress@gov.bc.ca",
+    "license": "GPL-2.0-or-later",
+    "dependencies": {
+        "@wordpress/block-editor": "catalog:",
+        "@wordpress/blocks": "catalog:",
+        "@wordpress/components": "catalog:",
+        "@wordpress/element": "catalog:",
+        "@wordpress/i18n": "catalog:"
+    }
+}

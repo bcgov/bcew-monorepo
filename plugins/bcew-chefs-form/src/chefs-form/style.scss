@@ -1,0 +1,38 @@
+.wp-block-bcew-chefs-form-chefs-form {
+	width: 100%;
+
+	.bcew-chefs-form__webcomponent {
+		width: 100%;
+		min-height: 400px;
+	}
+
+	.bcew-chefs-form__preview {
+		position: relative;
+	}
+
+	.bcew-chefs-form__overlay {
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+		background: rgb(128 128 128 / 40%);
+		cursor: not-allowed;
+	}
+
+	.bcew-chefs-form__error {
+		margin: 0;
+		padding: 1rem;
+		border: 1px solid #d63638;
+		border-radius: 4px;
+		background: #fcf0f1;
+		color: #8a2424;
+	}
+
+	.bcew-chefs-form__success {
+		margin: 0 0 1rem;
+		padding: 1rem;
+		border: 1px solid #00a32a;
+		border-radius: 4px;
+		background: #edfaef;
+		color: #1e4620;
+	}
+}

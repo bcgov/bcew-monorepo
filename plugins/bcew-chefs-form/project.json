@@ -1,0 +1,12 @@
+{
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "name": "bcew-chefs-form",
+    "root": "plugins/bcew-chefs-form",
+    "sourceRoot": "plugins/bcew-chefs-form/src",
+    "projectType": "application",
+    "targets": {
+        "build": {},
+        "start": {}
+    },
+    "tags": ["type:wp-plugin"]
+}
