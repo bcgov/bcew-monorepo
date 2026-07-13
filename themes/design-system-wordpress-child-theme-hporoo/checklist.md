@@ -1,7 +1,7 @@
-Created at 2026-07-13 8:51 am
+Created at 2026-07-13 10:25 am
 
 * [yes] Updated version in style.css or plugin file
-* [no] Updated CHANGELOG.md to include jira ticket
+* [yes] Updated CHANGELOG.md to include jira ticket
 * [no] Updated README.md for new functionality
 * [yes] Built assets for production (npm run build:production)
 * [N/A] Updated the documentation (N/A, Updated, or a ticket ID)
