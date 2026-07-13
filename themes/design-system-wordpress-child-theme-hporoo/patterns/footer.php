@@ -108,7 +108,7 @@ $bcgov_logo = esc_url( get_stylesheet_directory_uri() . '/assets/images/bcgov-lo
     <!-- /wp:separator -->
 
     <!-- wp:paragraph {"style":{"typography":{"fontSize":"14px"},"spacing":{"margin":{"top":"var:preset|spacing|40","bottom":"0"}}}} -->
-    <p style="margin-top:var(--wp--preset--spacing--40);margin-bottom:0;font-size:14px">© 2026 Government of British Columbia</p>
+    <p style="margin-top:var(--wp--preset--spacing--40);margin-bottom:0;font-size:14px">© <?php echo esc_html( gmdate( 'Y' ) ); ?> Government of British Columbia</p>
     <!-- /wp:paragraph -->
 </div>
 <!-- /wp:group -->
