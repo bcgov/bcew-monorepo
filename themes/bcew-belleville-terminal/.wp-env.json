@@ -2,6 +2,9 @@
     "core": "WordPress/WordPress#6.7.2",
     "phpVersion": "7.4",
     "themes": [".", "bcgov/design-system-wordpress-theme"],
+    "config": {
+        "WP_AUTO_UPDATE_CORE": false
+    },
     "port": 9002,
     "testsPort": 9003,
     "lifecycleScripts": {

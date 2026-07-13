@@ -5,6 +5,9 @@
         ".",
         "bcgov/design-system-wordpress-theme"
     ],
+    "config": {
+        "WP_AUTO_UPDATE_CORE": false
+    },
     "port": 9004,
     "testsPort": 9005,
     "lifecycleScripts": {

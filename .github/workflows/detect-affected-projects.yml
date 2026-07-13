@@ -18,18 +18,18 @@ jobs:
             projects: ${{ steps.compute.outputs.projects }}
         steps:
             - name: Checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@v7
               with:
                   fetch-depth: 0
 
             - name: Install pnpm
-              uses: pnpm/action-setup@v4
+              uses: pnpm/action-setup@v6.0.9
               with:
                   version: 10
                   cache: true
             
             - name: Setup Node.js 24
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v6.4.0
               with:
                   node-version: 24
                   cache: "pnpm"
