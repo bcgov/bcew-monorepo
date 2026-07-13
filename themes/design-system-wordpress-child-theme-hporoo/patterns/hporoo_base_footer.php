@@ -216,7 +216,7 @@ $mail_icon  = esc_url( get_stylesheet_directory_uri() . '/assets/images/building
                                     <p class="has-text-align-left has-font-dark-color has-text-color has-link-color"
                                         style="font-size:16px">
                                         PO
-                                        Box 9639 Stn Prov Govt<br>Victoria, B.C. V8W 9P1</p>
+                                        Box 9634 Stn Prov Govt<br>Victoria, B.C. V8W 9P1</p>
                                     <!-- /wp:paragraph -->
                                 </div>
                                 <!-- /wp:group -->
