@@ -16,15 +16,15 @@ catalog:
   '@swc/helpers': ~0.5.20
   '@types/jest': ^30.0.0
   '@types/node': 20.19.9
-  '@wordpress/block-editor': 15.17.0
-  '@wordpress/blocks': 15.17.0
-  '@wordpress/components': 35.0.1
-  '@wordpress/core-data': 7.48.1
-  '@wordpress/data': 10.48.1
+  '@wordpress/block-editor': wp-6.7
+  '@wordpress/blocks': wp-6.7
+  '@wordpress/components': wp-6.7
+  '@wordpress/core-data': wp-6.7
+  '@wordpress/data': wp-6.7
   '@wordpress/e2e-test-utils-playwright': ^1.42.0
-  '@wordpress/element': 6.44.0
+  '@wordpress/element': wp-6.7
   '@wordpress/env': ^11.2.0
-  '@wordpress/i18n': 6.17.0
+  '@wordpress/i18n': wp-6.7
   '@wordpress/scripts': ^31.7.0
   '@wordpress/stylelint-config': ^23.34.0
   'chokidar-cli': ^3.0.0
