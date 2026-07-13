@@ -31,6 +31,12 @@
             },
             "continuous": true
         },
+        "start-playwright": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "docker compose ps --status running --services | grep -qx playwright || docker compose up -d playwright"
+            }
+        },
         "test-integration": {
             "executor": "nx:run-commands",
             "options": {
@@ -51,26 +57,24 @@
         "test-e2e-docker": {
             "executor": "nx:run-commands",
             "options": {
-                "command": "PROJECT_PATH={projectRoot} TEST_COMMAND=\"npx wp-scripts test-playwright\" docker compose up --exit-code-from=playwright"
+                "command": "docker exec -it playwright sh -c \"cd {projectRoot} && npx wp-scripts test-playwright\""
             },
-            "parallelism": false,
-            "dependsOn": ["build", "wp-env-start"]
+            "dependsOn": ["start-playwright", "build", "wp-env-start"]
         },
         "test-screenshot": {
             "executor": "nx:run-commands",
             "options": {
-                "command": "PROJECT_PATH={projectRoot} TEST_COMMAND=\"npx wp-scripts test-playwright --config playwright.regression.config.js --update-snapshots none\" docker compose up --exit-code-from=playwright"
+                "command": "docker exec -it playwright sh -c \"cd {projectRoot} && npx wp-scripts test-playwright --config playwright.regression.config.js --update-snapshots none\""
             },
-            "parallelism": false,
-            "dependsOn": ["build", "wp-env-start"]
+            "dependsOn": ["start-playwright", "build", "wp-env-start"]
         },
         "test-screenshot-generate": {
             "executor": "nx:run-commands",
             "options": {
-                "command": "PROJECT_PATH={projectRoot} TEST_COMMAND=\"npx wp-scripts test-playwright --config playwright.regression.config.js --update-snapshots all\" docker compose up --exit-code-from=playwright"
+                "command": "docker exec -it playwright sh -c \"cd {projectRoot} && npx wp-scripts test-playwright --config playwright.regression.config.js --update-snapshots all\""
             },
             "parallelism": false,
-            "dependsOn": ["build", "wp-env-start"]
+            "dependsOn": ["start-playwright", "build", "wp-env-start"]
         },
         "wp-env-start": {
             "executor": "nx:run-commands",
@@ -112,5 +116,6 @@
             }
         }
     },
+    "parallel": 3,
     "analytics": true
 }

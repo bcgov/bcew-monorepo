@@ -15,15 +15,12 @@ services:
       NODE_ENV: test
       WP_ENVIRONMENT: local
       WP_E2E_SKIP_ENV_SETUP: "true"
-      PROJECT_PATH: ""
-      TEST_COMMAND: ""
 
     command: >
       sh -c "
-        npm i -g pnpm &&
-        pnpm install --frozen-lockfile --yes &&
-        cd ${PROJECT_PATH} &&
-        ${TEST_COMMAND}
+        npm i -g pnpm
+        pnpm install --frozen-lockfile --yes
+        tail -f /dev/null
       "
 
 volumes:

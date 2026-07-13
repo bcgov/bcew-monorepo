@@ -127,6 +127,9 @@ jobs:
                   key: pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
                   restore-keys: pnpm-store-
 
+            - name: Start playwright container
+              run: docker-compose up -d playwright
+
             - name: Run e2e tests
               run: npx nx affected --base="origin/${{ github.base_ref }}" -t test-e2e-docker
 
@@ -171,6 +174,9 @@ jobs:
                   path: .pnpm-store
                   key: pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
                   restore-keys: pnpm-store-
+
+            - name: Start playwright container
+              run: docker-compose up -d playwright
 
             - name: Run screenshot tests
               run: npx nx affected --base="origin/${{ github.base_ref }}" -t test-screenshot
