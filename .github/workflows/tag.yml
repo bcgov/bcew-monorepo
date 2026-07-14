@@ -31,6 +31,13 @@ jobs:
        id-token: write
     runs-on: ubuntu-latest
     steps:
+      - name: Generate GitHub App Token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+            app-id: ${{ vars.GH_APP_CLIENT_ID }}
+            private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
@@ -76,7 +83,7 @@ jobs:
 
       - name: Create tag
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
           TAG: ${{ steps.vars.outputs.tag }}
         run: |
           if git rev-parse "$TAG" >/dev/null 2>&1; then
@@ -122,6 +129,6 @@ jobs:
       - name: Deploy to GH Pages
         uses: peaceiris/actions-gh-pages@v4.1.0
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ steps.app-token.outputs.token }}
           publish_dir: ./public
           keep_files: true
