@@ -64,7 +64,6 @@ jobs:
           DOCS_BASE: /bcew-monorepo/docs
         run: pnpm docs:build
 
-
       - name: Deploy to GH Pages
         if: github.event_name != 'pull_request'
         uses: peaceiris/actions-gh-pages@v4.1.0
