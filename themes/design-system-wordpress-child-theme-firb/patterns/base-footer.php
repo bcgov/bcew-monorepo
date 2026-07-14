@@ -47,7 +47,8 @@
                                     <figure
                                         class="wp-block-image size-full is-resized dswp-information-contact-socials-card-img is-style-default">
                                         <img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/icons/store-light-green.png' ); ?>"
-                                            alt="" class="wp-image-7997" style="width:28px;height:auto" /></figure>
+                                            alt="" class="wp-image-7997" style="width:28px;height:auto" />
+                                    </figure>
                                     <!-- /wp:image -->
                                 </div>
                                 <!-- /wp:group -->
@@ -56,7 +57,8 @@
                                 <div class="wp-block-group">
                                     <!-- wp:heading {"level":4,"style":{"spacing":{"margin":{"top":"0","bottom":"0"}}}} -->
                                     <h4 class="wp-block-heading" id="lorem-ipsum" style="margin-top:0;margin-bottom:0">
-                                        <strong>Business hours</strong></h4>
+                                        <strong>Business hours</strong>
+                                    </h4>
                                     <!-- /wp:heading -->
 
                                     <!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"constrained"}} -->
@@ -95,7 +97,8 @@
                                     <figure
                                         class="wp-block-image size-full is-resized dswp-information-contact-socials-card-img is-style-default">
                                         <img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/icons/phone-light-green.png' ); ?>"
-                                            alt="" class="wp-image-7837" style="width:28px;height:auto" /></figure>
+                                            alt="" class="wp-image-7837" style="width:28px;height:auto" />
+                                    </figure>
                                     <!-- /wp:image -->
                                 </div>
                                 <!-- /wp:group -->
@@ -149,7 +152,8 @@
                                     <figure
                                         class="wp-block-image size-full is-resized dswp-information-contact-socials-card-img is-style-default">
                                         <img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/icons/envelope-open-text-light-green.png' ); ?>"
-                                            alt="" class="wp-image-8277" style="width:28px;height:auto" /></figure>
+                                            alt="" class="wp-image-8277" style="width:28px;height:auto" />
+                                    </figure>
                                     <!-- /wp:image -->
                                 </div>
                                 <!-- /wp:group -->
@@ -188,7 +192,8 @@
                                     <figure
                                         class="wp-block-image size-full is-resized dswp-information-contact-socials-card-img is-style-default">
                                         <img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/icons/file-contract-light-green.png' ); ?>"
-                                            alt="" class="wp-image-7657" style="width:28px;height:auto" /></figure>
+                                            alt="" class="wp-image-7657" style="width:28px;height:auto" />
+                                    </figure>
                                     <!-- /wp:image -->
                                 </div>
                                 <!-- /wp:group -->
@@ -232,7 +237,8 @@
                                         class="wp-block-image size-full is-resized dswp-information-contact-socials-card-img is-style-default">
                                         <img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/icons/mailbox-flag-up-light-green.png' ); ?>"
                                             alt="" class="wp-image-8502"
-                                            style="aspect-ratio:1;width:30px;height:auto" /></figure>
+                                            style="aspect-ratio:1;width:30px;height:auto" />
+                                    </figure>
                                     <!-- /wp:image -->
                                 </div>
                                 <!-- /wp:group -->
@@ -271,7 +277,8 @@
                                     <figure
                                         class="wp-block-image size-full is-resized dswp-information-contact-socials-card-img is-style-default">
                                         <img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/icons/map-location-dot-light-green.png' ); ?>"
-                                            alt="" class="wp-image-7717" style="width:28px;height:auto" /></figure>
+                                            alt="" class="wp-image-7717" style="width:28px;height:auto" />
+                                    </figure>
                                     <!-- /wp:image -->
                                 </div>
                                 <!-- /wp:group -->
@@ -331,7 +338,7 @@
             <div class="wp-block-column is-vertically-aligned-top" style="flex-basis:55%">
                 <!-- wp:group {"layout":{"type":"flex","orientation":"vertical"}} -->
                 <div class="wp-block-group">
-                    
+
                     <!-- wp:pattern {"slug":"design-system-wordpress-child-theme-firb/site-logo"} /-->
 
                     <!-- wp:paragraph {"align":"left","style":{"elements":{"link":{"color":{"text":"var:preset|color|font dark"}}},"typography":{"lineHeight":"1.7"},"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"0"}}},"textColor":"font dark"} -->
@@ -400,46 +407,6 @@
         <!-- /wp:columns -->
     </div>
     <!-- /wp:group -->
-
-    <!-- wp:group {"metadata":{"categories":["banner"],"patternName":"design-system-wordpress-theme/dswp-image-text","name":"Links"},"style":{"spacing":{"margin":{"top":"0","bottom":"0"},"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"1.6rem","right":"1.6rem"}}},"backgroundColor":"drk-green","layout":{"type":"constrained"}} -->
-    <div class="wp-block-group has-drk-green-background-color has-background"
-        style="margin-top:0;margin-bottom:0;padding-top:var(--wp--preset--spacing--40);padding-right:1.6rem;padding-bottom:var(--wp--preset--spacing--40);padding-left:1.6rem">
-        <!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|60"},"elements":{"link":{"color":{"text":"var:preset|color|background-white"}}}},"textColor":"background-white","layout":{"type":"flex","flexWrap":"wrap"}} -->
-        <div class="wp-block-group has-background-white-color has-text-color has-link-color">
-            <!-- wp:paragraph {"style":{"typography":{"lineHeight":"1.7"},"layout":{"selfStretch":"fit","flexSize":null}},"fontSize":"bcds-small-body"} -->
-            <p class="has-bcds-small-body-font-size" style="line-height:1.7"><a
-                    href="<?php echo esc_url( home_url() ); ?>" data-type="page" data-id="3412">Home</a></p>
-            <!-- /wp:paragraph -->
-
-            <!-- wp:paragraph {"style":{"typography":{"lineHeight":"1.7"}},"fontSize":"bcds-small-body"} -->
-            <p class="has-bcds-small-body-font-size" style="line-height:1.7"><a
-                    href="https://www2.gov.bc.ca/gov/content/home/disclaimer">Disclaimer</a></p>
-            <!-- /wp:paragraph -->
-
-            <!-- wp:paragraph {"style":{"typography":{"lineHeight":"1.7"}},"fontSize":"bcds-small-body"} -->
-            <p class="has-bcds-small-body-font-size" style="line-height:1.7"><a
-                    href="https://www2.gov.bc.ca/gov/content?id=9E890E16955E4FF4BF3B0E07B4722932" data-type="link"
-                    data-id="https://www2.gov.bc.ca/">Privacy</a></p>
-            <!-- /wp:paragraph -->
-
-            <!-- wp:paragraph {"style":{"typography":{"lineHeight":"1.7"}},"fontSize":"bcds-small-body"} -->
-            <p class="has-bcds-small-body-font-size" style="line-height:1.7"><a
-                    href="https://www2.gov.bc.ca/gov/content?id=E08E79740F9C41B9B0C484685CC5E412">Accessibility</a></p>
-            <!-- /wp:paragraph -->
-
-            <!-- wp:paragraph {"style":{"typography":{"lineHeight":"1.7"}},"fontSize":"bcds-small-body"} -->
-            <p class="has-bcds-small-body-font-size" style="line-height:1.7"><a
-                    href="https://www2.gov.bc.ca/gov/content?id=1AAACC9C65754E4D89A118B875E0FBDA">Copyright</a></p>
-            <!-- /wp:paragraph -->
-
-            <!-- wp:paragraph {"style":{"typography":{"lineHeight":"1.7"}},"fontSize":"bcds-small-body"} -->
-            <p class="has-bcds-small-body-font-size" style="line-height:1.7"><a
-                    href="<?php echo esc_url( home_url( 'about/contact/' ) ); ?>" data-type="page"
-                    data-id="29812">Contact us</a></p>
-            <!-- /wp:paragraph -->
-        </div>
-        <!-- /wp:group -->
-    </div>
-    <!-- /wp:group -->
+    <!-- wp:template-part {"slug":"secondary-footer","theme":"design-system-wordpress-child-theme-firb","area":"uncategorized"} /-->
 </div>
 <!-- /wp:group -->
