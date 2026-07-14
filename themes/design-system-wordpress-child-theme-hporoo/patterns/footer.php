@@ -18,8 +18,9 @@ $bcgov_logo = esc_url( get_stylesheet_directory_uri() . '/assets/images/bcgov-lo
         <!-- wp:column {"width":"35rem","style":{"spacing":{"blockGap":"var:preset|spacing|40"}}} -->
         <div class="wp-block-column" style="flex-basis:35rem">
             <!-- wp:image {"id":1954,"width":"145px","sizeSlug":"full","linkDestination":"none","className":"bcgov-logo"} -->
-<figure class="wp-block-image is-resized bcgov-logo"><img src="<?php echo esc_url( $bcgov_logo ); ?>" alt="BC Government Logo" class="wp-image-1954" style="width:145px;height:auto" /></figure>
-<!-- /wp:image -->
+            <figure class="wp-block-image is-resized bcgov-logo"><img src="<?php echo esc_url( $bcgov_logo ); ?>"
+                    alt="BC Government Logo" class="wp-image-1954" style="width:145px;height:auto" /></figure>
+            <!-- /wp:image -->
 
             <!-- wp:paragraph {"style":{"typography":{"fontSize":"14px"}},"fontFamily":"bcsans"} -->
             <p class="has-bcsans-font-family" style="font-size:14px">We help protect the public from harm and
@@ -107,8 +108,7 @@ $bcgov_logo = esc_url( get_stylesheet_directory_uri() . '/assets/images/bcgov-lo
     <!-- /wp:separator -->
 
     <!-- wp:paragraph {"style":{"typography":{"fontSize":"14px"},"spacing":{"margin":{"top":"var:preset|spacing|40","bottom":"0"}}}} -->
-    <p style="margin-top:var(--wp--preset--spacing--40);margin-bottom:0;font-size:14px">© 2026 Health Professions and
-        Occupations Regulatory Oversight Office</p>
+    <p style="margin-top:var(--wp--preset--spacing--40);margin-bottom:0;font-size:14px">© 2026 Government of British Columbia</p>
     <!-- /wp:paragraph -->
 </div>
 <!-- /wp:group -->
