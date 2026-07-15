@@ -69,6 +69,29 @@
                     "url": "https://github.com/bcgov/bcew-monorepo.git",
                     "reference": "bcew-belleville-terminal/v1.0.0-alpha.6"
                 }
+            },
+            "1.0.0-alpha.7": {
+                "name": "bcgov-theme/bcew-belleville-terminal",
+                "description": "Belleville Terminal Child Theme",
+                "type": "wordpress-theme",
+                "license": "Apache-2.0",
+                "autoload": {
+                    "psr-4": {
+                        "Bcgov\\BcewBellevilleTerminal\\": "src/",
+                        "Bcgov\\BcewBellevilleTerminal\\Test\\": "tests/"
+                    }
+                },
+                "version": "1.0.0-alpha.7",
+                "dist": {
+                    "url": "https://github.com/bcgov/bcew-monorepo/releases/download/bcew-belleville-terminal/v1.0.0-alpha.7/bcew-belleville-terminal-1.0.0-alpha.7.zip",
+                    "type": "zip",
+                    "reference": "bcew-belleville-terminal/v1.0.0-alpha.7"
+                },
+                "source": {
+                    "type": "git",
+                    "url": "https://github.com/bcgov/bcew-monorepo.git",
+                    "reference": "bcew-belleville-terminal/v1.0.0-alpha.7"
+                }
             }
         },
         "bcgov-plugin/bcew-blocks": {
