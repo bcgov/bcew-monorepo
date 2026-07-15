@@ -54,6 +54,7 @@ Full tables and target semantics live in the **[docs site](https://bcgov.github.
 - **Workflow and migrations:** [docs/contributing-workflow.md](docs/contributing-workflow.md)
 - **Documentation:** [docs/contributing.md](docs/contributing.md)
 - **CI workflows:** [.github/workflows/README.md](.github/workflows/README.md)
+- **Issue reporting:** When opening a GitHub issue, use the Bug report or Feature request templates in [.github/ISSUE_TEMPLATE](.github/ISSUE_TEMPLATE) so the report includes the context maintainers need to triage it quickly.
 
 ### Checklist for Contributing features to the monorepo
 

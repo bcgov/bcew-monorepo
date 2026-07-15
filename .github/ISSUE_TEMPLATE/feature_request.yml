@@ -1,0 +1,44 @@
+name: Feature request
+description: Suggest a new capability, enhancement, or workflow improvement.
+title: "[Feature]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting an improvement. The more context you can share, the easier it is to evaluate and prioritize.
+  - type: input
+    id: project
+    attributes:
+      label: Affected project or area
+      description: Name the plugin, theme, package, or workflow affected.
+      placeholder: e.g. plugins/bcew-blocks or docs/content
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or opportunity
+      description: What problem are you trying to solve or improve?
+      placeholder: Describe the current limitation or need.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the change you would like to see.
+      placeholder: Explain the proposed capability, UX change, workflow improvement, or API addition.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: What should be true when this work is complete?
+      placeholder: List the key outcomes or user-visible behaviors.
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Add any supporting details, examples, or references.
+      placeholder: Relevant links, screenshots, or notes.

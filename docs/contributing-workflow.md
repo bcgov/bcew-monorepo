@@ -7,6 +7,22 @@
 3. Open a pull request; CI runs monorepo lint and **`nx affected`** build and tests (see [CI/CD](./ci-cd.md)).
 4. After merge, releases are driven by **tags**, not by committing build artifacts to `main`.
 
+## After checking out a branch
+
+Build output (`dist/` and similar artifacts) is **not** committed to the repository. Whenever you check out or pull a branch—especially when reviewing a pull request—refresh dependencies and rebuild so your local environment matches that branch:
+
+```bash
+pnpm install
+pnpm build
+```
+
+Run both from the monorepo root. To rebuild only the project you are reviewing:
+
+```bash
+pnpm install
+npx nx run <project-name>:build
+```
+
 ## Adding a new repository (greenfield)
 
 Prefer the **generators** so structure matches standards:

@@ -42,6 +42,17 @@ List project names:
 npx nx show projects
 ```
 
+## After checking out a branch
+
+Because build artifacts are not committed, run these again whenever you check out or pull a branch (including when reviewing a PR):
+
+```bash
+pnpm install
+pnpm build
+```
+
+See [Contributing workflow](./contributing-workflow.md#after-checking-out-a-branch) for more detail.
+
 ## Local WordPress (`wp-env`)
 
 From a project directory (plugin or theme with `.wp-env.json`):
