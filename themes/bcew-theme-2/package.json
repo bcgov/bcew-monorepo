@@ -11,7 +11,7 @@
         "DesignSystem",
         "Gutenberg"
     ],
-	"homepage": "https://github.com/bcgov/bcew-monorepo/tree/main/themes/bcew-theme-2",
+    "homepage": "https://github.com/bcgov/bcew-monorepo/tree/main/themes/bcew-theme-2",
     "repository": {
         "type": "git",
         "url": "https://github.com/bcgov/bcew-monorepo.git",
