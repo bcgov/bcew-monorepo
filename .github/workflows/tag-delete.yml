@@ -93,7 +93,11 @@ jobs:
                   $distRef = $release["dist"]["reference"] ?? null;
                   $sourceRef = $release["source"]["reference"] ?? null;
 
-                  if ($distRef === $tag || $sourceRef === $tag || $releaseVersion === $version) {
+                  if (
+                      $distRef === $tag ||
+                      $sourceRef === $tag ||
+                      (($distRef === null && $sourceRef === null) && $releaseVersion === $version)
+                  ) {
                       unset($releases[$releaseVersion]);
                   }
               }
