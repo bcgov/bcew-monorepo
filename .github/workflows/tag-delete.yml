@@ -112,11 +112,13 @@ jobs:
           '
 
       - name: Prepare Pages content
+        if: ${{ steps.vars.outputs.supported == 'true' }}
         run: |
           mkdir -p public
           cp packages.json public/packages.json
 
       - name: Deploy to GH Pages
+        if: ${{ steps.vars.outputs.supported == 'true' }}
         uses: peaceiris/actions-gh-pages@v4.1.0
         with:
           github_token: ${{ steps.app-token.outputs.token }}
