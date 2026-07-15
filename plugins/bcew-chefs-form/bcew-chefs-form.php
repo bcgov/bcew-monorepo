@@ -19,8 +19,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'BCEW_CHEFS_FORM_PLUGIN_FILE', __FILE__ );
 define( 'BCEW_CHEFS_BASE_URL', 'https://submit.digital.gov.bc.ca/app' );
 
+require_once __DIR__ . '/includes/class-chefs-crypto.php';
 require_once __DIR__ . '/includes/class-chefs-credentials.php';
 require_once __DIR__ . '/includes/class-chefs-settings.php';
+
+register_activation_hook( __FILE__, array( 'BCEW_Chefs_Credentials', 'install' ) );
+
+add_action( 'plugins_loaded', array( 'BCEW_Chefs_Credentials', 'maybe_install' ) );
 
 BCEW_Chefs_Settings::init();
 

@@ -41,10 +41,14 @@ class BCEW_Chefs_Settings {
 		}
 
 		$error = isset( $_GET['chefs_error'] ) ? sanitize_text_field( wp_unslash( $_GET['chefs_error'] ) ) : '';
-		$forms = BCEW_Chefs_Credentials::list_forms( true );
+		// Never decrypt form IDs for the admin list — labels only.
+		$forms = BCEW_Chefs_Credentials::list_forms( false );
 		?>
 		<div class="wrap">
 			<h1><?php esc_html_e( 'CHEFS Forms', 'bcew-chefs-form' ); ?></h1>
+			<p class="description">
+				<?php esc_html_e( 'Form IDs and API keys are encrypted in the database and are not shown again after save.', 'bcew-chefs-form' ); ?>
+			</p>
 
 			<?php if ( $error ) : ?>
 				<div class="notice notice-error"><p><?php echo esc_html( $error ); ?></p></div>
@@ -64,7 +68,7 @@ class BCEW_Chefs_Settings {
 					</tr>
 					<tr>
 						<th><label for="form_id"><?php esc_html_e( 'Form ID', 'bcew-chefs-form' ); ?></label></th>
-						<td><input type="text" class="regular-text code" id="form_id" name="form_id" required /></td>
+						<td><input type="text" class="regular-text code" id="form_id" name="form_id" required autocomplete="off" /></td>
 					</tr>
 					<tr>
 						<th><label for="api_key"><?php esc_html_e( 'API key', 'bcew-chefs-form' ); ?></label></th>
@@ -80,7 +84,6 @@ class BCEW_Chefs_Settings {
 					<thead>
 						<tr>
 							<th><?php esc_html_e( 'Label', 'bcew-chefs-form' ); ?></th>
-							<th><?php esc_html_e( 'Form ID', 'bcew-chefs-form' ); ?></th>
 							<th></th>
 						</tr>
 					</thead>
@@ -88,7 +91,6 @@ class BCEW_Chefs_Settings {
 						<?php foreach ( $forms as $form ) : ?>
 							<tr>
 								<td><?php echo esc_html( $form['label'] ); ?></td>
-								<td><code><?php echo esc_html( $form['form_id'] ); ?></code></td>
 								<td>
 									<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 										<?php wp_nonce_field( 'bcew_chefs_delete' ); ?>
