@@ -39,13 +39,8 @@ jobs:
             exit 0
           fi
 
-          NAME="${BASH_REMATCH[1]}"
-          VERSION="${BASH_REMATCH[2]}"
-
           echo "supported=true" >> "$GITHUB_OUTPUT"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-          echo "name=$NAME" >> "$GITHUB_OUTPUT"
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Download existing packages.json
         if: ${{ steps.vars.outputs.supported == 'true' }}
@@ -60,9 +55,7 @@ jobs:
             exit "$curl_exit"
           }
 
-          if [ "$http_code" = "404" ]; then
-            echo '{"packages":{}}' > packages.json
-          elif [ "$http_code" != "200" ]; then
+          if [ "$http_code" != "200" ]; then
             echo "Failed to download packages.json (HTTP $http_code)" >&2
             exit 1
           fi
