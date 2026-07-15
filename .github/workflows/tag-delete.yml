@@ -54,7 +54,7 @@ jobs:
           set -euo pipefail
           url="https://${{ github.repository_owner }}.github.io/bcew-monorepo/packages.json"
 
-          http_code=$(curl -sSL -w "%{http_code}" -o packages.json "$url") || {
+          http_code=$(curl -sSL --retry 5 --retry-all-errors --connect-timeout 10 --max-time 60 -w "%{http_code}" -o packages.json "$url") || {
             curl_exit=$?
             echo "Failed to download packages.json (curl exit $curl_exit)" >&2
             exit "$curl_exit"
@@ -70,12 +70,10 @@ jobs:
         if: ${{ steps.vars.outputs.supported == 'true' }}
         env:
           TAG: ${{ steps.vars.outputs.tag }}
-          VERSION: ${{ steps.vars.outputs.version }}
         run: |
           php -r '
           $path = "packages.json";
           $tag = getenv("TAG");
-          $version = getenv("VERSION");
 
           if (!file_exists($path)) {
               file_put_contents($path, json_encode(["packages" => new stdClass()], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
