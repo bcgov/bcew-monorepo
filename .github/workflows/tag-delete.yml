@@ -1,0 +1,130 @@
+name: Remove release metadata on tag delete
+
+on:
+  delete:
+
+concurrency:
+  group: composer-repo-update
+  cancel-in-progress: false
+
+jobs:
+  cleanup-release:
+    name: Remove deleted tag from packages.json
+    if: ${{ github.event.ref_type == 'tag' }}
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Generate GitHub App Token
+        id: app-token
+        uses: actions/create-github-app-token@v3.2.0
+        with:
+          client-id: ${{ vars.GH_APP_CLIENT_ID }}
+          private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Parse deleted tag
+        id: vars
+        shell: bash
+        run: |
+          TAG="${{ github.event.ref }}"
+          echo "supported=false" >> "$GITHUB_OUTPUT"
+
+          # Expected format: <project>/v<semver>
+          if [[ ! "$TAG" =~ ^([^/]+)/v([0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?)$ ]]; then
+            echo "Unsupported tag format (skipping): $TAG"
+            exit 0
+          fi
+
+          echo "supported=true" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Download existing packages.json
+        if: ${{ steps.vars.outputs.supported == 'true' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://${{ github.repository_owner }}.github.io/bcew-monorepo/packages.json"
+
+          http_code=$(curl -sSL --retry 5 --retry-all-errors --connect-timeout 10 --max-time 60 -w "%{http_code}" -o packages.json "$url") || {
+            curl_exit=$?
+            echo "Failed to download packages.json (curl exit $curl_exit)" >&2
+            exit "$curl_exit"
+          }
+
+          if [ "$http_code" != "200" ]; then
+            echo "Failed to download packages.json (HTTP $http_code)" >&2
+            exit 1
+          fi
+      - name: Remove deleted tag from packages.json
+        if: ${{ steps.vars.outputs.supported == 'true' }}
+        env:
+          TAG: ${{ steps.vars.outputs.tag }}
+        run: |
+          php -r '
+          $path = "packages.json";
+          $tag = getenv("TAG");
+
+          if (!file_exists($path)) {
+              file_put_contents($path, json_encode(["packages" => new stdClass()], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
+              exit(0);
+          }
+
+          $json = file_get_contents($path);
+          $data = json_decode($json, true);
+
+          if (!is_array($data)) {
+              fwrite(STDERR, "Invalid packages.json\n");
+              exit(1);
+          }
+
+          if (!isset($data["packages"]) || !is_array($data["packages"])) {
+              $data["packages"] = [];
+          }
+
+          foreach ($data["packages"] as $packageName => &$releases) {
+              if (!is_array($releases)) {
+                  continue;
+              }
+
+              foreach ($releases as $releaseVersion => $release) {
+                  if (!is_array($release)) {
+                      continue;
+                  }
+
+                  $distRef = $release["dist"]["reference"] ?? null;
+                  $sourceRef = $release["source"]["reference"] ?? null;
+
+                  if (
+                      $distRef === $tag ||
+                      $sourceRef === $tag
+                  ) {
+                      unset($releases[$releaseVersion]);
+                  }
+              }
+
+              if (empty($releases)) {
+                  unset($data["packages"][$packageName]);
+              }
+          }
+          unset($releases);
+
+          file_put_contents($path, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n");
+          '
+
+      - name: Prepare Pages content
+        if: ${{ steps.vars.outputs.supported == 'true' }}
+        run: |
+          mkdir -p public
+          cp packages.json public/packages.json
+
+      - name: Deploy to GH Pages
+        if: ${{ steps.vars.outputs.supported == 'true' }}
+        uses: peaceiris/actions-gh-pages@v4.1.0
+        with:
+          github_token: ${{ steps.app-token.outputs.token }}
+          publish_dir: ./public
+          keep_files: true
