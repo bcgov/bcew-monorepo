@@ -25,12 +25,12 @@ import { __ } from '@wordpress/i18n';
  * @type {Object<string, string>}
  */
 export const FIELD_TYPES = {
-	/** Text input field type */
-	text: __( 'Text', 'bcgov-design-system' ),
+    /** Text input field type */
+    text: __( 'Text', 'bcgov-design-system' ),
 
-	/** Date picker field type */
-	date: __( 'Date', 'bcgov-design-system' ),
+    /** Date picker field type */
+    date: __( 'Date', 'bcgov-design-system' ),
 
-	/** Taxonomy field type */
-	taxonomy: __( 'Taxonomy', 'bcgov-design-system' ),
+    /** Taxonomy field type */
+    taxonomy: __( 'Taxonomy', 'bcgov-design-system' ),
 };

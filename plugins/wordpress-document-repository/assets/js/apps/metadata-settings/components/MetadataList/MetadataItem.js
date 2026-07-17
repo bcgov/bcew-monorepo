@@ -1,3 +1,7 @@
+import { JSX } from 'react';
+import { Button } from '@wordpress/components';
+import { __ } from '@wordpress/i18n';
+
 /**
  * MetadataItem Component
  *
@@ -22,42 +26,38 @@
  *   <MetadataFieldContent />
  * </MetadataItem>
  */
-
-import { Button } from '@wordpress/components';
-import { __ } from '@wordpress/i18n';
-
 const MetadataItem = ( { children, onMoveUp, onMoveDown, index, total } ) => (
-	<div className="metadata-field-item">
-		{ /* Main content area for the metadata field */ }
-		<div className="metadata-field-info">{ children }</div>
+    <div className="metadata-field-item">
+        { /* Main content area for the metadata field */ }
+        <div className="metadata-field-info">{ children }</div>
 
-		{ /* Move controls - only show up/down buttons when applicable */ }
-		<div className="metadata-field-move-actions">
-			{ /* Show move up button if not the first item */ }
-			{ index > 0 && (
-				<Button
-					variant="secondary"
-					onClick={ onMoveUp }
-					className="move-up"
-					aria-label={ __( 'Move Up', 'bcgov-design-system' ) }
-				>
-					↑
-				</Button>
-			) }
+        { /* Move controls - only show up/down buttons when applicable */ }
+        <div className="metadata-field-move-actions">
+            { /* Show move up button if not the first item */ }
+            { index > 0 && (
+                <Button
+                    variant="secondary"
+                    onClick={ onMoveUp }
+                    className="move-up"
+                    aria-label={ __( 'Move Up', 'bcgov-design-system' ) }
+                >
+                    ↑
+                </Button>
+            ) }
 
-			{ /* Show move down button if not the last item */ }
-			{ index < total - 1 && (
-				<Button
-					variant="secondary"
-					onClick={ onMoveDown }
-					className="move-down"
-					aria-label={ __( 'Move Down', 'bcgov-design-system' ) }
-				>
-					↓
-				</Button>
-			) }
-		</div>
-	</div>
+            { /* Show move down button if not the last item */ }
+            { index < total - 1 && (
+                <Button
+                    variant="secondary"
+                    onClick={ onMoveDown }
+                    className="move-down"
+                    aria-label={ __( 'Move Down', 'bcgov-design-system' ) }
+                >
+                    ↓
+                </Button>
+            ) }
+        </div>
+    </div>
 );
 
 export default MetadataItem;

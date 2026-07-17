@@ -1,3 +1,4 @@
+import { JSX } from 'react';
 import { CheckboxControl, TextControl, Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import SafeRender from './SafeRender';
@@ -37,250 +38,250 @@ import DocumentTableRow from './DocumentTableRow';
  * @return {JSX.Element} Rendered document table
  */
 function DocumentTable( {
-	documents,
-	selectedDocuments,
-	onSelectDocument,
-	onSelectAll,
-	onDelete,
-	onEdit,
-	onRestore,
-	isDeleting,
-	metadataFields,
-	isSpreadsheetMode,
-	bulkEditedMetadata,
-	onMetadataChange,
-	formatFileSize,
-	documentStatusFilter,
-	searchTerm = '',
-	searchInput = '',
-	setSearchInput,
-	performSearch,
-	handleSearchKeyPress,
-	setSearchParams,
-	toggleSpreadsheetMode,
-	hasMetadataChanges,
-	handleSaveBulkChanges,
-	isSavingBulk,
+    documents,
+    selectedDocuments,
+    onSelectDocument,
+    onSelectAll,
+    onDelete,
+    onEdit,
+    onRestore,
+    isDeleting,
+    metadataFields,
+    isSpreadsheetMode,
+    bulkEditedMetadata,
+    onMetadataChange,
+    formatFileSize,
+    documentStatusFilter,
+    searchTerm = '',
+    searchInput = '',
+    setSearchInput,
+    performSearch,
+    handleSearchKeyPress,
+    setSearchParams,
+    toggleSpreadsheetMode,
+    hasMetadataChanges,
+    handleSaveBulkChanges,
+    isSavingBulk,
 } ) {
-	// Check if all documents are currently selected
-	const allSelected =
-		documents.length > 0 && selectedDocuments.length === documents.length;
+    // Check if all documents are currently selected
+    const allSelected =
+        documents.length > 0 && selectedDocuments.length === documents.length;
 
-	return (
-		<div className="document-table-wrapper">
-			{ /* Search bar and spreadsheet button at top of table */ }
-			<div className="document-table__search-header">
-				<div className="document-table__search-header-left">
-					{ toggleSpreadsheetMode && (
-						<Button
-							className={ `doc-repo-button spreadsheet-toggle${
-								isSpreadsheetMode ? ' isPressed' : ''
-							}` }
-							onClick={ () =>
-								toggleSpreadsheetMode( ! isSpreadsheetMode )
-							}
-							isPressed={ isSpreadsheetMode }
-						>
-							{ isSpreadsheetMode
-								? __(
-										'Exit Spreadsheet Mode',
-										'bcgov-design-system'
-								  )
-								: __(
-										'Enter Spreadsheet Mode',
-										'bcgov-design-system'
-								  ) }
-						</Button>
-					) }
-					{ isSpreadsheetMode &&
-						hasMetadataChanges &&
-						handleSaveBulkChanges && (
-							<Button
-								className="doc-repo-button save-button"
-								onClick={ handleSaveBulkChanges }
-								isBusy={ isSavingBulk }
-								disabled={ isSavingBulk }
-							>
-								{ isSavingBulk
-									? __( 'Saving…', 'bcgov-design-system' )
-									: __(
-											'Save Changes',
-											'bcgov-design-system'
-									  ) }
-							</Button>
-						) }
-				</div>
-				<div className="document-table__search-header-right">
-					<div className="document-search-wrapper">
-						<div className="document-search-input-wrapper">
-							<TextControl
-								placeholder={ __(
-									'Search documents…',
-									'bcgov-design-system'
-								) }
-								value={ searchInput }
-								onChange={ setSearchInput }
-								onKeyPress={ handleSearchKeyPress }
-								className="document-search-input"
-							/>
-							{ ( searchTerm || searchInput ) && (
-								<button
-									className="document-search-clear"
-									onClick={ () => {
-										// Always reset search completely
-										setSearchParams( ( prev ) => ( {
-											...prev,
-											search: '',
-											page: 1,
-										} ) );
+    return (
+        <div className="document-table-wrapper">
+            { /* Search bar and spreadsheet button at top of table */ }
+            <div className="document-table__search-header">
+                <div className="document-table__search-header-left">
+                    { toggleSpreadsheetMode && (
+                        <Button
+                            className={ `doc-repo-button spreadsheet-toggle${
+                                isSpreadsheetMode ? ' isPressed' : ''
+                            }` }
+                            onClick={ () =>
+                                toggleSpreadsheetMode( ! isSpreadsheetMode )
+                            }
+                            isPressed={ isSpreadsheetMode }
+                        >
+                            { isSpreadsheetMode
+                                ? __(
+                                      'Exit Spreadsheet Mode',
+                                      'bcgov-design-system'
+                                  )
+                                : __(
+                                      'Enter Spreadsheet Mode',
+                                      'bcgov-design-system'
+                                  ) }
+                        </Button>
+                    ) }
+                    { isSpreadsheetMode &&
+                        hasMetadataChanges &&
+                        handleSaveBulkChanges && (
+                            <Button
+                                className="doc-repo-button save-button"
+                                onClick={ handleSaveBulkChanges }
+                                isBusy={ isSavingBulk }
+                                disabled={ isSavingBulk }
+                            >
+                                { isSavingBulk
+                                    ? __( 'Saving…', 'bcgov-design-system' )
+                                    : __(
+                                          'Save Changes',
+                                          'bcgov-design-system'
+                                      ) }
+                            </Button>
+                        ) }
+                </div>
+                <div className="document-table__search-header-right">
+                    <div className="document-search-wrapper">
+                        <div className="document-search-input-wrapper">
+                            <TextControl
+                                placeholder={ __(
+                                    'Search documents…',
+                                    'bcgov-design-system'
+                                ) }
+                                value={ searchInput }
+                                onChange={ setSearchInput }
+                                onKeyPress={ handleSearchKeyPress }
+                                className="document-search-input"
+                            />
+                            { ( searchTerm || searchInput ) && (
+                                <button
+                                    className="document-search-clear"
+                                    onClick={ () => {
+                                        // Always reset search completely
+                                        setSearchParams( ( prev ) => ( {
+                                            ...prev,
+                                            search: '',
+                                            page: 1,
+                                        } ) );
 
-										setSearchInput( '' );
-									} }
-									aria-label={ __(
-										'Clear search',
-										'bcgov-design-system'
-									) }
-									title={ __(
-										'Clear search',
-										'bcgov-design-system'
-									) }
-								>
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										viewBox="0 0 24 24"
-										width="16"
-										height="16"
-										fill="none"
-										stroke="currentColor"
-										strokeWidth="2"
-										strokeLinecap="round"
-										strokeLinejoin="round"
-									>
-										<line
-											x1="18"
-											y1="6"
-											x2="6"
-											y2="18"
-										></line>
-										<line
-											x1="6"
-											y1="6"
-											x2="18"
-											y2="18"
-										></line>
-									</svg>
-								</button>
-							) }
-						</div>
-						<Button
-							className="document-search-button"
-							variant="primary"
-							onClick={ performSearch }
-							disabled={ ! searchInput.trim() }
-						>
-							{ __( 'Search', 'bcgov-design-system' ) }
-						</Button>
-					</div>
-				</div>
-			</div>
-			<div className="document-table" role="table">
-				{ /* Table header with column titles and select all checkbox */ }
-				<div className="document-table-header" role="rowgroup">
-					<div className="document-table-row" role="row">
-						{ /* Select all checkbox column */ }
-						<div
-							className="document-table-cell header"
-							role="columnheader"
-						>
-							<CheckboxControl
-								checked={ allSelected }
-								onChange={ onSelectAll }
-							/>
-						</div>
-						{ /* Document title column */ }
-						<div
-							className="document-table-cell header"
-							role="columnheader"
-						>
-							{ __( 'Title', 'bcgov-design-system' ) }
-						</div>
-						{ /* Excerpt column */ }
-						<div
-							className="document-table-cell header"
-							role="columnheader"
-						>
-							{ __( 'Excerpt', 'bcgov-design-system' ) }
-						</div>
-						{ /* Metadata columns */ }
-						{ metadataFields.map( ( field ) => (
-							<div
-								key={ field.id }
-								className="document-table-cell header metadata-column"
-								role="columnheader"
-							>
-								{ field.label }
-							</div>
-						) ) }
-						{ /* File size column */ }
-						<div
-							className="document-table-cell header"
-							role="columnheader"
-						>
-							{ __( 'Size', 'bcgov-design-system' ) }
-						</div>
-						{ /* File type column */ }
-						<div
-							className="document-table-cell header"
-							role="columnheader"
-						>
-							{ __( 'Type', 'bcgov-design-system' ) }
-						</div>
-						{ /* Revisions column */ }
-						<div
-							className="document-table-cell header"
-							role="columnheader"
-						>
-							{ __( 'Revisions', 'bcgov-design-system' ) }
-						</div>
-						{ /* Actions column */ }
-						<div
-							className="document-table-cell header"
-							role="columnheader"
-						>
-							{ __( 'Actions', 'bcgov-design-system' ) }
-						</div>
-					</div>
-				</div>
+                                        setSearchInput( '' );
+                                    } }
+                                    aria-label={ __(
+                                        'Clear search',
+                                        'bcgov-design-system'
+                                    ) }
+                                    title={ __(
+                                        'Clear search',
+                                        'bcgov-design-system'
+                                    ) }
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 24 24"
+                                        width="16"
+                                        height="16"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    >
+                                        <line
+                                            x1="18"
+                                            y1="6"
+                                            x2="6"
+                                            y2="18"
+                                        ></line>
+                                        <line
+                                            x1="6"
+                                            y1="6"
+                                            x2="18"
+                                            y2="18"
+                                        ></line>
+                                    </svg>
+                                </button>
+                            ) }
+                        </div>
+                        <Button
+                            className="document-search-button"
+                            variant="primary"
+                            onClick={ performSearch }
+                            disabled={ ! searchInput.trim() }
+                        >
+                            { __( 'Search', 'bcgov-design-system' ) }
+                        </Button>
+                    </div>
+                </div>
+            </div>
+            <div className="document-table" role="table">
+                { /* Table header with column titles and select all checkbox */ }
+                <div className="document-table-header" role="rowgroup">
+                    <div className="document-table-row" role="row">
+                        { /* Select all checkbox column */ }
+                        <div
+                            className="document-table-cell header"
+                            role="columnheader"
+                        >
+                            <CheckboxControl
+                                checked={ allSelected }
+                                onChange={ onSelectAll }
+                            />
+                        </div>
+                        { /* Document title column */ }
+                        <div
+                            className="document-table-cell header"
+                            role="columnheader"
+                        >
+                            { __( 'Title', 'bcgov-design-system' ) }
+                        </div>
+                        { /* Excerpt column */ }
+                        <div
+                            className="document-table-cell header"
+                            role="columnheader"
+                        >
+                            { __( 'Excerpt', 'bcgov-design-system' ) }
+                        </div>
+                        { /* Metadata columns */ }
+                        { metadataFields.map( ( field ) => (
+                            <div
+                                key={ field.id }
+                                className="document-table-cell header metadata-column"
+                                role="columnheader"
+                            >
+                                { field.label }
+                            </div>
+                        ) ) }
+                        { /* File size column */ }
+                        <div
+                            className="document-table-cell header"
+                            role="columnheader"
+                        >
+                            { __( 'Size', 'bcgov-design-system' ) }
+                        </div>
+                        { /* File type column */ }
+                        <div
+                            className="document-table-cell header"
+                            role="columnheader"
+                        >
+                            { __( 'Type', 'bcgov-design-system' ) }
+                        </div>
+                        { /* Revisions column */ }
+                        <div
+                            className="document-table-cell header"
+                            role="columnheader"
+                        >
+                            { __( 'Revisions', 'bcgov-design-system' ) }
+                        </div>
+                        { /* Actions column */ }
+                        <div
+                            className="document-table-cell header"
+                            role="columnheader"
+                        >
+                            { __( 'Actions', 'bcgov-design-system' ) }
+                        </div>
+                    </div>
+                </div>
 
-				{ /* Table body containing document rows */ }
-				<div className="document-table-body" role="rowgroup">
-					{ documents.map( ( document ) => (
-						<SafeRender key={ document.id }>
-							<DocumentTableRow
-								document={ document }
-								isSelected={ selectedDocuments.includes(
-									document.id
-								) }
-								onSelect={ onSelectDocument }
-								onDelete={ onDelete }
-								onEdit={ onEdit }
-								onRestore={ onRestore }
-								isDeleting={ isDeleting }
-								metadataFields={ metadataFields }
-								isSpreadsheetMode={ isSpreadsheetMode }
-								bulkEditedMetadata={ bulkEditedMetadata }
-								onMetadataChange={ onMetadataChange }
-								formatFileSize={ formatFileSize }
-								documentStatusFilter={ documentStatusFilter }
-								excerpt={ document.excerpt }
-								searchTerm={ searchTerm }
-							/>
-						</SafeRender>
-					) ) }
-				</div>
-			</div>
-		</div>
-	);
+                { /* Table body containing document rows */ }
+                <div className="document-table-body" role="rowgroup">
+                    { documents.map( ( document ) => (
+                        <SafeRender key={ document.id }>
+                            <DocumentTableRow
+                                document={ document }
+                                isSelected={ selectedDocuments.includes(
+                                    document.id
+                                ) }
+                                onSelect={ onSelectDocument }
+                                onDelete={ onDelete }
+                                onEdit={ onEdit }
+                                onRestore={ onRestore }
+                                isDeleting={ isDeleting }
+                                metadataFields={ metadataFields }
+                                isSpreadsheetMode={ isSpreadsheetMode }
+                                bulkEditedMetadata={ bulkEditedMetadata }
+                                onMetadataChange={ onMetadataChange }
+                                formatFileSize={ formatFileSize }
+                                documentStatusFilter={ documentStatusFilter }
+                                excerpt={ document.excerpt }
+                                searchTerm={ searchTerm }
+                            />
+                        </SafeRender>
+                    ) ) }
+                </div>
+            </div>
+        </div>
+    );
 }
 
 export { DocumentTable as default };

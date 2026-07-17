@@ -1,3 +1,5 @@
+import { JSX } from 'react';
+
 /**
  * MetadataList Component
  *
@@ -15,9 +17,8 @@
  *   <MetadataField />
  * </MetadataList>
  */
-
 const MetadataList = ( { children } ) => (
-	<div className="metadata-fields-list">{ children }</div>
+    <div className="metadata-fields-list">{ children }</div>
 );
 
 export default MetadataList;

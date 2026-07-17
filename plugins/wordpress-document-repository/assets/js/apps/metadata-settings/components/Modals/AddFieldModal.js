@@ -1,3 +1,14 @@
+import { JSX } from 'react';
+import {
+    Modal,
+    TextControl,
+    SelectControl,
+    TextareaControl,
+    Button,
+} from '@wordpress/components';
+import { __ } from '@wordpress/i18n';
+import { FIELD_TYPES } from '../../constants/fieldTypes';
+
 /**
  * AddFieldModal Component
  *
@@ -26,99 +37,88 @@
  *   errors={validationErrors}
  * />
  */
-
-import {
-	Modal,
-	TextControl,
-	SelectControl,
-	TextareaControl,
-	Button,
-} from '@wordpress/components';
-import { __ } from '@wordpress/i18n';
-import { FIELD_TYPES } from '../../constants/fieldTypes';
-
 const AddFieldModal = ( {
-	isOpen,
-	onClose,
-	field,
-	onFieldChange,
-	onOptionsChange,
-	onSave,
-	errors = {},
+    isOpen,
+    onClose,
+    field,
+    onFieldChange,
+    onOptionsChange,
+    onSave,
+    errors = {},
 } ) => {
-	// Return null if modal is not open
-	if ( ! isOpen ) {
-		return null;
-	}
+    // Return null if modal is not open
+    if ( ! isOpen ) {
+        return null;
+    }
 
-	return (
-		<Modal
-			title={ __( 'Add Metadata Field', 'bcgov-design-system' ) }
-			onRequestClose={ onClose }
-			className="metadata-field-modal"
-		>
-			{ /* Field ID input */ }
-			<TextControl
-				label={ __( 'Field ID', 'bcgov-design-system' ) }
-				value={ field.id }
-				onChange={ ( value ) => onFieldChange( 'id', value ) }
-				help={ __(
-					'A unique identifier for the field',
-					'bcgov-design-system'
-				) }
-				error={ errors.id }
-			/>
+    return (
+        <Modal
+            title={ __( 'Add Metadata Field', 'bcgov-design-system' ) }
+            onRequestClose={ onClose }
+            className="metadata-field-modal"
+        >
+            { /* Field ID input */ }
+            <TextControl
+                label={ __( 'Field ID', 'bcgov-design-system' ) }
+                value={ field.id }
+                onChange={ ( value ) => onFieldChange( 'id', value ) }
+                help={ __(
+                    'A unique identifier for the field',
+                    'bcgov-design-system'
+                ) }
+                error={ errors.id }
+            />
 
-			{ /* Field Label input */ }
-			<TextControl
-				label={ __( 'Field Label', 'bcgov-design-system' ) }
-				value={ field.label }
-				onChange={ ( value ) => onFieldChange( 'label', value ) }
-				help={ __( 'The label shown to users', 'bcgov-design-system' ) }
-				error={ errors.label }
-			/>
+            { /* Field Label input */ }
+            <TextControl
+                label={ __( 'Field Label', 'bcgov-design-system' ) }
+                value={ field.label }
+                onChange={ ( value ) => onFieldChange( 'label', value ) }
+                help={ __( 'The label shown to users', 'bcgov-design-system' ) }
+                error={ errors.label }
+            />
 
-			{ /* Field Type selection */ }
-			<SelectControl
-				label={ __( 'Field Type', 'bcgov-design-system' ) }
-				value={ field.type }
-				options={ Object.entries( FIELD_TYPES ).map(
-					( [ value, label ] ) => ( { value, label } )
-				) }
-				onChange={ ( value ) => onFieldChange( 'type', value ) }
-			/>
+            { /* Field Type selection */ }
+            <SelectControl
+                label={ __( 'Field Type', 'bcgov-design-system' ) }
+                value={ field.type }
+                options={ Object.entries( FIELD_TYPES ).map(
+                    ( [ value, label ] ) => ( { value, label } )
+                ) }
+                onChange={ ( value ) => onFieldChange( 'type', value ) }
+            />
 
-			{ /* Options input (only shown for taxonomy fields) */ }
-			{ field.type === 'taxonomy' && (
-				<TextareaControl
-					label={ __( 'Taxonomy Terms', 'bcgov-design-system' ) }
-					value={ field._rawOptionsText }
-					onChange={ onOptionsChange }
-					help={ __(
-						'Enter one taxonomy term per line. These will become the available options for this taxonomy.',
-						'bcgov-design-system'
-					) }
-					error={ errors.options }
-				/>
-			) }
+            { /* Options input (only shown for taxonomy fields) */ }
+            { 'taxonomy' === field.type && (
+                <TextareaControl
+                    label={ __( 'Taxonomy Terms', 'bcgov-design-system' ) }
+                    value={ field._rawOptionsText }
+                    onChange={ onOptionsChange }
+                    help={ __(
+                        'Enter one taxonomy term per line. These will become the available options for this taxonomy.',
+                        'bcgov-design-system'
+                    ) }
+                    error={ errors.options }
+                />
+            ) }
 
-			{ /* Modal action buttons */ }
-			<div className="modal-actions">
-				<Button
-					onClick={ onSave }
-					className="doc-repo-button save-button"
-				>
-					{ __( 'Add Field', 'bcgov-design-system' ) }
-				</Button>
-				<Button
-					onClick={ onClose }
-					className="doc-repo-button cancel-button"
-				>
-					{ __( 'Cancel', 'bcgov-design-system' ) }
-				</Button>
-			</div>
-		</Modal>
-	);
+            { /* Modal action buttons */ }
+            <div className="modal-actions">
+                <Button
+                    onClick={ onSave }
+                    className="doc-repo-button save-button"
+                >
+                    { __( 'Add Field', 'bcgov-design-system' ) }
+                </Button>
+                <Button
+                    onClick={ onClose }
+                    className="doc-repo-button cancel-button"
+                >
+                    { __( 'Cancel', 'bcgov-design-system' ) }
+                </Button>
+            </div>
+        </Modal>
+    );
 };
 
 export default AddFieldModal;

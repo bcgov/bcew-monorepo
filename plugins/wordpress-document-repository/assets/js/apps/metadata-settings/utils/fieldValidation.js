@@ -45,57 +45,57 @@ import { __ } from '@wordpress/i18n';
  * }
  */
 export const validateField = (
-	field,
-	existingFields = [],
-	currentIndex = null
+    field,
+    existingFields = [],
+    currentIndex = null
 ) => {
-	const errors = {};
+    const errors = {};
 
-	// Validate required ID
-	if ( ! field.id ) {
-		errors.id = __( 'Field ID is required', 'bcgov-design-system' );
-	}
+    // Validate required ID
+    if ( ! field.id ) {
+        errors.id = __( 'Field ID is required', 'bcgov-design-system' );
+    }
 
-	// Validate required label
-	if ( ! field.label ) {
-		errors.label = __( 'Field label is required', 'bcgov-design-system' );
-	}
+    // Validate required label
+    if ( ! field.label ) {
+        errors.label = __( 'Field label is required', 'bcgov-design-system' );
+    }
 
-	// Check for duplicate ID
-	const hasDuplicate = existingFields.some(
-		( existing, index ) =>
-			existing.id === field.id && index !== currentIndex
-	);
-	if ( hasDuplicate ) {
-		errors.id = __(
-			'A field with this ID already exists',
-			'bcgov-design-system'
-		);
-	}
+    // Check for duplicate ID
+    const hasDuplicate = existingFields.some(
+        ( existing, index ) =>
+            existing.id === field.id && index !== currentIndex
+    );
+    if ( hasDuplicate ) {
+        errors.id = __(
+            'A field with this ID already exists',
+            'bcgov-design-system'
+        );
+    }
 
-	// Validate field type
-	if (
-		! field.type ||
-		! [ 'text', 'date', 'taxonomy' ].includes( field.type )
-	) {
-		errors.type = __(
-			'Please select a valid field type',
-			'bcgov-design-system'
-		);
-	}
+    // Validate field type
+    if (
+        ! field.type ||
+        ! [ 'text', 'date', 'taxonomy' ].includes( field.type )
+    ) {
+        errors.type = __(
+            'Please select a valid field type',
+            'bcgov-design-system'
+        );
+    }
 
-	// Validate taxonomy field options
-	if (
-		field.type === 'taxonomy' &&
-		( ! field.options || field.options.length === 0 )
-	) {
-		errors.options = __(
-			'Taxonomy fields require at least one term',
-			'bcgov-design-system'
-		);
-	}
+    // Validate taxonomy field options
+    if (
+        'taxonomy' === field.type &&
+        ( ! field.options || 0 === field.options.length )
+    ) {
+        errors.options = __(
+            'Taxonomy fields require at least one term',
+            'bcgov-design-system'
+        );
+    }
 
-	return errors;
+    return errors;
 };
 
 /**
@@ -115,10 +115,10 @@ export const validateField = (
  * // Returns: { id: '', label: '', type: 'text', description: '', options: [], _rawOptionsText: '' }
  */
 export const getInitialFieldState = () => ( {
-	id: '',
-	label: '',
-	type: 'text',
-	description: '',
-	options: [],
-	_rawOptionsText: '',
+    id: '',
+    label: '',
+    type: 'text',
+    description: '',
+    options: [],
+    _rawOptionsText: '',
 } );

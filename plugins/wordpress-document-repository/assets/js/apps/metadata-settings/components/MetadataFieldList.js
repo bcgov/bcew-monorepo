@@ -1,3 +1,4 @@
+import { JSX } from 'react';
 import { Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
@@ -11,7 +12,7 @@ import { __ } from '@wordpress/i18n';
  * @return {JSX.Element} Metadata list container
  */
 const MetadataList = ( { children } ) => (
-	<div className="metadata-fields-list">{ children }</div>
+    <div className="metadata-fields-list">{ children }</div>
 );
 
 /**
@@ -24,9 +25,9 @@ const MetadataList = ( { children } ) => (
  * @return {JSX.Element} Metadata item with move controls
  */
 const MetadataItem = ( { children } ) => (
-	<div className="metadata-field-item">
-		<div className="metadata-field-info">{ children }</div>
-	</div>
+    <div className="metadata-field-item">
+        <div className="metadata-field-info">{ children }</div>
+    </div>
 );
 
 /**
@@ -37,8 +38,8 @@ const MetadataItem = ( { children } ) => (
  * @constant {Object} FIELD_TYPES
  */
 const FIELD_TYPES = {
-	text: __( 'Text', 'bcgov-design-system' ),
-	date: __( 'Date', 'bcgov-design-system' ),
+    text: __( 'Text', 'bcgov-design-system' ),
+    date: __( 'Date', 'bcgov-design-system' ),
 };
 
 /**
@@ -54,52 +55,52 @@ const FIELD_TYPES = {
  * @return {JSX.Element} List of metadata fields
  */
 const MetadataFieldList = ( { fields, onEdit, onDelete, isSaving } ) => {
-	if ( fields.length === 0 ) {
-		return (
-			<div className="no-fields-message">
-				<p>
-					{ __(
-						'No custom metadata fields defined yet. Click "Add New Field" to create one.',
-						'bcgov-design-system'
-					) }
-				</p>
-			</div>
-		);
-	}
+    if ( 0 === fields.length ) {
+        return (
+            <div className="no-fields-message">
+                <p>
+                    { __(
+                        'No custom metadata fields defined yet. Click "Add New Field" to create one.',
+                        'bcgov-design-system'
+                    ) }
+                </p>
+            </div>
+        );
+    }
 
-	return (
-		<MetadataList>
-			{ fields.map( ( field, index ) => (
-				<MetadataItem key={ field.id }>
-					<div className="metadata-field-info">
-						<h3>{ field.label }</h3>
-						<p className="field-id">ID: { field.id }</p>
-						<p className="field-type">
-							Type: { FIELD_TYPES[ field.type ] }
-						</p>
-						<p className="field-description">
-							Description: { field.description }
-						</p>
-					</div>
-					<div className="metadata-field-actions">
-						<Button
-							className="doc-repo-button edit-button"
-							onClick={ () => onEdit( field, index ) }
-						>
-							{ __( 'Edit', 'bcgov-design-system' ) }
-						</Button>
-						<Button
-							className="doc-repo-button delete-button"
-							onClick={ () => onDelete( field ) }
-							disabled={ isSaving }
-						>
-							{ __( 'Delete', 'bcgov-design-system' ) }
-						</Button>
-					</div>
-				</MetadataItem>
-			) ) }
-		</MetadataList>
-	);
+    return (
+        <MetadataList>
+            { fields.map( ( field, index ) => (
+                <MetadataItem key={ field.id }>
+                    <div className="metadata-field-info">
+                        <h3>{ field.label }</h3>
+                        <p className="field-id">ID: { field.id }</p>
+                        <p className="field-type">
+                            Type: { FIELD_TYPES[ field.type ] }
+                        </p>
+                        <p className="field-description">
+                            Description: { field.description }
+                        </p>
+                    </div>
+                    <div className="metadata-field-actions">
+                        <Button
+                            className="doc-repo-button edit-button"
+                            onClick={ () => onEdit( field, index ) }
+                        >
+                            { __( 'Edit', 'bcgov-design-system' ) }
+                        </Button>
+                        <Button
+                            className="doc-repo-button delete-button"
+                            onClick={ () => onDelete( field ) }
+                            disabled={ isSaving }
+                        >
+                            { __( 'Delete', 'bcgov-design-system' ) }
+                        </Button>
+                    </div>
+                </MetadataItem>
+            ) ) }
+        </MetadataList>
+    );
 };
 
 export default MetadataFieldList;

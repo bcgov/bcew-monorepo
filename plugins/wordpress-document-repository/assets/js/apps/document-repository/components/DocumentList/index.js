@@ -1,9 +1,9 @@
 import { useCallback, useMemo } from '@wordpress/element';
 import {
-	Button,
-	SelectControl,
-	TextControl,
-	TextareaControl,
+    Button,
+    SelectControl,
+    TextControl,
+    TextareaControl,
 } from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
 import ErrorBoundary from './ErrorBoundary';
@@ -56,880 +56,880 @@ import { default as useDocumentManagement } from './hooks/useDocumentManagement'
  * @param {boolean}  props.isLoading            - Whether documents are currently being loaded
  */
 const DocumentList = ( {
-	documents = [],
-	currentPage = 1,
-	totalPages = 1,
-	onPageChange,
-	onDelete,
-	onTrash,
-	onRestore,
-	isDeleting = false,
-	selectedDocuments = [],
-	onSelectDocument,
-	onSelectAll,
-	onFileDrop,
-	onDocumentsUpdate,
-	metadataFields = [],
-	statusCounts = {},
-	documentStatusFilter = 'all',
-	onStatusFilterChange,
-	searchTerm = '',
-	searchInput = '',
-	setSearchInput,
-	performSearch,
-	handleSearchKeyPress,
-	setSearchParams,
-	isLoading = false,
+    documents = [],
+    currentPage = 1,
+    totalPages = 1,
+    onPageChange,
+    onDelete,
+    onTrash,
+    onRestore,
+    isDeleting = false,
+    selectedDocuments = [],
+    onSelectDocument,
+    onSelectAll,
+    onFileDrop,
+    onDocumentsUpdate,
+    metadataFields = [],
+    statusCounts = {},
+    documentStatusFilter = 'all',
+    onStatusFilterChange,
+    searchTerm = '',
+    searchInput = '',
+    setSearchInput,
+    performSearch,
+    handleSearchKeyPress,
+    setSearchParams,
+    isLoading = false,
 } ) => {
-	// Memoize formatFileSize function
-	const formatFileSize = useMemo(
-		() => ( bytes ) => {
-			if ( bytes === 0 ) {
-				return '0 Bytes';
-			}
-			const k = 1024;
-			const sizes = [ 'Bytes', 'KB', 'MB', 'GB' ];
-			const i = Math.floor( Math.log( bytes ) / Math.log( k ) );
-			return (
-				parseFloat( ( bytes / Math.pow( k, i ) ).toFixed( 2 ) ) +
-				' ' +
-				sizes[ i ]
-			);
-		},
-		[]
-	);
+    // Memoize formatFileSize function
+    const formatFileSize = useMemo(
+        () => ( bytes ) => {
+            if ( 0 === bytes ) {
+                return '0 Bytes';
+            }
+            const k = 1024;
+            const sizes = [ 'Bytes', 'KB', 'MB', 'GB' ];
+            const i = Math.floor( Math.log( bytes ) / Math.log( k ) );
+            return (
+                parseFloat( ( bytes / Math.pow( k, i ) ).toFixed( 2 ) ) +
+                ' ' +
+                sizes[ i ]
+            );
+        },
+        []
+    );
 
-	// Memoize API namespace to prevent recalculation
-	const apiNamespace = useMemo( () => {
-		const settings = window.documentRepositorySettings;
+    // Memoize API namespace to prevent recalculation
+    const apiNamespace = useMemo( () => {
+        const settings = window.documentRepositorySettings;
 
-		return settings?.apiNamespace || 'wp/v2';
-	}, [] );
+        return settings?.apiNamespace || 'wp/v2';
+    }, [] );
 
-	// Use notifications hook
-	const { showNotification } = useNotifications();
+    // Use notifications hook
+    const { showNotification } = useNotifications();
 
-	// Use error handling hook
-	const { failedOperations, handleOperationError, retryAllOperations } =
-		useErrorHandling( {
-			onShowNotification: showNotification,
-		} );
+    // Use error handling hook
+    const { failedOperations, handleOperationError, retryAllOperations } =
+        useErrorHandling( {
+            onShowNotification: showNotification,
+        } );
 
-	// Use document management hook
-	const {
-		deleteDocument,
-		restoreDocument,
-		bulkDeleteConfirmOpen,
-		bulkRestoreConfirmOpen,
-		isMultiDeleting,
-		isMultiRestoring,
-		setDeleteDocument,
-		setRestoreDocument,
-		handleBulkDelete,
-		handleBulkRestore,
-		handleSingleDelete,
-		handleSingleRestore,
-		openBulkDeleteConfirm,
-		closeBulkDeleteConfirm,
-		openBulkRestoreConfirm,
-		closeBulkRestoreConfirm,
-	} = useDocumentManagement( {
-		onDelete,
-		onTrash,
-		onRestore,
-		documentStatusFilter,
-		onSelectAll,
-		onShowNotification: showNotification,
-		onError: handleOperationError,
-	} );
+    // Use document management hook
+    const {
+        deleteDocument,
+        restoreDocument,
+        bulkDeleteConfirmOpen,
+        bulkRestoreConfirmOpen,
+        isMultiDeleting,
+        isMultiRestoring,
+        setDeleteDocument,
+        setRestoreDocument,
+        handleBulkDelete,
+        handleBulkRestore,
+        handleSingleDelete,
+        handleSingleRestore,
+        openBulkDeleteConfirm,
+        closeBulkDeleteConfirm,
+        openBulkRestoreConfirm,
+        closeBulkRestoreConfirm,
+    } = useDocumentManagement( {
+        onDelete,
+        onTrash,
+        onRestore,
+        documentStatusFilter,
+        onSelectAll,
+        onShowNotification: showNotification,
+        onError: handleOperationError,
+    } );
 
-	// Use metadata management hook - critical for spreadsheet mode
-	const {
-		// Single document editing
-		editingMetadata,
-		editedValues,
-		errors: metadataErrors,
-		isSaving: isSavingMetadata,
-		hasMetadataChanged,
-		handleEditMetadata,
-		updateEditedField,
-		handleSaveMetadata,
+    // Use metadata management hook - critical for spreadsheet mode
+    const {
+        // Single document editing
+        editingMetadata,
+        editedValues,
+        errors: metadataErrors,
+        isSaving: isSavingMetadata,
+        hasMetadataChanged,
+        handleEditMetadata,
+        updateEditedField,
+        handleSaveMetadata,
 
-		// Spreadsheet mode
-		isSpreadsheetMode,
-		hasMetadataChanges,
-		bulkEditedMetadata,
-		isSavingBulk,
-		handleMetadataChange,
-		toggleSpreadsheetMode,
-		handleSaveBulkChanges,
+        // Spreadsheet mode
+        isSpreadsheetMode,
+        hasMetadataChanges,
+        bulkEditedMetadata,
+        isSavingBulk,
+        handleMetadataChange,
+        toggleSpreadsheetMode,
+        handleSaveBulkChanges,
 
-		// Document state
-		localDocuments,
-	} = useMetadataManagement( {
-		documents,
-		metadataFields,
-		apiNamespace,
-		onUpdateDocuments: onDocumentsUpdate,
-		onError: handleOperationError,
-		onShowNotification: showNotification,
-	} );
+        // Document state
+        localDocuments,
+    } = useMetadataManagement( {
+        documents,
+        metadataFields,
+        apiNamespace,
+        onUpdateDocuments: onDocumentsUpdate,
+        onError: handleOperationError,
+        onShowNotification: showNotification,
+    } );
 
-	// Use file handling hook
-	const {
-		uploadingFiles,
-		showUploadFeedback,
-		handleFiles,
-		closeUploadFeedback,
-	} = useFileHandling( {
-		onFileDrop,
-		onShowNotification: showNotification,
-		onError: handleOperationError,
-	} );
+    // Use file handling hook
+    const {
+        uploadingFiles,
+        showUploadFeedback,
+        handleFiles,
+        closeUploadFeedback,
+    } = useFileHandling( {
+        onFileDrop,
+        onShowNotification: showNotification,
+        onError: handleOperationError,
+    } );
 
-	// Handler to retry all failed operations
-	const handleRetryAll = useCallback( () => {
-		const operationHandlers = {
-			delete: onDelete,
-			metadata: handleSaveMetadata,
-		};
-		retryAllOperations( operationHandlers );
-	}, [ onDelete, handleSaveMetadata, retryAllOperations ] );
+    // Handler to retry all failed operations
+    const handleRetryAll = useCallback( () => {
+        const operationHandlers = {
+            delete: onDelete,
+            metadata: handleSaveMetadata,
+        };
+        retryAllOperations( operationHandlers );
+    }, [ onDelete, handleSaveMetadata, retryAllOperations ] );
 
-	// Memoize the document table props to prevent unnecessary re-renders
-	const documentTableProps = useMemo(
-		() => ( {
-			documents: localDocuments,
-			selectedDocuments,
-			onSelectDocument,
-			onSelectAll,
-			onDelete: setDeleteDocument,
-			onEdit: handleEditMetadata,
-			onRestore: setRestoreDocument,
-			isDeleting,
-			metadataFields,
-			isSpreadsheetMode,
-			bulkEditedMetadata,
-			onMetadataChange: handleMetadataChange,
-			formatFileSize,
-			documentStatusFilter,
-			searchTerm,
-			searchInput,
-			setSearchInput,
-			performSearch,
-			handleSearchKeyPress,
-			setSearchParams,
-			toggleSpreadsheetMode,
-			hasMetadataChanges,
-			handleSaveBulkChanges,
-			isSavingBulk,
-		} ),
-		[
-			localDocuments,
-			selectedDocuments,
-			onSelectDocument,
-			onSelectAll,
-			isDeleting,
-			metadataFields,
-			isSpreadsheetMode,
-			bulkEditedMetadata,
-			handleEditMetadata,
-			handleMetadataChange,
-			formatFileSize,
-			setDeleteDocument,
-			setRestoreDocument,
-			documentStatusFilter,
-			searchTerm,
-			searchInput,
-			setSearchInput,
-			performSearch,
-			handleSearchKeyPress,
-			setSearchParams,
-			toggleSpreadsheetMode,
-			hasMetadataChanges,
-			handleSaveBulkChanges,
-			isSavingBulk,
-		]
-	);
+    // Memoize the document table props to prevent unnecessary re-renders
+    const documentTableProps = useMemo(
+        () => ( {
+            documents: localDocuments,
+            selectedDocuments,
+            onSelectDocument,
+            onSelectAll,
+            onDelete: setDeleteDocument,
+            onEdit: handleEditMetadata,
+            onRestore: setRestoreDocument,
+            isDeleting,
+            metadataFields,
+            isSpreadsheetMode,
+            bulkEditedMetadata,
+            onMetadataChange: handleMetadataChange,
+            formatFileSize,
+            documentStatusFilter,
+            searchTerm,
+            searchInput,
+            setSearchInput,
+            performSearch,
+            handleSearchKeyPress,
+            setSearchParams,
+            toggleSpreadsheetMode,
+            hasMetadataChanges,
+            handleSaveBulkChanges,
+            isSavingBulk,
+        } ),
+        [
+            localDocuments,
+            selectedDocuments,
+            onSelectDocument,
+            onSelectAll,
+            isDeleting,
+            metadataFields,
+            isSpreadsheetMode,
+            bulkEditedMetadata,
+            handleEditMetadata,
+            handleMetadataChange,
+            formatFileSize,
+            setDeleteDocument,
+            setRestoreDocument,
+            documentStatusFilter,
+            searchTerm,
+            searchInput,
+            setSearchInput,
+            performSearch,
+            handleSearchKeyPress,
+            setSearchParams,
+            toggleSpreadsheetMode,
+            hasMetadataChanges,
+            handleSaveBulkChanges,
+            isSavingBulk,
+        ]
+    );
 
-	const handleFilesWithLog = ( files ) => {
-		handleFiles( files );
-	};
+    const handleFilesWithLog = ( files ) => {
+        handleFiles( files );
+    };
 
-	// Helper functions to avoid nested ternary expressions
-	const getSingleDeleteButtonText = () => {
-		if ( isDeleting ) {
-			return isTrashView( documentStatusFilter )
-				? __( 'Deleting…', 'bcgov-design-system' )
-				: __( 'Trashing…', 'bcgov-design-system' );
-		}
-		return isTrashView( documentStatusFilter )
-			? __( 'Delete Permanently', 'bcgov-design-system' )
-			: __( 'Trash', 'bcgov-design-system' );
-	};
+    // Helper functions to avoid nested ternary expressions
+    const getSingleDeleteButtonText = () => {
+        if ( isDeleting ) {
+            return isTrashView( documentStatusFilter )
+                ? __( 'Deleting…', 'bcgov-design-system' )
+                : __( 'Trashing…', 'bcgov-design-system' );
+        }
+        return isTrashView( documentStatusFilter )
+            ? __( 'Delete Permanently', 'bcgov-design-system' )
+            : __( 'Trash', 'bcgov-design-system' );
+    };
 
-	const getBulkDeleteButtonText = () => {
-		if ( isMultiDeleting ) {
-			return isTrashView( documentStatusFilter )
-				? __( 'Deleting…', 'bcgov-design-system' )
-				: __( 'Trashing…', 'bcgov-design-system' );
-		}
-		return isTrashView( documentStatusFilter )
-			? __( 'Delete Selected Permanently', 'bcgov-design-system' )
-			: __( 'Trash Selected', 'bcgov-design-system' );
-	};
+    const getBulkDeleteButtonText = () => {
+        if ( isMultiDeleting ) {
+            return isTrashView( documentStatusFilter )
+                ? __( 'Deleting…', 'bcgov-design-system' )
+                : __( 'Trashing…', 'bcgov-design-system' );
+        }
+        return isTrashView( documentStatusFilter )
+            ? __( 'Delete Selected Permanently', 'bcgov-design-system' )
+            : __( 'Trash Selected', 'bcgov-design-system' );
+    };
 
-	// Counts of all untrashed and trashed documents
-	const { totalDocumentCount, trashedCount } = useMemo( () => {
-		// Count all statuses except 'trash'
-		const total = Object.entries( statusCounts ).reduce(
-			( acc, [ key, val ] ) => {
-				if ( key !== 'trash' ) {
-					return acc + Number( val || 0 );
-				}
-				return acc;
-			},
-			0
-		);
+    // Counts of all untrashed and trashed documents
+    const { totalDocumentCount, trashedCount } = useMemo( () => {
+        // Count all statuses except 'trash'
+        const total = Object.entries( statusCounts ).reduce(
+            ( acc, [ key, val ] ) => {
+                if ( key !== 'trash' ) {
+                    return acc + Number( val || 0 );
+                }
+                return acc;
+            },
+            0
+        );
 
-		// Trash count
-		const trash = Number( statusCounts.trash || 0 );
+        // Trash count
+        const trash = Number( statusCounts.trash || 0 );
 
-		return {
-			totalDocumentCount: total,
-			trashedCount: trash,
-		};
-	}, [ statusCounts ] );
+        return {
+            totalDocumentCount: total,
+            trashedCount: trash,
+        };
+    }, [ statusCounts ] );
 
-	return (
-		<ErrorBoundary>
-			<div className="document-list">
-				<RetryNotice
-					failedOperations={ failedOperations }
-					onRetryAll={ handleRetryAll }
-				/>
+    return (
+        <ErrorBoundary>
+            <div className="document-list">
+                <RetryNotice
+                    failedOperations={ failedOperations }
+                    onRetryAll={ handleRetryAll }
+                />
 
-				<div className="document-list__actions">
-					<div className="document-list__left-actions">
-						{ /* Delete button moved to table actions section */ }
-					</div>
-					<div className="document-list__right-actions">
-						<UploadArea onFilesSelected={ handleFilesWithLog } />
-					</div>
-				</div>
+                <div className="document-list__actions">
+                    <div className="document-list__left-actions">
+                        { /* Delete button moved to table actions section */ }
+                    </div>
+                    <div className="document-list__right-actions">
+                        <UploadArea onFilesSelected={ handleFilesWithLog } />
+                    </div>
+                </div>
 
-				<ul className="subsubsub document-status-filters">
-					<li className="all">
-						<button
-							type="button"
-							className={
-								isAllView( documentStatusFilter )
-									? 'current'
-									: ''
-							}
-							onClick={ () => {
-								if ( onStatusFilterChange ) {
-									onStatusFilterChange( 'all' );
-								}
-							} }
-						>
-							{ __( 'All', 'bcgov-design-system' ) }{ ' ' }
-							<span className="count">
-								( { totalDocumentCount } )
-							</span>
-						</button>
-					</li>
-					<li className="trash">
-						<span className="separator"> | </span>
-						<button
-							type="button"
-							className={
-								isTrashView( documentStatusFilter )
-									? 'current'
-									: ''
-							}
-							onClick={ () => {
-								if ( onStatusFilterChange ) {
-									onStatusFilterChange( 'trash' );
-								}
-							} }
-						>
-							{ __( 'Trash', 'bcgov-design-system' ) }{ ' ' }
-							<span className="count">( { trashedCount } )</span>
-						</button>
-					</li>
-				</ul>
+                <ul className="subsubsub document-status-filters">
+                    <li className="all">
+                        <button
+                            type="button"
+                            className={
+                                isAllView( documentStatusFilter )
+                                    ? 'current'
+                                    : ''
+                            }
+                            onClick={ () => {
+                                if ( onStatusFilterChange ) {
+                                    onStatusFilterChange( 'all' );
+                                }
+                            } }
+                        >
+                            { __( 'All', 'bcgov-design-system' ) }{ ' ' }
+                            <span className="count">
+                                ( { totalDocumentCount } )
+                            </span>
+                        </button>
+                    </li>
+                    <li className="trash">
+                        <span className="separator"> | </span>
+                        <button
+                            type="button"
+                            className={
+                                isTrashView( documentStatusFilter )
+                                    ? 'current'
+                                    : ''
+                            }
+                            onClick={ () => {
+                                if ( onStatusFilterChange ) {
+                                    onStatusFilterChange( 'trash' );
+                                }
+                            } }
+                        >
+                            { __( 'Trash', 'bcgov-design-system' ) }{ ' ' }
+                            <span className="count">( { trashedCount } )</span>
+                        </button>
+                    </li>
+                </ul>
 
-				<div className="document-list__table-actions">
-					<div className="action-buttons-container">
-						{ isTrashView( documentStatusFilter ) &&
-							selectedDocuments.length > 0 && (
-								<Button
-									className="doc-repo-button save-button bulk-restore-button"
-									onClick={ openBulkRestoreConfirm }
-									disabled={ isMultiRestoring }
-								>
-									{ sprintf(
-										/* translators: %d: number of selected documents */
-										__(
-											'Restore Selected (%d)',
-											'bcgov-design-system'
-										),
-										selectedDocuments.length
-									) }
-								</Button>
-							) }
+                <div className="document-list__table-actions">
+                    <div className="action-buttons-container">
+                        { isTrashView( documentStatusFilter ) &&
+                            selectedDocuments.length > 0 && (
+                                <Button
+                                    className="doc-repo-button save-button bulk-restore-button"
+                                    onClick={ openBulkRestoreConfirm }
+                                    disabled={ isMultiRestoring }
+                                >
+                                    { sprintf(
+                                        /* translators: %d: number of selected documents */
+                                        __(
+                                            'Restore Selected (%d)',
+                                            'bcgov-design-system'
+                                        ),
+                                        selectedDocuments.length
+                                    ) }
+                                </Button>
+                            ) }
 
-						{ selectedDocuments.length > 0 && (
-							<Button
-								className="doc-repo-button delete-button bulk-delete-button"
-								onClick={ openBulkDeleteConfirm }
-								disabled={ isMultiDeleting }
-							>
-								{ isTrashView( documentStatusFilter )
-									? sprintf(
-											/* translators: %d: number of selected documents */
-											__(
-												'Delete Selected Permanently (%d)',
-												'bcgov-design-system'
-											),
-											selectedDocuments.length
-									  )
-									: sprintf(
-											/* translators: %d: number of selected documents */
-											__(
-												'Trash Selected (%d)',
-												'bcgov-design-system'
-											),
-											selectedDocuments.length
-									  ) }
-							</Button>
-						) }
-					</div>
-				</div>
+                        { selectedDocuments.length > 0 && (
+                            <Button
+                                className="doc-repo-button delete-button bulk-delete-button"
+                                onClick={ openBulkDeleteConfirm }
+                                disabled={ isMultiDeleting }
+                            >
+                                { isTrashView( documentStatusFilter )
+                                    ? sprintf(
+                                          /* translators: %d: number of selected documents */
+                                          __(
+                                              'Delete Selected Permanently (%d)',
+                                              'bcgov-design-system'
+                                          ),
+                                          selectedDocuments.length
+                                      )
+                                    : sprintf(
+                                          /* translators: %d: number of selected documents */
+                                          __(
+                                              'Trash Selected (%d)',
+                                              'bcgov-design-system'
+                                          ),
+                                          selectedDocuments.length
+                                      ) }
+                            </Button>
+                        ) }
+                    </div>
+                </div>
 
-				<DocumentTable { ...documentTableProps } />
+                <DocumentTable { ...documentTableProps } />
 
-				<PaginationControls
-					currentPage={ currentPage }
-					totalPages={ totalPages }
-					onPageChange={ onPageChange }
-					isLoading={ isLoading }
-				/>
+                <PaginationControls
+                    currentPage={ currentPage }
+                    totalPages={ totalPages }
+                    onPageChange={ onPageChange }
+                    isLoading={ isLoading }
+                />
 
-				{ showUploadFeedback && (
-					<UploadFeedback
-						uploadingFiles={ uploadingFiles }
-						showUploadFeedback={ showUploadFeedback }
-						onClose={ closeUploadFeedback }
-					/>
-				) }
+                { showUploadFeedback && (
+                    <UploadFeedback
+                        uploadingFiles={ uploadingFiles }
+                        showUploadFeedback={ showUploadFeedback }
+                        onClose={ closeUploadFeedback }
+                    />
+                ) }
 
-				{ deleteDocument && (
-					<MetadataModal
-						title={
-							isTrashView( documentStatusFilter )
-								? __(
-										'Delete Document Permanently',
-										'bcgov-design-system'
-								  )
-								: __( 'Trash Document', 'bcgov-design-system' )
-						}
-						isOpen={ !! deleteDocument }
-						onClose={ () => setDeleteDocument( null ) }
-						onSave={ () => handleSingleDelete( deleteDocument.id ) }
-						isSaving={ isDeleting }
-						isDisabled={ false }
-						saveButtonText={ getSingleDeleteButtonText() }
-						saveButtonClassName="doc-repo-button delete-button"
-					>
-						<div className="delete-confirmation-content">
-							<div className="delete-warning">
-								{ isTrashView( documentStatusFilter )
-									? __(
-											'Are you sure you want to delete this document? This action cannot be undone.',
-											'bcgov-design-system'
-									  )
-									: __(
-											'Are you sure you want to trash this document?',
-											'bcgov-design-system'
-									  ) }
-							</div>
-							<div className="documents-to-delete">
-								<h4>
-									{ isTrashView( documentStatusFilter )
-										? __(
-												'Document to be deleted:',
-												'bcgov-design-system'
-										  )
-										: __(
-												'Document to be trashed:',
-												'bcgov-design-system'
-										  ) }
-								</h4>
-								<ul>
-									<li>{ deleteDocument.title }</li>
-								</ul>
-							</div>
-						</div>
-					</MetadataModal>
-				) }
+                { deleteDocument && (
+                    <MetadataModal
+                        title={
+                            isTrashView( documentStatusFilter )
+                                ? __(
+                                      'Delete Document Permanently',
+                                      'bcgov-design-system'
+                                  )
+                                : __( 'Trash Document', 'bcgov-design-system' )
+                        }
+                        isOpen={ !! deleteDocument }
+                        onClose={ () => setDeleteDocument( null ) }
+                        onSave={ () => handleSingleDelete( deleteDocument.id ) }
+                        isSaving={ isDeleting }
+                        isDisabled={ false }
+                        saveButtonText={ getSingleDeleteButtonText() }
+                        saveButtonClassName="doc-repo-button delete-button"
+                    >
+                        <div className="delete-confirmation-content">
+                            <div className="delete-warning">
+                                { isTrashView( documentStatusFilter )
+                                    ? __(
+                                          'Are you sure you want to delete this document? This action cannot be undone.',
+                                          'bcgov-design-system'
+                                      )
+                                    : __(
+                                          'Are you sure you want to trash this document?',
+                                          'bcgov-design-system'
+                                      ) }
+                            </div>
+                            <div className="documents-to-delete">
+                                <h4>
+                                    { isTrashView( documentStatusFilter )
+                                        ? __(
+                                              'Document to be deleted:',
+                                              'bcgov-design-system'
+                                          )
+                                        : __(
+                                              'Document to be trashed:',
+                                              'bcgov-design-system'
+                                          ) }
+                                </h4>
+                                <ul>
+                                    <li>{ deleteDocument.title }</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </MetadataModal>
+                ) }
 
-				{ restoreDocument && (
-					<MetadataModal
-						title={ __(
-							'Restore Document',
-							'bcgov-design-system'
-						) }
-						isOpen={ !! restoreDocument }
-						onClose={ () => setRestoreDocument( null ) }
-						onSave={ () =>
-							handleSingleRestore( restoreDocument.id )
-						}
-						isSaving={ isDeleting }
-						isDisabled={ false }
-						saveButtonText={ __(
-							'Restore',
-							'bcgov-design-system'
-						) }
-						saveButtonClassName="doc-repo-button save-button"
-					>
-						<div className="restore-confirmation-content">
-							<div className="restore-warning">
-								{ __(
-									'Are you sure you want to restore this document?',
-									'bcgov-design-system'
-								) }
-							</div>
-							<div className="documents-to-restore">
-								<h4>
-									{ __(
-										'Document to be restored:',
-										'bcgov-design-system'
-									) }
-								</h4>
-								<ul>
-									<li>{ restoreDocument.title }</li>
-								</ul>
-							</div>
-						</div>
-					</MetadataModal>
-				) }
+                { restoreDocument && (
+                    <MetadataModal
+                        title={ __(
+                            'Restore Document',
+                            'bcgov-design-system'
+                        ) }
+                        isOpen={ !! restoreDocument }
+                        onClose={ () => setRestoreDocument( null ) }
+                        onSave={ () =>
+                            handleSingleRestore( restoreDocument.id )
+                        }
+                        isSaving={ isDeleting }
+                        isDisabled={ false }
+                        saveButtonText={ __(
+                            'Restore',
+                            'bcgov-design-system'
+                        ) }
+                        saveButtonClassName="doc-repo-button save-button"
+                    >
+                        <div className="restore-confirmation-content">
+                            <div className="restore-warning">
+                                { __(
+                                    'Are you sure you want to restore this document?',
+                                    'bcgov-design-system'
+                                ) }
+                            </div>
+                            <div className="documents-to-restore">
+                                <h4>
+                                    { __(
+                                        'Document to be restored:',
+                                        'bcgov-design-system'
+                                    ) }
+                                </h4>
+                                <ul>
+                                    <li>{ restoreDocument.title }</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </MetadataModal>
+                ) }
 
-				{ /* Bulk Delete Confirmation Modal */ }
-				{ bulkDeleteConfirmOpen && (
-					<MetadataModal
-						title={
-							isTrashView( documentStatusFilter )
-								? __(
-										'Delete Selected Documents Permanently',
-										'bcgov-design-system'
-								  )
-								: __(
-										'Trash Selected Documents',
-										'bcgov-design-system'
-								  )
-						}
-						isOpen={ bulkDeleteConfirmOpen }
-						onClose={ closeBulkDeleteConfirm }
-						onSave={ () => handleBulkDelete( selectedDocuments ) }
-						isSaving={ isMultiDeleting }
-						isDisabled={ false }
-						saveButtonText={ getBulkDeleteButtonText() }
-						saveButtonClassName="doc-repo-button delete-button"
-					>
-						<div className="delete-confirmation-content">
-							<div className="delete-warning">
-								{ isTrashView( documentStatusFilter )
-									? __(
-											'Are you sure you want to delete the selected documents? This action cannot be undone.',
-											'bcgov-design-system'
-									  )
-									: __(
-											'Are you sure you want to trash the selected documents?',
-											'bcgov-design-system'
-									  ) }
-							</div>
-							<div className="documents-to-delete">
-								<h4>
-									{ isTrashView( documentStatusFilter )
-										? sprintf(
-												/* translators: %d: number of selected documents */
-												__(
-													'Documents to be deleted (%d):',
-													'bcgov-design-system'
-												),
-												selectedDocuments.length
-										  )
-										: sprintf(
-												/* translators: %d: number of selected documents */
-												__(
-													'Documents to be trashed (%d):',
-													'bcgov-design-system'
-												),
-												selectedDocuments.length
-										  ) }
-								</h4>
-								<ul>
-									{ localDocuments
-										.filter( ( doc ) =>
-											selectedDocuments.includes( doc.id )
-										)
-										.map( ( doc ) => (
-											<li key={ doc.id }>
-												{ doc.title }
-											</li>
-										) ) }
-								</ul>
-							</div>
-						</div>
-					</MetadataModal>
-				) }
+                { /* Bulk Delete Confirmation Modal */ }
+                { bulkDeleteConfirmOpen && (
+                    <MetadataModal
+                        title={
+                            isTrashView( documentStatusFilter )
+                                ? __(
+                                      'Delete Selected Documents Permanently',
+                                      'bcgov-design-system'
+                                  )
+                                : __(
+                                      'Trash Selected Documents',
+                                      'bcgov-design-system'
+                                  )
+                        }
+                        isOpen={ bulkDeleteConfirmOpen }
+                        onClose={ closeBulkDeleteConfirm }
+                        onSave={ () => handleBulkDelete( selectedDocuments ) }
+                        isSaving={ isMultiDeleting }
+                        isDisabled={ false }
+                        saveButtonText={ getBulkDeleteButtonText() }
+                        saveButtonClassName="doc-repo-button delete-button"
+                    >
+                        <div className="delete-confirmation-content">
+                            <div className="delete-warning">
+                                { isTrashView( documentStatusFilter )
+                                    ? __(
+                                          'Are you sure you want to delete the selected documents? This action cannot be undone.',
+                                          'bcgov-design-system'
+                                      )
+                                    : __(
+                                          'Are you sure you want to trash the selected documents?',
+                                          'bcgov-design-system'
+                                      ) }
+                            </div>
+                            <div className="documents-to-delete">
+                                <h4>
+                                    { isTrashView( documentStatusFilter )
+                                        ? sprintf(
+                                              /* translators: %d: number of selected documents */
+                                              __(
+                                                  'Documents to be deleted (%d):',
+                                                  'bcgov-design-system'
+                                              ),
+                                              selectedDocuments.length
+                                          )
+                                        : sprintf(
+                                              /* translators: %d: number of selected documents */
+                                              __(
+                                                  'Documents to be trashed (%d):',
+                                                  'bcgov-design-system'
+                                              ),
+                                              selectedDocuments.length
+                                          ) }
+                                </h4>
+                                <ul>
+                                    { localDocuments
+                                        .filter( ( doc ) =>
+                                            selectedDocuments.includes( doc.id )
+                                        )
+                                        .map( ( doc ) => (
+                                            <li key={ doc.id }>
+                                                { doc.title }
+                                            </li>
+                                        ) ) }
+                                </ul>
+                            </div>
+                        </div>
+                    </MetadataModal>
+                ) }
 
-				{ bulkRestoreConfirmOpen && (
-					<MetadataModal
-						title={ __(
-							'Restore Selected Documents',
-							'bcgov-design-system'
-						) }
-						isOpen={ bulkRestoreConfirmOpen }
-						onClose={ closeBulkRestoreConfirm }
-						onSave={ () => handleBulkRestore( selectedDocuments ) }
-						isSaving={ isMultiRestoring }
-						isDisabled={ false }
-						saveButtonText={
-							isMultiRestoring
-								? __( 'Restoring…', 'bcgov-design-system' )
-								: __(
-										'Restore Selected',
-										'bcgov-design-system'
-								  )
-						}
-						saveButtonClassName="doc-repo-button save-button"
-					>
-						<div className="restore-confirmation-content">
-							<div className="restore-warning">
-								{ __(
-									'Are you sure you want to restore the selected documents?',
-									'bcgov-design-system'
-								) }
-							</div>
-							<div className="documents-to-restore">
-								<h4>
-									{ sprintf(
-										/* translators: %d: number of selected documents */
-										__(
-											'Documents to be restored (%d):',
-											'bcgov-design-system'
-										),
-										selectedDocuments.length
-									) }
-								</h4>
-								<ul>
-									{ localDocuments
-										.filter( ( doc ) =>
-											selectedDocuments.includes( doc.id )
-										)
-										.map( ( doc ) => (
-											<li key={ doc.id }>
-												{ doc.title }
-											</li>
-										) ) }
-								</ul>
-							</div>
-						</div>
-					</MetadataModal>
-				) }
+                { bulkRestoreConfirmOpen && (
+                    <MetadataModal
+                        title={ __(
+                            'Restore Selected Documents',
+                            'bcgov-design-system'
+                        ) }
+                        isOpen={ bulkRestoreConfirmOpen }
+                        onClose={ closeBulkRestoreConfirm }
+                        onSave={ () => handleBulkRestore( selectedDocuments ) }
+                        isSaving={ isMultiRestoring }
+                        isDisabled={ false }
+                        saveButtonText={
+                            isMultiRestoring
+                                ? __( 'Restoring…', 'bcgov-design-system' )
+                                : __(
+                                      'Restore Selected',
+                                      'bcgov-design-system'
+                                  )
+                        }
+                        saveButtonClassName="doc-repo-button save-button"
+                    >
+                        <div className="restore-confirmation-content">
+                            <div className="restore-warning">
+                                { __(
+                                    'Are you sure you want to restore the selected documents?',
+                                    'bcgov-design-system'
+                                ) }
+                            </div>
+                            <div className="documents-to-restore">
+                                <h4>
+                                    { sprintf(
+                                        /* translators: %d: number of selected documents */
+                                        __(
+                                            'Documents to be restored (%d):',
+                                            'bcgov-design-system'
+                                        ),
+                                        selectedDocuments.length
+                                    ) }
+                                </h4>
+                                <ul>
+                                    { localDocuments
+                                        .filter( ( doc ) =>
+                                            selectedDocuments.includes( doc.id )
+                                        )
+                                        .map( ( doc ) => (
+                                            <li key={ doc.id }>
+                                                { doc.title }
+                                            </li>
+                                        ) ) }
+                                </ul>
+                            </div>
+                        </div>
+                    </MetadataModal>
+                ) }
 
-				{ editingMetadata && (
-					<MetadataModal
-						title={ __(
-							'Edit Document Metadata',
-							'bcgov-design-system'
-						) }
-						isOpen={ !! editingMetadata }
-						onClose={ () => handleEditMetadata( null ) }
-						onSave={ handleSaveMetadata }
-						isSaving={ isSavingMetadata }
-						isDisabled={ ! hasMetadataChanged }
-						saveButtonText={
-							isSavingMetadata
-								? __( 'Saving…', 'bcgov-design-system' )
-								: __( 'Save Changes', 'bcgov-design-system' )
-						}
-						saveButtonClassName="doc-repo-button save-button"
-					>
-						<div className="editable-metadata">
-							{ /* Title field */ }
-							<div className="metadata-field">
-								<label htmlFor="title">
-									{ __( 'Title', 'bcgov-design-system' ) }
-								</label>
-								<TextControl
-									id="title"
-									value={ editedValues.title || '' }
-									onChange={ ( value ) => {
-										updateEditedField( 'title', value );
-									} }
-									placeholder={ __(
-										'Enter title…',
-										'bcgov-design-system'
-									) }
-								/>
-							</div>
+                { editingMetadata && (
+                    <MetadataModal
+                        title={ __(
+                            'Edit Document Metadata',
+                            'bcgov-design-system'
+                        ) }
+                        isOpen={ !! editingMetadata }
+                        onClose={ () => handleEditMetadata( null ) }
+                        onSave={ handleSaveMetadata }
+                        isSaving={ isSavingMetadata }
+                        isDisabled={ ! hasMetadataChanged }
+                        saveButtonText={
+                            isSavingMetadata
+                                ? __( 'Saving…', 'bcgov-design-system' )
+                                : __( 'Save Changes', 'bcgov-design-system' )
+                        }
+                        saveButtonClassName="doc-repo-button save-button"
+                    >
+                        <div className="editable-metadata">
+                            { /* Title field */ }
+                            <div className="metadata-field">
+                                <label htmlFor="title">
+                                    { __( 'Title', 'bcgov-design-system' ) }
+                                </label>
+                                <TextControl
+                                    id="title"
+                                    value={ editedValues.title || '' }
+                                    onChange={ ( value ) => {
+                                        updateEditedField( 'title', value );
+                                    } }
+                                    placeholder={ __(
+                                        'Enter title…',
+                                        'bcgov-design-system'
+                                    ) }
+                                />
+                            </div>
 
-							{ /* Excerpt field */ }
-							<div className="metadata-field">
-								<label htmlFor="excerpt">
-									{ __( 'Excerpt', 'bcgov-design-system' ) }
-								</label>
-								<TextareaControl
-									id="excerpt"
-									value={ editedValues.excerpt || '' }
-									onChange={ ( value ) => {
-										updateEditedField( 'excerpt', value );
-										// Auto-resize the textarea
-										setTimeout( () => {
-											const textarea =
-												document.getElementById(
-													'excerpt'
-												);
-											if ( textarea ) {
-												textarea.style.height = 'auto';
-												textarea.style.height =
-													textarea.scrollHeight +
-													'px';
-											}
-										}, 0 );
-									} }
-									placeholder={ __(
-										'Enter excerpt…',
-										'bcgov-design-system'
-									) }
-									rows={ 3 }
-									className="excerpt-textarea"
-								/>
-							</div>
+                            { /* Excerpt field */ }
+                            <div className="metadata-field">
+                                <label htmlFor="excerpt">
+                                    { __( 'Excerpt', 'bcgov-design-system' ) }
+                                </label>
+                                <TextareaControl
+                                    id="excerpt"
+                                    value={ editedValues.excerpt || '' }
+                                    onChange={ ( value ) => {
+                                        updateEditedField( 'excerpt', value );
+                                        // Auto-resize the textarea
+                                        setTimeout( () => {
+                                            const textarea =
+                                                document.getElementById(
+                                                    'excerpt'
+                                                );
+                                            if ( textarea ) {
+                                                textarea.style.height = 'auto';
+                                                textarea.style.height =
+                                                    textarea.scrollHeight +
+                                                    'px';
+                                            }
+                                        }, 0 );
+                                    } }
+                                    placeholder={ __(
+                                        'Enter excerpt…',
+                                        'bcgov-design-system'
+                                    ) }
+                                    rows={ 3 }
+                                    className="excerpt-textarea"
+                                />
+                            </div>
 
-							{ metadataFields.map( ( field ) => (
-								<div
-									key={ field.id }
-									className="metadata-field"
-								>
-									<label htmlFor={ field.id }>
-										{ field.label }
-									</label>
-									{ ( () => {
-										let inputElement = null;
+                            { metadataFields.map( ( field ) => (
+                                <div
+                                    key={ field.id }
+                                    className="metadata-field"
+                                >
+                                    <label htmlFor={ field.id }>
+                                        { field.label }
+                                    </label>
+                                    { ( () => {
+                                        let inputElement = null;
 
-										if ( field.type === 'taxonomy' ) {
-											if ( field.multiple ) {
-												// Coerce edited value into an array for the token field.
-												let valueArray;
-												const raw =
-													editedValues[ field.id ];
-												if ( Array.isArray( raw ) ) {
-													valueArray = raw;
-												} else if ( raw ) {
-													valueArray = [ raw ];
-												} else {
-													valueArray = [];
-												}
+                                        if ( 'taxonomy' === field.type ) {
+                                            if ( field.multiple ) {
+                                                // Coerce edited value into an array for the token field.
+                                                let valueArray;
+                                                const raw =
+                                                    editedValues[ field.id ];
+                                                if ( Array.isArray( raw ) ) {
+                                                    valueArray = raw;
+                                                } else if ( raw ) {
+                                                    valueArray = [ raw ];
+                                                } else {
+                                                    valueArray = [];
+                                                }
 
-												inputElement = (
-													<TaxonomyTokenField
-														id={ field.id }
-														label={ field.label }
-														value={ valueArray }
-														options={
-															field.options || []
-														}
-														onChange={ (
-															selectedValues
-														) =>
-															updateEditedField(
-																field.id,
-																selectedValues
-															)
-														}
-														placeholder={ __(
-															'Type to search or select…',
-															'bcgov-design-system'
-														) }
-														required={
-															field.required
-														}
-													/>
-												);
-											} else {
-												inputElement = (
-													<SelectControl
-														id={ field.id }
-														value={
-															editedValues[
-																field.id
-															] || ''
-														}
-														options={ [
-															{
-																label: __(
-																	'Select…',
-																	'bcgov-design-system'
-																),
-																value: '',
-															},
-															...(
-																field.options ||
-																[]
-															).map(
-																( option ) => {
-																	if (
-																		typeof option ===
-																		'string'
-																	) {
-																		return {
-																			label: option,
-																			value: option,
-																		};
-																	}
-																	return {
-																		label:
-																			option.label ||
-																			option.name,
-																		value:
-																			option.value ||
-																			option.id,
-																	};
-																}
-															),
-														] }
-														onChange={ ( value ) =>
-															updateEditedField(
-																field.id,
-																value
-															)
-														}
-													/>
-												);
-											}
-										} else {
-											inputElement = (
-												<TextControl
-													id={ field.id }
-													type={
-														field.type === 'date'
-															? 'date'
-															: 'text'
-													}
-													value={
-														editedValues[
-															field.id
-														] || ''
-													}
-													onChange={ ( value ) =>
-														updateEditedField(
-															field.id,
-															value
-														)
-													}
-												/>
-											);
-										}
+                                                inputElement = (
+                                                    <TaxonomyTokenField
+                                                        id={ field.id }
+                                                        label={ field.label }
+                                                        value={ valueArray }
+                                                        options={
+                                                            field.options || []
+                                                        }
+                                                        onChange={ (
+                                                            selectedValues
+                                                        ) =>
+                                                            updateEditedField(
+                                                                field.id,
+                                                                selectedValues
+                                                            )
+                                                        }
+                                                        placeholder={ __(
+                                                            'Type to search or select…',
+                                                            'bcgov-design-system'
+                                                        ) }
+                                                        required={
+                                                            field.required
+                                                        }
+                                                    />
+                                                );
+                                            } else {
+                                                inputElement = (
+                                                    <SelectControl
+                                                        id={ field.id }
+                                                        value={
+                                                            editedValues[
+                                                                field.id
+                                                            ] || ''
+                                                        }
+                                                        options={ [
+                                                            {
+                                                                label: __(
+                                                                    'Select…',
+                                                                    'bcgov-design-system'
+                                                                ),
+                                                                value: '',
+                                                            },
+                                                            ...(
+                                                                field.options ||
+                                                                []
+                                                            ).map(
+                                                                ( option ) => {
+                                                                    if (
+                                                                        'string' ===
+                                                                        typeof option
+                                                                    ) {
+                                                                        return {
+                                                                            label: option,
+                                                                            value: option,
+                                                                        };
+                                                                    }
+                                                                    return {
+                                                                        label:
+                                                                            option.label ||
+                                                                            option.name,
+                                                                        value:
+                                                                            option.value ||
+                                                                            option.id,
+                                                                    };
+                                                                }
+                                                            ),
+                                                        ] }
+                                                        onChange={ ( value ) =>
+                                                            updateEditedField(
+                                                                field.id,
+                                                                value
+                                                            )
+                                                        }
+                                                    />
+                                                );
+                                            }
+                                        } else {
+                                            inputElement = (
+                                                <TextControl
+                                                    id={ field.id }
+                                                    type={
+                                                        'date' === field.type
+                                                            ? 'date'
+                                                            : 'text'
+                                                    }
+                                                    value={
+                                                        editedValues[
+                                                            field.id
+                                                        ] || ''
+                                                    }
+                                                    onChange={ ( value ) =>
+                                                        updateEditedField(
+                                                            field.id,
+                                                            value
+                                                        )
+                                                    }
+                                                />
+                                            );
+                                        }
 
-										return inputElement;
-									} )() }
-									{ metadataErrors[ field.id ] && (
-										<div className="metadata-error">
-											{ metadataErrors[ field.id ] }
-										</div>
-									) }
-								</div>
-							) ) }
-						</div>
-						<div className="non-editable-metadata">
-							<h3>
-								{ __(
-									'Document Information',
-									'bcgov-design-system'
-								) }
-							</h3>
-							<div className="metadata-field">
-								<label htmlFor="document-slug">
-									{ __(
-										'Document slug',
-										'bcgov-design-system'
-									) }
-								</label>
-								<div id="document-slug" className="field-value">
-									{ editingMetadata.slug ||
-										editingMetadata.post_name ||
-										__(
-											'Not available',
-											'bcgov-design-system'
-										) }
-								</div>
-							</div>
-							<div className="metadata-field">
-								<label htmlFor="document-filename">
-									{ __( 'Filename', 'bcgov-design-system' ) }
-								</label>
-								<div
-									id="document-filename"
-									className="field-value"
-								>
-									{ (
-										editingMetadata.metadata
-											?.document_file_name ||
-										editingMetadata.filename ||
-										editingMetadata.title ||
-										''
-									).replace( /\.pdf$/i, '' ) ||
-										__(
-											'Not available',
-											'bcgov-design-system'
-										) }
-								</div>
-							</div>
-							<div className="metadata-field">
-								<label htmlFor="document-file-type">
-									{ __( 'File Type', 'bcgov-design-system' ) }
-								</label>
-								<div
-									id="document-file-type"
-									className="field-value"
-								>
-									{ editingMetadata.metadata
-										?.document_file_type || 'PDF' }
-								</div>
-							</div>
-							<div className="metadata-field">
-								<label htmlFor="document-file-size">
-									{ __( 'File Size', 'bcgov-design-system' ) }
-								</label>
-								<div
-									id="document-file-size"
-									className="field-value"
-								>
-									{ editingMetadata.metadata
-										?.document_file_size
-										? formatFileSize(
-												parseInt(
-													editingMetadata.metadata
-														.document_file_size
-												)
-										  )
-										: __(
-												'Not available',
-												'bcgov-design-system'
-										  ) }
-								</div>
-							</div>
-						</div>
-					</MetadataModal>
-				) }
-			</div>
-		</ErrorBoundary>
-	);
+                                        return inputElement;
+                                    } )() }
+                                    { metadataErrors[ field.id ] && (
+                                        <div className="metadata-error">
+                                            { metadataErrors[ field.id ] }
+                                        </div>
+                                    ) }
+                                </div>
+                            ) ) }
+                        </div>
+                        <div className="non-editable-metadata">
+                            <h3>
+                                { __(
+                                    'Document Information',
+                                    'bcgov-design-system'
+                                ) }
+                            </h3>
+                            <div className="metadata-field">
+                                <label htmlFor="document-slug">
+                                    { __(
+                                        'Document slug',
+                                        'bcgov-design-system'
+                                    ) }
+                                </label>
+                                <div id="document-slug" className="field-value">
+                                    { editingMetadata.slug ||
+                                        editingMetadata.post_name ||
+                                        __(
+                                            'Not available',
+                                            'bcgov-design-system'
+                                        ) }
+                                </div>
+                            </div>
+                            <div className="metadata-field">
+                                <label htmlFor="document-filename">
+                                    { __( 'Filename', 'bcgov-design-system' ) }
+                                </label>
+                                <div
+                                    id="document-filename"
+                                    className="field-value"
+                                >
+                                    { (
+                                        editingMetadata.metadata
+                                            ?.document_file_name ||
+                                        editingMetadata.filename ||
+                                        editingMetadata.title ||
+                                        ''
+                                    ).replace( /\.pdf$/i, '' ) ||
+                                        __(
+                                            'Not available',
+                                            'bcgov-design-system'
+                                        ) }
+                                </div>
+                            </div>
+                            <div className="metadata-field">
+                                <label htmlFor="document-file-type">
+                                    { __( 'File Type', 'bcgov-design-system' ) }
+                                </label>
+                                <div
+                                    id="document-file-type"
+                                    className="field-value"
+                                >
+                                    { editingMetadata.metadata
+                                        ?.document_file_type || 'PDF' }
+                                </div>
+                            </div>
+                            <div className="metadata-field">
+                                <label htmlFor="document-file-size">
+                                    { __( 'File Size', 'bcgov-design-system' ) }
+                                </label>
+                                <div
+                                    id="document-file-size"
+                                    className="field-value"
+                                >
+                                    { editingMetadata.metadata
+                                        ?.document_file_size
+                                        ? formatFileSize(
+                                              parseInt(
+                                                  editingMetadata.metadata
+                                                      .document_file_size
+                                              )
+                                          )
+                                        : __(
+                                              'Not available',
+                                              'bcgov-design-system'
+                                          ) }
+                                </div>
+                            </div>
+                        </div>
+                    </MetadataModal>
+                ) }
+            </div>
+        </ErrorBoundary>
+    );
 };
 
 export default DocumentList;

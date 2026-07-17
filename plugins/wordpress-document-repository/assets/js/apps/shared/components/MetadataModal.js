@@ -1,3 +1,4 @@
+import { JSX } from 'react';
 import { Modal, Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { useCallback } from '@wordpress/element';
@@ -18,77 +19,77 @@ import { useCallback } from '@wordpress/element';
  * @return {JSX.Element|null} Modal component or null if not open
  */
 const MetadataModal = ( {
-	title,
-	isOpen,
-	onClose,
-	onSave,
-	isSaving = false,
-	isDisabled = false,
-	saveButtonText,
-	saveButtonClassName = 'doc-repo-button save-button',
-	children,
+    title,
+    isOpen,
+    onClose,
+    onSave,
+    isSaving = false,
+    isDisabled = false,
+    saveButtonText,
+    saveButtonClassName = 'doc-repo-button save-button',
+    children,
 } ) => {
-	// Create a safe handler for closing the modal that prevents event bubbling
-	const handleClose = useCallback(
-		( e ) => {
-			// Stop propagation to prevent the event from bubbling up
-			if ( e ) {
-				e.preventDefault();
-				e.stopPropagation();
-			}
+    // Create a safe handler for closing the modal that prevents event bubbling
+    const handleClose = useCallback(
+        ( e ) => {
+            // Stop propagation to prevent the event from bubbling up
+            if ( e ) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
 
-			// Call the onClose callback
-			onClose();
-		},
-		[ onClose ]
-	);
+            // Call the onClose callback
+            onClose();
+        },
+        [ onClose ]
+    );
 
-	// Create a safe handler for form submission
-	const handleSubmit = useCallback(
-		( e ) => {
-			e.preventDefault();
-			e.stopPropagation();
-			onSave();
-		},
-		[ onSave ]
-	);
+    // Create a safe handler for form submission
+    const handleSubmit = useCallback(
+        ( e ) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onSave();
+        },
+        [ onSave ]
+    );
 
-	if ( ! isOpen ) {
-		return null;
-	}
+    if ( ! isOpen ) {
+        return null;
+    }
 
-	return (
-		<Modal
-			title={ title }
-			onRequestClose={ handleClose }
-			className="metadata-edit-modal"
-			shouldCloseOnClickOutside={ true }
-			shouldCloseOnEsc={ true }
-		>
-			<form onSubmit={ handleSubmit } className="metadata-edit-form">
-				{ children }
+    return (
+        <Modal
+            title={ title }
+            onRequestClose={ handleClose }
+            className="metadata-edit-modal"
+            shouldCloseOnClickOutside={ true }
+            shouldCloseOnEsc={ true }
+        >
+            <form onSubmit={ handleSubmit } className="metadata-edit-form">
+                { children }
 
-				<div className="modal-actions">
-					<Button
-						onClick={ handleClose }
-						disabled={ isSaving }
-						className="doc-repo-button cancel-button"
-					>
-						{ __( 'Cancel', 'bcgov-design-system' ) }
-					</Button>
-					<Button
-						type="submit"
-						isBusy={ isSaving }
-						disabled={ isSaving || isDisabled }
-						className={ saveButtonClassName }
-					>
-						{ saveButtonText ||
-							__( 'Save Changes', 'bcgov-design-system' ) }
-					</Button>
-				</div>
-			</form>
-		</Modal>
-	);
+                <div className="modal-actions">
+                    <Button
+                        onClick={ handleClose }
+                        disabled={ isSaving }
+                        className="doc-repo-button cancel-button"
+                    >
+                        { __( 'Cancel', 'bcgov-design-system' ) }
+                    </Button>
+                    <Button
+                        type="submit"
+                        isBusy={ isSaving }
+                        disabled={ isSaving || isDisabled }
+                        className={ saveButtonClassName }
+                    >
+                        { saveButtonText ||
+                            __( 'Save Changes', 'bcgov-design-system' ) }
+                    </Button>
+                </div>
+            </form>
+        </Modal>
+    );
 };
 
 export default MetadataModal;

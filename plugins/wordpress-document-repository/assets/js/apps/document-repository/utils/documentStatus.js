@@ -4,7 +4,7 @@
  * @return {boolean} True if the status is 'trash', false otherwise
  */
 export function isTrashView( status ) {
-	return 'trash' === status;
+    return 'trash' === status;
 }
 
 /**
@@ -13,5 +13,5 @@ export function isTrashView( status ) {
  * @return {boolean} True if the status is 'all', false otherwise
  */
 export function isAllView( status ) {
-	return 'all' === status;
+    return 'all' === status;
 }

@@ -1,9 +1,10 @@
+import { JSX } from 'react';
 import {
-	TextControl,
-	SelectControl,
-	TextareaControl,
-	Notice,
-	CheckboxControl,
+    TextControl,
+    SelectControl,
+    TextareaControl,
+    Notice,
+    CheckboxControl,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
@@ -15,9 +16,9 @@ import { __ } from '@wordpress/i18n';
  * @constant {Object} FIELD_TYPES
  */
 const FIELD_TYPES = {
-	text: __( 'Text', 'bcgov-design-system' ),
-	date: __( 'Date', 'bcgov-design-system' ),
-	taxonomy: __( 'Taxonomy', 'bcgov-design-system' ),
+    text: __( 'Text', 'bcgov-design-system' ),
+    date: __( 'Date', 'bcgov-design-system' ),
+    taxonomy: __( 'Taxonomy', 'bcgov-design-system' ),
 };
 
 /**
@@ -34,111 +35,111 @@ const FIELD_TYPES = {
  * @return {JSX.Element} Metadata field form
  */
 const MetadataFieldForm = ( {
-	field,
-	errors,
-	onChange,
-	onOptionsChange,
-	isEdit = false,
+    field,
+    errors,
+    onChange,
+    onOptionsChange,
+    isEdit = false,
 } ) => {
-	// Format options array to string for textarea
-	const formatOptionsToString = ( fieldValue ) => {
-		if ( fieldValue._rawOptionsText !== undefined ) {
-			return fieldValue._rawOptionsText;
-		}
-		return Array.isArray( fieldValue.options )
-			? fieldValue.options.join( '\n' )
-			: '';
-	};
+    // Format options array to string for textarea
+    const formatOptionsToString = ( fieldValue ) => {
+        if ( fieldValue._rawOptionsText !== undefined ) {
+            return fieldValue._rawOptionsText;
+        }
+        return Array.isArray( fieldValue.options )
+            ? fieldValue.options.join( '\n' )
+            : '';
+    };
 
-	return (
-		<div className="metadata-field-form">
-			{ errors?.submit && (
-				<Notice status="error" isDismissible={ false }>
-					<p>{ errors.submit }</p>
-				</Notice>
-			) }
+    return (
+        <div className="metadata-field-form">
+            { errors?.submit && (
+                <Notice status="error" isDismissible={ false }>
+                    <p>{ errors.submit }</p>
+                </Notice>
+            ) }
 
-			<TextControl
-				label={ __( 'Field Label', 'bcgov-design-system' ) }
-				help={ __(
-					'Display name for the field',
-					'bcgov-design-system'
-				) }
-				value={ field.label }
-				onChange={ ( label ) => onChange( 'label', label ) }
-				required
-				className={ errors?.label ? 'has-error' : '' }
-			/>
-			{ errors?.label && (
-				<div className="field-error">{ errors.label }</div>
-			) }
+            <TextControl
+                label={ __( 'Field Label', 'bcgov-design-system' ) }
+                help={ __(
+                    'Display name for the field',
+                    'bcgov-design-system'
+                ) }
+                value={ field.label }
+                onChange={ ( label ) => onChange( 'label', label ) }
+                required
+                className={ errors?.label ? 'has-error' : '' }
+            />
+            { errors?.label && (
+                <div className="field-error">{ errors.label }</div>
+            ) }
 
-			{ isEdit ? (
-				<div className="field-type-display">
-					<label htmlFor="edit-field-type-value">
-						{ __( 'Field Type', 'bcgov-design-system' ) }
-					</label>
-					<div
-						id="edit-field-type-value"
-						className="field-type-value"
-					>
-						{ FIELD_TYPES[ field.type ] }
-					</div>
-				</div>
-			) : (
-				<SelectControl
-					label={ __( 'Field Type', 'bcgov-design-system' ) }
-					value={ field.type }
-					options={ Object.entries( FIELD_TYPES ).map(
-						( [ value, typeLabel ] ) => ( {
-							value,
-							label: typeLabel,
-						} )
-					) }
-					onChange={ ( type ) => onChange( 'type', type ) }
-				/>
-			) }
+            { isEdit ? (
+                <div className="field-type-display">
+                    <label htmlFor="edit-field-type-value">
+                        { __( 'Field Type', 'bcgov-design-system' ) }
+                    </label>
+                    <div
+                        id="edit-field-type-value"
+                        className="field-type-value"
+                    >
+                        { FIELD_TYPES[ field.type ] }
+                    </div>
+                </div>
+            ) : (
+                <SelectControl
+                    label={ __( 'Field Type', 'bcgov-design-system' ) }
+                    value={ field.type }
+                    options={ Object.entries( FIELD_TYPES ).map(
+                        ( [ value, typeLabel ] ) => ( {
+                            value,
+                            label: typeLabel,
+                        } )
+                    ) }
+                    onChange={ ( type ) => onChange( 'type', type ) }
+                />
+            ) }
 
-			{ field.type === 'taxonomy' && (
-				<>
-					<TextareaControl
-						label={ __( 'Taxonomy Terms', 'bcgov-design-system' ) }
-						value={ formatOptionsToString( field ) }
-						onChange={ onOptionsChange }
-						help={ __(
-							'Enter one taxonomy term per line. These will become the available options for this taxonomy.',
-							'bcgov-design-system'
-						) }
-					/>
+            { 'taxonomy' === field.type && (
+                <>
+                    <TextareaControl
+                        label={ __( 'Taxonomy Terms', 'bcgov-design-system' ) }
+                        value={ formatOptionsToString( field ) }
+                        onChange={ onOptionsChange }
+                        help={ __(
+                            'Enter one taxonomy term per line. These will become the available options for this taxonomy.',
+                            'bcgov-design-system'
+                        ) }
+                    />
 
-					{ /* Multiple choice toggle for taxonomy fields */ }
-					<CheckboxControl
-						label={ __( 'Multiple choice', 'bcgov-design-system' ) }
-						help={ __(
-							'Allow selecting multiple terms for this field',
-							'bcgov-design-system'
-						) }
-						checked={ !! field.multiple }
-						onChange={ ( checked ) =>
-							onChange( 'multiple', checked )
-						}
-					/>
-				</>
-			) }
+                    { /* Multiple choice toggle for taxonomy fields */ }
+                    <CheckboxControl
+                        label={ __( 'Multiple choice', 'bcgov-design-system' ) }
+                        help={ __(
+                            'Allow selecting multiple terms for this field',
+                            'bcgov-design-system'
+                        ) }
+                        checked={ !! field.multiple }
+                        onChange={ ( checked ) =>
+                            onChange( 'multiple', checked )
+                        }
+                    />
+                </>
+            ) }
 
-			<TextareaControl
-				label={ __( 'Field Description', 'bcgov-design-system' ) }
-				value={ field.description }
-				onChange={ ( description ) =>
-					onChange( 'description', description )
-				}
-				help={ __(
-					'Description for the field',
-					'bcgov-design-system'
-				) }
-			/>
-		</div>
-	);
+            <TextareaControl
+                label={ __( 'Field Description', 'bcgov-design-system' ) }
+                value={ field.description }
+                onChange={ ( description ) =>
+                    onChange( 'description', description )
+                }
+                help={ __(
+                    'Description for the field',
+                    'bcgov-design-system'
+                ) }
+            />
+        </div>
+    );
 };
 
 export default MetadataFieldForm;
