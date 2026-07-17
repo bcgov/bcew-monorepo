@@ -1,19 +1,15 @@
 <?php
 /**
- * Plugin Name: WordPress Document Repository
- * Plugin URI: https://github.com/bcgov/wordpress-document-repository
- * Author: govwordpress@gov.bc.ca
- * Author URI: https://citz-gdx.atlassian.net/browse/DSWP-225
- * Description: WordPress Document Repository plugin is a plugin that enhances the ability to upload and manage
- * documents on your WordPress site.
- * Requires at least: 6.4.4
- * Tested up to: 6.5
- * Requires PHP: 7.4
- * Version: 1.1.0
- * License: Apache License Version 2.0
- * License URI: LICENSE
- * Text Domain: wordpress-document-repository
- * Tags:
+ * Plugin Name:       WordPress Document Repository
+ * Plugin URI:        https://github.com/bcgov/bcew-monorepo/plugins/wordpress-document-repository
+ * Description:       WordPress Document Repository plugin is a plugin that enhances the ability to upload and manage
+ * Version:           1.1.0
+ * Requires at least: 6.7
+ * Requires PHP:      7.4
+ * Author:            govwordpress@gov.bc.ca
+ * License:           Apache Licence version 2.0
+ * License URI:       https://www.apache.org/licenses/LICENSE-2.0
+ * Text Domain:       wordpress-document-repository
  *
  * @package WordpressDocumentRepository
  */
