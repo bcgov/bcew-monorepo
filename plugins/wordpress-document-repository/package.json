@@ -1,0 +1,66 @@
+{
+  "name": "wordpress-document-repository",
+  "version": "1.0.0",
+  "description": "Wordpress Document Repository Plugin",
+  "author": "govwordpress@gov.bc.ca",
+  "license": "GPL-2.0-or-later",
+  "keywords": [
+    "WordPress",
+    "Block Theme",
+    "BCGov",
+    "Plugin",
+    "Gutenberg"
+  ],
+  "homepage": "https://github.com/bcgov/wordpress-document-repository#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bcgov/wordpress-document-repository.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bcgov/wordpress-document-repository#readme",
+    "email": "govwordpress@gov.bc.ca"
+  },
+  "engines": {
+    "node": ">=24.11.0"
+  },
+  "main": "index.js",
+  "devDependencies": {
+    "@wordpress/api-fetch": "^6.55.0",
+    "@wordpress/components": "^25.16.0",
+    "@wordpress/element": "^5.35.0",
+    "@wordpress/i18n": "^4.58.0",
+    "@wordpress/scripts": "^31.1.0",
+    "css-loader": "^6.11.0",
+    "mini-css-extract-plugin": "^2.9.4",
+    "prop-types": "^15.8.1",
+    "sass": "^1.94.2",
+    "sass-loader": "^16.0.6",
+    "webpack": "^5.103.0",
+    "webpack-cli": "^4.10.0"
+  },
+  "dependencies": {
+    "@wordpress/icons": "^11.3.0"
+  },
+  "overrides": {
+    "webpack-dev-server": "^5.2.2"
+  },
+  "scripts": {
+    "build": "npm run build:doc-repo && npm run build:metadata-settings && npm run build:css",
+    "build:doc-repo": "wp-scripts build --webpack-src-dir=assets/js/apps/document-repository --output-path=build/document-repository",
+    "build:metadata-settings": "wp-scripts build --webpack-src-dir=assets/js/apps/metadata-settings --output-path=build/metadata-settings",
+    "build:css": "wp-scripts build --webpack-src-dir=assets/scss --output-path=build/css",
+    "start": "webpack --config webpack.config.js --watch",
+    "check-engines": "wp-scripts check-engines",
+    "check-licenses": "wp-scripts check-licenses",
+    "format": "wp-scripts format",
+    "lint:css": "wp-scripts lint-style 'src/**/*.scss' --allow-empty-input",
+    "fix:css": "wp-scripts lint-style '**/*.scss' --fix --allow-empty-input",
+    "lint:js": "wp-scripts lint-js 'src/**/*.js'",
+    "fix:js": "wp-scripts lint-js '**/*.js' --fix",
+    "lint:md:docs": "wp-scripts lint-md-docs",
+    "lint:pkg-json": "wp-scripts lint-pkg-json",
+    "packages-update": "wp-scripts packages-update",
+    "test": "npm run test:unit",
+    "test:unit": "wp-scripts test-unit-js --passWithNoTests"
+  }
+}

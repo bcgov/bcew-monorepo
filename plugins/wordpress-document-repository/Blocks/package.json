@@ -1,0 +1,46 @@
+{
+	"name": "{plugin-name}-blocks",
+	"version": "1.0.0",
+	"description": "{Plugin Name} Blocks",
+	"author": "govwordpress@gov.bc.ca",
+	"license": "GPL-2.0-or-later",
+	"main": "build/index.js",
+	"scripts": {
+		"build:production": "npm ci && npm run fix:js && npm run fix:css && npm run fix:md && npm run test:unit && npm run build",
+		"build": "wp-scripts build",
+		"format": "wp-scripts format",
+		"lint:css": "wp-scripts lint-style",
+		"lint:js": "wp-scripts lint-js",
+		"packages-update": "wp-scripts packages-update",
+		"plugin-zip": "wp-scripts plugin-zip",
+		"start": "wp-scripts start",
+		"fix:css": "wp-scripts lint-style 'src/**/*.scss' --fix --allow-empty-input",
+		"fix:js": "wp-scripts lint-js --fix",
+		"fix:md": "wp-scripts lint-md-docs --fix",
+		"lint:pkg-json": "wp-scripts lint-pkg-json",
+		"test:e2e": "wp-scripts test-e2e --passWithNoTests",
+		"test:unit": "wp-scripts test-unit-js --passWithNoTests",
+		"test": "npm run test:unit"
+	},
+	"engines": {
+		"node": ">=24.11.0"
+	},
+	"devDependencies": {
+		"@bcgov/wordpress-eslint": "github:bcgov/wordpress-eslint#semver:1.x",
+		"@bcgov/wordpress-stylelintrc": "github:bcgov/wordpress-stylelintrc#semver:1.x",
+		"@wordpress/scripts": "^31.1.0",
+		"prettier": "^3.7.4"
+	},
+	"dependencies": {
+		"@wordpress/block-editor": "^15.9.0",
+		"@wordpress/blocks": "^15.9.0",
+		"@wordpress/components": "^30.9.0",
+		"@wordpress/core-data": "^7.36.0",
+		"@wordpress/data": "^10.36.0",
+		"@wordpress/element": "^6.36.0",
+		"@wordpress/i18n": "^6.9.0"
+	},
+	"overrides": {
+		"webpack-dev-server": "^5.2.2"
+	}
+}
