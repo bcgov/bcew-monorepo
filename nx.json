@@ -40,9 +40,7 @@
         "test-integration": {
             "executor": "nx:run-commands",
             "options": {
-                "command": "wp-env run tests-cli composer run test",
-                "cwd": "{projectRoot}",
-                "configuration": "vendor/bcew-monorepo/phpunit-config/phpunit.integration.xml"
+                "command": "wp-env run tests-cli --env-cwd=wp-content/{projectRoot} vendor/bin/phpunit ./ -c vendor/bcew-monorepo/phpunit-config/phpunit.integration.xml"
             },
             "dependsOn": ["composer-install", "wp-env-start"]
         },

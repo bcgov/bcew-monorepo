@@ -117,8 +117,8 @@ class AdminUIManager {
     private function register_admin_scripts(): void {
         $plugin_dir = plugin_dir_path( __DIR__ );
         $plugin_url = plugin_dir_url( __DIR__ );
-        $build_path = $plugin_dir . 'build';
-        $build_url  = $plugin_url . 'build';
+        $build_path = $plugin_dir . 'dist';
+        $build_url  = $plugin_url . 'dist';
 
         // Get version from file modification time, or use fallback if file doesn't exist.
         $js_file = $build_path . '/document-repository/index.js';

@@ -21,13 +21,7 @@
         "start-playwright": {},
         "test-e2e": {},
         "test-e2e-docker": {},
-        "test-screenshot": {},
-        "test-screenshot-generate": {},
-        "test-integration": {
-            "options": {
-                "command": "wp-env run tests-cli --env-cwd=wp-content/plugins/wordpress-document-repository composer test ./",
-            }
-        },
+        "test-integration": {},
         "wp-env-start": {},
         "wp-env-clean": {},
         "wp-env-stop": {}

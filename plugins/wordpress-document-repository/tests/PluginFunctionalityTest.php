@@ -1,10 +1,12 @@
 <?php
+namespace Bcgov\WordpressDocumentRepository\Tests;
+
    /**
     * Class PluginFunctionalityTest
     *
     * @package WordpressDocumentRepository
     */
-class PluginFunctionalityTest extends WP_UnitTestCase {
+class PluginFunctionalityTest extends \WP_UnitTestCase {
 	/**
 	 * Tests if the plugin is properly loaded and activated.
 	 * A simple test to verify WordPress test environment is working
