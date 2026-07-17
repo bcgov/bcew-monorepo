@@ -16,6 +16,7 @@ catalog:
   '@swc/helpers': ~0.5.23
   '@types/jest': ^30.0.0
   '@types/node': 20.19.9
+  '@wordpress/api-fetch': wp-6.7
   '@wordpress/block-editor': wp-6.7
   '@wordpress/blocks': wp-6.7
   '@wordpress/components': wp-6.7
@@ -25,6 +26,7 @@ catalog:
   '@wordpress/element': wp-6.7
   '@wordpress/env': wp-6.7
   '@wordpress/i18n': wp-6.7
+  '@wordpress/icons': wp-6.7
   '@wordpress/scripts': ^31.7.0
   '@wordpress/stylelint-config': wp-6.7
   'chokidar-cli': ^3.0.0
