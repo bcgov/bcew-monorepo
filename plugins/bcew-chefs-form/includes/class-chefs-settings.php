@@ -50,6 +50,19 @@ class BCEW_Chefs_Settings {
 				<?php esc_html_e( 'Form IDs and API keys are encrypted in the database and are not shown again after save.', 'bcew-chefs-form' ); ?>
 			</p>
 
+			<?php
+			$controller_path = dirname( BCEW_CHEFS_FORM_PLUGIN_FILE ) . '/examples/form-controller-thank-you.js';
+			if ( is_readable( $controller_path ) ) :
+				?>
+				<details style="max-width:720px;margin:1rem 0">
+					<summary><?php esc_html_e( 'Thank-you message (CHEFS Form Controller)', 'bcew-chefs-form' ); ?></summary>
+					<p class="description">
+						<?php esc_html_e( 'Paste this into CHEFS → your form → Settings → Form Controller. The message runs in CHEFS, not WordPress.', 'bcew-chefs-form' ); ?>
+					</p>
+					<textarea class="large-text code" rows="10" readonly onclick="this.select();"><?php echo esc_textarea( file_get_contents( $controller_path ) ); ?></textarea>
+				</details>
+			<?php endif; ?>
+
 			<?php if ( $error ) : ?>
 				<div class="notice notice-error"><p><?php echo esc_html( $error ); ?></p></div>
 			<?php elseif ( isset( $_GET['chefs_saved'] ) ) : ?>
@@ -129,8 +142,14 @@ class BCEW_Chefs_Settings {
 			self::redirect_error( $token['error'] ?? __( 'Could not validate with CHEFS.', 'bcew-chefs-form' ) );
 		}
 
-		if ( ! BCEW_Chefs_Credentials::save( $form_id, $api_key, $label ) ) {
+		$embed_ref = BCEW_Chefs_Credentials::save( $form_id, $api_key, $label );
+
+		if ( ! $embed_ref ) {
 			self::redirect_error( __( 'Could not save.', 'bcew-chefs-form' ) );
+		}
+
+		if ( class_exists( 'BCEW_Chefs_Flow_Demo' ) ) {
+			BCEW_Chefs_Flow_Demo::record_save( $label, $embed_ref );
 		}
 
 		wp_safe_redirect( add_query_arg( 'chefs_saved', '1', self::get_page_url() ) );

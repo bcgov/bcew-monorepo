@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>CHEFS flow</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Sora:wght@500;600&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet" />
+	<link rel="stylesheet" href="./styles.css?v=25" />
+</head>
+<body>
+	<main class="app">
+		<header class="bar">
+			<input id="wp-origin" type="url" value="http://localhost:9010" />
+			<button type="button" id="btn-connect" class="btn">Watch</button>
+			<span id="live-badge" class="badge" hidden></span>
+			<span id="status" class="status"></span>
+		</header>
+		<a id="wp-admin-link" href="http://localhost:9010/wp-admin/" hidden></a>
+
+		<div class="layout">
+			<aside class="files">
+				<p class="aside-title">Files</p>
+				<ul id="file-tree" class="file-tree"></ul>
+			</aside>
+
+			<div class="center">
+				<section class="wp-form" id="wp-form">
+					<h1>CHEFS Forms</h1>
+					<table class="form-table">
+						<tr>
+							<th><label for="demo-label">Label</label></th>
+							<td><input type="text" id="demo-label" class="regular-text" value="Contact form" /></td>
+						</tr>
+						<tr>
+							<th><label for="demo-form-id">Form ID</label></th>
+							<td><input type="text" id="demo-form-id" class="regular-text code" value="a1b2c3d4-e5f6-4000-8000-000000000001" /></td>
+						</tr>
+						<tr>
+							<th><label for="demo-api-key">API key</label></th>
+							<td><input type="password" id="demo-api-key" class="regular-text" value="demo-secret-key" autocomplete="new-password" /></td>
+						</tr>
+					</table>
+					<p class="submit">
+						<button type="button" id="btn-demo-save" class="button-primary">Save</button>
+						<button type="button" id="btn-demo-embed" class="button-secondary">Play embed</button>
+					</p>
+				</section>
+
+				<section id="stage" class="stage" hidden>
+					<div class="stage-bar">
+						<p id="step-label" class="step-label"></p>
+						<div class="nav">
+							<button type="button" id="btn-prev" class="btn ghost">Back</button>
+							<button type="button" id="btn-next" class="btn">Next</button>
+						</div>
+					</div>
+
+					<p id="step-title" class="step-title"></p>
+					<p id="step-say" class="step-say"></p>
+
+					<pre id="step-code" class="step-code" hidden><code></code></pre>
+
+					<div id="step-zone" class="step-zone" hidden>
+						<div class="zone-lane zone-browser">
+							<p class="zone-kicker">Browser</p>
+							<p id="zone-browser-tag" class="zone-tag"></p>
+							<p id="zone-browser-note" class="zone-note"></p>
+						</div>
+						<div class="zone-wall" aria-hidden="true">
+							<span class="zone-wall-label">HTTP</span>
+						</div>
+						<div class="zone-lane zone-server">
+							<p class="zone-kicker">PHP server</p>
+							<p id="zone-server-tag" class="zone-tag"></p>
+							<p id="zone-server-note" class="zone-note"></p>
+						</div>
+					</div>
+
+					<div class="scene-row">
+						<div id="scene" class="scene" aria-live="polite"></div>
+						<aside id="step-aside" class="step-aside" hidden></aside>
+						<aside id="step-hazard" class="step-hazard" hidden>
+							<p class="hazard-icon" aria-hidden="true">!</p>
+							<p id="hazard-title" class="hazard-title"></p>
+							<p id="hazard-body" class="hazard-body"></p>
+						</aside>
+					</div>
+
+					<p id="step-file" class="step-file"></p>
+				</section>
+			</div>
+		</div>
+	</main>
+	<script src="./app.js?v=25" defer></script>
+</body>
+</html>

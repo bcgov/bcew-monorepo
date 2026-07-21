@@ -1,4 +1,4 @@
-export async function loadViewer( container, config, onSubmitDone ) {
+export async function loadViewer( container, config ) {
 	const { formId, authToken, baseUrl, viewerScriptUrl } = config;
 
 	if ( ! customElements.get( 'chefs-form-viewer' ) ) {
@@ -17,22 +17,8 @@ export async function loadViewer( container, config, onSubmitDone ) {
 	viewer.setAttribute( 'auth-token', authToken );
 	viewer.setAttribute( 'base-url', baseUrl );
 	viewer.setAttribute( 'isolate-styles', 'true' );
-	viewer.setAttribute( 'auto-reload-on-submit', 'false' );
 
-	const resetSubmitting = () => {
-		const form = viewer.formioInstance;
-		if ( form ) {
-			form.submitting = false;
-			form.redraw?.();
-		}
-	};
-
-	viewer.addEventListener( 'formio:submitDone', () => {
-		resetSubmitting();
-		onSubmitDone?.();
-	} );
 	viewer.addEventListener( 'formio:error', ( event ) => {
-		resetSubmitting();
 		const message = event?.detail?.error;
 		if ( typeof message === 'string' && message ) {
 			const error = document.createElement( 'p' );

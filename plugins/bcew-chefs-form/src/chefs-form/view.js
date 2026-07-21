@@ -25,12 +25,7 @@ document.querySelectorAll( '[data-bcew-chefs-embed]' ).forEach( ( container ) =>
 				return;
 			}
 
-			await loadViewer( container, config, () => {
-				const notice = document.createElement( 'p' );
-				notice.className = 'bcew-chefs-form__success';
-				notice.textContent = 'Thank you — your form has been submitted.';
-				container.parentElement?.insertBefore( notice, container );
-			} );
+			await loadViewer( container, config );
 		} )
 		.catch( () => {
 			showMessage( container, 'bcew-chefs-form__error', 'Could not load the CHEFS form.' );

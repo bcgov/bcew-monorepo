@@ -22,12 +22,14 @@ define( 'BCEW_CHEFS_BASE_URL', 'https://submit.digital.gov.bc.ca/app' );
 require_once __DIR__ . '/includes/class-chefs-crypto.php';
 require_once __DIR__ . '/includes/class-chefs-credentials.php';
 require_once __DIR__ . '/includes/class-chefs-settings.php';
+require_once __DIR__ . '/includes/class-chefs-flow-demo.php';
 
 register_activation_hook( __FILE__, array( 'BCEW_Chefs_Credentials', 'install' ) );
 
 add_action( 'plugins_loaded', array( 'BCEW_Chefs_Credentials', 'maybe_install' ) );
 
 BCEW_Chefs_Settings::init();
+BCEW_Chefs_Flow_Demo::init();
 
 add_action( 'init', function () {
 	if ( function_exists( 'wp_register_block_types_from_metadata_collection' ) ) {
@@ -66,7 +68,12 @@ add_action( 'rest_api_init', function () {
 					&& null !== BCEW_Chefs_Credentials::get_by_embed_ref( $embed_ref );
 			},
 			'callback'            => function ( $request ) {
-				$config = bcew_chefs_form_get_embed_config( sanitize_key( $request->get_param( 'embed_ref' ) ) );
+				$embed_ref = sanitize_key( $request->get_param( 'embed_ref' ) );
+				$config    = bcew_chefs_form_get_embed_config( $embed_ref );
+
+				if ( class_exists( 'BCEW_Chefs_Flow_Demo' ) ) {
+					BCEW_Chefs_Flow_Demo::record_embed( $embed_ref, $config );
+				}
 
 				if ( ! $config['success'] ) {
 					$config['settingsUrl'] = BCEW_Chefs_Settings::get_page_url();
