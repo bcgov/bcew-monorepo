@@ -209,6 +209,29 @@
                     "url": "https://github.com/bcgov/bcew-monorepo.git",
                     "reference": "bcew-blocks/v1.0.0-alpha.5"
                 }
+            },
+            "1.0.0": {
+                "name": "bcgov-plugin/bcew-blocks",
+                "description": "Plugin containing blocks intended to be used with the Design System WordPress Theme suite of products.",
+                "type": "wordpress-plugin",
+                "license": "Apache-2.0",
+                "autoload": {
+                    "psr-4": {
+                        "Bcgov\\BcgovWordpressBlocks\\": "src/",
+                        "Bcgov\\BcgovWordpressBlocks\\Test\\": "tests/php/"
+                    }
+                },
+                "version": "1.0.0",
+                "dist": {
+                    "url": "https://github.com/bcgov/bcew-monorepo/releases/download/bcew-blocks/v1.0.0/bcew-blocks-1.0.0.zip",
+                    "type": "zip",
+                    "reference": "bcew-blocks/v1.0.0"
+                },
+                "source": {
+                    "type": "git",
+                    "url": "https://github.com/bcgov/bcew-monorepo.git",
+                    "reference": "bcew-blocks/v1.0.0"
+                }
             }
         },
         "bcgov-theme/bcew-theme-2": {
