@@ -1,3 +1,4 @@
+import { JSX } from 'react';
 import { Button, Spinner } from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
 
@@ -6,11 +7,12 @@ import { __, sprintf } from '@wordpress/i18n';
  *
  * Renders pagination controls for navigating through document pages
  *
- * @param {Object}   props
+ * @param {Object}   props              - Component props
  * @param {number}   props.currentPage  - Current page number
  * @param {number}   props.totalPages   - Total number of pages
  * @param {Function} props.onPageChange - Callback when page changes
  * @param {boolean}  props.isLoading    - Whether data is currently being loaded
+ * @return {JSX.Element|null} Pagination controls or null if only one page
  */
 const PaginationControls = ( {
     currentPage,

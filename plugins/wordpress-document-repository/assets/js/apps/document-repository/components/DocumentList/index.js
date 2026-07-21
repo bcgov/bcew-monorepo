@@ -1,3 +1,4 @@
+import { JSX } from 'react';
 import { useCallback, useMemo } from '@wordpress/element';
 import {
     Button,
@@ -54,6 +55,7 @@ import { default as useDocumentManagement } from './hooks/useDocumentManagement'
  * @param {Function} props.handleSearchKeyPress - Handle Enter key for search
  * @param {Function} props.setSearchParams      - Setter for search parameters
  * @param {boolean}  props.isLoading            - Whether documents are currently being loaded
+ * @return {JSX.Element} Document list component with metadata management and file handling
  */
 const DocumentList = ( {
     documents = [],

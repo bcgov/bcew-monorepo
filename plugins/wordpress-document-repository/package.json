@@ -36,7 +36,6 @@
     "scripts": {
         "build:doc-repo": "wp-scripts build --webpack-src-dir=assets/js/apps/document-repository --output-path=dist/document-repository",
         "build:metadata-settings": "wp-scripts build --webpack-src-dir=assets/js/apps/metadata-settings --output-path=dist/metadata-settings",
-        "build:css": "wp-scripts build --webpack-src-dir=assets/scss --output-path=dist/css",
-        "start": "webpack --config webpack.config.js --watch"
+        "build:css": "wp-scripts build --webpack-src-dir=assets/scss --output-path=dist/css"
     }
 }

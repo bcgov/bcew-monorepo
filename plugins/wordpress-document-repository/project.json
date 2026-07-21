@@ -17,7 +17,12 @@
                 "command": "npm run build:doc-repo && npm run build:metadata-settings && npm run build:css"
             }
         },
-        "start": {},
+        // Todo: Fix start target, currently erroring due to missing webpack.config.js file.
+        "start": {
+            "options": {
+                "command": "webpack --config webpack.config.js --watch"
+            }
+        },
         "start-playwright": {},
         "test-e2e": {},
         "test-e2e-docker": {},

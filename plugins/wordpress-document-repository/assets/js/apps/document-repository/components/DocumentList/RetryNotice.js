@@ -1,3 +1,4 @@
+import { JSX } from 'react';
 import { Button, Notice } from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
 
@@ -6,9 +7,10 @@ import { __, sprintf } from '@wordpress/i18n';
  *
  * Displays a notice for operations that can be retried
  *
- * @param {Object}   props
+ * @param {Object}   props                  - Component props
  * @param {Array}    props.failedOperations - Array of failed operations
  * @param {Function} props.onRetryAll       - Callback when retry all button is clicked
+ * @return {JSX.Element|null} Retry notice or null if no failed operations
  */
 const RetryNotice = ( { failedOperations, onRetryAll } ) => {
     if ( 0 === failedOperations.length ) {

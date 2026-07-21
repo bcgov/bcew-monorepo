@@ -37,7 +37,7 @@ import DocumentTableRow from './DocumentTableRow';
  * @param {boolean}  props.isSavingBulk          - Flag indicating if bulk save is in progress
  * @return {JSX.Element} Rendered document table
  */
-function DocumentTable( {
+const DocumentTable = ( {
     documents,
     selectedDocuments,
     onSelectDocument,
@@ -62,7 +62,7 @@ function DocumentTable( {
     hasMetadataChanges,
     handleSaveBulkChanges,
     isSavingBulk,
-} ) {
+} ) => {
     // Check if all documents are currently selected
     const allSelected =
         documents.length > 0 && selectedDocuments.length === documents.length;
@@ -282,6 +282,6 @@ function DocumentTable( {
             </div>
         </div>
     );
-}
+};
 
 export { DocumentTable as default };

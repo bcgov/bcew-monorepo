@@ -1,3 +1,4 @@
+import { JSX } from 'react';
 import { useRef, useCallback, useState, useEffect } from '@wordpress/element';
 import { Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
@@ -7,9 +8,10 @@ import { __ } from '@wordpress/i18n';
  *
  * Provides a drag-and-drop area for file uploads
  *
- * @param {Object}   props
+ * @param {Object}   props                 - Component props
  * @param {Function} props.onFilesSelected - Callback when files are selected
  * @param {string}   props.acceptMimeTypes - MIME types to accept (e.g. 'application/pdf')
+ * @return {JSX.Element} Upload area component
  */
 const UploadArea = ( {
     onFilesSelected,

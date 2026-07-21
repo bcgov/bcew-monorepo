@@ -534,8 +534,8 @@ const DocumentUploader = ( {
      *    - Card-based layout
      *    - Drag-and-drop support
      *    - Full metadata form
+     * @return {JSX.Element} Rendered component
      */
-    // Render content based on whether we're in modal mode or not
     const renderContent = () => {
         return (
             <>

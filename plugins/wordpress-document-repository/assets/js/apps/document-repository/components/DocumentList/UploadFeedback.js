@@ -1,3 +1,4 @@
+import { JSX } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { useEffect } from '@wordpress/element';
 
@@ -12,6 +13,7 @@ import { useEffect } from '@wordpress/element';
  * @param {Array}    props.uploadingFiles     - Array of files being uploaded with their status
  * @param {boolean}  props.showUploadFeedback - Flag to control visibility of the feedback UI
  * @param {Function} props.onClose            - Callback function to close the feedback UI
+ * @return {JSX.Element|null} Upload feedback component or null if not visible
  *
  * @example
  * const files = [

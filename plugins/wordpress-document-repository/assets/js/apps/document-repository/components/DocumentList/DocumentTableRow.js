@@ -34,7 +34,7 @@ import { highlightSearchTerm } from '../../utils/searchUtils';
  * @param {string}   props.searchTerm           - Current search term for highlighting
  * @return {JSX.Element} Rendered document table row
  */
-function DocumentTableRow( {
+const DocumentTableRow = ( {
     document,
     isSelected,
     onSelect,
@@ -49,7 +49,7 @@ function DocumentTableRow( {
     formatFileSize,
     documentStatusFilter,
     searchTerm = '',
-} ) {
+} ) => {
     /**
      * Render excerpt cell content
      * @return {JSX.Element|string} Excerpt content
@@ -200,6 +200,8 @@ function DocumentTableRow( {
      * Render the action buttons contextually.
      * If viewing trashed documents, show the restore and delete permanently buttons
      * If viewing other documents, show the download, edit and trash buttons
+     *
+     * @return {JSX.Element} Action buttons
      */
     const renderActions = () => {
         if ( isTrashView( documentStatusFilter ) ) {
@@ -442,6 +444,6 @@ function DocumentTableRow( {
             </div>
         </div>
     );
-}
+};
 
 export { DocumentTableRow as default };
