@@ -4,12 +4,12 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4e7e89dcd6eeeead963beedb452d3c01",
+    "content-hash": "b3cea44f5b49061f4bee336cbf647ccc",
     "packages": [],
     "packages-dev": [
         {
             "name": "bcew-monorepo/phpunit-config",
-            "version": "dev-main",
+            "version": "dev-feature/DSWP-766-import-document-repo",
             "dist": {
                 "type": "path",
                 "url": "../../packages/phpunit-config",

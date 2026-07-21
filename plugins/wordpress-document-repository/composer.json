@@ -13,7 +13,7 @@
         }
     ],
     "require-dev": {
-        "bcew-monorepo/phpunit-config": "dev-main",
+        "bcew-monorepo/phpunit-config": "*@dev",
         "phpunit/phpunit": "^9.5",
         "yoast/phpunit-polyfills": "^1.0"
     },
