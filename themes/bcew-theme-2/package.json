@@ -11,7 +11,7 @@
         "DesignSystem",
         "Gutenberg"
     ],
-    "homepage": "https://github.com/bcgov/bcew-monorepo/themes/bcew-theme-2",
+    "homepage": "https://github.com/bcgov/bcew-monorepo/tree/main/themes/bcew-theme-2",
     "repository": {
         "type": "git",
         "url": "https://github.com/bcgov/bcew-monorepo.git",
@@ -21,7 +21,7 @@
         "url": "https://github.com/bcgov/bcew-monorepo/issues",
         "email": "govwordpress@gov.bc.ca"
     },
-    "main": "index.js",
+    "main": "src/index.js",
     "dependencies": {
         "@bcgov/bc-sans": "catalog:",
         "@bcgov/design-tokens": "catalog:"
@@ -29,9 +29,5 @@
     "devDependencies": {
         "@bcew-monorepo/e2e": "workspace:*",
         "@playwright/test": "catalog:"
-    },
-    "scripts": {
-        "build": "wp-scripts build --output-path=dist",
-        "start": "wp-scripts start --output-path=dist"
     }
 }
