@@ -1,5 +1,6 @@
 export async function loadViewer( container, config ) {
-	const { formId, authToken, baseUrl, viewerScriptUrl } = config;
+	const { formId, authToken, baseUrl } = config;
+	const viewerScriptUrl = `${ baseUrl.replace( /\/$/, '' ) }/embed/chefs-form-viewer.js`;
 
 	if ( ! customElements.get( 'chefs-form-viewer' ) ) {
 		await new Promise( ( resolve, reject ) => {

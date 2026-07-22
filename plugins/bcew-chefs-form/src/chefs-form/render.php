@@ -5,16 +5,16 @@
  * @package bcew-chefs-form
  */
 
-$embed_ref = $attributes['embedRef'] ?? '';
+$form_id = BCEW_Chefs_Credentials::sanitize_form_id( $attributes['formId'] ?? '' );
 
-if ( ! BCEW_Chefs_Credentials::is_valid_embed_ref( $embed_ref ) ) {
+if ( '' === $form_id ) {
 	if ( current_user_can( 'edit_posts' ) ) {
 		echo '<p class="bcew-chefs-form__error">' . esc_html__( 'Select a CHEFS form in the block sidebar.', 'bcew-chefs-form' ) . '</p>';
 	}
 	return;
 }
 
-if ( ! BCEW_Chefs_Credentials::get_by_embed_ref( $embed_ref ) ) {
+if ( ! BCEW_Chefs_Credentials::get_by_form_id( $form_id ) ) {
 	if ( current_user_can( 'edit_posts' ) ) {
 		echo '<p class="bcew-chefs-form__error">' . esc_html__( 'Form not configured in CHEFS Forms.', 'bcew-chefs-form' ) . '</p>';
 	}
@@ -22,5 +22,5 @@ if ( ! BCEW_Chefs_Credentials::get_by_embed_ref( $embed_ref ) ) {
 }
 ?>
 <div <?php echo wp_kses_data( get_block_wrapper_attributes( array( 'class' => 'bcew-chefs-form-block' ) ) ); ?>>
-	<div class="bcew-chefs-form__webcomponent" data-bcew-chefs-embed="<?php echo esc_attr( $embed_ref ); ?>"></div>
+	<div class="bcew-chefs-form__webcomponent" data-bcew-chefs-form-id="<?php echo esc_attr( $form_id ); ?>"></div>
 </div>

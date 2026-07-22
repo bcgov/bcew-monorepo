@@ -110,16 +110,6 @@ class BCEW_Chefs_Crypto {
 	}
 
 	/**
-	 * Hash a form ID for uniqueness lookups without storing plaintext.
-	 *
-	 * @param string $form_id CHEFS form UUID.
-	 * @return string
-	 */
-	public static function hash_form_id( $form_id ) {
-		return hash_hmac( 'sha256', strtolower( trim( $form_id ) ), self::get_key() );
-	}
-
-	/**
 	 * 32-byte key derived from WordPress auth salts.
 	 *
 	 * @return string

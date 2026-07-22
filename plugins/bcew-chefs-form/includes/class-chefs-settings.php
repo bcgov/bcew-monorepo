@@ -41,27 +41,14 @@ class BCEW_Chefs_Settings {
 		}
 
 		$error = isset( $_GET['chefs_error'] ) ? sanitize_text_field( wp_unslash( $_GET['chefs_error'] ) ) : '';
-		// Never decrypt form IDs for the admin list — labels only.
-		$forms = BCEW_Chefs_Credentials::list_forms( false );
+		// Labels and form IDs for the admin list.
+		$forms = BCEW_Chefs_Credentials::list_forms();
 		?>
 		<div class="wrap">
 			<h1><?php esc_html_e( 'CHEFS Forms', 'bcew-chefs-form' ); ?></h1>
 			<p class="description">
-				<?php esc_html_e( 'Form IDs and API keys are encrypted in the database and are not shown again after save.', 'bcew-chefs-form' ); ?>
+				<?php esc_html_e( 'Form IDs are stored for block lookup. API keys are encrypted in the database and are not shown again after save.', 'bcew-chefs-form' ); ?>
 			</p>
-
-			<?php
-			$controller_path = dirname( BCEW_CHEFS_FORM_PLUGIN_FILE ) . '/examples/form-controller-thank-you.js';
-			if ( is_readable( $controller_path ) ) :
-				?>
-				<details style="max-width:720px;margin:1rem 0">
-					<summary><?php esc_html_e( 'Thank-you message (CHEFS Form Controller)', 'bcew-chefs-form' ); ?></summary>
-					<p class="description">
-						<?php esc_html_e( 'Paste this into CHEFS → your form → Settings → Form Controller. The message runs in CHEFS, not WordPress.', 'bcew-chefs-form' ); ?>
-					</p>
-					<textarea class="large-text code" rows="10" readonly onclick="this.select();"><?php echo esc_textarea( file_get_contents( $controller_path ) ); ?></textarea>
-				</details>
-			<?php endif; ?>
 
 			<?php if ( $error ) : ?>
 				<div class="notice notice-error"><p><?php echo esc_html( $error ); ?></p></div>
@@ -97,6 +84,7 @@ class BCEW_Chefs_Settings {
 					<thead>
 						<tr>
 							<th><?php esc_html_e( 'Label', 'bcew-chefs-form' ); ?></th>
+							<th><?php esc_html_e( 'Form ID', 'bcew-chefs-form' ); ?></th>
 							<th></th>
 						</tr>
 					</thead>
@@ -104,11 +92,12 @@ class BCEW_Chefs_Settings {
 						<?php foreach ( $forms as $form ) : ?>
 							<tr>
 								<td><?php echo esc_html( $form['label'] ); ?></td>
+								<td><code><?php echo esc_html( $form['formId'] ); ?></code></td>
 								<td>
 									<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 										<?php wp_nonce_field( 'bcew_chefs_delete' ); ?>
 										<input type="hidden" name="action" value="bcew_chefs_delete" />
-										<input type="hidden" name="embed_ref" value="<?php echo esc_attr( $form['embed_ref'] ); ?>" />
+										<input type="hidden" name="form_id" value="<?php echo esc_attr( $form['formId'] ); ?>" />
 										<?php submit_button( __( 'Remove', 'bcew-chefs-form' ), 'delete small', 'submit', false ); ?>
 									</form>
 								</td>
@@ -142,14 +131,10 @@ class BCEW_Chefs_Settings {
 			self::redirect_error( $token['error'] ?? __( 'Could not validate with CHEFS.', 'bcew-chefs-form' ) );
 		}
 
-		$embed_ref = BCEW_Chefs_Credentials::save( $form_id, $api_key, $label );
+		$saved_form_id = BCEW_Chefs_Credentials::save( $form_id, $api_key, $label );
 
-		if ( ! $embed_ref ) {
+		if ( ! $saved_form_id ) {
 			self::redirect_error( __( 'Could not save.', 'bcew-chefs-form' ) );
-		}
-
-		if ( class_exists( 'BCEW_Chefs_Flow_Demo' ) ) {
-			BCEW_Chefs_Flow_Demo::record_save( $label, $embed_ref );
 		}
 
 		wp_safe_redirect( add_query_arg( 'chefs_saved', '1', self::get_page_url() ) );
@@ -162,7 +147,7 @@ class BCEW_Chefs_Settings {
 		}
 
 		check_admin_referer( 'bcew_chefs_delete' );
-		BCEW_Chefs_Credentials::delete( sanitize_key( wp_unslash( $_POST['embed_ref'] ?? '' ) ) );
+		BCEW_Chefs_Credentials::delete( BCEW_Chefs_Credentials::sanitize_form_id( wp_unslash( $_POST['form_id'] ?? '' ) ) );
 		wp_safe_redirect( add_query_arg( 'chefs_deleted', '1', self::get_page_url() ) );
 		exit;
 	}

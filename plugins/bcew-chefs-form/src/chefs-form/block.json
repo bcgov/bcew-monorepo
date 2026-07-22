@@ -2,13 +2,13 @@
     "$schema": "https://schemas.wp.org/trunk/block.json",
     "apiVersion": 3,
     "name": "bcew-chefs-form/chefs-form",
-    "version": "0.0.8",
+    "version": "0.0.9",
     "title": "CHEFS Form",
     "category": "widgets",
     "icon": "feedback",
     "description": "Display a CHEFS form.",
     "attributes": {
-        "embedRef": {
+        "formId": {
             "type": "string",
             "default": ""
         }

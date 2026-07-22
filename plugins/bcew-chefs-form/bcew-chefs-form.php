@@ -22,24 +22,15 @@ define( 'BCEW_CHEFS_BASE_URL', 'https://submit.digital.gov.bc.ca/app' );
 require_once __DIR__ . '/includes/class-chefs-crypto.php';
 require_once __DIR__ . '/includes/class-chefs-credentials.php';
 require_once __DIR__ . '/includes/class-chefs-settings.php';
-require_once __DIR__ . '/includes/class-chefs-flow-demo.php';
 
 register_activation_hook( __FILE__, array( 'BCEW_Chefs_Credentials', 'install' ) );
 
 add_action( 'plugins_loaded', array( 'BCEW_Chefs_Credentials', 'maybe_install' ) );
 
 BCEW_Chefs_Settings::init();
-BCEW_Chefs_Flow_Demo::init();
 
 add_action( 'init', function () {
-	if ( function_exists( 'wp_register_block_types_from_metadata_collection' ) ) {
-		wp_register_block_types_from_metadata_collection( __DIR__ . '/dist', __DIR__ . '/dist/blocks-manifest.php' );
-		return;
-	}
-
-	foreach ( glob( __DIR__ . '/dist/*/block.json' ) ?: array() as $block_file ) {
-		register_block_type_from_metadata( $block_file );
-	}
+	wp_register_block_types_from_metadata_collection( __DIR__ . '/dist', __DIR__ . '/dist/blocks-manifest.php' );
 } );
 
 add_action( 'enqueue_block_editor_assets', function () {
@@ -47,7 +38,7 @@ add_action( 'enqueue_block_editor_assets', function () {
 		'wp-blocks',
 		'window.bcewChefsFormSettings=' . wp_json_encode(
 			array(
-				'forms'       => BCEW_Chefs_Credentials::list_forms( false ),
+				'forms'       => BCEW_Chefs_Credentials::list_forms(),
 				'settingsUrl' => BCEW_Chefs_Settings::get_page_url(),
 			)
 		) . ';',
@@ -62,18 +53,13 @@ add_action( 'rest_api_init', function () {
 		array(
 			'methods'             => 'GET',
 			'permission_callback' => function ( $request ) {
-				$embed_ref = sanitize_key( $request->get_param( 'embed_ref' ) );
-
-				return BCEW_Chefs_Credentials::is_valid_embed_ref( $embed_ref )
-					&& null !== BCEW_Chefs_Credentials::get_by_embed_ref( $embed_ref );
+				return BCEW_Chefs_Credentials::exists(
+					BCEW_Chefs_Credentials::sanitize_form_id( $request->get_param( 'form_id' ) )
+				);
 			},
 			'callback'            => function ( $request ) {
-				$embed_ref = sanitize_key( $request->get_param( 'embed_ref' ) );
-				$config    = bcew_chefs_form_get_embed_config( $embed_ref );
-
-				if ( class_exists( 'BCEW_Chefs_Flow_Demo' ) ) {
-					BCEW_Chefs_Flow_Demo::record_embed( $embed_ref, $config );
-				}
+				$form_id = BCEW_Chefs_Credentials::sanitize_form_id( $request->get_param( 'form_id' ) );
+				$config  = bcew_chefs_form_get_embed_config( $form_id );
 
 				if ( ! $config['success'] ) {
 					$config['settingsUrl'] = BCEW_Chefs_Settings::get_page_url();
@@ -82,10 +68,10 @@ add_action( 'rest_api_init', function () {
 				return rest_ensure_response( $config );
 			},
 			'args'                => array(
-				'embed_ref' => array(
+				'form_id' => array(
 					'required'          => true,
 					'type'              => 'string',
-					'sanitize_callback' => 'sanitize_key',
+					'sanitize_callback' => array( 'BCEW_Chefs_Credentials', 'sanitize_form_id' ),
 				),
 			),
 		)
@@ -103,7 +89,7 @@ function bcew_chefs_form_get_gateway_token( $form_id, $api_key ) {
 		);
 	}
 
-	$form_id  = strtolower( trim( $form_id ) );
+	$form_id  = BCEW_Chefs_Credentials::sanitize_form_id( $form_id );
 	$response = wp_remote_post(
 		untrailingslashit( BCEW_CHEFS_BASE_URL ) . '/gateway/v1/auth/token/forms/' . rawurlencode( $form_id ),
 		array(
@@ -132,14 +118,16 @@ function bcew_chefs_form_get_gateway_token( $form_id, $api_key ) {
 }
 
 /**
- * @return array{success:bool,formId:?string,authToken:?string,baseUrl:?string,viewerScriptUrl:?string,error:?string}
+ * @return array{success:bool,formId:?string,authToken:?string,baseUrl:?string,error:?string}
  */
-function bcew_chefs_form_get_embed_config( $embed_ref ) {
-	if ( ! BCEW_Chefs_Credentials::is_valid_embed_ref( $embed_ref ) ) {
-		return array( 'success' => false, 'error' => __( 'Invalid form reference.', 'bcew-chefs-form' ) );
+function bcew_chefs_form_get_embed_config( $form_id ) {
+	$form_id = BCEW_Chefs_Credentials::sanitize_form_id( $form_id );
+
+	if ( '' === $form_id ) {
+		return array( 'success' => false, 'error' => __( 'Invalid form ID.', 'bcew-chefs-form' ) );
 	}
 
-	$record = BCEW_Chefs_Credentials::get_by_embed_ref( $embed_ref );
+	$record = BCEW_Chefs_Credentials::get_by_form_id( $form_id );
 
 	if ( ! $record ) {
 		return array( 'success' => false, 'error' => __( 'Form not configured in CHEFS Forms.', 'bcew-chefs-form' ) );
@@ -151,14 +139,11 @@ function bcew_chefs_form_get_embed_config( $embed_ref ) {
 		return array( 'success' => false, 'error' => $token['error'] ?? __( 'Could not load the CHEFS form.', 'bcew-chefs-form' ) );
 	}
 
-	$base = untrailingslashit( BCEW_CHEFS_BASE_URL );
-
 	return array(
-		'success'         => true,
-		'formId'          => $record['form_id'],
-		'authToken'       => $token['token'],
-		'baseUrl'         => $base,
-		'viewerScriptUrl' => $base . '/embed/chefs-form-viewer.js',
-		'error'           => null,
+		'success'   => true,
+		'formId'    => $record['form_id'],
+		'authToken' => $token['token'],
+		'baseUrl'   => untrailingslashit( BCEW_CHEFS_BASE_URL ),
+		'error'     => null,
 	);
 }

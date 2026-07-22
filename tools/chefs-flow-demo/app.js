@@ -11,14 +11,9 @@ const PLUGIN_TREE = [
 	{ type: "file", name: "block.json", path: "plugins/bcew-chefs-form/src/chefs-form/block.json" },
 ];
 
-const EMBED_REF_ASIDE = {
-	title: "What’s an embed ref?",
-	body: "A short random ID that labels your saved form in the database. It’s safe to put on public pages — it doesn’t reveal your API key. WordPress uses it to look up the locked secrets when someone visits the page.",
-};
-
-const EMBED_REF_ORIGIN_ASIDE = {
-	title: "What’s an embed ref?",
-	body: "A short random ID that labels your saved form in the database. It’s safe to put on public pages — it doesn’t reveal your API key. WordPress created it when you saved: 16 random bytes turned into a 32-character hex string.",
+const FORM_ID_ASIDE = {
+	title: "What’s the Form ID?",
+	body: "The CHEFS UUID for your form. It’s safe on public pages — it identifies the form but isn’t the API key. WordPress uses it to look up the encrypted API key when someone visits the page.",
 };
 
 const PHP_JS_ASIDE = {
@@ -73,156 +68,134 @@ if ( empty( $token['token'] ) ) {
 		]),
 	},
 	{
-		title: "Lock the secrets",
-		say: "Readable values become scrambled. Only WordPress can unlock them later.",
+		title: "Lock the API key",
+		say: "The API key becomes scrambled. The Form ID stays readable for block lookup.",
 		file: "plugins/bcew-chefs-form/includes/class-chefs-crypto.php",
 		zone: {
 			server: true,
 			serverTag: "PHP only",
 			serverNote: "encrypt() runs in PHP — ciphertext never sent to the browser",
 		},
-		code: () => `$form_id_encrypted = BCEW_Chefs_Crypto::encrypt( $form_id );
-$api_key_encrypted = BCEW_Chefs_Crypto::encrypt( $api_key );`,
+		code: () => `$api_key_encrypted = BCEW_Chefs_Crypto::encrypt( $api_key );
+// Form ID stored as plaintext: $form_id`,
 		morph: true,
 		scene: () => `
-			<span class="box secret morph-from" data-to="locked secrets">Form ID + API key</span>
+			<span class="box secret morph-from" data-to="locked API key">API key</span>
 			<span class="arrow">→</span>
 			<span class="box lock">encrypt()</span>
 		`,
 	},
 	{
-		title: "Roll a random embed ref",
-		say: "16 random bytes → hex string. Not derived from your API key.",
-		file: "plugins/bcew-chefs-form/includes/class-chefs-credentials.php",
-		aside: EMBED_REF_ASIDE,
-		zone: {
-			server: true,
-			serverTag: "PHP only",
-			serverNote: "random_bytes() + bin2hex() — happens on the server",
-		},
-		code: (c) => `$embed_ref = bin2hex( random_bytes( 16 ) );
-// 16 bytes → 32 hex chars
-// → ${esc(c.embed)}`,
-		scene: (c) => boxes([
-			["random", "random_bytes(16)"],
-			"→",
-			["lock", "bin2hex()"],
-			"→",
-			["embed-ref", `embed ref<small>${esc(c.embedShort)}</small>`],
-		]),
-	},
-	{
 		title: "Save in the database",
-		say: "Locked secrets and the embed ref go in one DB row.",
+		say: "Form ID, label, and encrypted API key go in one DB row.",
 		file: "plugins/bcew-chefs-form/includes/class-chefs-credentials.php",
-		aside: EMBED_REF_ASIDE,
+		aside: FORM_ID_ASIDE,
 		zone: {
 			server: true,
 			serverTag: "PHP + database",
-			serverNote: "Secrets stored encrypted — admin page redirects, fields stay empty",
+			serverNote: "API key stored encrypted — admin page redirects, fields stay empty",
 		},
 		code: (c) => `$wpdb->insert( $table, [
-    'embed_ref'         => '${esc(c.embed)}',
-    'form_id_encrypted' => $form_id_encrypted,
+    'form_id'           => '${esc(c.formId)}',
+    'label'             => $label,
     'api_key_encrypted' => $api_key_encrypted,
 ] );`,
 		scene: (c) => boxes([
-			["lock", "locked secrets"],
-			["embed-ref", `embed ref<small>${esc(c.embedShort)}</small>`],
+			["form-id", `Form ID<small>${esc(c.formIdShort)}</small>`],
+			["lock", "locked API key"],
 			"→",
 			["page", "database row"],
 		]),
 	},
 	{
-		title: "The page only keeps the embed ref",
-		say: "The block editor stores the embed ref — not the API key. Secrets never come back to the browser.",
+		title: "The block stores the Form ID",
+		say: "The block editor stores the Form ID — not the API key. The API key never comes back to the browser.",
 		file: "plugins/bcew-chefs-form/src/chefs-form/block.json",
-		aside: EMBED_REF_ASIDE,
+		aside: FORM_ID_ASIDE,
 		zone: {
 			browser: true,
 			server: true,
 			browserTag: "Block editor",
 			serverTag: "Saved in WP",
-			browserNote: "Only embed ref in block attributes",
+			browserNote: "Only Form ID in block attributes",
 			serverNote: "API key stays in the encrypted DB row",
 		},
 		code: (c) => `"attributes": {
-    "embedRef": {
+    "formId": {
         "type": "string",
-        "default": "${esc(c.embed)}"
+        "default": "${esc(c.formId)}"
     }
 }`,
 		scene: (c) => boxes([
-			["page", `block<small>embed ref ${esc(c.embedShort)}</small>`],
+			["page", `block<small>Form ID ${esc(c.formIdShort)}</small>`],
 			"=",
-			["embed-ref", `database row<small>same embed ref</small>`],
+			["form-id", `database row<small>same Form ID</small>`],
 		]),
 	},
 ];
 
 const EMBED_STEPS = [
 	{
-		title: "Page has an embed ref",
-		say: "PHP runs render.php on the server first. The browser only receives finished HTML — with the embed ref, not the API key.",
+		title: "Page has the Form ID",
+		say: "PHP runs render.php on the server first. The browser only receives finished HTML — with the Form ID, not the API key.",
 		file: "plugins/bcew-chefs-form/src/chefs-form/render.php",
-		aside: EMBED_REF_ORIGIN_ASIDE,
+		aside: FORM_ID_ASIDE,
 		zone: {
 			browser: true,
 			server: true,
 			serverFirst: true,
 			browserTag: "Public browser",
 			serverTag: "render.php runs first",
-			browserNote: "Gets HTML: data-bcew-chefs-embed only",
+			browserNote: "Gets HTML: data-bcew-chefs-form-id only",
 			serverNote: "PHP builds the page before the DOM exists",
 		},
-		code: (c) => `$embed_ref = $attributes['embedRef'];
+		code: (c) => `$form_id = $attributes['formId'];
 
-<div data-bcew-chefs-embed="<?php echo esc_attr( $embed_ref ); ?>">
-// → ${esc(c.embedShort)}
+<div data-bcew-chefs-form-id="<?php echo esc_attr( $form_id ); ?>">
+// → ${esc(c.formIdShort)}
 </div>`,
 		scene: (c) => boxes([
 			["page", "public page"],
 			"→",
-			["embed-ref", `embed ref<small>${esc(c.embedShort)}</small>`],
+			["form-id", `Form ID<small>${esc(c.formIdShort)}</small>`],
 		]),
 	},
 	{
-		title: "Embed ref finds the DB row",
-		say: "Match the embed ref → get the locked secrets for that form.",
+		title: "Form ID finds the DB row",
+		say: "Match the Form ID → get the encrypted API key for that form.",
 		file: "plugins/bcew-chefs-form/includes/class-chefs-credentials.php",
-		aside: EMBED_REF_ASIDE,
+		aside: FORM_ID_ASIDE,
 		zone: {
 			server: true,
 			serverTag: "PHP REST API",
-			serverNote: "DB lookup on the server — browser only sent the embed ref",
+			serverNote: "DB lookup on the server — browser only sent the Form ID",
 		},
 		code: (c) => `$row = $wpdb->get_row(
     $wpdb->prepare(
         'SELECT ... FROM wp_bcew_chefs_credentials
-         WHERE embed_ref = %s',
-        '${esc(c.embed)}'
+         WHERE form_id = %s',
+        '${esc(c.formId)}'
     )
 );`,
 		scene: () => boxes([
-			["embed-ref", "embed ref"],
+			["form-id", "Form ID"],
 			"→",
-			["lock", "locked secrets"],
+			["lock", "locked API key"],
 		]),
 	},
 	{
 		title: "Unlock on the server",
-		say: "WordPress decrypts in PHP. The browser still can’t see the API key.",
+		say: "WordPress decrypts the API key in PHP. The browser still can’t see it.",
 		file: "plugins/bcew-chefs-form/includes/class-chefs-crypto.php",
 		zone: {
 			server: true,
 			serverTag: "PHP only",
 			serverNote: "decrypt() in memory — plaintext never leaves the server",
 		},
-		code: () => `$form_id = BCEW_Chefs_Crypto::decrypt( $row['form_id_encrypted'] );
-$api_key = BCEW_Chefs_Crypto::decrypt( $row['api_key_encrypted'] );`,
+		code: () => `$api_key = BCEW_Chefs_Crypto::decrypt( $row['api_key_encrypted'] );`,
 		morph: true,
 		scene: () => `
-			<span class="box lock morph-from" data-to="Form ID + API key" data-cls="secret">locked secrets</span>
+			<span class="box lock morph-from" data-to="API key" data-cls="secret">locked API key</span>
 			<span class="arrow">→</span>
 			<span class="box page">decrypt() in PHP</span>
 		`,
@@ -262,7 +235,7 @@ $api_key = BCEW_Chefs_Crypto::decrypt( $row['api_key_encrypted'] );`,
 		},
 		code: (c) => `// view.js — runs in the browser
 fetch( '/wp-json/bcew-chefs/v1/embed-config
-    ?embed_ref=${esc(c.embed)}' )
+    ?form_id=${esc(c.formId)}' )
   .then( ( res ) => res.json() )
   // { formId, authToken } — no api_key
   .then( ( config ) => loadViewer( container, config ) );`,
@@ -320,8 +293,6 @@ const state = {
 		label: "",
 		formId: "",
 		apiKey: "",
-		embed: "",
-		encForm: "",
 		encKey: "",
 	},
 };
@@ -367,11 +338,6 @@ function fakeSeal(value) {
 	return `s1:${h.toString(16)}${s.slice(0, 4)}…`;
 }
 
-function newEmbed() {
-	return Array.from(crypto.getRandomValues(new Uint8Array(16)))
-		.map((b) => b.toString(16).padStart(2, "0"))
-		.join("");
-}
 
 function readDemoForm() {
 	return {
@@ -386,8 +352,7 @@ function ctx() {
 	return {
 		label: fv.label,
 		formId: fv.formId,
-		embed: fv.embed,
-		embedShort: truncate(fv.embed, 10),
+		formIdShort: truncate(fv.formId, 10),
 	};
 }
 
@@ -518,13 +483,10 @@ function openStage(type, steps) {
 }
 
 function launchSave(values) {
-	const embed = newEmbed();
 	state.formValues = {
 		label: values.label,
 		formId: values.formId,
 		apiKey: values.apiKey,
-		embed,
-		encForm: fakeSeal(values.formId),
 		encKey: fakeSeal(values.apiKey),
 	};
 	els.wpForm.classList.add("sending");
@@ -535,15 +497,12 @@ function launchSave(values) {
 }
 
 function ensureCredentials(values) {
-	if (state.formValues.embed) return;
+	if (state.formValues.formId) return;
 	const v = values || readDemoForm();
-	const embed = newEmbed();
 	state.formValues = {
 		label: v.label,
 		formId: v.formId,
 		apiKey: v.apiKey,
-		embed,
-		encForm: fakeSeal(v.formId),
 		encKey: fakeSeal(v.apiKey),
 	};
 }
@@ -593,15 +552,13 @@ async function tick() {
 			if (ev.type === "save") {
 				const row = ev.steps?.find((s) => s.row)?.row;
 				state.formValues.label = ev.label || row?.label || readDemoForm().label;
-				state.formValues.embed = ev.embed_ref || row?.embed_ref || newEmbed();
-				state.formValues.encForm = row?.form_id_encrypted || fakeSeal("wp");
+				state.formValues.formId = ev.form_id || row?.form_id || els.demoFormId.value || readDemoForm().formId;
 				state.formValues.encKey = row?.api_key_encrypted || fakeSeal("key");
-				state.formValues.formId = els.demoFormId.value || "from WordPress";
 				state.formValues.apiKey = els.demoApiKey.value || "••••";
 				openStage("save", SAVE_STEPS);
 			} else if (ev.type === "embed") {
 				ensureCredentials(readDemoForm());
-				if (ev.embed_ref) state.formValues.embed = ev.embed_ref;
+				if (ev.form_id) state.formValues.formId = ev.form_id;
 				openStage("embed", EMBED_STEPS);
 			}
 			return;

@@ -2,7 +2,7 @@
 /**
  * Server-side storage for CHEFS form credentials.
  *
- * Credentials live in a dedicated table with encrypted form ID and API key.
+ * Form IDs are stored in plaintext for block lookup. API keys are encrypted at rest.
  *
  * @package bcew-chefs-form
  */
@@ -16,8 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class BCEW_Chefs_Credentials {
 
-	const OPTION_KEY    = 'bcew_chefs_forms';
-	const TABLE_VERSION = 1;
+	const TABLE_VERSION  = 1;
 	const DB_VERSION_KEY = 'bcew_chefs_credentials_db_version';
 
 	/**
@@ -32,35 +31,13 @@ class BCEW_Chefs_Credentials {
 	}
 
 	/**
-	 * Create or update the credentials table.
+	 * Create the credentials table.
 	 *
 	 * @return void
 	 */
 	public static function install() {
-		global $wpdb;
-
-		$table   = self::table_name();
-		$charset = $wpdb->get_charset_collate();
-
-		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-
-		$sql = "CREATE TABLE {$table} (
-			id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-			embed_ref char(32) NOT NULL,
-			label varchar(255) NOT NULL DEFAULT '',
-			form_id_hash char(64) NOT NULL,
-			form_id_encrypted longtext NOT NULL,
-			api_key_encrypted longtext NOT NULL,
-			created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-			updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-			PRIMARY KEY  (id),
-			UNIQUE KEY embed_ref (embed_ref),
-			UNIQUE KEY form_id_hash (form_id_hash)
-		) {$charset};";
-
-		dbDelta( $sql );
+		self::create_table();
 		update_option( self::DB_VERSION_KEY, self::TABLE_VERSION, false );
-		self::migrate_from_option();
 	}
 
 	/**
@@ -75,24 +52,47 @@ class BCEW_Chefs_Credentials {
 	}
 
 	/**
-	 * Get a stored form record by embed reference (decrypted for server use).
+	 * Check whether a form ID exists in the table.
 	 *
-	 * @param string $embed_ref Opaque embed reference.
-	 * @return array{form_id:string,api_key:string,label:string}|null
+	 * @param string $form_id CHEFS form UUID.
+	 * @return bool
 	 */
-	public static function get_by_embed_ref( $embed_ref ) {
+	public static function exists( $form_id ) {
 		global $wpdb;
 
-		$embed_ref = sanitize_key( $embed_ref );
+		$form_id = self::sanitize_form_id( $form_id );
 
-		if ( '' === $embed_ref || ! self::is_valid_embed_ref( $embed_ref ) ) {
+		if ( '' === $form_id ) {
+			return false;
+		}
+
+		return (bool) $wpdb->get_var(
+			$wpdb->prepare(
+				'SELECT 1 FROM ' . self::table_name() . ' WHERE form_id = %s LIMIT 1',
+				$form_id
+			)
+		);
+	}
+
+	/**
+	 * Get a stored form record by form ID (decrypted API key for server use).
+	 *
+	 * @param string $form_id CHEFS form UUID.
+	 * @return array{form_id:string,api_key:string,label:string}|null
+	 */
+	public static function get_by_form_id( $form_id ) {
+		global $wpdb;
+
+		$form_id = self::sanitize_form_id( $form_id );
+
+		if ( '' === $form_id ) {
 			return null;
 		}
 
 		$row = $wpdb->get_row(
 			$wpdb->prepare(
-				'SELECT label, form_id_encrypted, api_key_encrypted FROM ' . self::table_name() . ' WHERE embed_ref = %s',
-				$embed_ref
+				'SELECT label, form_id, api_key_encrypted FROM ' . self::table_name() . ' WHERE form_id = %s',
+				$form_id
 			),
 			ARRAY_A
 		);
@@ -101,15 +101,14 @@ class BCEW_Chefs_Credentials {
 			return null;
 		}
 
-		$form_id = BCEW_Chefs_Crypto::decrypt( $row['form_id_encrypted'] );
 		$api_key = BCEW_Chefs_Crypto::decrypt( $row['api_key_encrypted'] );
 
-		if ( false === $form_id || false === $api_key ) {
+		if ( false === $api_key ) {
 			return null;
 		}
 
 		return array(
-			'form_id' => $form_id,
+			'form_id' => $row['form_id'],
 			'api_key' => $api_key,
 			'label'   => $row['label'],
 		);
@@ -121,80 +120,66 @@ class BCEW_Chefs_Credentials {
 	 * @param string $form_id CHEFS form UUID.
 	 * @param string $api_key Form API key.
 	 * @param string $label   Optional admin label.
-	 * @return string|false Embed reference on success.
+	 * @return string|false Form ID on success.
 	 */
 	public static function save( $form_id, $api_key, $label = '' ) {
 		global $wpdb;
 
-		$form_id = strtolower( trim( $form_id ) );
+		$form_id = self::sanitize_form_id( $form_id );
 		$api_key = trim( $api_key );
 		$label   = sanitize_text_field( $label );
 
-		if ( ! self::is_valid_form_id( $form_id ) || '' === $api_key ) {
+		if ( '' === $form_id || '' === $api_key ) {
 			return false;
 		}
 
-		$form_id_encrypted = BCEW_Chefs_Crypto::encrypt( $form_id );
 		$api_key_encrypted = BCEW_Chefs_Crypto::encrypt( $api_key );
 
-		if ( false === $form_id_encrypted || false === $api_key_encrypted ) {
+		if ( false === $api_key_encrypted ) {
 			return false;
 		}
-
-		$form_id_hash = BCEW_Chefs_Crypto::hash_form_id( $form_id );
-		$table        = self::table_name();
-		$existing     = $wpdb->get_row(
-			$wpdb->prepare(
-				"SELECT embed_ref FROM {$table} WHERE form_id_hash = %s",
-				$form_id_hash
-			),
-			ARRAY_A
-		);
-
-		$embed_ref = ( is_array( $existing ) && ! empty( $existing['embed_ref'] ) )
-			? $existing['embed_ref']
-			: bin2hex( random_bytes( 16 ) );
 
 		if ( ! $label ) {
 			$label = __( 'CHEFS form', 'bcew-chefs-form' );
 		}
 
-		$data = array(
-			'embed_ref'          => $embed_ref,
-			'label'              => $label,
-			'form_id_hash'       => $form_id_hash,
-			'form_id_encrypted'  => $form_id_encrypted,
-			'api_key_encrypted'  => $api_key_encrypted,
-		);
-		$formats = array( '%s', '%s', '%s', '%s', '%s' );
+		$table    = self::table_name();
+		$existing = self::exists( $form_id );
 
-		if ( is_array( $existing ) ) {
-			$result = $wpdb->update( $table, $data, array( 'embed_ref' => $embed_ref ), $formats, array( '%s' ) );
+		$data    = array(
+			'form_id'           => $form_id,
+			'label'             => $label,
+			'api_key_encrypted' => $api_key_encrypted,
+		);
+		$formats = array( '%s', '%s', '%s' );
+
+		if ( $existing ) {
+			$result = $wpdb->update( $table, $data, array( 'form_id' => $form_id ), $formats, array( '%s' ) );
 		} else {
 			$result = $wpdb->insert( $table, $data, $formats );
 		}
 
-		return false === $result ? false : $embed_ref;
+		return false === $result ? false : $form_id;
 	}
 
 	/**
-	 * Remove a form by embed reference.
+	 * Remove a form by CHEFS form ID.
 	 *
-	 * @param string $embed_ref Opaque embed reference.
+	 * @param string $form_id CHEFS form UUID.
 	 * @return bool
 	 */
-	public static function delete( $embed_ref ) {
+	public static function delete( $form_id ) {
 		global $wpdb;
 
-		$embed_ref = sanitize_key( $embed_ref );
+		$form_id = self::sanitize_form_id( $form_id );
 
-		if ( ! self::is_valid_embed_ref( $embed_ref ) ) {
+		if ( '' === $form_id ) {
 			return false;
 		}
 
 		$deleted = $wpdb->delete(
 			self::table_name(),
-			array( 'embed_ref' => $embed_ref ),
+			array( 'form_id' => $form_id ),
 			array( '%s' )
 		);
 
@@ -202,16 +187,15 @@ class BCEW_Chefs_Credentials {
 	}
 
 	/**
-	 * List configured forms for UI (never includes API key; form ID only when requested).
+	 * List configured forms for UI (never includes API key).
 	 *
-	 * @param bool $include_form_id Include decrypted CHEFS UUID (avoid for admin screens).
-	 * @return array<int,array<string,string>>
+	 * @return array<int,array{formId:string,label:string}>
 	 */
-	public static function list_forms( $include_form_id = false ) {
+	public static function list_forms() {
 		global $wpdb;
 
 		$rows = $wpdb->get_results(
-			'SELECT embed_ref, label, form_id_encrypted FROM ' . self::table_name() . ' ORDER BY label ASC',
+			'SELECT form_id, label FROM ' . self::table_name() . ' ORDER BY label ASC',
 			ARRAY_A
 		);
 
@@ -222,20 +206,10 @@ class BCEW_Chefs_Credentials {
 		}
 
 		foreach ( $rows as $row ) {
-			$item = array(
-				'embedRef'  => $row['embed_ref'],
-				'embed_ref' => $row['embed_ref'],
-				'label'     => $row['label'] ?: __( 'CHEFS form', 'bcew-chefs-form' ),
+			$list[] = array(
+				'formId' => $row['form_id'],
+				'label'  => $row['label'] ?: __( 'CHEFS form', 'bcew-chefs-form' ),
 			);
-
-			if ( $include_form_id ) {
-				$form_id = BCEW_Chefs_Crypto::decrypt( $row['form_id_encrypted'] );
-				if ( false !== $form_id ) {
-					$item['form_id'] = $form_id;
-				}
-			}
-
-			$list[] = $item;
 		}
 
 		return $list;
@@ -255,61 +229,41 @@ class BCEW_Chefs_Credentials {
 	}
 
 	/**
-	 * Validate an embed reference.
+	 * Normalize and validate a CHEFS form UUID for storage and lookup.
 	 *
-	 * @param string $embed_ref Embed reference.
-	 * @return bool
+	 * @param string $form_id Form ID.
+	 * @return string Empty string when invalid.
 	 */
-	public static function is_valid_embed_ref( $embed_ref ) {
-		return (bool) preg_match( '/^[a-f0-9]{32}$/i', $embed_ref );
+	public static function sanitize_form_id( $form_id ) {
+		$form_id = strtolower( trim( sanitize_text_field( $form_id ) ) );
+
+		return self::is_valid_form_id( $form_id ) ? $form_id : '';
 	}
 
 	/**
-	 * One-time migrate plaintext option storage into the encrypted table.
+	 * Create the credentials table via dbDelta.
 	 *
 	 * @return void
 	 */
-	private static function migrate_from_option() {
+	private static function create_table() {
 		global $wpdb;
 
-		$forms = get_option( self::OPTION_KEY, null );
+		$table   = self::table_name();
+		$charset = $wpdb->get_charset_collate();
 
-		if ( ! is_array( $forms ) || array() === $forms ) {
-			return;
-		}
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-		$table = self::table_name();
+		$sql = "CREATE TABLE {$table} (
+			id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+			form_id char(36) NOT NULL,
+			label varchar(255) NOT NULL DEFAULT '',
+			api_key_encrypted longtext NOT NULL,
+			created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+			PRIMARY KEY  (id),
+			UNIQUE KEY form_id (form_id)
+		) {$charset};";
 
-		foreach ( $forms as $embed_ref => $record ) {
-			$embed_ref = sanitize_key( $embed_ref );
-			$form_id   = strtolower( trim( $record['form_id'] ?? '' ) );
-			$api_key   = trim( $record['api_key'] ?? '' );
-			$label     = sanitize_text_field( $record['label'] ?? '' );
-
-			if ( ! self::is_valid_embed_ref( $embed_ref ) || ! self::is_valid_form_id( $form_id ) || '' === $api_key ) {
-				continue;
-			}
-
-			$form_id_encrypted = BCEW_Chefs_Crypto::encrypt( $form_id );
-			$api_key_encrypted = BCEW_Chefs_Crypto::encrypt( $api_key );
-
-			if ( false === $form_id_encrypted || false === $api_key_encrypted ) {
-				continue;
-			}
-
-			$wpdb->replace(
-				$table,
-				array(
-					'embed_ref'         => $embed_ref,
-					'label'             => $label ? $label : __( 'CHEFS form', 'bcew-chefs-form' ),
-					'form_id_hash'      => BCEW_Chefs_Crypto::hash_form_id( $form_id ),
-					'form_id_encrypted' => $form_id_encrypted,
-					'api_key_encrypted' => $api_key_encrypted,
-				),
-				array( '%s', '%s', '%s', '%s', '%s' )
-			);
-		}
-
-		delete_option( self::OPTION_KEY );
+		dbDelta( $sql );
 	}
 }

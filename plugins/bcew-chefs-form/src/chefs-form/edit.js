@@ -6,7 +6,7 @@ import { useEffect, useRef } from '@wordpress/element';
 import { loadViewer } from './loader';
 
 const Edit = ( { attributes, setAttributes } ) => {
-	const { embedRef } = attributes;
+	const { formId } = attributes;
 	const forms = window.bcewChefsFormSettings?.forms ?? [];
 	const settingsUrl = window.bcewChefsFormSettings?.settingsUrl;
 	const previewRef = useRef( null );
@@ -15,13 +15,13 @@ const Edit = ( { attributes, setAttributes } ) => {
 		{ label: __( 'Select a form…', 'bcew-chefs-form' ), value: '' },
 		...forms.map( ( form ) => ( {
 			label: form.label,
-			value: form.embedRef,
+			value: form.formId,
 		} ) ),
 	];
 
 	useEffect( () => {
 		const el = previewRef.current;
-		if ( ! el || ! embedRef ) {
+		if ( ! el || ! formId ) {
 			el?.replaceChildren();
 			return undefined;
 		}
@@ -29,7 +29,7 @@ const Edit = ( { attributes, setAttributes } ) => {
 		let cancelled = false;
 
 		fetch(
-			`/wp-json/bcew-chefs/v1/embed-config?embed_ref=${ encodeURIComponent( embedRef ) }`
+			`/wp-json/bcew-chefs/v1/embed-config?form_id=${ encodeURIComponent( formId ) }`
 		)
 			.then( ( response ) => response.json() )
 			.then( async ( config ) => {
@@ -44,7 +44,7 @@ const Edit = ( { attributes, setAttributes } ) => {
 			cancelled = true;
 			el.replaceChildren();
 		};
-	}, [ embedRef ] );
+	}, [ formId ] );
 
 	return (
 		<>
@@ -62,10 +62,10 @@ const Edit = ( { attributes, setAttributes } ) => {
 					) : (
 						<SelectControl
 							label={ __( 'Form', 'bcew-chefs-form' ) }
-							value={ embedRef }
+							value={ formId }
 							options={ options }
 							onChange={ ( value ) =>
-								setAttributes( { embedRef: value } )
+								setAttributes( { formId: value } )
 							}
 						/>
 					) }
@@ -75,7 +75,7 @@ const Edit = ( { attributes, setAttributes } ) => {
 			<div
 				{ ...useBlockProps( { className: 'bcew-chefs-form-block' } ) }
 			>
-				{ embedRef ? (
+				{ formId ? (
 					<div className="bcew-chefs-form__preview">
 						<div
 							ref={ previewRef }

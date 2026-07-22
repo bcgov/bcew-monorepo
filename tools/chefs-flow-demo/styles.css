@@ -473,7 +473,7 @@ body {
 .box.secret { color: var(--secret); background: #fff4e8; }
 .box.lock { color: var(--seal); background: #f3ebff; }
 .box.random { color: #6b4a12; background: #fff8e8; }
-.box.embed-ref { color: var(--accent); background: #dff0e6; }
+.box.form-id { color: var(--accent); background: #dff0e6; }
 .box.ok { color: var(--token); background: #e5f4fb; }
 .box.page { color: var(--ink); background: #f3f6f2; border-color: var(--line); }
 
