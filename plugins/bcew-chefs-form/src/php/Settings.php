@@ -99,10 +99,6 @@ class Settings {
 				<input type="hidden" name="action" value="bcew_chefs_save" />
 				<table class="form-table">
 					<tr>
-						<th><label for="label"><?php esc_html_e( 'Label', 'bcew-chefs-form' ); ?></label></th>
-						<td><input type="text" class="regular-text" id="label" name="label" placeholder="Contact form" /></td>
-					</tr>
-					<tr>
 						<th><label for="form_id"><?php esc_html_e( 'Form ID', 'bcew-chefs-form' ); ?></label></th>
 						<td><input type="text" class="regular-text code" id="form_id" name="form_id" required autocomplete="off" /></td>
 					</tr>
@@ -119,21 +115,19 @@ class Settings {
 				<table class="widefat striped" style="max-width:720px">
 					<thead>
 						<tr>
-							<th><?php esc_html_e( 'Label', 'bcew-chefs-form' ); ?></th>
 							<th><?php esc_html_e( 'Form ID', 'bcew-chefs-form' ); ?></th>
 							<th></th>
 						</tr>
 					</thead>
 					<tbody>
-						<?php foreach ( $forms as $form ) : ?>
+						<?php foreach ( $forms as $form_id ) : ?>
 							<tr>
-								<td><?php echo esc_html( $form['label'] ); ?></td>
-								<td><code><?php echo esc_html( $form['formId'] ); ?></code></td>
+								<td><code><?php echo esc_html( $form_id ); ?></code></td>
 								<td>
 									<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 										<?php wp_nonce_field( 'bcew_chefs_delete' ); ?>
 										<input type="hidden" name="action" value="bcew_chefs_delete" />
-										<input type="hidden" name="form_id" value="<?php echo esc_attr( $form['formId'] ); ?>" />
+										<input type="hidden" name="form_id" value="<?php echo esc_attr( $form_id ); ?>" />
 										<?php submit_button( __( 'Remove', 'bcew-chefs-form' ), 'delete small', 'submit', false ); ?>
 									</form>
 								</td>
@@ -158,7 +152,6 @@ class Settings {
 
 		$form_id = sanitize_text_field( wp_unslash( $_POST['form_id'] ?? '' ) );
 		$api_key = sanitize_text_field( wp_unslash( $_POST['api_key'] ?? '' ) );
-		$label   = sanitize_text_field( wp_unslash( $_POST['label'] ?? '' ) );
 
 		if ( ! Credentials::is_valid_form_id( $form_id ) ) {
 			$this->redirect_error( __( 'Invalid form ID.', 'bcew-chefs-form' ) );
@@ -170,7 +163,7 @@ class Settings {
 			$this->redirect_error( $token['error'] ?? __( 'Could not validate with CHEFS.', 'bcew-chefs-form' ) );
 		}
 
-		$saved_form_id = Credentials::save( $form_id, $api_key, $label );
+		$saved_form_id = Credentials::save( $form_id, $api_key );
 
 		if ( ! $saved_form_id ) {
 			$this->redirect_error( __( 'Could not save.', 'bcew-chefs-form' ) );

@@ -13,9 +13,9 @@ const Edit = ( { attributes, setAttributes } ) => {
 
 	const options = [
 		{ label: __( 'Select a form…', 'bcew-chefs-form' ), value: '' },
-		...forms.map( ( form ) => ( {
-			label: form.label,
-			value: form.formId,
+		...forms.map( ( id ) => ( {
+			label: id,
+			value: id,
 		} ) ),
 	];
 

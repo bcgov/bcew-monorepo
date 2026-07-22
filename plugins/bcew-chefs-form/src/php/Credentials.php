@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Credentials {
 
-	const TABLE_VERSION  = 1;
+	const TABLE_VERSION  = 2;
 	const DB_VERSION_KEY = 'bcew_chefs_credentials_db_version';
 
 	/**
@@ -46,9 +46,18 @@ class Credentials {
 	 * @return void
 	 */
 	public static function maybe_install() {
-		if ( (int) get_option( self::DB_VERSION_KEY, 0 ) < self::TABLE_VERSION ) {
-			self::install();
+		$version = (int) get_option( self::DB_VERSION_KEY, 0 );
+
+		if ( $version >= self::TABLE_VERSION ) {
+			return;
 		}
+
+		if ( $version > 0 && $version < self::TABLE_VERSION ) {
+			global $wpdb;
+			$wpdb->query( 'DROP TABLE IF EXISTS ' . self::table_name() ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		}
+
+		self::install();
 	}
 
 	/**
@@ -78,7 +87,7 @@ class Credentials {
 	 * Get a stored form record by form ID (decrypted API key for server use).
 	 *
 	 * @param string $form_id CHEFS form UUID.
-	 * @return array{form_id:string,api_key:string,label:string}|null
+	 * @return array{form_id:string,api_key:string}|null
 	 */
 	public static function get_by_form_id( $form_id ) {
 		global $wpdb;
@@ -91,7 +100,7 @@ class Credentials {
 
 		$row = $wpdb->get_row(
 			$wpdb->prepare(
-				'SELECT label, form_id, api_key_encrypted FROM ' . self::table_name() . ' WHERE form_id = %s',
+				'SELECT form_id, api_key_encrypted FROM ' . self::table_name() . ' WHERE form_id = %s',
 				$form_id
 			),
 			ARRAY_A
@@ -110,7 +119,6 @@ class Credentials {
 		return array(
 			'form_id' => $row['form_id'],
 			'api_key' => $api_key,
-			'label'   => $row['label'],
 		);
 	}
 
@@ -119,15 +127,13 @@ class Credentials {
 	 *
 	 * @param string $form_id CHEFS form UUID.
 	 * @param string $api_key Form API key.
-	 * @param string $label   Optional admin label.
 	 * @return string|false Form ID on success.
 	 */
-	public static function save( $form_id, $api_key, $label = '' ) {
+	public static function save( $form_id, $api_key ) {
 		global $wpdb;
 
 		$form_id = self::sanitize_form_id( $form_id );
 		$api_key = trim( $api_key );
-		$label   = sanitize_text_field( $label );
 
 		if ( '' === $form_id || '' === $api_key ) {
 			return false;
@@ -139,19 +145,14 @@ class Credentials {
 			return false;
 		}
 
-		if ( ! $label ) {
-			$label = __( 'CHEFS form', 'bcew-chefs-form' );
-		}
-
 		$table    = self::table_name();
 		$existing = self::exists( $form_id );
 
 		$data    = array(
 			'form_id'           => $form_id,
-			'label'             => $label,
 			'api_key_encrypted' => $api_key_encrypted,
 		);
-		$formats = array( '%s', '%s', '%s' );
+		$formats = array( '%s', '%s' );
 
 		if ( $existing ) {
 			$result = $wpdb->update( $table, $data, array( 'form_id' => $form_id ), $formats, array( '%s' ) );
@@ -187,29 +188,29 @@ class Credentials {
 	}
 
 	/**
-	 * List configured forms for UI (never includes API key).
+	 * List configured form IDs for UI (never includes API key).
 	 *
-	 * @return array<int,array{formId:string,label:string}>
+	 * @return array<int,string>
 	 */
 	public static function list_forms() {
 		global $wpdb;
 
-		$rows = $wpdb->get_results(
-			'SELECT form_id, label FROM ' . self::table_name() . ' ORDER BY label ASC',
-			ARRAY_A
+		$rows = $wpdb->get_col(
+			'SELECT form_id FROM ' . self::table_name() . ' ORDER BY form_id ASC'
 		);
+
+		if ( ! is_array( $rows ) ) {
+			return array();
+		}
 
 		$list = array();
 
-		if ( ! is_array( $rows ) ) {
-			return $list;
-		}
+		foreach ( $rows as $form_id ) {
+			$form_id = self::sanitize_form_id( $form_id );
 
-		foreach ( $rows as $row ) {
-			$list[] = array(
-				'formId' => $row['form_id'],
-				'label'  => $row['label'] ?: __( 'CHEFS form', 'bcew-chefs-form' ),
-			);
+			if ( '' !== $form_id ) {
+				$list[] = $form_id;
+			}
 		}
 
 		return $list;
@@ -256,7 +257,6 @@ class Credentials {
 		$sql = "CREATE TABLE {$table} (
 			id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			form_id char(36) NOT NULL,
-			label varchar(255) NOT NULL DEFAULT '',
 			api_key_encrypted longtext NOT NULL,
 			created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
