@@ -2,10 +2,10 @@
 /**
  * Server-side storage for CHEFS form credentials.
  *
- * Form IDs are stored in plaintext for block lookup. API keys are encrypted at rest.
- *
  * @package bcew-chefs-form
  */
+
+namespace Bcgov\BcewChefsForm;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Manages CHEFS API credentials for the site.
  */
-class BCEW_Chefs_Credentials {
+class Credentials {
 
 	const TABLE_VERSION  = 1;
 	const DB_VERSION_KEY = 'bcew_chefs_credentials_db_version';
@@ -101,7 +101,7 @@ class BCEW_Chefs_Credentials {
 			return null;
 		}
 
-		$api_key = BCEW_Chefs_Crypto::decrypt( $row['api_key_encrypted'] );
+		$api_key = Crypto::decrypt( $row['api_key_encrypted'] );
 
 		if ( false === $api_key ) {
 			return null;
@@ -133,7 +133,7 @@ class BCEW_Chefs_Credentials {
 			return false;
 		}
 
-		$api_key_encrypted = BCEW_Chefs_Crypto::encrypt( $api_key );
+		$api_key_encrypted = Crypto::encrypt( $api_key );
 
 		if ( false === $api_key_encrypted ) {
 			return false;

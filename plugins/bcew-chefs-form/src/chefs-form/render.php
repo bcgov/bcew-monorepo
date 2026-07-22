@@ -5,7 +5,9 @@
  * @package bcew-chefs-form
  */
 
-$form_id = BCEW_Chefs_Credentials::sanitize_form_id( $attributes['formId'] ?? '' );
+use Bcgov\BcewChefsForm\Credentials;
+
+$form_id = Credentials::sanitize_form_id( $attributes['formId'] ?? '' );
 
 if ( '' === $form_id ) {
 	if ( current_user_can( 'edit_posts' ) ) {
@@ -14,7 +16,7 @@ if ( '' === $form_id ) {
 	return;
 }
 
-if ( ! BCEW_Chefs_Credentials::get_by_form_id( $form_id ) ) {
+if ( ! Credentials::get_by_form_id( $form_id ) ) {
 	if ( current_user_can( 'edit_posts' ) ) {
 		echo '<p class="bcew-chefs-form__error">' . esc_html__( 'Form not configured in CHEFS Forms.', 'bcew-chefs-form' ) . '</p>';
 	}

@@ -6,7 +6,8 @@
     "projectType": "application",
     "targets": {
         "build": {},
-        "start": {}
+        "start": {},
+        "composer-install": {}
     },
     "tags": ["type:wp-plugin"]
 }

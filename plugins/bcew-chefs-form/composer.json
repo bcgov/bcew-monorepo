@@ -1,0 +1,30 @@
+{
+    "name": "bcgov-plugin/bcew-chefs-form",
+    "description": "Embed CHEFS forms in WordPress",
+    "type": "wordpress-plugin",
+    "license": "Apache-2.0",
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../../packages/phpunit-config",
+            "options": {
+                "symlink": false
+            }
+        }
+    ],
+    "require-dev": {
+        "bcew-monorepo/phpunit-config": "*",
+        "phpunit/phpunit": "^9.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Bcgov\\BcewChefsForm\\": "src/php/",
+            "Bcgov\\BcewChefsForm\\Test\\": "tests/php/"
+        }
+    },
+    "scripts": {
+        "test": [
+            "./vendor/bin/phpunit"
+        ]
+    }
+}

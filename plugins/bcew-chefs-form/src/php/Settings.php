@@ -5,44 +5,80 @@
  * @package bcew-chefs-form
  */
 
+namespace Bcgov\BcewChefsForm;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class BCEW_Chefs_Settings {
+/**
+ * Admin settings for saved CHEFS credentials.
+ */
+class Settings {
 
 	const PAGE_SLUG = 'bcew-chefs-form-settings';
 
-	public static function init() {
-		add_action( 'admin_menu', array( __CLASS__, 'register_menu' ) );
-		add_action( 'admin_post_bcew_chefs_save', array( __CLASS__, 'handle_save' ) );
-		add_action( 'admin_post_bcew_chefs_delete', array( __CLASS__, 'handle_delete' ) );
-		add_filter( 'plugin_action_links_' . plugin_basename( BCEW_CHEFS_FORM_PLUGIN_FILE ), function ( $links ) {
-			$links[] = '<a href="' . esc_url( self::get_page_url() ) . '">' . esc_html__( 'Settings', 'bcew-chefs-form' ) . '</a>';
-			return $links;
-		} );
+	/**
+	 * @var Gateway
+	 */
+	private $gateway;
+
+	/**
+	 * @param Gateway|null $gateway Gateway client.
+	 */
+	public function __construct( Gateway $gateway = null ) {
+		$this->gateway = $gateway ?? new Gateway();
 	}
 
-	public static function register_menu() {
+	/**
+	 * Register admin hooks.
+	 *
+	 * @return void
+	 */
+	public function init() {
+		add_action( 'admin_menu', array( $this, 'register_menu' ) );
+		add_action( 'admin_post_bcew_chefs_save', array( $this, 'handle_save' ) );
+		add_action( 'admin_post_bcew_chefs_delete', array( $this, 'handle_delete' ) );
+		add_filter(
+			'plugin_action_links_' . plugin_basename( BCEW_CHEFS_FORM_PLUGIN_FILE ),
+			array( $this, 'add_plugin_action_links' )
+		);
+	}
+
+	/**
+	 * @param array<int,string> $links Plugin action links.
+	 * @return array<int,string>
+	 */
+	public function add_plugin_action_links( $links ) {
+		$links[] = '<a href="' . esc_url( self::get_page_url() ) . '">' . esc_html__( 'Settings', 'bcew-chefs-form' ) . '</a>';
+		return $links;
+	}
+
+	/**
+	 * @return void
+	 */
+	public function register_menu() {
 		add_menu_page(
 			__( 'CHEFS Forms', 'bcew-chefs-form' ),
 			__( 'CHEFS Forms', 'bcew-chefs-form' ),
 			'manage_options',
 			self::PAGE_SLUG,
-			array( __CLASS__, 'render_page' ),
+			array( $this, 'render_page' ),
 			'dashicons-feedback',
 			58
 		);
 	}
 
-	public static function render_page() {
+	/**
+	 * @return void
+	 */
+	public function render_page() {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_die( esc_html__( 'Unauthorized.', 'bcew-chefs-form' ) );
 		}
 
 		$error = isset( $_GET['chefs_error'] ) ? sanitize_text_field( wp_unslash( $_GET['chefs_error'] ) ) : '';
-		// Labels and form IDs for the admin list.
-		$forms = BCEW_Chefs_Credentials::list_forms();
+		$forms = Credentials::list_forms();
 		?>
 		<div class="wrap">
 			<h1><?php esc_html_e( 'CHEFS Forms', 'bcew-chefs-form' ); ?></h1>
@@ -110,7 +146,10 @@ class BCEW_Chefs_Settings {
 		<?php
 	}
 
-	public static function handle_save() {
+	/**
+	 * @return void
+	 */
+	public function handle_save() {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_die( esc_html__( 'Unauthorized.', 'bcew-chefs-form' ) );
 		}
@@ -121,42 +160,52 @@ class BCEW_Chefs_Settings {
 		$api_key = sanitize_text_field( wp_unslash( $_POST['api_key'] ?? '' ) );
 		$label   = sanitize_text_field( wp_unslash( $_POST['label'] ?? '' ) );
 
-		if ( ! BCEW_Chefs_Credentials::is_valid_form_id( $form_id ) ) {
-			self::redirect_error( __( 'Invalid form ID.', 'bcew-chefs-form' ) );
+		if ( ! Credentials::is_valid_form_id( $form_id ) ) {
+			$this->redirect_error( __( 'Invalid form ID.', 'bcew-chefs-form' ) );
 		}
 
-		$token = bcew_chefs_form_get_gateway_token( $form_id, $api_key );
+		$token = $this->gateway->get_token( $form_id, $api_key );
 
 		if ( empty( $token['token'] ) ) {
-			self::redirect_error( $token['error'] ?? __( 'Could not validate with CHEFS.', 'bcew-chefs-form' ) );
+			$this->redirect_error( $token['error'] ?? __( 'Could not validate with CHEFS.', 'bcew-chefs-form' ) );
 		}
 
-		$saved_form_id = BCEW_Chefs_Credentials::save( $form_id, $api_key, $label );
+		$saved_form_id = Credentials::save( $form_id, $api_key, $label );
 
 		if ( ! $saved_form_id ) {
-			self::redirect_error( __( 'Could not save.', 'bcew-chefs-form' ) );
+			$this->redirect_error( __( 'Could not save.', 'bcew-chefs-form' ) );
 		}
 
 		wp_safe_redirect( add_query_arg( 'chefs_saved', '1', self::get_page_url() ) );
 		exit;
 	}
 
-	public static function handle_delete() {
+	/**
+	 * @return void
+	 */
+	public function handle_delete() {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_die( esc_html__( 'Unauthorized.', 'bcew-chefs-form' ) );
 		}
 
 		check_admin_referer( 'bcew_chefs_delete' );
-		BCEW_Chefs_Credentials::delete( BCEW_Chefs_Credentials::sanitize_form_id( wp_unslash( $_POST['form_id'] ?? '' ) ) );
+		Credentials::delete( Credentials::sanitize_form_id( wp_unslash( $_POST['form_id'] ?? '' ) ) );
 		wp_safe_redirect( add_query_arg( 'chefs_deleted', '1', self::get_page_url() ) );
 		exit;
 	}
 
+	/**
+	 * @return string
+	 */
 	public static function get_page_url() {
 		return admin_url( 'admin.php?page=' . self::PAGE_SLUG );
 	}
 
-	private static function redirect_error( $message ) {
+	/**
+	 * @param string $message Error message.
+	 * @return void
+	 */
+	private function redirect_error( $message ) {
 		wp_safe_redirect( add_query_arg( 'chefs_error', rawurlencode( $message ), self::get_page_url() ) );
 		exit;
 	}

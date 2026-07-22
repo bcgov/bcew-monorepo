@@ -5,17 +5,16 @@
  * @package bcew-chefs-form
  */
 
+namespace Bcgov\BcewChefsForm;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 /**
  * Symmetric encryption helpers for stored form credentials.
- *
- * Uses libsodium secretbox when available, otherwise OpenSSL AES-256-GCM.
- * The key is derived from WordPress salts (AUTH) so ciphertext is tied to the site.
  */
-class BCEW_Chefs_Crypto {
+class Crypto {
 
 	const PREFIX_SODIUM  = 's1:';
 	const PREFIX_OPENSSL = 'o1:';
@@ -93,7 +92,6 @@ class BCEW_Chefs_Crypto {
 
 			$raw = base64_decode( substr( $payload, strlen( self::PREFIX_OPENSSL ) ), true );
 
-			// 12-byte IV + 16-byte tag + ciphertext.
 			if ( false === $raw || strlen( $raw ) < 28 ) {
 				return false;
 			}

@@ -3,8 +3,5 @@
 	"phpVersion": "7.4",
 	"plugins": ["."],
 	"port": 9010,
-	"testsPort": 9011,
-	"config": {
-		"BCEW_CHEFS_FLOW_DEMO": true
-	}
+	"testsPort": 9011
 }
