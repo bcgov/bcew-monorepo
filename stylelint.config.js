@@ -2,7 +2,7 @@
 module.exports = {
     extends: [ '@wordpress/stylelint-config/scss' ],
     ignoreFontFamilies: [ 'BCSans' ],
-    ignoreFiles: [ '**/dist/**' ],
+    ignoreFiles: [ '**/dist/**', '**/coverage/**' ],
     rules: {
         // Todo: Re-enable this rule when it is introduced in higher versions of stylelint-config-wordpress.
         //'plugin-wpds/no-unknown-ds-tokens': null,

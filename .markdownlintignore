@@ -2,3 +2,5 @@ artifacts
 vendor
 node_modules
 tools/monorepo/src/generators/plugin-generator/files/**
+# Todo: Enable when integrating this documentation.
+plugins/wordpress-document-repository/documentation/**
