@@ -12,5 +12,10 @@
             "Bcgov\\BcewTheme2\\": "src/",
             "Bcgov\\BcewTheme2\\Test\\": "tests/"
         }
+    },
+    "config": {
+        "platform": {
+            "php": "7.4.30"
+        }
     }
 }

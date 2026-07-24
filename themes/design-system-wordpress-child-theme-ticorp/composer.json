@@ -8,5 +8,10 @@
             "Bcgov\\DesignSystemTicorp\\": "src/",
             "Bcgov\\DesignSystemTicorp\\Test\\": "tests/"
         }
+    },
+    "config": {
+        "platform": {
+            "php": "7.4.30"
+        }
     }
 }
