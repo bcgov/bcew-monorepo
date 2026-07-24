@@ -61,14 +61,18 @@ jobs:
       - name: Parse Inputs
         id: vars
         shell: bash
+        env:
+          NAME: ${{ inputs.name }}
+          VERSION: ${{ inputs.version }}
+          IS_PRERELEASE: ${{ inputs.is_prerelease }}
         run: |
-          echo "name=${{ inputs.name }}" >> $GITHUB_OUTPUT
-          echo "version_normalized=${{ inputs.version }}" >> $GITHUB_OUTPUT
-          echo "version=v${{ inputs.version }}" >> $GITHUB_OUTPUT
-          echo "project_path=$(npx nx show project ${{ inputs.name }} --json | jq -r .root)" >> $GITHUB_OUTPUT
-          echo "is_prerelease=${{ inputs.is_prerelease }}" >> $GITHUB_OUTPUT
-          echo "tag=${{ inputs.name }}/v${{ inputs.version }}" >> $GITHUB_OUTPUT
-          echo "asset_name=${{ inputs.name }}-${{ inputs.version }}.zip" >> $GITHUB_OUTPUT
+          echo "name=$NAME" >> $GITHUB_OUTPUT
+          echo "version_normalized=$VERSION" >> $GITHUB_OUTPUT
+          echo "version=v$VERSION" >> $GITHUB_OUTPUT
+          echo "project_path=$(npx nx show project $NAME --json | jq -r .root)" >> $GITHUB_OUTPUT
+          echo "is_prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
+          echo "tag=$NAME/v$VERSION" >> $GITHUB_OUTPUT
+          echo "asset_name=$NAME-$VERSION.zip" >> $GITHUB_OUTPUT
 
       - name: Install Composer dependencies
         run: npx nx run ${{ steps.vars.outputs.name }}:composer-install
