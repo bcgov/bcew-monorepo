@@ -15,7 +15,7 @@
     "require-dev": {
         "bcew-monorepo/phpunit-config": "@dev",
         "phpunit/phpunit": "^9.5",
-        "yoast/phpunit-polyfills": "^1.0"
+        "yoast/phpunit-polyfills": "^4.0"
     },
     "autoload": {
         "psr-4": {
