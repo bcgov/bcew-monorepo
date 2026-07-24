@@ -1,5 +1,7 @@
 # Documentation maintenance
 
+For dependency update PRs and deferrals, see [Dependabot maintenance](./dependabot-maintenance.md).
+
 ## When to update documentation
 
 Update docs **in the same pull request** as the behavior change when you:

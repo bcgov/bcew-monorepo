@@ -56,6 +56,7 @@ const monorepoGuideItems = [
   { text: 'Release & deployment', link: '/release-and-deployment' },
   { text: 'Versioning', link: '/versioning' },
   { text: 'Package management', link: '/package-management' },
+  { text: 'Dependabot maintenance', link: '/dependabot-maintenance' },
   { text: 'Contributing docs', link: '/contributing' },
   { text: 'Onboarding checklist', link: '/onboarding-validation' },
   { text: 'Maintenance', link: '/maintenance' },
