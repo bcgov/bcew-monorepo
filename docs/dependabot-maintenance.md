@@ -41,6 +41,6 @@ ignore:
     versions: ["14.0.0"]
 ```
 
-4. When the issue can be resolved, resolve it, remove that `ignore`, then close the issue.
+1. When the issue can be resolved, resolve it, remove that `ignore`, then close the issue.
 
 See also: [Package management](./package-management.md), [CI/CD](./ci-cd.md).
