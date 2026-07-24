@@ -14,7 +14,7 @@
     ],
     "require-dev": {
         "bcew-monorepo/phpunit-config": "@dev",
-        "phpunit/phpunit": "^9.5"
+        "phpunit/phpunit": "^13.2"
     },
     "autoload": {
         "psr-4": {
