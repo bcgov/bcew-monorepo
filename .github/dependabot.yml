@@ -1,0 +1,26 @@
+# Production WordPress: 6.7.4
+# @wordpress/* versions live in pnpm-workspace.yaml catalog (wp-6.7 tags).
+# Add ignore entries only when an update can't be merged — see docs/dependabot-maintenance.md
+
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    reviewers:
+      - bcgov/digital-engagement-solutions-custom-web
+
+  - package-ecosystem: composer
+    directories:
+      - /
+      - /plugins/*
+      - /themes/*
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    reviewers:
+      - bcgov/digital-engagement-solutions-custom-web
