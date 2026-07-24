@@ -69,16 +69,16 @@ jobs:
           echo "name=$NAME" >> $GITHUB_OUTPUT
           echo "version_normalized=$VERSION" >> $GITHUB_OUTPUT
           echo "version=v$VERSION" >> $GITHUB_OUTPUT
-          echo "project_path=$(npx nx show project $NAME --json | jq -r .root)" >> $GITHUB_OUTPUT
+          echo "project_path=$(pnpm nx show project $NAME --json | jq -r .root)" >> $GITHUB_OUTPUT
           echo "is_prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
           echo "tag=$NAME/v$VERSION" >> $GITHUB_OUTPUT
           echo "asset_name=$NAME-$VERSION.zip" >> $GITHUB_OUTPUT
 
       - name: Install Composer dependencies
-        run: npx nx run ${{ steps.vars.outputs.name }}:composer-install
+        run: pnpm nx run ${{ steps.vars.outputs.name }}:composer-install
 
       - name: Nx Build
-        run: npx nx run ${{ steps.vars.outputs.name }}:build
+        run: pnpm nx run ${{ steps.vars.outputs.name }}:build
 
       - name: Update versions and zip build artifacts
         env:
