@@ -2,6 +2,7 @@ name: Pull request checks
 
 on:
     pull_request:
+    push:
 
 # Avoid duplicate runs on force-pushes
 concurrency:
