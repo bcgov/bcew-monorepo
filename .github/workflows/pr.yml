@@ -95,7 +95,7 @@ jobs:
               run: pnpm nx affected --base="origin/${{ github.base_ref }}" -t test-integration --coverage-clover=coverage.xml
 
             - name: Upload coverage
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@v7.0.1
               with:
                 name: php-coverage
                 path: |
@@ -206,11 +206,11 @@ jobs:
         # - test-js
       runs-on: ubuntu-latest
       steps:
-        - uses: actions/checkout@v4
+        - uses: actions/checkout@v7
           with:
             fetch-depth: 0
 
-        - uses: actions/download-artifact@v5
+        - uses: actions/download-artifact@v8.0.1
           with:
             path: sonar-artifacts
 
