@@ -96,7 +96,7 @@ jobs:
 
             - name: Run affected PHP integration tests
               if: github.event_name == 'pull_request'
-              run: pnpm nx affected -t test-integration --coverage-clover=coverage.xml
+              run: pnpm nx affected --base="origin/${{ github.base_ref }}" -t test-integration --coverage-clover=coverage.xml
 
             - name: Run PHP integration tests
               if: github.event_name == 'push'
