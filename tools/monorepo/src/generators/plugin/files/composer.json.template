@@ -26,5 +26,10 @@
         "test": [
             "./vendor/bin/phpunit"
         ]
+    },
+    "config": {
+        "platform": {
+            "php": "7.4.30"
+        }
     }
 }
