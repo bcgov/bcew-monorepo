@@ -92,7 +92,15 @@ jobs:
               run: composer i
 
             - name: Run PHP integration tests
-              run: npx nx affected --base="origin/${{ github.base_ref }}" -t test-integration
+              run: pnpm nx affected --base="origin/${{ github.base_ref }}" -t test-integration --coverage-clover=coverage.xml
+
+            - name: Upload coverage
+              uses: actions/upload-artifact@v4
+              with:
+                name: php-coverage
+                path: |
+                  plugins/*/coverage.xml
+                  themes/*/coverage.xml
 
     test-e2e:
         name: Test e2e (affected)
@@ -189,3 +197,38 @@ jobs:
                     plugins/*/artifacts/test-results/
                     themes/*/artifacts/test-results/
                   retention-days: 7
+
+    sonarqube:
+      name: SonarQube
+      needs:
+        - test-integration
+        # later:
+        # - test-js
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+          with:
+            fetch-depth: 0
+
+        - uses: actions/download-artifact@v5
+          with:
+            path: sonar-artifacts
+
+        - name: Build report lists
+          id: reports
+          run: |
+            PHP_REPORTS=$(find sonar-artifacts -name "coverage.xml" | paste -sd "," -)
+            JS_REPORTS=$(find sonar-artifacts -name "lcov.info" | paste -sd "," -)
+
+            echo "php_reports=$PHP_REPORTS" >> $GITHUB_OUTPUT
+            echo "js_reports=$JS_REPORTS" >> $GITHUB_OUTPUT
+
+        - name: SonarQube Scan
+          uses: SonarSource/sonarqube-scan-action@v6
+          env:
+            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+            SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          with:
+            args: >
+              -Dsonar.php.coverage.reportPaths=${{ steps.reports.outputs.php_reports }}
+              -Dsonar.javascript.lcov.reportPaths=${{ steps.reports.outputs.js_reports }}
