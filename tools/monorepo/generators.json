@@ -1,10 +1,5 @@
 {
     "generators": {
-        "release-tag": {
-            "factory": "./dist/generators/release-tag/release-tag",
-            "schema": "./dist/generators/release-tag/schema.json",
-            "description": "Create and push a release tag in the format <project>/v<semver>"
-        },
         "theme": {
             "factory": "./dist/generators/theme/theme",
             "schema": "./dist/generators/theme/schema.json",

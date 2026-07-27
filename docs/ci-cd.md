@@ -25,8 +25,6 @@ All workflows live under [`.github/workflows/`](https://github.com/bcgov/bcew-mo
 
 The PR workflow compares the PR head to `origin/<github.base_ref>` (the target branch, usually `main`). Any project touched or implied by the Nx graph runs the expensive targets.
 
-Reusable workflow `detect-affected-projects.yml` exists for **callable** workflows; it computes affected **app** projects for a given base/head. Keep it in mind if you add new workflows that need the same logic.
-
 ## Merges to `main`
 
 - **Docs:** Pushes to `main` that touch `docs/**`, package `docs/**`, sync script, or docs workflow deploy the VitePress site via `deploy-docs.yml` (see [Documentation site](./documentation-site.md)).

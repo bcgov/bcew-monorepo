@@ -32,7 +32,3 @@ See `tag.yml` for exact permissions and steps.
 Builds the VitePress documentation site (including `tools/sync-docs.mjs`) and deploys output to the `docs/` directory on branch `gh-pages` for GitHub Pages.
 
 **Triggers:** `workflow_dispatch`, pushes to `main` that touch docs-related paths, and PRs that touch those paths (build only; deploy runs on non-PR events).
-
-## Detect affected projects (`detect-affected-projects.yml`)
-
-Reusable workflow (`workflow_call`) that outputs affected **application** projects for a given base/head. Use when adding new automation that should mirror PR semantics.
