@@ -69,7 +69,7 @@ jobs:
               run: pnpm run lint-pkg-json
     
     test-integration:
-        name: Test integration (affected)
+        name: Test integration
         runs-on: ubuntu-latest
         timeout-minutes: 15
         steps:
@@ -94,8 +94,13 @@ jobs:
             - name: Install Composer dependencies
               run: composer i
 
+            - name: Run affected PHP integration tests
+              if: github.event_name == 'pull_request'
+              run: pnpm nx affected -t test-integration --coverage-clover=coverage.xml
+
             - name: Run PHP integration tests
-              run: pnpm nx affected --base="origin/${{ github.base_ref }}" -t test-integration --coverage-clover=coverage.xml
+              if: github.event_name == 'push'
+              run: pnpm nx run-many -t test-integration --coverage-clover=coverage.xml
 
             - name: Upload coverage
               uses: actions/upload-artifact@v7.0.1
@@ -109,6 +114,7 @@ jobs:
         name: Test e2e (affected)
         runs-on: ubuntu-latest
         timeout-minutes: 15
+        if: github.event_name == 'pull_request'
         steps:
             - name: Checkout
               uses: actions/checkout@v7
@@ -157,6 +163,7 @@ jobs:
         name: Test screenshots (affected)
         runs-on: ubuntu-latest
         timeout-minutes: 15
+        if: github.event_name == 'pull_request'
         steps:
             - name: Checkout
               uses: actions/checkout@v7
