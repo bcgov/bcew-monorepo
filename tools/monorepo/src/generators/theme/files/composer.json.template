@@ -9,4 +9,9 @@
             "Bcgov\\<%= phpNamespace %>\\Test\\": "tests/"
         }
     },
+    "config": {
+        "platform": {
+            "php": "7.4.30"
+        }
+    }
 }

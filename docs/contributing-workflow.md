@@ -101,3 +101,25 @@ Use [documented conventions](./versioning.md#branch-naming) (`feature/…`, `fix
 - [ ] Package `docs/index.md` added or ported
 - [ ] `pnpm lint` and affected `build` / tests pass locally
 - [ ] First monorepo tag planned with namespaced format
+- [ ] Standalone README updated to point at the monorepo
+- [ ] Standalone GitHub repo archived (not deleted)
+
+## After migration: cut over and archive
+
+Once the checklist above is done in the monorepo, retire the standalone GitHub repo. Do **not** keep developing there.
+
+### Recommended order
+
+1. **Update the standalone README** — short notice that the project moved, with a link to the monorepo path (and this docs site if useful).
+2. **Archive** the standalone repo on GitHub (do not delete it).
+
+Archiving makes the repo **read-only** (no new issues, PRs, or pushes). You do not need separate steps to close PRs, lock branches, or migrate issues.
+
+### How to archive
+
+On the **standalone** repository:
+
+1. **Settings** → scroll to **Danger Zone**.
+2. **Archive this repository** → confirm.
+
+History, old releases, and tags stay available for reference. Prefer **archive** over delete.

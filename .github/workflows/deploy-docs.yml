@@ -45,7 +45,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v6.0.9
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
         with:
           version: 10
 
@@ -57,7 +57,7 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --ignore-scripts #prevent scripts from running during install, as we will run them explicitly in the next step
 
       - name: Build docs site (VitePress; includes sync)
         env:
@@ -66,7 +66,7 @@ jobs:
 
       - name: Deploy to GH Pages
         if: github.event_name != 'pull_request'
-        uses: peaceiris/actions-gh-pages@v4.1.0
+        uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 #v4.1.0
         with:
             github_token: ${{ steps.app-token.outputs.token }}
             publish_dir: docs/.vitepress/dist
