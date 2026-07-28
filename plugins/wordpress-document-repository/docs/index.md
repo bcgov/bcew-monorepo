@@ -57,8 +57,8 @@ Entry and bundles:
 - Define fields in the Metadata Settings UI (text, date, taxonomy).
 - Taxonomy fields automatically register a taxonomy with a doc_ prefix.
 - Server-side:
-  - Fields: `Bcgov\WordpressDocumentRepository\DocumentMetadataManager::get_metadata_fields`
-  - Taxonomies: `Bcgov\WordpressDocumentRepository\DocumentPostType::register_metadata_taxonomies`
+    - Fields: `Bcgov\WordpressDocumentRepository\DocumentMetadataManager::get_metadata_fields`
+    - Taxonomies: `Bcgov\WordpressDocumentRepository\DocumentPostType::register_metadata_taxonomies`
 
 Hook triggered after metadata fields change:
 
@@ -71,13 +71,13 @@ Namespace from config: `RepositoryConfig::get_api_namespace` in (src/RepositoryC
 Endpoints (selected):
 
 - GET `/{namespace}/documents`
-  - Query param: `status` (publish, draft, trash, any, all)
+    - Query param: `status` (publish, draft, trash, any, all)
 - POST `/{namespace}/documents`
-  - Uploads a PDF and creates a document post with metadata
+    - Uploads a PDF and creates a document post with metadata
 - GET `/{namespace}/documents/check-duplicate?search_name={filename}`
-  - Returns duplicate status by original file name
+    - Returns duplicate status by original file name
 - GET `/{namespace}/documents/{id}`
-  - Fetch a single document
+    - Fetch a single document
 
 See controller: `src/RestApiController.php`
 
@@ -91,9 +91,9 @@ Security:
 - Files stored under `/uploads/documents`
 - Upload directory managed by `DocumentUploader::custom_upload_dir`  in `src/DocumentUploader.php`
 - Search:
-  - Permalinks for document results link to the file URL
-  - Titles include file type and size
-  - Logic in `wordpress-document-repository.php`
+    - Permalinks for document results link to the file URL
+    - Titles include file type and size
+    - Logic in `wordpress-document-repository.php`
 
 ## Requirements
 
