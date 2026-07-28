@@ -1,5 +1,7 @@
 # BCEW Monorepo
 
+[![Quality gate status](https://sonarcloud.io/api/project_badges/measure?project=bcgov_bcew-monorepo&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=bcgov_bcew-monorepo)
+
 This repository contains WordPress themes and plugins managed in a single Git monorepo. Goals include **shared tooling**, **consistent standards**, **maintainability**, and **preserved history** when importing legacy projects.
 
 ## Documentation
