@@ -33,16 +33,8 @@
 		entire ruleset, then rule by rule, remove ones that don't suit a project.
 		We can do this by running `phpcs` with the '-s' flag, which allows us to
 		see the names of the sniffs reporting errors.
-		Once we know the sniff names, we can opt to exclude sniffs which don't
-		suit our project like so.
-
-		The below two examples just show how you can exclude rules.
-		They are not intended as advice about which sniffs to exclude.
-		-->
-
-		<!--
-		<exclude name="WordPress.WhiteSpace.ControlStructureSpacing"/>
-		<exclude name="WordPress.Security.EscapeOutput"/>
+		Once we know the sniff names, we can opt to exclude sniffs by adding
+		<exclude name="Sniff.Name"/> rules within this <rule> element.
 		-->
 	</rule>
 
@@ -63,7 +55,6 @@
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound"><severity>0</severity></rule>
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound"><severity>0</severity></rule>
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound"><severity>0</severity></rule>
-	<!--<rule ref="WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound"><type>warning</type></rule>-->
 	<rule ref="WordPress.Files.FileName.InvalidClassFileName"><severity>0</severity></rule>
 	<rule ref="WordPress.Files.FileName.NotHyphenatedLowercase"><severity>0</severity></rule>
 	<rule ref="WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase"><severity>warning</severity></rule>
