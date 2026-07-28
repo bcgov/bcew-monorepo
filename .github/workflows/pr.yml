@@ -2,6 +2,9 @@ name: Pull request checks
 
 on:
     pull_request:
+    push:
+        branches:
+            - main
 
 # Avoid duplicate runs on force-pushes
 concurrency:
@@ -41,7 +44,8 @@ jobs:
                   node-version: 24
 
             - name: Install pnpm
-              uses: pnpm/action-setup@v6.0.9
+              uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+
               with:
                   version: 10
                   run_install: true
@@ -66,7 +70,7 @@ jobs:
               run: pnpm run lint-pkg-json
     
     test-integration:
-        name: Test integration (affected)
+        name: Test integration
         runs-on: ubuntu-latest
         timeout-minutes: 15
         steps:
@@ -82,7 +86,7 @@ jobs:
                   node-version: 24
 
             - name: Install pnpm
-              uses: pnpm/action-setup@v6.0.9
+              uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
               with:
                   version: 10
                   run_install: true
@@ -91,8 +95,13 @@ jobs:
             - name: Install Composer dependencies
               run: composer i
 
-            - name: Run PHP integration tests
+            - name: Run affected PHP integration tests
+              if: github.event_name == 'pull_request'
               run: pnpm nx affected --base="origin/${{ github.base_ref }}" -t test-integration --coverage-clover=coverage.xml
+
+            - name: Run PHP integration tests
+              if: github.event_name == 'push'
+              run: pnpm nx run-many -t test-integration --coverage-clover=coverage.xml
 
             - name: Upload coverage
               uses: actions/upload-artifact@v7.0.1
@@ -106,6 +115,7 @@ jobs:
         name: Test e2e (affected)
         runs-on: ubuntu-latest
         timeout-minutes: 15
+        if: github.event_name == 'pull_request'
         steps:
             - name: Checkout
               uses: actions/checkout@v7
@@ -119,7 +129,7 @@ jobs:
                   node-version: 24
 
             - name: Install pnpm
-              uses: pnpm/action-setup@v6.0.9
+              uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
               with:
                   version: 10
                   run_install: true
@@ -154,6 +164,7 @@ jobs:
         name: Test screenshots (affected)
         runs-on: ubuntu-latest
         timeout-minutes: 15
+        if: github.event_name == 'pull_request'
         steps:
             - name: Checkout
               uses: actions/checkout@v7
@@ -167,7 +178,7 @@ jobs:
                   node-version: 24
 
             - name: Install pnpm
-              uses: pnpm/action-setup@v6.0.9
+              uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
               with:
                   version: 10
                   run_install: true
