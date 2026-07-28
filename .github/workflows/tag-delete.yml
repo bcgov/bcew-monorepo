@@ -49,7 +49,7 @@ jobs:
           set -euo pipefail
           url="https://${{ github.repository_owner }}.github.io/bcew-monorepo/packages.json"
 
-          http_code=$(curl -sSL --retry 5 --retry-all-errors --connect-timeout 10 --max-time 60 -w "%{http_code}" -o packages.json "$url") || {
+          http_code=$(curl -sSL --proto '=https' --proto-redir '=https' --retry 5 --retry-all-errors --connect-timeout 10 --max-time 60 -w "%{http_code}" -o packages.json "$url") || {
             curl_exit=$?
             echo "Failed to download packages.json (curl exit $curl_exit)" >&2
             exit "$curl_exit"
@@ -123,7 +123,7 @@ jobs:
 
       - name: Deploy to GH Pages
         if: ${{ steps.vars.outputs.supported == 'true' }}
-        uses: peaceiris/actions-gh-pages@v4.1.0
+        uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 #v4.1.0
         with:
           github_token: ${{ steps.app-token.outputs.token }}
           publish_dir: ./public
