@@ -34,7 +34,7 @@
 		We can do this by running `phpcs` with the '-s' flag, which allows us to
 		see the names of the sniffs reporting errors.
 		Once we know the sniff names, we can opt to exclude sniffs by adding
-		<exclude name="<sniff.name>"/> rules within this ruleset element.
+		<exclude name="Sniff.Name"/> rules within this <rule> element.
 		-->
 	</rule>
 
