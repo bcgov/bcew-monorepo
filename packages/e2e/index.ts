@@ -100,7 +100,7 @@ export const renderPattern = async ( editor: any, patternSlug: string ) => {
     await expect( preview ).toHaveScreenshot();
 };
 
-const EXCLUDED_STYLEBOOK_BLOCKS = [
+const EXCLUDED_STYLEBOOK_BLOCKS = new Set( [
     'avatar',
     'column',
     'comments',
@@ -124,7 +124,7 @@ const EXCLUDED_STYLEBOOK_BLOCKS = [
     'calendar',
     'latest-comments',
     'archives',
-];
+] );
 
 const STYLEBOOK_EXAMPLE_SELECTOR =
     'div.edit-site-style-book__example, div.editor-style-book__example';
@@ -146,7 +146,9 @@ const STYLEBOOK_SELECTED_PREVIEW_SELECTOR = [
  *
  * @param {any} canvasFrame Canvas iframe element.
  */
-const waitForCanvasHeightStability = async ( canvasFrame: any ): Promise< void > => {
+const waitForCanvasHeightStability = async (
+    canvasFrame: any
+): Promise< void > => {
     let previousScrollHeight = await canvasFrame.evaluate(
         () => document.body.scrollHeight
     );
@@ -184,7 +186,10 @@ const waitForCanvasHeightStability = async ( canvasFrame: any ): Promise< void >
  * @param {any} canvas Canvas frame locator.
  * @param {any} admin  Admin fixture object.
  */
-const renderSinglePreview = async ( canvas: any, admin: any ): Promise< void > => {
+const renderSinglePreview = async (
+    canvas: any,
+    admin: any
+): Promise< void > => {
     await admin.page.waitForTimeout( 300 );
 
     const selectedPreview = canvas
@@ -218,7 +223,7 @@ const renderBlocksGrid = async ( blocks: any ): Promise< void > => {
 
         const formattedName = blockName.replace( 'example-core/', '' );
 
-        if ( EXCLUDED_STYLEBOOK_BLOCKS.includes( formattedName ) ) {
+        if ( EXCLUDED_STYLEBOOK_BLOCKS.has( formattedName ) ) {
             continue;
         }
 
@@ -256,7 +261,6 @@ export const renderStylebook = async ( admin: any ) => {
     await expect( canvas.locator( 'body' ) ).toBeVisible();
 
     const blocks = canvas.locator( STYLEBOOK_EXAMPLE_SELECTOR );
-    let blockCount = 0;
 
     try {
         await expect
@@ -266,8 +270,6 @@ export const renderStylebook = async ( admin: any ) => {
                     'Expected style book examples to render in style-book-canvas iframe.',
             } )
             .toBeGreaterThan( 0 );
-
-        blockCount = await blocks.count();
     } catch {
         const canvasFrame = admin.page.frame( { name: 'style-book-canvas' } );
 
