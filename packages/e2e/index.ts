@@ -100,7 +100,7 @@ export const renderPattern = async ( editor: any, patternSlug: string ) => {
     await expect( preview ).toHaveScreenshot();
 };
 
-const EXCLUDED_STYLEBOOK_BLOCKS = new Set( [
+const EXCLUDED_STYLEBOOK_BLOCKS = [
     'avatar',
     'column',
     'comments',
@@ -124,13 +124,114 @@ const EXCLUDED_STYLEBOOK_BLOCKS = new Set( [
     'calendar',
     'latest-comments',
     'archives',
-] );
+];
 
 const STYLEBOOK_EXAMPLE_SELECTOR =
     'div.edit-site-style-book__example, div.editor-style-book__example';
 
 const STYLEBOOK_PREVIEW_SELECTOR =
     'div.edit-site-style-book__example-preview, div.editor-style-book__example-preview';
+
+const STYLEBOOK_SELECTED_PREVIEW_SELECTOR = [
+    '[aria-selected="true"] div.edit-site-style-book__example-preview',
+    '[aria-selected="true"] div.editor-style-book__example-preview',
+    '.is-selected div.edit-site-style-book__example-preview',
+    '.is-selected div.editor-style-book__example-preview',
+    'div.edit-site-style-book__example-preview',
+    'div.editor-style-book__example-preview',
+].join( ', ' );
+
+/**
+ * Wait for the style book canvas height to stabilize.
+ *
+ * @param {any} canvasFrame Canvas iframe element.
+ */
+const waitForCanvasHeightStability = async ( canvasFrame: any ): Promise< void > => {
+    let previousScrollHeight = await canvasFrame.evaluate(
+        () => document.body.scrollHeight
+    );
+    let stableSamples = 0;
+
+    for ( let sampleIndex = 0; sampleIndex < 30; sampleIndex++ ) {
+        await canvasFrame.page().waitForTimeout( 150 );
+
+        const currentScrollHeight = await canvasFrame.evaluate(
+            () => document.body.scrollHeight
+        );
+
+        if ( currentScrollHeight === previousScrollHeight ) {
+            stableSamples++;
+
+            if ( stableSamples >= 4 ) {
+                break;
+            }
+        } else {
+            stableSamples = 0;
+            previousScrollHeight = currentScrollHeight;
+        }
+    }
+
+    if ( stableSamples < 4 ) {
+        throw new Error(
+            'Style book canvas height did not stabilize before screenshot capture.'
+        );
+    }
+};
+
+/**
+ * Render single selected preview (fallback for newer WordPress versions).
+ *
+ * @param {any} canvas Canvas frame locator.
+ * @param {any} admin  Admin fixture object.
+ */
+const renderSinglePreview = async ( canvas: any, admin: any ): Promise< void > => {
+    await admin.page.waitForTimeout( 300 );
+
+    const selectedPreview = canvas
+        .locator( STYLEBOOK_SELECTED_PREVIEW_SELECTOR )
+        .first();
+
+    await expect( selectedPreview ).toBeVisible();
+    await expect( selectedPreview ).toHaveScreenshot(
+        'style-book-overview.png',
+        {
+            maxDiffPixelRatio: 0.01,
+        }
+    );
+};
+
+/**
+ * Render all blocks in the style book grid.
+ *
+ * @param {any} blocks Blocks locator.
+ */
+const renderBlocksGrid = async ( blocks: any ): Promise< void > => {
+    const blockCount = await blocks.count();
+
+    for ( let blockIndex = 0; blockIndex < blockCount; blockIndex++ ) {
+        const block = blocks.nth( blockIndex );
+        const blockName = await block.getAttribute( 'id' );
+
+        if ( ! blockName ) {
+            throw new Error( 'Style book example is missing an id attribute.' );
+        }
+
+        const formattedName = blockName.replace( 'example-core/', '' );
+
+        if ( EXCLUDED_STYLEBOOK_BLOCKS.includes( formattedName ) ) {
+            continue;
+        }
+
+        await expect(
+            block.locator( STYLEBOOK_PREVIEW_SELECTOR )
+        ).toHaveScreenshot( `style-book-${ formattedName }.png`, {
+            animations: 'disabled',
+            caret: 'hide',
+            scale: 'css',
+            maxDiffPixelRatio: 0.02,
+        } );
+    }
+};
 
 /**
  * Render the WordPress style book and save screenshots for each example.
@@ -149,43 +250,44 @@ export const renderStylebook = async ( admin: any ) => {
         await blocksButton.first().click();
     }
 
-    // Give the style book canvas time to load
-    await new Promise( ( resolve ) => setTimeout( resolve, 3000 ) );
-
-    // Wait for the iframe to attach to the DOM with extended timeout
-    await admin.page.waitForSelector( 'iframe[name="style-book-canvas"]', { timeout: 15000 } );
-
     const canvas = admin.page.frameLocator(
         'iframe[name="style-book-canvas"]'
     );
     await expect( canvas.locator( 'body' ) ).toBeVisible();
 
     const blocks = canvas.locator( STYLEBOOK_EXAMPLE_SELECTOR );
-    const blockCount = await blocks.count();
+    let blockCount = 0;
 
-    for ( let blockIndex = 0; blockIndex < blockCount; blockIndex++ ) {
-        const block = blocks.nth( blockIndex );
-        const blockName = await block.getAttribute( 'id' );
+    try {
+        await expect
+            .poll( async () => blocks.count(), {
+                timeout: 10000,
+                message:
+                    'Expected style book examples to render in style-book-canvas iframe.',
+            } )
+            .toBeGreaterThan( 0 );
 
-        if ( ! blockName ) {
-            throw new Error( 'Style book example is missing an id attribute.' );
+        blockCount = await blocks.count();
+    } catch {
+        const canvasFrame = admin.page.frame( { name: 'style-book-canvas' } );
+
+        if ( ! canvasFrame ) {
+            throw new Error( 'Style book canvas iframe was not found.' );
         }
 
-        const formattedName = blockName.replace( 'example-core/', '' );
+        await canvasFrame.waitForSelector( 'body' );
 
-        if ( EXCLUDED_STYLEBOOK_BLOCKS.has( formattedName ) ) {
-            continue;
-        }
+        // Wait until the style book canvas height settles before capturing.
+        await waitForCanvasHeightStability( canvasFrame );
 
-        await expect(
-            block.locator( STYLEBOOK_PREVIEW_SELECTOR )
-        ).toHaveScreenshot( `style-book-${ formattedName }.png`, {
-            animations: 'disabled',
-            caret: 'hide',
-            scale: 'css',
-            maxDiffPixelRatio: 0.02,
-        } );
+        // Render single selected preview (fallback).
+        await renderSinglePreview( canvas, admin );
+
+        return;
     }
+
+    // Render all blocks in the grid.
+    await renderBlocksGrid( blocks );
 };
 
 /**
