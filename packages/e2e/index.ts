@@ -132,7 +132,9 @@ const STYLEBOOK_EXAMPLE_SELECTOR =
 const STYLEBOOK_PREVIEW_SELECTOR =
     'div.edit-site-style-book__example-preview, div.editor-style-book__example-preview';
 
-const screenshotStylebookBlocks = async ( blocks: Locator ): Promise< void > => {
+const screenshotStylebookBlocks = async (
+    blocks: Locator
+): Promise< void > => {
     const blockCount = await blocks.count();
     for ( let blockIndex = 0; blockIndex < blockCount; blockIndex++ ) {
         const block = blocks.nth( blockIndex );
@@ -167,17 +169,26 @@ const screenshotStylebookBlocks = async ( blocks: Locator ): Promise< void > => 
 export const renderStylebook = async ( admin: any ) => {
     await admin.visitAdminPage( 'site-editor.php', 'path=%2Fwp_global_styles' );
 
-    const styleBookButton = admin.page.getByRole( 'button', { name: 'Style Book' } );
+    const styleBookButton = admin.page.getByRole( 'button', {
+        name: 'Style Book',
+    } );
     await expect( styleBookButton ).toBeVisible();
 
-    const styleBookCanvas = admin.page.locator( 'iframe[name="style-book-canvas"]' );
-    const styleBookPreview = admin.page.locator( 'iframe[name="style-book-canvas"].is-button' );
+    const styleBookCanvas = admin.page.locator(
+        'iframe[name="style-book-canvas"]'
+    );
+    const styleBookPreview = admin.page.locator(
+        'iframe[name="style-book-canvas"].is-button'
+    );
 
     // React handlers initialize ~3 s after render; each 2 s wait acts as the retry delay.
     for ( let attempt = 0; attempt < 5; attempt++ ) {
         await styleBookButton.click();
         try {
-            await styleBookCanvas.waitFor( { state: 'attached', timeout: 2000 } );
+            await styleBookCanvas.waitFor( {
+                state: 'attached',
+                timeout: 2000,
+            } );
         } catch {
             continue;
         }
@@ -194,7 +205,9 @@ export const renderStylebook = async ( admin: any ) => {
         await blocksButton.first().click();
     }
 
-    const canvas = admin.page.frameLocator( 'iframe[name="style-book-canvas"]' );
+    const canvas = admin.page.frameLocator(
+        'iframe[name="style-book-canvas"]'
+    );
     await expect( canvas.locator( 'body' ) ).toBeVisible( { timeout: 15000 } );
 
     const blocks = canvas.locator( STYLEBOOK_EXAMPLE_SELECTOR );
