@@ -4,7 +4,7 @@
  * Common helpers for e2e tests across themes and plugins.
  */
 
-import { expect, Page } from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
 import { test } from '@wordpress/e2e-test-utils-playwright';
 import config from './playwright.config';
 
@@ -132,109 +132,8 @@ const STYLEBOOK_EXAMPLE_SELECTOR =
 const STYLEBOOK_PREVIEW_SELECTOR =
     'div.edit-site-style-book__example-preview, div.editor-style-book__example-preview';
 
-const STYLEBOOK_SELECTED_PREVIEW_SELECTOR = [
-    '[aria-selected="true"] div.edit-site-style-book__example-preview',
-    '[aria-selected="true"] div.editor-style-book__example-preview',
-    '.is-selected div.edit-site-style-book__example-preview',
-    '.is-selected div.editor-style-book__example-preview',
-    'div.edit-site-style-book__example-preview',
-    'div.editor-style-book__example-preview',
-].join( ', ' );
-
-/**
- * Render the WordPress style book and save screenshots for each example.
- *
- * @param {any} admin Admin fixture object.
- */
-export const renderStylebook = async ( admin: any ) => {
-    await admin.visitAdminPage( 'site-editor.php', 'path=%2Fwp_global_styles' );
-
-    await new Promise( ( resolve ) => setTimeout( resolve, 2000 ) );
-
-    await admin.page.getByRole( 'button', { name: 'Style Book' } ).click();
-
-    const blocksButton = admin.page.getByRole( 'button', { name: 'Blocks' } );
-    if ( ( await blocksButton.count() ) > 0 ) {
-        await blocksButton.first().click();
-    }
-
-    const canvas = admin.page.frameLocator(
-        'iframe[name="style-book-canvas"]'
-    );
-    await expect( canvas.locator( 'body' ) ).toBeVisible();
-
-    const blocks = canvas.locator( STYLEBOOK_EXAMPLE_SELECTOR );
-    let blockCount = 0;
-
-    try {
-        await expect
-            .poll( async () => blocks.count(), {
-                timeout: 10000,
-                message:
-                    'Expected style book examples to render in style-book-canvas iframe.',
-            } )
-            .toBeGreaterThan( 0 );
-
-        blockCount = await blocks.count();
-    } catch {
-        const canvasFrame = admin.page.frame( { name: 'style-book-canvas' } );
-
-        if ( ! canvasFrame ) {
-            throw new Error( 'Style book canvas iframe was not found.' );
-        }
-
-        await canvasFrame.waitForSelector( 'body' );
-
-        // Wait until the style book canvas height settles before capturing.
-        let previousScrollHeight = await canvasFrame.evaluate(
-            () => document.body.scrollHeight
-        );
-        let stableSamples = 0;
-
-        for ( let sampleIndex = 0; sampleIndex < 30; sampleIndex++ ) {
-            await admin.page.waitForTimeout( 150 );
-
-            const currentScrollHeight = await canvasFrame.evaluate(
-                () => document.body.scrollHeight
-            );
-
-            if ( currentScrollHeight === previousScrollHeight ) {
-                stableSamples++;
-
-                if ( stableSamples >= 4 ) {
-                    break;
-                }
-            } else {
-                stableSamples = 0;
-                previousScrollHeight = currentScrollHeight;
-            }
-        }
-
-        if ( stableSamples < 4 ) {
-            throw new Error(
-                'Style book canvas height did not stabilize before screenshot capture.'
-            );
-        }
-
-        await admin.page.waitForTimeout( 300 );
-
-        // Newer WordPress style book UIs may render one selected block preview
-        // instead of the legacy multi-example grid.
-        const selectedPreview = canvas
-            .locator( STYLEBOOK_SELECTED_PREVIEW_SELECTOR )
-            .first();
-
-        await expect( selectedPreview ).toBeVisible();
-        await expect( selectedPreview ).toHaveScreenshot(
-            'style-book-overview.png',
-            {
-                maxDiffPixelRatio: 0.01,
-            }
-        );
-
-        return;
-    }
-
+const screenshotStylebookBlocks = async ( blocks: Locator ): Promise< void > => {
+    const blockCount = await blocks.count();
     for ( let blockIndex = 0; blockIndex < blockCount; blockIndex++ ) {
         const block = blocks.nth( blockIndex );
         const blockName = await block.getAttribute( 'id' );
@@ -255,9 +154,59 @@ export const renderStylebook = async ( admin: any ) => {
             animations: 'disabled',
             caret: 'hide',
             scale: 'css',
-            maxDiffPixelRatio: 0.02,
+            maxDiffPixels: 2,
         } );
     }
+};
+
+/**
+ * Render the WordPress style book and save screenshots for each example.
+ *
+ * @param {any} admin Admin fixture object.
+ */
+export const renderStylebook = async ( admin: any ) => {
+    await admin.visitAdminPage( 'site-editor.php', 'path=%2Fwp_global_styles' );
+
+    const styleBookButton = admin.page.getByRole( 'button', { name: 'Style Book' } );
+    await expect( styleBookButton ).toBeVisible();
+
+    const styleBookCanvas = admin.page.locator( 'iframe[name="style-book-canvas"]' );
+    const styleBookPreview = admin.page.locator( 'iframe[name="style-book-canvas"].is-button' );
+
+    // React handlers initialize ~3 s after render; each 2 s wait acts as the retry delay.
+    for ( let attempt = 0; attempt < 5; attempt++ ) {
+        await styleBookButton.click();
+        try {
+            await styleBookCanvas.waitFor( { state: 'attached', timeout: 2000 } );
+        } catch {
+            continue;
+        }
+        // WP 6.7+: compact preview must be activated via keyboard — click() targets the iframe content.
+        if ( ( await styleBookPreview.count() ) > 0 ) {
+            await styleBookPreview.focus();
+            await admin.page.keyboard.press( 'Enter' );
+        }
+        break;
+    }
+
+    const blocksButton = admin.page.getByRole( 'button', { name: 'Blocks' } );
+    if ( ( await blocksButton.count() ) > 0 ) {
+        await blocksButton.first().click();
+    }
+
+    const canvas = admin.page.frameLocator( 'iframe[name="style-book-canvas"]' );
+    await expect( canvas.locator( 'body' ) ).toBeVisible( { timeout: 15000 } );
+
+    const blocks = canvas.locator( STYLEBOOK_EXAMPLE_SELECTOR );
+    await expect
+        .poll( async () => blocks.count(), {
+            timeout: 10000,
+            message:
+                'Expected style book examples to render in style-book-canvas iframe.',
+        } )
+        .toBeGreaterThan( 0 );
+
+    await screenshotStylebookBlocks( blocks );
 };
 
 /**
