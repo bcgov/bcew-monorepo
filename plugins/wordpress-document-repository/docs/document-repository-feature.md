@@ -2,7 +2,7 @@
 
 The Document Repository lets administrators and authorized users upload, organize, search, and manage PDF documents on a WordPress site. Documents are stored separately from regular posts and can be enriched with custom metadata fields for better searchability and organization.
 
-![Document Repository Overview](/images/document-repository-overview.png)
+![Document Repository Overview](./images/document-repository-overview.png)
 
 ---
 
@@ -18,7 +18,7 @@ The Document Repository lets administrators and authorized users upload, organiz
 
 In WordPress Admin: **Document Repository** (left navigation).
 
-![Where To Find Document Repository](/images/where-to-find-document-repository.png)
+![Where To Find Document Repository](./images/where-to-find-document-repository.png)
 
 ---
 
@@ -42,7 +42,7 @@ In WordPress Admin: **Document Repository** (left navigation).
 
 Note: Only valid PDF files are accepted. Non‑PDF files are rejected.
 
-![Upload a Document](/images/document-repository-upload.gif)
+![Upload a Document](./images/document-repository-upload.gif)
 
 ---
 
@@ -56,7 +56,7 @@ Edits apply immediately and are reflected in the list.
 
 > Note: Taxonomy fields may contain one or more values, separated by commas or Enter key
 
-![Edit a Document](/images/document-repository-edit.gif)
+![Edit a Document](./images/document-repository-edit.gif)
 
 ---
 
@@ -73,7 +73,7 @@ Effect:
 - From the **Trash** view, you can **Restore** or **Delete Permanently**.
 - When permanently deleted, the file is removed from the server and all associated metadata is deleted.
 
-![Delete a Document](/images/document-repository-delete.gif)
+![Delete a Document](./images/document-repository-delete.gif)
 
 ---
 
@@ -88,7 +88,7 @@ Effect:
 
 Results include documents whose title, excerpt, or metadata matches your term.
 
-![Search For Documents in the repository](/images/document-repository-search.gif)
+![Search For Documents in the repository](./images/document-repository-search.gif)
 
 ---
 
@@ -116,7 +116,7 @@ Shows:
 
 To switch views, use the **View Mode** toggle in the top‑right.
 
-![Switch View Modes](/images/document-repository-view-modes.gif)
+![Switch View Modes](./images/document-repository-view-modes.gif)
 
 ---
 
@@ -130,7 +130,7 @@ Revisions track changes made to the document’s content fields (including Excer
 4. Optionally click **Edit Revision** to adjust the revision text and click **Save**.
 5. Return to **Document Repository** to see your changes.
 
-![Document Revisions](/images/document-repository-revisions.gif)
+![Document Revisions](./images/document-repository-revisions.gif)
 
 ---
 

@@ -2,6 +2,12 @@
 
 A WordPress plugin for uploading, organizing, and managing documents (PDFs) with custom metadata in a streamlined admin UI. It provides a custom post type, REST API endpoints, a React-based admin application, and optional public display enhancements.
 
+
+## Feature guides
+
+- [Document Repository](./document-repository-feature) — upload, edit, search, trash, revisions, and view modes
+- [Metadata Settings](./metadata-settings) — define custom text, date, and taxonomy fields
+
 ## Features
 
 - Custom post type: Documents
@@ -51,8 +57,8 @@ Entry and bundles:
 - Define fields in the Metadata Settings UI (text, date, taxonomy).
 - Taxonomy fields automatically register a taxonomy with a doc_ prefix.
 - Server-side:
-  - Fields: `Bcgov\WordpressDocumentRepository\DocumentMetadataManager::get_metadata_fields`
-  - Taxonomies: `Bcgov\WordpressDocumentRepository\DocumentPostType::register_metadata_taxonomies`
+    - Fields: `Bcgov\WordpressDocumentRepository\DocumentMetadataManager::get_metadata_fields`
+    - Taxonomies: `Bcgov\WordpressDocumentRepository\DocumentPostType::register_metadata_taxonomies`
 
 Hook triggered after metadata fields change:
 
@@ -65,13 +71,13 @@ Namespace from config: `RepositoryConfig::get_api_namespace` in (src/RepositoryC
 Endpoints (selected):
 
 - GET `/{namespace}/documents`
-  - Query param: `status` (publish, draft, trash, any, all)
+    - Query param: `status` (publish, draft, trash, any, all)
 - POST `/{namespace}/documents`
-  - Uploads a PDF and creates a document post with metadata
+    - Uploads a PDF and creates a document post with metadata
 - GET `/{namespace}/documents/check-duplicate?search_name={filename}`
-  - Returns duplicate status by original file name
+    - Returns duplicate status by original file name
 - GET `/{namespace}/documents/{id}`
-  - Fetch a single document
+    - Fetch a single document
 
 See controller: `src/RestApiController.php`
 
@@ -85,9 +91,9 @@ Security:
 - Files stored under `/uploads/documents`
 - Upload directory managed by `DocumentUploader::custom_upload_dir`  in `src/DocumentUploader.php`
 - Search:
-  - Permalinks for document results link to the file URL
-  - Titles include file type and size
-  - Logic in `wordpress-document-repository.php`
+    - Permalinks for document results link to the file URL
+    - Titles include file type and size
+    - Logic in `wordpress-document-repository.php`
 
 ## Requirements
 
@@ -117,30 +123,3 @@ npm run build
 
 After these steps, simply activate the plugin from the WordPress Admin.
 
-## Install and Testing Scripts
-
-### Plugin
-
-- Build plugin assets: `npm run build`
-- Production checks (lint/format/phpcs): `composer production`
-- PHPUnit (local): `composer test-setup` then `composer test`
-- Coverage: `composer coverage`
-
-### Documentation (VuePress)
-
-- Dev: `npm run docs:dev` (in documentation/)
-- Build: `npm run docs:build` (in documentation/)
-
-## Configuration
-
-Defaults: `src/RepositoryConfig.php`
-
-- Post type: `document`
-- Capability: `upload_files`
-- Allowed MIME types: PDF only
-- Max file size: 20 MB
-- REST namespace: `bcgov-document-repository/v1`
-- Per-page default: 20
-- Cache disabled by default
-
-Values can be filtered via `bcgov_document_repository_settings`.
