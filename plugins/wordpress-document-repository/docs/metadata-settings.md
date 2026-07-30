@@ -2,7 +2,7 @@
 
 Use Metadata settings to define the custom fields that appear on every document in the repository. These fields improve search, sorting, and filtering across both the standard and spreadsheet views.
 
-![Metadata Settings Overview:](/images/metadata-settings-overview.jpg)
+![Metadata Settings Overview:](./images/metadata-settings-overview.jpg)
 
 ---
 
@@ -17,7 +17,7 @@ Use Metadata settings to define the custom fields that appear on every document 
 
 In WordPress Admin: **Document Repository → Metadata Settings** (left nav).
 
-![Where To Find Metadata Settings](/images/where-to-find-metadata-settings.jpg)
+![Where To Find Metadata Settings](./images/where-to-find-metadata-settings.jpg)
 
 ---
 
@@ -30,7 +30,7 @@ Each metadata field includes:
 - **Description**: Optional helper text.
 - **Taxonomy Terms** (required when type is Taxonomy): A list of categories, one per line. For example, if a document repository is used by a Zoo, the taxonomy could be Animals: Ape, Bear, Coyote. The taxonomy is Animals, and the terms are Ape, Bear, Coyote.
 
-![Metadata Field Form](/images/metadata-fields-form.jpg)
+![Metadata Field Form](./images/metadata-fields-form.jpg)
 
 Notes:
 
@@ -54,7 +54,7 @@ Notes:
 7. Optionally add a **Description**.
 8. Click **Save**.
 
-![Add Metadata Field](/images/metadata-add-field-taxonomy.gif)
+![Add Metadata Field](./images/metadata-add-field-taxonomy.gif)
 
 ---
 
@@ -66,7 +66,7 @@ Notes:
 - Taxonomy terms can be modified but not fully removed; keep at least one term.
 - Save changes. Existing documents keep their prior values until each document is edited (standard or spreadsheet mode).
 
-![Edit Metadata Field](/images/metadata-edit-field-taxonomy.gif)
+![Edit Metadata Field](./images/metadata-edit-field-taxonomy.gif)
 
 ---
 
@@ -83,7 +83,7 @@ Effect:
 - The field (column) disappears from both standard and spreadsheet views.
 - All stored values for that field are removed.
 
-![Delete Metadata Field](/images/metadata-delete-field-taxonomy.gif)
+![Delete Metadata Field](./images/metadata-delete-field-taxonomy.gif)
 
 ---
 
@@ -92,11 +92,11 @@ Effect:
 - New fields appear as columns in both views.
 - Enter or edit values per document in **standard** or **spreadsheet** mode.
 - Search by:
-  - **Text**: match text strings.
-  - **Date**: filter by date.
-  - **Taxonomy**: filter by selected terms.
+    - **Text**: match text strings.
+    - **Date**: filter by date.
+    - **Taxonomy**: filter by selected terms.
 
-![Using a Metadata Field](/images/metadata-using-dates.gif)
+![Using a Metadata Field](./images/metadata-using-dates.gif)
 
 ---
 

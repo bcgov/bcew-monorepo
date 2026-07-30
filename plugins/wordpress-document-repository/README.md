@@ -1,14 +1,9 @@
-# Wordpress Document Repository
+# WordPress Document Repository
 
-Wordpress Document Repository Plugin
-
-This plugin README is intentionally plugin-specific. It should describe what this plugin provides and any constraints unique to this plugin.
+A WordPress plugin for uploading, organizing, and managing PDF documents with custom metadata in a streamlined admin UI.
 
 ## Notes
 
-- Add plugin-specific details here, for example:
-    - key blocks or features included in this plugin
-    - required theme, dependencies, or compatibility constraints
-    - links to plugin docs (for example, `./docs/index.md`)
-- Operational and monorepo workflows are intentionally centralized and excluded from this README. See `tools/monorepo/README.md` for setup, development, and build instructions.
-
+- Plugin docs: [`docs/index.md`](./docs/index.md) (under **Plugins** on the monorepo docs site, same as `bcew-blocks`)
+- Feature guides: [Document Repository](./docs/document-repository-feature.md), [Metadata Settings](./docs/metadata-settings.md)
+- Operational and monorepo workflows are centralized — see `tools/monorepo/README.md`
