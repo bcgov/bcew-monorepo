@@ -48,19 +48,15 @@ describe( 'plugin generator', () => {
 
         const packageJsonPath = 'plugins/no-description-plugin/package.json';
         const composerJsonPath = 'plugins/no-description-plugin/composer.json';
-        const blockJsonPath =
-            'plugins/no-description-plugin/src/sample-block/block.json';
         const packageJson = JSON.parse(
             tree.read( packageJsonPath )!.toString()
         );
         const composerJson = JSON.parse(
             tree.read( composerJsonPath )!.toString()
         );
-        const blockJson = JSON.parse( tree.read( blockJsonPath )!.toString() );
 
         expect( packageJson.description ).toBe( '' );
         expect( composerJson.description ).toBe( '' );
-        expect( blockJson.description ).toBe( '' );
     } );
 
     it( 'should generate php-safe function name and pascal case namespace', async () => {
@@ -85,20 +81,6 @@ describe( 'plugin generator', () => {
         expect(
             composerJson.autoload[ 'psr-4' ][ 'Bcgov\\MyPluginV2\\' ]
         ).toBe( 'src/' );
-    } );
-
-    it( 'should scaffold visual regression tests', async () => {
-        const options: PluginGeneratorSchema = {
-            name: 'Screenshot Plugin',
-            description: 'Description',
-        };
-
-        await pluginGenerator( tree, options );
-
-        const screenshotSpecPath =
-            'plugins/screenshot-plugin/tests/screenshot/sample-block.spec.js';
-
-        expect( tree.exists( screenshotSpecPath ) ).toBe( true );
     } );
 
     it( 'should generate a supported wp-env config', async () => {
@@ -138,7 +120,7 @@ describe( 'plugin generator', () => {
         expect( wpEnvConfig.testsPort ).toBe( 8887 );
     } );
 
-    it( 'should scaffold sample block e2e smoke coverage', async () => {
+    it( 'should scaffold a generic e2e smoke test', async () => {
         const options: PluginGeneratorSchema = {
             name: 'E2E Coverage Plugin',
             description: 'Description',
@@ -150,10 +132,7 @@ describe( 'plugin generator', () => {
             'plugins/e2e-coverage-plugin/tests/e2e/smoke.spec.js';
         const smokeSpec = tree.read( smokeSpecPath )!.toString();
 
-        expect( smokeSpec ).toContain(
-            'sample block can be inserted and rendered on the frontend'
-        );
-        expect( smokeSpec ).toContain( 'sample-block' );
-        expect( smokeSpec ).toContain( 'hello from the saved content!' );
+        expect( smokeSpec ).toContain( 'post can be created and published' );
+        expect( smokeSpec ).toContain( 'core/paragraph' );
     } );
 } );

@@ -10,11 +10,11 @@ This library was generated with [Nx](https://nx.dev).
 npx nx generate monorepo:plugin
 ```
 
-By default, this creates a plugin with one initial `sample-block`.
+By default, this creates a plugin scaffold without blocks. Add blocks with `monorepo:block` after the plugin exists.
 
 #### Sample Instructions
 
-Create a plugin with the default `sample-block`:
+Create a plugin:
 
 ```shell
 npx nx generate monorepo:plugin --name="My Plugin" --description="My plugin description"
