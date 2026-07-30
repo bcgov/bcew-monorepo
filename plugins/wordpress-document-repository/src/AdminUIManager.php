@@ -53,6 +53,15 @@ class AdminUIManager {
      * Add the document repository menu to the WordPress admin.
      */
     public function add_repository_menu(): void {
+        $hooks = [
+            'a',
+            'b',
+        ];
+
+        if ( in_array( 'c', $hooks, true ) ) {
+            return;
+        }
+
         add_menu_page(
             'Document Repository',
             'Document Repository',
