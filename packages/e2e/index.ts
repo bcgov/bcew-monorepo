@@ -100,7 +100,7 @@ export const renderPattern = async ( editor: any, patternSlug: string ) => {
     await expect( preview ).toHaveScreenshot();
 };
 
-const EXCLUDED_STYLEBOOK_BLOCKS = [
+const EXCLUDED_STYLEBOOK_BLOCKS = new Set( [
     'avatar',
     'column',
     'comments',
@@ -124,7 +124,7 @@ const EXCLUDED_STYLEBOOK_BLOCKS = [
     'calendar',
     'latest-comments',
     'archives',
-];
+] );
 
 const STYLEBOOK_EXAMPLE_SELECTOR =
     'div.edit-site-style-book__example, div.editor-style-book__example';
@@ -245,7 +245,7 @@ export const renderStylebook = async ( admin: any ) => {
 
         const formattedName = blockName.replace( 'example-core/', '' );
 
-        if ( EXCLUDED_STYLEBOOK_BLOCKS.includes( formattedName ) ) {
+        if ( EXCLUDED_STYLEBOOK_BLOCKS.has( formattedName ) ) {
             continue;
         }
 
