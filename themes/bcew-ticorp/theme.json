@@ -1,0 +1,26 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/theme.json",
+    "version": 3,
+    "title": "BCEW – TI Corp",
+    "settings": {
+        "color": {
+            "palette": [
+                 {
+                    "slug": "bcew-ticorp-hero-text-border",
+                    "color": "#176A95",
+                    "name": "BCEW – TI Corp Hero Text Border"
+                },
+                {
+                    "slug": "bcew-ticorp-heading-secondary",
+                    "color": "#0B4D78",
+                    "name": "BCEW – TI Corp Heading Secondary"
+                },
+                {
+                    "slug": "bcew-ticorp-footer-background",
+                    "color": "#2D2D2D",
+                    "name": "BCEW – TI Corp Footer Background"
+                }
+            ]
+        }
+    }
+}
