@@ -332,6 +332,36 @@
                     "reference": "bcew-theme-2/v1.0.0-alpha.2"
                 }
             }
+        },
+        "bcgov-theme/bcew-ticorp": {
+            "1.0.0-alpha.1": {
+                "name": "bcgov-theme/bcew-ticorp",
+                "description": "BCEW \u2013 TI Corp Child Theme",
+                "type": "wordpress-theme",
+                "license": "Apache-2.0",
+                "autoload": {
+                    "psr-4": {
+                        "Bcgov\\BcewTicorp\\": "src/",
+                        "Bcgov\\BcewTicorp\\Test\\": "tests/"
+                    }
+                },
+                "config": {
+                    "platform": {
+                        "php": "7.4.30"
+                    }
+                },
+                "version": "1.0.0-alpha.1",
+                "dist": {
+                    "url": "https://github.com/bcgov/bcew-monorepo/releases/download/bcew-ticorp/v1.0.0-alpha.1/bcew-ticorp-1.0.0-alpha.1.zip",
+                    "type": "zip",
+                    "reference": "bcew-ticorp/v1.0.0-alpha.1"
+                },
+                "source": {
+                    "type": "git",
+                    "url": "https://github.com/bcgov/bcew-monorepo.git",
+                    "reference": "bcew-ticorp/v1.0.0-alpha.1"
+                }
+            }
         }
     }
 }
