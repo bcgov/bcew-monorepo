@@ -1,13 +1,13 @@
 {
     "$schema": "../../node_modules/nx/schemas/project-schema.json",
-    "name": "design-system-wordpress-child-theme-ticorp",
-    "root": "themes/design-system-wordpress-child-theme-ticorp",
-    "sourceRoot": "themes/design-system-wordpress-child-theme-ticorp/src",
+    "name": "bcew-ticorp",
+    "root": "themes/bcew-ticorp",
+    "sourceRoot": "themes/bcew-ticorp/src",
     "projectType": "application",
     "generators": {
         "bcew-monorepo:theme": {
-            "name": "Design System Wordpress Child Theme TI-Corp",
-            "slug": "design-system-wordpress-child-theme-ticorp"
+            "name": "BCEW – TI Corp",
+            "slug": "bcew-ticorp"
         }
     },
     "targets": {
