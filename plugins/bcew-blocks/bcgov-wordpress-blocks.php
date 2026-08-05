@@ -90,15 +90,14 @@ add_filter( 'register_block_type_args', 'bcgov_wordpress_blocks_list_uses_contex
  * untouched and never silently disappear.
  *
  * @param string   $block_content The rendered list markup.
- * @param array    $block         The parsed block (unused).
  * @param WP_Block $instance      The block instance, used to read context.
  *
  * @return string The original markup, or an empty string when the list is empty.
  */
-function bcgov_wordpress_blocks_hide_empty_list( $block_content, $block = array(), $instance = null ) {
+function bcgov_wordpress_blocks_hide_empty_list( $block_content, $instance = null ) {
     if ( ! $instance instanceof WP_Block || empty( $instance->context['bcew-blocks/hideEmptyList'] ) ) {
         return $block_content;
     }
     return '' === trim( wp_strip_all_tags( (string) $block_content ) ) ? '' : $block_content;
 }
-add_filter( 'render_block_core/list', 'bcgov_wordpress_blocks_hide_empty_list', 10, 3 );
+add_filter( 'render_block_core/list', 'bcgov_wordpress_blocks_hide_empty_list', 10, 2 );
