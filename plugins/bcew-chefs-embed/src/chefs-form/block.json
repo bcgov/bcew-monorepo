@@ -1,0 +1,26 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "bcew-chefs-embed/chefs-form",
+    "version": "0.0.1",
+    "title": "Chefs Form",
+    "category": "widgets",
+    "icon": "media-document",
+    "description": "",
+    "attributes": {
+        "formId": {
+            "type": "string",
+            "default": ""
+        }
+    },
+    "example": {},
+    "supports": {
+        "html": false
+    },
+    "textdomain": "bcew-chefs-embed",
+    "editorScript": "file:./index.js",
+    "editorStyle": "file:./index.css",
+    "style": "file:./style-index.css",
+    "render": "file:./render.php",
+    "viewScript": "file:./view.js"
+}
