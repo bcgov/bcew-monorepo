@@ -35,3 +35,8 @@ plugins/wordpress-document-repository:
         - any-glob-to-any-file: 'plugins/wordpress-document-repository/**'
 
         
+plugins/bcew-chefs-embed:
+    - changed-files:
+        - any-glob-to-any-file: 'plugins/bcew-chefs-embed/**'
+
+        

@@ -1,0 +1,33 @@
+{
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "name": "bcew-chefs-embed",
+    "root": "plugins/bcew-chefs-embed",
+    "sourceRoot": "plugins/bcew-chefs-embed/src",
+    "projectType": "application",
+    "generators": {
+        "bcew-monorepo:plugin": {
+            "name": "bcew-chefs-embed",
+            "description": "Embed BC Government Common Hosted Form Service (CHEFS) forms into WordPress pages and posts."
+        }
+    },
+    "targets": {
+        "composer-install": {},
+        "build": {},
+        "start": {},
+        "start-playwright": {},
+        "test-e2e": {},
+        "test-e2e-docker": {},
+        "test-screenshot": {},
+        "test-screenshot-generate": {},
+        "test-integration": {
+            "options": {
+                "command": "wp-env run tests-cli --env-cwd=wp-content/plugins/bcew-chefs-embed composer test ./",
+            }
+        },
+        "wp-env-start": {},
+        "wp-env-clean": {},
+        "wp-env-stop": {}
+    },
+    "implicitDependencies": ["packages/phpunit-config/"],
+    "tags": ["type:wp-plugin"]
+}
