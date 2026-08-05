@@ -25,6 +25,8 @@ if ( ! file_exists( "{$_tests_dir}/includes/functions.php" ) ) {
 // Give access to tests_add_filter() function.
 require_once "{$_tests_dir}/includes/functions.php";
 
+class EntrypointNotFoundException extends RuntimeException {}
+
 /**
  * Manually load the plugin or theme being tested.
  */
@@ -35,7 +37,7 @@ function _manually_load_plugin_or_theme() {
     } elseif (is_string($entrypoint)) {
         require $entrypoint;
     } else {
-        throw new Exception('Could not load plugin or theme entrypoint.');
+        throw new EntrypointNotFoundException('Could not load plugin or theme entrypoint.');
     }
 }
 
