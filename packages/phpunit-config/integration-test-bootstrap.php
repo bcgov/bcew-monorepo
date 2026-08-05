@@ -35,7 +35,7 @@ function _manually_load_plugin_or_theme() {
     if ($entrypoint === true) {
         _register_theme();
     } elseif (is_string($entrypoint)) {
-        require $entrypoint;
+        require_once   $entrypoint;
     } else {
         throw new EntrypointNotFoundException('Could not load plugin or theme entrypoint.');
     }
@@ -105,4 +105,4 @@ function _register_theme() {
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin_or_theme' );
 
 // Start up the WP testing environment.
-require "{$_tests_dir}/includes/bootstrap.php";
+require_once "{$_tests_dir}/includes/bootstrap.php";
