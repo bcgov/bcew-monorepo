@@ -1,0 +1,36 @@
+{
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "name": "bcew-document-repository",
+    "root": "plugins/bcew-document-repository",
+    "sourceRoot": "plugins/bcew-document-repository/src",
+    "projectType": "application",
+    "generators": {
+        "bcew-monorepo:plugin": {
+            "name": "BCEW – Document Repository",
+            "description": "BCEW Document Repository plugin"
+        }
+    },
+    "targets": {
+        "composer-install": {},
+        "build": {
+            "options": {
+                "command": "npm run build:doc-repo && npm run build:metadata-settings && npm run build:css"
+            }
+        },
+        // Todo: Fix start target, currently erroring due to missing webpack.config.js file.
+        "start": {
+            "options": {
+                "command": "webpack --config webpack.config.js --watch"
+            }
+        },
+        "start-playwright": {},
+        "test-e2e": {},
+        "test-e2e-docker": {},
+        "test-integration": {},
+        "wp-env-start": {},
+        "wp-env-clean": {},
+        "wp-env-stop": {}
+    },
+    "implicitDependencies": ["packages/phpunit-config/"],
+    "tags": ["type:wp-plugin"]
+}

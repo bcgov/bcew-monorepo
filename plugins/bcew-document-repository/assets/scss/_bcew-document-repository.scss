@@ -1,0 +1,608 @@
+/* stylelint-disable no-descending-specificity */
+/* stylelint-disable rule-empty-line-before, comment-empty-line-before */
+/* stylelint-disable no-eol-whitespace, block-closing-brace-newline-before */
+
+/**
+ * Document Repository Styles
+ *
+ * This file contains styles for the Document Repository interface.
+ * It includes styles for the document list, table, and various UI components
+ * used throughout the application.
+ */
+
+@use "abstracts/variables" as *;
+@use "sass:color";
+@use "abstracts/mixins" as mix;
+
+/* =========================================
+   Base Element Styles - Least Specific
+   ========================================= */
+
+// Basic SVG icon styles - scoped to document repository
+.bcew-document-repository svg {
+	width: 1.25rem;
+	height: 1.25rem;
+	transition: all 0.2s ease;
+}
+
+// Basic paragraph styles - scoped to document repository
+.bcew-document-repository p {
+	line-height: 1.5;
+	margin: 0 0 1rem;
+}
+
+/* =========================================
+   General Components - Medium Specificity
+   ========================================= */
+
+// Table styles - scoped to document repository
+.bcew-document-repository table {
+	width: 100%;
+	border-collapse: collapse;
+
+	th {
+		text-align: left;
+		padding: 0.75rem 1rem;
+		font-weight: $font-weight-bold;
+		border-bottom: 0.0625rem solid $color-border;
+	}
+
+	td {
+		padding: 0.75rem 1rem;
+		border-bottom: 0.0625rem solid $color-border-light;
+		vertical-align: middle;
+	}
+}
+
+// Notice component
+.components-notice {
+	display: flex;
+	align-items: flex-start;
+	padding: $spacing-md;
+	border-radius: $border-radius;
+	margin-bottom: $spacing-md;
+
+	&.is-error {
+		background-color: $color-error-light;
+		border-left: 0.25rem solid $color-error;
+	}
+
+	&.is-success {
+		background-color: $color-success-light;
+		border-left: 0.25rem solid $color-success;
+	}
+
+	.components-notice__content {
+		flex: 1;
+		font-size: $font-size-sm;
+	}
+
+	.components-notice__dismiss {
+		padding: $spacing-xs;
+		border: none;
+
+		svg {
+			width: 1rem;
+			height: 1rem;
+			color: $color-text-light;
+		}
+	}
+}
+
+/* =========================================
+   Document Repository Components - Higher Specificity
+   ========================================= */
+
+// Document Repository main container
+.bcew-document-repository {
+	font-family: $font-family-base;
+	color: $color-text;
+	max-width: 100%;
+
+	// Header section
+	&__header {
+		margin-bottom: $spacing-lg;
+	}
+
+	&__title {
+		font-size: $font-size-xxl;
+		font-weight: $font-weight-bold;
+		margin-bottom: $spacing-md;
+	}
+
+	&__description {
+		color: $color-text-light;
+		margin-bottom: $spacing-lg;
+	}
+
+	&__content {
+		background-color: $color-white;
+		border-radius: $border-radius;
+		box-shadow: $box-shadow-sm;
+		padding: $spacing-lg;
+	}
+
+	&__error {
+		background-color: $color-error-light;
+		border-left: 0.25rem solid $color-error;
+		color: $color-error;
+		padding: $spacing-md;
+		margin-bottom: $spacing-lg;
+		border-radius: $border-radius;
+
+		&__title {
+			font-weight: $font-weight-bold;
+			margin-bottom: $spacing-xs;
+		}
+
+		&__message {
+			margin-bottom: $spacing-sm;
+		}
+	}
+
+	&__loading {
+		text-align: center;
+		padding: $spacing-xl;
+		color: $color-text-light;
+
+		.components-spinner {
+			margin: 0 auto $spacing-md;
+		}
+
+		p {
+			margin: $spacing-sm 0;
+		}
+
+		.loading-description {
+			font-size: $font-size-sm;
+			opacity: 0.8;
+		}
+	}
+
+	&__empty {
+		text-align: center;
+		padding: $spacing-xl;
+		color: $color-text-light;
+
+		&__icon {
+			font-size: 48px;
+			margin-bottom: $spacing-md;
+			color: $color-gray-400;
+		}
+
+		&__title {
+			font-size: $font-size-lg;
+			font-weight: $font-weight-bold;
+			margin-bottom: $spacing-sm;
+		}
+
+		&__message {
+			margin-bottom: $spacing-lg;
+		}
+	}
+
+	// Document controls section - organizing controls from less to more specific
+	.document-controls {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: $spacing-lg;
+		flex-wrap: wrap;
+		gap: $spacing-md;
+
+		// View controls section
+		.view-controls {
+			display: flex;
+			gap: $spacing-sm;
+		}
+
+		// Search filter section
+		.search-filter {
+			display: flex;
+			gap: $spacing-md;
+			flex: 1;
+			max-width: 40rem;
+
+			.components-search-control {
+				flex: 1;
+
+				input {
+					height: $button-height-md;
+					padding: 0 $spacing-md;
+					border-radius: $border-radius;
+					border: 0.0625rem solid $color-border;
+					font-size: $font-size-sm;
+				}
+			}
+
+			.components-dropdown {
+				.components-button {
+					height: $button-height-md;
+					border: 0.0625rem solid $color-border;
+					background-color: $color-white;
+
+					svg {
+						margin-left: $spacing-sm;
+					}
+				}
+			}
+		}
+	}
+
+	// Document table container
+	.document-table-container {
+		border: 0.0625rem solid $color-border;
+		border-radius: $border-radius;
+		overflow: hidden;
+		margin-bottom: $spacing-lg;
+
+		table {
+			margin: 0;
+
+			th {
+				background-color: $color-gray-100;
+				white-space: nowrap;
+			}
+		}
+	}
+}
+
+/* Document List and Document Table */
+.document-list {
+	display: flex;
+	flex-direction: column;
+	gap: $spacing-lg;
+	margin-bottom: $spacing-xl;
+	padding: $spacing-sm;
+	align-items: stretch;
+
+	// Document list actions
+	.document-list-actions {
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: $spacing-md;
+
+		.document-list-left-actions {
+			display: flex;
+			gap: $spacing-sm;
+			align-items: center;
+			flex-wrap: wrap;
+
+			.mode-toggle {
+				display: flex;
+				align-items: center;
+
+				.components-button {
+					svg {
+						margin-right: $spacing-sm;
+					}
+				}
+			}
+
+			.bulk-delete-button {
+				display: flex;
+				align-items: center;
+			}
+		}
+	}
+
+	// Enter Spreadsheet Mode button
+	.components-button-group {
+		display: flex;
+		gap: $spacing-sm;
+	}
+
+	// Pagination
+	.pagination {
+		display: flex;
+		justify-content: flex-end;
+		align-items: center;
+		gap: 0.25rem; // Small gap between elements
+		margin-top: $spacing-md;
+		flex-wrap: wrap; // Allow wrapping on small screens
+		position: relative;
+
+		// Loading spinner
+		.pagination-loading {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-right: 0.5rem;
+
+			.components-spinner {
+				margin: 0;
+				width: 1rem;
+				height: 1rem;
+			}
+		}
+
+		.components-button {
+			min-width: 2rem;
+			width: 2rem;
+			height: 2rem;
+			padding: 0;
+			text-align: center;
+			font-size: 0.875rem;
+			border-radius: 0.25rem;
+			margin: 0;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			border: 1px solid $color-border;
+			background: $color-white;
+			color: $color-text;
+
+			&:hover:not(:disabled) {
+				background: $color-bg-lighter;
+				border-color: $color-primary;
+			}
+
+			&:disabled {
+				background: $color-bg-lighter;
+				border-color: $color-border;
+				color: $color-text-light;
+				opacity: 0.6;
+				cursor: not-allowed;
+			}
+
+			// Navigation buttons (First, Prev, Next, Last)
+			&.pagination-button-first,
+			&.pagination-button-prev,
+			&.pagination-button-next,
+			&.pagination-button-last {
+				font-size: 1rem;
+				font-weight: 600;
+			}
+
+			// Page number buttons
+			&.pagination-button-number {
+				&:hover:not(:disabled) {
+					border-color: $color-primary;
+				}
+			}
+
+			// Current page
+			&.current-page {
+				background: $color-primary !important;
+				color: $color-white !important;
+				border-color: $color-primary !important;
+				font-weight: 600 !important;
+
+				&:hover {
+					background: $color-primary-dark !important;
+					border-color: $color-primary-dark !important;
+				}
+
+				&:disabled {
+					background: $color-primary !important;
+					color: $color-white !important;
+					border-color: $color-primary !important;
+					opacity: 1 !important;
+					cursor: default !important;
+				}
+			}
+		}
+
+		// Page indicator text ("X of Y")
+		.pagination-page-indicator {
+			margin: 0 0.5rem;
+			font-size: 0.875rem;
+			color: $color-text;
+			white-space: nowrap;
+		}
+	}
+}
+
+/* Document Table - Applied directly to top-level element */
+.document-table {
+	border: 0.0625rem solid $color-border;
+	border-radius: $border-radius;
+	overflow: hidden;
+	font-size: $font-size-sm;
+	display: table;
+	width: auto;
+	min-width: unset;
+	max-width: 100%;
+	margin: 0 0 $spacing-lg 0;
+	background-color: $color-white;
+	box-shadow: $box-shadow-sm;
+	align-self: flex-start;
+	table-layout: auto;
+
+	// Table header styles
+	.document-table-header {
+		display: table-header-group;
+		background-color: $color-gray-100;
+
+		.document-table-row {
+			border-bottom: 0.125rem solid $color-border;
+		}
+
+		.header {
+			font-weight: $font-weight-bold;
+			color: $color-text;
+			position: sticky;
+			top: 0;
+			background-color: $color-gray-100;
+			z-index: 2;
+		}
+	}
+
+	// Table body styles
+	.document-table-body {
+		display: table-row-group;
+	}
+
+	// Table row styles
+	.document-table-row {
+		display: table-row;
+		transition: background-color $transition-fast;
+
+		&:hover {
+			background-color: color.adjust($color-gray-100, $lightness: 1%);
+		}
+
+		&:nth-child(even) {
+			background-color: color.adjust($color-gray-100, $lightness: 1.5%);
+
+			&:hover {
+				background-color: color.adjust($color-gray-100, $lightness: 0.5%);
+			}
+		}
+	}
+
+	// Table cell styles
+	.document-table-cell {
+		display: table-cell;
+		padding: $spacing-md;
+		border-bottom: 0.0625rem solid $color-border;
+		vertical-align: middle;
+		overflow: visible;
+		text-overflow: clip;
+
+		&.document-table__search-cell {
+			overflow: visible;
+		}
+		white-space: normal;
+
+		&.header {
+			padding-top: $spacing-md;
+			padding-bottom: $spacing-md;
+		}
+
+		// Spreadsheet mode cell styling
+		.components-text-control__input,
+		.components-select-control__input {
+			width: 100%;
+			min-height: $button-height-md;
+			font-size: $font-size-sm;
+		}
+
+		// Action buttons
+		.action-buttons {
+			display: flex;
+			justify-content: flex-end;
+			gap: $spacing-xs;
+
+			.table-action-button {
+				svg {
+					margin: 0;
+				}
+			}
+		}
+	}
+
+	// Checkbox cell specifically
+	.document-table-cell:first-child {
+		width: 3rem;
+		min-width: 3rem;
+		max-width: 3rem;
+		text-align: center;
+
+		.components-checkbox-control__input-container {
+			margin: 0 auto;
+		}
+	}
+
+	// Title cell specifically
+	.document-table-cell:nth-child(2) {
+		min-width: 12rem;
+		max-width: none;
+		white-space: normal;
+		overflow: visible;
+		text-overflow: clip;
+	}
+
+	// Excerpt cell specifically
+	.excerpt-cell {
+		min-width: 15rem;
+		max-width: none;
+		white-space: normal;
+		overflow: visible;
+		text-overflow: clip;
+	}
+
+	// Actions cell specifically
+	.document-table-cell:last-child {
+		width: 6rem;
+		min-width: 6rem;
+		max-width: 8rem;
+
+		&.actions {
+			white-space: nowrap;
+		}
+	}
+
+	// Revisions cell with badge styling
+	.revisions-cell {
+		width: 5rem;
+		min-width: 5rem;
+		text-align: center;
+	}
+
+	// Revisions badge button styling
+	.revisions-badge {
+		display: inline-block;
+		padding: 0.375rem 0.75rem;
+		background-color: #f0f6fc;
+		border: 0.0625rem solid #d0d7de;
+		border-radius: 0.25rem;
+		color: #0969da;
+		font-size: $font-size-sm;
+		font-weight: $font-weight-bold;
+		cursor: pointer;
+		transition: all 0.2s ease;
+		white-space: nowrap;
+
+		&:hover {
+			background-color: #e8f0ff;
+			border-color: #0969da;
+			color: #0860ca;
+			text-decoration: none;
+		}
+
+		&:focus {
+			outline: 0.125rem solid #0969da;
+			outline-offset: 0.125rem;
+		}
+	}
+
+	// Metadata column specifically
+	.metadata-column {
+		min-width: 10rem;
+		max-width: 15rem;
+	}
+}
+
+// Search input and button styles
+.document-search-wrapper {
+	display: flex;
+	align-items: center;
+	gap: $spacing-sm;
+
+	.document-search-input-wrapper {
+		display: flex;
+		align-items: center;
+		gap: $spacing-xs;
+		flex: 1;
+		max-width: 20rem;
+
+		.document-search-input {
+			flex: 1;
+		}
+
+		.document-search-button {
+			flex-shrink: 0;
+		}
+
+		.document-search-clear {
+			flex-shrink: 0;
+			margin-left: $spacing-xs;
+
+			svg {
+				width: 1rem;
+				height: 1rem;
+			}
+		}
+	}
+}
