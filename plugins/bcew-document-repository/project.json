@@ -14,7 +14,8 @@
         "composer-install": {},
         "build": {
             "options": {
-                "command": "npm run build:doc-repo && npm run build:metadata-settings && npm run build:css"
+                "command": "npm run build:doc-repo && npm run build:metadata-settings && npm run build:css",
+                "forwardAllArgs": false
             }
         },
         // Todo: Fix start target, currently erroring due to missing webpack.config.js file.
