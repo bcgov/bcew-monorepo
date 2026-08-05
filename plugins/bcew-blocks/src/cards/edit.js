@@ -35,7 +35,7 @@ import {
 const ALLOWED_BLOCKS = [ CARD_BLOCK ];
 const ICON_TEXT_BLOCK = CARD_CONTENT_TYPES[ 'icon-text' ];
 const MEDIA_TEXT_BLOCK = CARD_CONTENT_TYPES[ 'media-text' ];
-const CONTENT_BLOCKS = [ ICON_TEXT_BLOCK, MEDIA_TEXT_BLOCK ];
+const CONTENT_BLOCKS = new Set( [ ICON_TEXT_BLOCK, MEDIA_TEXT_BLOCK ] );
 
 /**
  * Builds the initial inner-block template: one card slot per `cardCount`,
@@ -80,7 +80,7 @@ const Edit = ( { clientId, attributes, setAttributes } ) => {
     useEffect( () => {
         cardBlocks.forEach( ( card ) => {
             card.innerBlocks?.forEach( ( inner ) => {
-                if ( ! CONTENT_BLOCKS.includes( inner.name ) ) {
+                if ( ! CONTENT_BLOCKS.has( inner.name ) ) {
                     return;
                 }
 
