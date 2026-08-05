@@ -3,7 +3,7 @@
  * Plugin Name:       BCEW – Document Repository
  * Plugin URI:        https://github.com/bcgov/bcew-monorepo/plugins/bcew-document-repository
  * Description:       WordPress Document Repository plugin is a plugin that enhances the ability to upload and manage
- * Version:           1.1.0
+ * Version:           1.2.0
  * Requires at least: 6.7
  * Requires PHP:      7.4
  * Author:            govwordpress@gov.bc.ca
