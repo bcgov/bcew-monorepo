@@ -93,14 +93,17 @@ class CredentialsManager {
 			return null;
 		}
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table name is internal.
+		$table = self::table_name();
+
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared -- table name cannot be parameterized.
 		$row = $wpdb->get_row(
 			$wpdb->prepare(
-				'SELECT form_id, api_key, created_at, user_id FROM ' . self::table_name() . ' WHERE form_id = %s',
+				"SELECT form_id, api_key, created_at, user_id FROM `{$table}` WHERE form_id = %s",
 				$form_id
 			),
 			ARRAY_A
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared
 
 		if ( ! is_array( $row ) ) {
 			return null;
@@ -139,13 +142,14 @@ class CredentialsManager {
 		$user_id = absint( $user_id );
 		$table   = self::table_name();
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table name is internal.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared -- table name cannot be parameterized.
 		$existing = (bool) $wpdb->get_var(
 			$wpdb->prepare(
-				'SELECT 1 FROM ' . $table . ' WHERE form_id = %s LIMIT 1',
+				"SELECT 1 FROM `{$table}` WHERE form_id = %s LIMIT 1",
 				$form_id
 			)
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared
 
 		if ( $existing ) {
 			$result = $wpdb->update(

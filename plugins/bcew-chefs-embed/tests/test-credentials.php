@@ -32,8 +32,10 @@ class CredentialsTest extends \WP_UnitTestCase {
 		CredentialsManager::install();
 
 		global $wpdb;
+
+		$table = CredentialsManager::table_name();
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
-		$wpdb->query( 'DELETE FROM ' . CredentialsManager::table_name() );
+		$wpdb->query( "DELETE FROM `{$table}`" );
 	}
 
 	/**
