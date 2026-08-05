@@ -100,4 +100,4 @@ function bcgov_wordpress_blocks_hide_empty_list( $block_content, $instance = nul
     }
     return '' === trim( wp_strip_all_tags( (string) $block_content ) ) ? '' : $block_content;
 }
-add_filter( 'render_block_core/list', 'bcgov_wordpress_blocks_hide_empty_list', 10, 3 );
+add_filter( 'render_block_core/list', 'bcgov_wordpress_blocks_hide_empty_list', 10, 2 );
