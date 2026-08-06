@@ -4,9 +4,9 @@
 	"plugins": [
 		"."
 	],
-    "config": {
-        "WP_AUTO_UPDATE_CORE": false
-    },
-    "port": 9012,
-    "testsPort": 9013
+	"config": {
+		"WP_AUTO_UPDATE_CORE": false
+	},
+	"port": 9012,
+	"testsPort": 9013
 }
