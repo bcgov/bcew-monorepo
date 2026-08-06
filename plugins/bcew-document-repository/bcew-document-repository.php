@@ -65,7 +65,7 @@ if ( ! class_exists( 'Bcgov\\BcewDocumentRepository\\Settings' ) ) {
 $bcew_document_repository          = new DocumentRepository();
 $bcew_document_repository_settings = new Settings();
 
-// Document rrevisions.
+// Document revisions.
 $revision_manager = new DocumentRevisionManager();
 $revision_manager->init();
 

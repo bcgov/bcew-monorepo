@@ -62,7 +62,7 @@ Entry and bundles:
 
 Hook triggered after metadata fields change:
 
-- Action: `bcew_document_repository_metadata_fields_updated` (see README.md)
+- Action: `bcgov_document_repository_metadata_fields_updated` (see README.md)
 
 ## REST API
 

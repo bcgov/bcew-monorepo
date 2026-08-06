@@ -36,7 +36,7 @@ class DocumentMetadataManager {
      * @return array Raw metadata fields.
      */
     private function get_raw_metadata_fields(): array {
-        return get_option( 'bcew_document_repository_metadata_fields', [] );
+        return get_option( 'document_repository_metadata_fields', [] );
     }
 
     /**
@@ -195,7 +195,7 @@ class DocumentMetadataManager {
         );
 
         // Save fields.
-        $result = update_option( 'bcew_document_repository_metadata_fields', $fields );
+        $result = update_option( 'document_repository_metadata_fields', $fields );
 
         // Handle taxonomy fields.
         if ( $result ) {
@@ -208,7 +208,7 @@ class DocumentMetadataManager {
 
         // Trigger re-registration of metadata fields with WordPress REST API.
         if ( $result ) {
-            do_action( 'bcew_document_repository_metadata_fields_updated' );
+            do_action( 'bcgov_document_repository_metadata_fields_updated' );
         }
 
         return $result;
@@ -688,7 +688,7 @@ class DocumentMetadataManager {
      */
     private function log( string $message, string $level = 'info' ): void {
         if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-            do_action( 'bcew_document_repository_log', $message, $level );
+            do_action( 'document_repository_log', $message, $level );
         }
     }
 

@@ -13,7 +13,7 @@ class Settings {
     /**
      * The option name used to store the setting in WordPress options table.
      */
-    const OPTION_NAME = 'bcew_document_repository_enabled';
+    const OPTION_NAME = 'wordpress_document_repository_enabled';
 
     /**
      * Initialize the class by registering WordPress hooks.
@@ -32,7 +32,7 @@ class Settings {
      */
     public function register_settings() {
         register_setting(
-            'bcew-document-repository_options_group',
+            'wordpress-document-repository_options_group',
             self::OPTION_NAME,
             [
                 'type'              => 'string',

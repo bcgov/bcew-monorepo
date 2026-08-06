@@ -11,7 +11,7 @@ use Bcgov\DocumentRepository\View;
     <h1><?php esc_html_e( 'Document Repository Settings', 'bcew-document-repository' ); ?></h1>
     <form method="post" action="options.php">
         <?php
-        settings_fields( 'bcew-document-repository_options_group' );
+        settings_fields( 'wordpress-document-repository_options_group' );
         $value = get_option( Settings::OPTION_NAME, '0' );
         ?>
         <table class="form-table">

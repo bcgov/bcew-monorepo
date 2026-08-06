@@ -84,8 +84,8 @@ class DocumentRepository {
         add_action( 'rest_api_init', [ $this, 'register_rest_routes' ], 10 );
 
         // Hook to re-register metadata fields when they are updated (frontend).
-        add_action( 'bcew_document_repository_metadata_fields_updated', [ $this->get_document_post_type_instance(), 'register_metadata_fields' ] );
-        add_action( 'bcew_document_repository_metadata_fields_updated', [ $this, 'register_metadata_taxonomies' ] );
+        add_action( 'bcgov_document_repository_metadata_fields_updated', [ $this->get_document_post_type_instance(), 'register_metadata_fields' ] );
+        add_action( 'bcgov_document_repository_metadata_fields_updated', [ $this, 'register_metadata_taxonomies' ] );
     }
 
     /**
@@ -104,13 +104,13 @@ class DocumentRepository {
 
         // Event listeners.
         add_action(
-            'bcew_document_repository_document_uploaded',
+            'bcgov_document_repository_document_uploaded',
             [ $this->get_metadata_manager_instance(), 'clear_cache' ]
         );
 
         // Hook to re-register metadata fields when they are updated.
-        add_action( 'bcew_document_repository_metadata_fields_updated', [ $this->get_document_post_type_instance(), 'register_metadata_fields' ] );
-        add_action( 'bcew_document_repository_metadata_fields_updated', [ $this, 'register_metadata_taxonomies' ] );
+        add_action( 'bcgov_document_repository_metadata_fields_updated', [ $this->get_document_post_type_instance(), 'register_metadata_fields' ] );
+        add_action( 'bcgov_document_repository_metadata_fields_updated', [ $this, 'register_metadata_taxonomies' ] );
 
         // Migrate existing files to the new direct path structure.
         add_action( 'admin_init', [ $this, 'migrate_existing_files' ] );
@@ -130,13 +130,13 @@ class DocumentRepository {
 
         // Event listeners.
         add_action(
-            'bcew_document_repository_document_uploaded',
+            'bcgov_document_repository_document_uploaded',
             [ $this->get_metadata_manager_instance(), 'clear_cache' ]
         );
 
         // Hook to re-register metadata fields when they are updated.
-        add_action( 'bcew_document_repository_metadata_fields_updated', [ $this->get_document_post_type_instance(), 'register_metadata_fields' ] );
-        add_action( 'bcew_document_repository_metadata_fields_updated', [ $this, 'register_metadata_taxonomies' ] );
+        add_action( 'bcgov_document_repository_metadata_fields_updated', [ $this->get_document_post_type_instance(), 'register_metadata_fields' ] );
+        add_action( 'bcgov_document_repository_metadata_fields_updated', [ $this, 'register_metadata_taxonomies' ] );
 
         // Migrate existing files to the new direct path structure.
         add_action( 'admin_init', [ $this, 'migrate_existing_files' ] );
@@ -304,10 +304,11 @@ class DocumentRepository {
 
                     // Update attachment file path in WordPress.
                     update_attached_file( $attachment_id, $proper_path );
-
-                    // Add reference to document post.
-                    update_post_meta( $attachment_id, '_bcew_document_repository_post_id', $document->ID );
                 }
+
+                // Ensure attachment is marked as a document repository file
+                // even when the file was already at the proper path.
+                update_post_meta( $attachment_id, '_document_repository_post_id', $document->ID );
             }
         }
     }

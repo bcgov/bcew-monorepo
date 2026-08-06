@@ -360,10 +360,10 @@ const DocumentUploader = ( {
         formData.append( 'title', title );
         formData.append( '_wpnonce', window.documentRepositorySettings.nonce );
 
-        // Add metadata as JSON with bcew_document_repository flag
+        // Add metadata as JSON with document_repository flag
         const metadataWithFlag = {
             ...metadata,
-            bcew_document_repository: true,
+            document_repository: true,
         };
         const metadataJson = JSON.stringify( metadataWithFlag );
         formData.append( 'metadata', metadataJson );

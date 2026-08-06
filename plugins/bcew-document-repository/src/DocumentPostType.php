@@ -181,7 +181,7 @@ class DocumentPostType {
         }
         $already_registered = true;
 
-        $metadata_fields = get_option( 'bcew_document_repository_metadata_fields', [] );
+        $metadata_fields = get_option( 'document_repository_metadata_fields', [] );
         $post_type       = $this->config->get_post_type();
 
         foreach ( $metadata_fields as $field ) {

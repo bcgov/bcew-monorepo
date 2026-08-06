@@ -50,7 +50,7 @@ class DocumentUploader {
                     return $uploads;
                 }
 
-                if ( isset( $_POST['metadata'] ) && strpos( $_POST['metadata'], 'bcew_document_repository' ) !== false ) {
+                if ( isset( $_POST['metadata'] ) && strpos( $_POST['metadata'], 'document_repository' ) !== false ) {
                     $uploads['subdir'] = '/documents';
                     $uploads['path']   = $uploads['basedir'] . $uploads['subdir'];
                     $uploads['url']    = $uploads['baseurl'] . $uploads['subdir'];
@@ -74,7 +74,7 @@ class DocumentUploader {
         }
 
         // Only modify upload directory for document repository uploads.
-        if ( empty( $_POST['metadata'] ) || strpos( $_POST['metadata'], 'bcew_document_repository' ) === false ) {
+        if ( empty( $_POST['metadata'] ) || strpos( $_POST['metadata'], 'document_repository' ) === false ) {
             return $uploads;
         }
 
@@ -97,7 +97,7 @@ class DocumentUploader {
      */
     public function fix_attachment_url( $url, $attachment_id ) {
         // Check if this is a document repository attachment.
-        $post_id = get_post_meta( $attachment_id, '_bcew_document_repository_post_id', true );
+        $post_id = get_post_meta( $attachment_id, '_document_repository_post_id', true );
         if ( ! $post_id ) {
             return $url;
         }
@@ -115,7 +115,7 @@ class DocumentUploader {
      */
     public function upload_document( array $file, array $metadata = [] ) {
         // Add a flag to identify this as a document repository upload.
-        $_POST['metadata'] = wp_json_encode( array_merge( $metadata, [ 'bcew_document_repository' => true ] ) );
+        $_POST['metadata'] = wp_json_encode( array_merge( $metadata, [ 'document_repository' => true ] ) );
 
         // Ensure our custom upload directory exists.
         $upload_dir = wp_upload_dir();
@@ -240,10 +240,10 @@ class DocumentUploader {
             update_post_meta( $doc_id, 'document_file_id', $attachment_id );
 
             // Store reference to document post in attachment meta.
-            update_post_meta( $attachment_id, '_bcew_document_repository_post_id', $doc_id );
+            update_post_meta( $attachment_id, '_document_repository_post_id', $doc_id );
 
             // Hook for version upload.
-            do_action( 'bcew_document_repository_document_version_uploaded', $doc_id, $attachment_id, $old_file_id );
+            do_action( 'bcgov_document_repository_document_version_uploaded', $doc_id, $attachment_id, $old_file_id );
 
             // Get full document data.
             return $this->get_document_data( $doc_id );
@@ -263,10 +263,10 @@ class DocumentUploader {
         }
 
         // Store reference to document post in attachment meta.
-        update_post_meta( $attachment_id, '_bcew_document_repository_post_id', $document_id );
+        update_post_meta( $attachment_id, '_document_repository_post_id', $document_id );
 
         // Trigger document uploaded action.
-        do_action( 'bcew_document_repository_document_uploaded', $document_id );
+        do_action( 'bcgov_document_repository_document_uploaded', $document_id );
 
         // Get full document data.
         return $this->get_document_data( $document_id );
