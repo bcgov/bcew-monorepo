@@ -18,13 +18,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
+use Bcgov\BcewChefsEmbed\CredentialsManager;
+
 /**
  * Load Composer autoloader and verify required class exists.
  * If the autoloader or the required class is missing, halt plugin execution.
  */
 $autoloader_path = __DIR__ . '/vendor/autoload.php';
 if ( file_exists( $autoloader_path ) ) {
-    require_once $autoloader_path;
+	require_once $autoloader_path;
+}
+
+if ( class_exists( CredentialsManager::class ) ) {
+	register_activation_hook( __FILE__, array( CredentialsManager::class, 'activate' ) );
+	add_action( 'wp_initialize_site', array( CredentialsManager::class, 'on_initialize_site' ) );
 }
 
 /**
@@ -36,19 +43,19 @@ if ( file_exists( $autoloader_path ) ) {
  * @see https://make.wordpress.org/core/2024/10/17/new-block-type-registration-apis-to-improve-performance-in-wordpress-6-7/
  */
 function bcew_chefs_embed_init() {
-    if ( function_exists( 'wp_register_block_types_from_metadata_collection' ) ) {
-        wp_register_block_types_from_metadata_collection( __DIR__ . '/dist', __DIR__ . '/dist/blocks-manifest.php' );
-    } else {
-        // Define the path to the build directory.
-        $build_dir = plugin_dir_path( __FILE__ ) . 'dist/';
+	if ( function_exists( 'wp_register_block_types_from_metadata_collection' ) ) {
+		wp_register_block_types_from_metadata_collection( __DIR__ . '/dist', __DIR__ . '/dist/blocks-manifest.php' );
+	} else {
+		// Define the path to the build directory.
+		$build_dir = plugin_dir_path( __FILE__ ) . 'dist/';
 
-        // Use glob to find all block.json files in the subdirectories of the build folder.
-        $block_files = glob( $build_dir . '*/block.json' );
-        // Loop through each block.json file.
-        foreach ( $block_files as $block_file ) {
-            // Register the block type from the metadata in block.json.
-            register_block_type_from_metadata( $block_file );
-        }
-    }
+		// Use glob to find all block.json files in the subdirectories of the build folder.
+		$block_files = glob( $build_dir . '*/block.json' );
+		// Loop through each block.json file.
+		foreach ( $block_files as $block_file ) {
+			// Register the block type from the metadata in block.json.
+			register_block_type_from_metadata( $block_file );
+		}
+	}
 }
 add_action( 'init', 'bcew_chefs_embed_init' );
