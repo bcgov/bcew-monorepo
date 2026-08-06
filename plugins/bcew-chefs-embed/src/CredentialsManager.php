@@ -118,6 +118,33 @@ class CredentialsManager {
 	}
 
 	/**
+	 * Get all saved CHEFS form IDs.
+	 *
+	 * @return string[]
+	 */
+	public static function get_saved_form_ids() {
+		global $wpdb;
+
+		$table = self::table_name();
+
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared -- table name cannot be parameterized.
+		$form_ids = $wpdb->get_col( "SELECT form_id FROM `{$table}` ORDER BY created_at DESC" );
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared
+
+		if ( ! is_array( $form_ids ) ) {
+			return array();
+		}
+
+		return array_map(
+			'trim',
+			array_filter(
+				array_map( 'sanitize_text_field', $form_ids ),
+				'strlen'
+			)
+		);
+	}
+
+	/**
 	 * Save or update credentials for a CHEFS form.
 	 *
 	 * @param string   $form_id CHEFS form ID.
