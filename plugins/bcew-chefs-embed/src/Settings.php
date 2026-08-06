@@ -74,7 +74,7 @@ class Settings {
 			wp_die( esc_html__( 'Unauthorized.', 'bcew-chefs-embed' ) );
 		}
 
-		$forms = Credentials::list_forms();
+		$forms = CredentialsManager::list_forms();
 		?>
 		<div class="wrap">
 			<h1><?php esc_html_e( 'CHEFS Settings', 'bcew-chefs-embed' ); ?></h1>
@@ -156,7 +156,7 @@ class Settings {
 		$form_id = sanitize_text_field( wp_unslash( $_POST['form_id'] ?? '' ) );
 		$api_key = sanitize_text_field( wp_unslash( $_POST['api_key'] ?? '' ) );
 
-		$saved_form_id = Credentials::save( $form_id, $api_key );
+		$saved_form_id = CredentialsManager::save( $form_id, $api_key );
 		$redirect_arg  = false === $saved_form_id ? 'chefs_error' : 'chefs_saved';
 
 		wp_safe_redirect( add_query_arg( $redirect_arg, '1', self::get_page_url() ) );
@@ -175,9 +175,9 @@ class Settings {
 
 		check_admin_referer( 'bcew_chefs_delete' );
 
-		$form_id = Credentials::sanitize_form_id( wp_unslash( $_POST['form_id'] ?? '' ) );
+		$form_id = sanitize_text_field( wp_unslash( $_POST['form_id'] ?? '' ) );
 
-		Credentials::delete( $form_id );
+		CredentialsManager::delete( $form_id );
 
 		wp_safe_redirect( add_query_arg( 'chefs_deleted', '1', self::get_page_url() ) );
 		exit;

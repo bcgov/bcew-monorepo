@@ -15,17 +15,8 @@
         "build": {},
         "start": {},
         "start-playwright": {},
-        "test-e2e": {
-            "dependsOn": ["composer-install", "build", "wp-env-start"]
-        },
-        "test-e2e-docker": {
-            "dependsOn": [
-                "composer-install",
-                "start-playwright",
-                "build",
-                "wp-env-start"
-            ]
-        },
+        "test-e2e": {},
+        "test-e2e-docker": {},
         "test-screenshot": {},
         "test-screenshot-generate": {},
         "test-integration": {
