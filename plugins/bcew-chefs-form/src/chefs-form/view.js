@@ -1,3 +1,4 @@
+import { getEmbedConfigUrl } from './embed-config';
 import { loadViewer } from './loader';
 
 function showMessage( container, className, message ) {
@@ -13,7 +14,7 @@ document.querySelectorAll( '[data-bcew-chefs-form-id]' ).forEach( ( container ) 
 		return;
 	}
 
-	fetch( `/wp-json/bcew-chefs/v1/embed-config?form_id=${ encodeURIComponent( formId ) }` )
+	fetch( getEmbedConfigUrl( formId ) )
 		.then( ( response ) => response.json() )
 		.then( async ( config ) => {
 			if ( ! config.success ) {
@@ -25,7 +26,12 @@ document.querySelectorAll( '[data-bcew-chefs-form-id]' ).forEach( ( container ) 
 				return;
 			}
 
-			await loadViewer( container, config );
+			await loadViewer( container, config, () => {
+				const notice = document.createElement( 'p' );
+				notice.className = 'bcew-chefs-form__success';
+				notice.textContent = 'Thank you — your form has been submitted.';
+				container.parentElement?.insertBefore( notice, container );
+			} );
 		} )
 		.catch( () => {
 			showMessage( container, 'bcew-chefs-form__error', 'Could not load the CHEFS form.' );

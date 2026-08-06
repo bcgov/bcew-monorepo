@@ -3,6 +3,7 @@ import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
 import { ExternalLink, Notice, PanelBody, SelectControl } from '@wordpress/components';
 import { useEffect, useRef } from '@wordpress/element';
 
+import { getEmbedConfigUrl } from './embed-config';
 import { loadViewer } from './loader';
 
 const Edit = ( { attributes, setAttributes } ) => {
@@ -28,9 +29,7 @@ const Edit = ( { attributes, setAttributes } ) => {
 
 		let cancelled = false;
 
-		fetch(
-			`/wp-json/bcew-chefs/v1/embed-config?form_id=${ encodeURIComponent( formId ) }`
-		)
+		fetch( getEmbedConfigUrl( formId ) )
 			.then( ( response ) => response.json() )
 			.then( async ( config ) => {
 				if ( cancelled || ! config.success ) {

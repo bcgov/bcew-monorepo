@@ -46,7 +46,7 @@ class RestApi {
 			'/embed-config',
 			array(
 				'methods'             => 'GET',
-				'permission_callback' => array( $this, 'can_embed' ),
+				'permission_callback' => '__return_true',
 				'callback'            => array( $this, 'get_embed_config' ),
 				'args'                => array(
 					'form_id' => array(
@@ -56,16 +56,6 @@ class RestApi {
 					),
 				),
 			)
-		);
-	}
-
-	/**
-	 * @param \WP_REST_Request $request Request.
-	 * @return bool
-	 */
-	public function can_embed( $request ) {
-		return Credentials::exists(
-			Credentials::sanitize_form_id( $request->get_param( 'form_id' ) )
 		);
 	}
 
