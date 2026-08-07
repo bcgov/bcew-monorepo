@@ -14,6 +14,8 @@
  * @package bcew-chefs-embed
  */
 
+use Bcgov\BcewChefsEmbed\Settings;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
@@ -33,6 +35,26 @@ if ( class_exists( CredentialsManager::class ) ) {
 	register_activation_hook( __FILE__, array( CredentialsManager::class, 'activate' ) );
 	add_action( 'wp_initialize_site', array( CredentialsManager::class, 'on_initialize_site' ) );
 	add_action( 'rest_api_init', 'bcew_chefs_embed_register_rest_routes' );
+}
+
+/**
+ * Initialize the CHEFS settings admin page.
+ *
+ * @return void
+ */
+function bcew_chefs_embed_admin_init() {
+	$settings = new Settings();
+	$settings->init();
+}
+
+/**
+ * Register the CHEFS menu on admin_menu hook.
+ *
+ * @return void
+ */
+function bcew_chefs_embed_register_menu() {
+	$settings = new Settings();
+	$settings->register_menu();
 }
 
 /**
@@ -59,6 +81,14 @@ function bcew_chefs_embed_init() {
 		}
 	}
 }
+
+// Initialize admin settings (menu, forms, actions).
+if ( is_admin() && class_exists( Settings::class ) ) {
+	add_action( 'admin_menu', 'bcew_chefs_embed_register_menu' );
+	add_action( 'admin_init', 'bcew_chefs_embed_admin_init' );
+}
+
+// Initialize blocks and other frontend functionality.
 add_action( 'init', 'bcew_chefs_embed_init' );
 
 /**

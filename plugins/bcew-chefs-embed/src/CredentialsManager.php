@@ -79,6 +79,44 @@ class CredentialsManager {
 	}
 
 	/**
+	 * Remove a form by CHEFS form ID.
+	 *
+	 * @param string $form_id CHEFS form ID.
+	 * @return bool
+	 */
+	public static function delete( $form_id ) {
+		global $wpdb;
+
+		$form_id = self::sanitize_form_id( $form_id );
+
+		if ( '' === $form_id ) {
+			return false;
+		}
+
+		$deleted = $wpdb->delete(
+			self::table_name(),
+			array( 'form_id' => $form_id ),
+			array( '%s' )
+		);
+
+		return false !== $deleted && $deleted > 0;
+	}
+
+	/**
+	 * List configured form IDs for the settings page.
+	 *
+	 * @return array<int,string>
+	 */
+	public static function list_forms() {
+		global $wpdb;
+
+		$table = self::table_name();
+
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- no user input; table name cannot be parameterized.
+		return $wpdb->get_col( 'SELECT form_id FROM `' . $table . '` ORDER BY created_at DESC' );
+	}
+
+	/**
 	 * Get a stored form record by form ID (primary key).
 	 *
 	 * @param string $form_id CHEFS form ID.
