@@ -1,11 +1,9 @@
 <?php
-namespace Bcgov\BcewDocumentRepository;
+namespace Bcgov\Bcew\DocumentRepository;
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
-
-use Bcgov\DocumentRepository\View;
 ?>
 <div class="wrap">
     <h1><?php esc_html_e( 'Document Repository Settings', 'bcew-document-repository' ); ?></h1>

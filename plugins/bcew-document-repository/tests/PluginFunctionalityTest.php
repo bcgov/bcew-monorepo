@@ -1,10 +1,10 @@
 <?php
-namespace Bcgov\BcewDocumentRepository\Tests;
+namespace Bcgov\Bcew\DocumentRepository\Tests;
 
    /**
     * Class PluginFunctionalityTest
     *
-    * @package BcewDocumentRepository
+    * @package Bcgov\Bcew\DocumentRepository
     */
 class PluginFunctionalityTest extends \WP_UnitTestCase {
 	/**

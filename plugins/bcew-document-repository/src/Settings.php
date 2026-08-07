@@ -1,13 +1,13 @@
 <?php
 
-namespace Bcgov\BcewDocumentRepository;
+namespace Bcgov\Bcew\DocumentRepository;
 
 /**
  * Class Settings
  *
  * This class handles the settings for the Document Repository feature.
  *
- * @package Bcgov\BcewDocumentRepository
+ * @package Bcgov\Bcew\DocumentRepository
  */
 class Settings {
     /**

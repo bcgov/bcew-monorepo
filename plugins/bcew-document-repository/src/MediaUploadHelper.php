@@ -1,6 +1,6 @@
 <?php
 
-namespace Bcgov\BcewDocumentRepository;
+namespace Bcgov\Bcew\DocumentRepository;
 
 use WP_Error;
 

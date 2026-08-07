@@ -1,8 +1,8 @@
 <?php
 
-namespace Bcgov\BcewDocumentRepository;
+namespace Bcgov\Bcew\DocumentRepository;
 
-use Bcgov\BcewDocumentRepository\RepositoryConfig;
+use Bcgov\Bcew\DocumentRepository\RepositoryConfig;
 
 /**
  * AdminUIManager - Admin UI Integration

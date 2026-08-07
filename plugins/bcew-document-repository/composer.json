@@ -19,12 +19,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Bcgov\\BcewDocumentRepository\\": "src/"
+            "Bcgov\\Bcew\\DocumentRepository\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Bcgov\\BcewDocumentRepository\\Tests\\": "tests/"
+            "Bcgov\\Bcew\\DocumentRepository\\Tests\\": "tests/"
         }
     },
     "scripts": {

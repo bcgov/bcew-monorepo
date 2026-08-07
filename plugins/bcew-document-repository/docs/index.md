@@ -57,8 +57,8 @@ Entry and bundles:
 - Define fields in the Metadata Settings UI (text, date, taxonomy).
 - Taxonomy fields automatically register a taxonomy with a doc_ prefix.
 - Server-side:
-    - Fields: `Bcgov\BcewDocumentRepository\DocumentMetadataManager::get_metadata_fields`
-    - Taxonomies: `Bcgov\BcewDocumentRepository\DocumentPostType::register_metadata_taxonomies`
+    - Fields: `Bcgov\Bcew\DocumentRepository\DocumentMetadataManager::get_metadata_fields`
+    - Taxonomies: `Bcgov\Bcew\DocumentRepository\DocumentPostType::register_metadata_taxonomies`
 
 Hook triggered after metadata fields change:
 
@@ -105,21 +105,23 @@ Security:
 
 ## Installation
 
-First, clone the repo and set up the plugin:
+This plugin lives in the [bcew-monorepo](https://github.com/bcgov/bcew-monorepo). From the monorepo root:
 
 ```shell
-# clone repo
-gowp plugins # or manually cd to your plugins directory
-git clone https://github.com/bcgov/bcew-document-repository.git
-cd bcew-document-repository
+# Clone the monorepo (if you do not already have it)
+git clone https://github.com/bcgov/bcew-monorepo.git
+cd bcew-monorepo
 
-# Install dependencies:
-composer install
-npm install
+# Install workspace dependencies
+pnpm install
 
-# Build assets:
-npm run build
+# Install PHP dependencies and build this plugin
+npx nx run bcew-document-repository:composer-install
+npx nx run bcew-document-repository:build
+
+# Optional: start a local WordPress environment for this plugin
+npx nx run bcew-document-repository:wp-env-start
 ```
 
-After these steps, simply activate the plugin from the WordPress Admin.
+After these steps, activate the plugin from the WordPress Admin (or use the wp-env site above).
 

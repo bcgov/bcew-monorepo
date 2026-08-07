@@ -1,8 +1,8 @@
 <?php
 
-namespace Bcgov\BcewDocumentRepository;
+namespace Bcgov\Bcew\DocumentRepository;
 
-use Bcgov\BcewDocumentRepository\{
+use Bcgov\Bcew\DocumentRepository\{
     RepositoryConfig,
     DocumentPostType,
     DocumentUploader,

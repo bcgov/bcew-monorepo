@@ -1,5 +1,5 @@
 <?php
-namespace Bcgov\BcewDocumentRepository;
+namespace Bcgov\Bcew\DocumentRepository;
 
 /**
  * Class DocumentRevisionManager
