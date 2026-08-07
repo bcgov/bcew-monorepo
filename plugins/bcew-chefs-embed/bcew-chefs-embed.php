@@ -34,6 +34,7 @@ if ( file_exists( $autoloader_path ) ) {
 if ( class_exists( CredentialsManager::class ) ) {
 	register_activation_hook( __FILE__, array( CredentialsManager::class, 'activate' ) );
 	add_action( 'wp_initialize_site', array( CredentialsManager::class, 'on_initialize_site' ) );
+	add_action( 'rest_api_init', 'bcew_chefs_embed_register_rest_routes' );
 }
 
 /**
@@ -89,3 +90,48 @@ if ( is_admin() && class_exists( Settings::class ) ) {
 
 // Initialize blocks and other frontend functionality.
 add_action( 'init', 'bcew_chefs_embed_init' );
+
+/**
+ * Register plugin REST API routes.
+ */
+function bcew_chefs_embed_register_rest_routes() {
+	register_rest_route(
+		'bcew-chefs-embed/v1',
+		'/form-ids',
+		[
+			[
+				'methods'             => 'GET',
+				'callback'            => 'bcew_chefs_embed_get_saved_form_ids',
+				'permission_callback' => 'bcew_chefs_embed_can_edit_posts',
+			],
+		]
+	);
+}
+
+/**
+ * Return saved CHEFS form IDs from the credentials table.
+ *
+ * @return WP_REST_Response REST response containing form IDs.
+ */
+function bcew_chefs_embed_get_saved_form_ids() {
+	$form_ids = CredentialsManager::get_saved_form_ids();
+
+	return new WP_REST_Response( $form_ids, 200 );
+}
+
+/**
+ * Permission callback for REST routes that require edit post capabilities.
+ *
+ * @return bool|\WP_Error True when current user can edit posts, otherwise error.
+ */
+function bcew_chefs_embed_can_edit_posts() {
+	if ( ! current_user_can( 'edit_posts' ) ) {
+		return new \WP_Error(
+			'rest_forbidden',
+			__( 'You do not have permission to view CHEFS form IDs.', 'bcew-chefs-embed' ),
+			array( 'status' => 403 )
+		);
+	}
+
+	return true;
+}

@@ -119,6 +119,57 @@ class CredentialsTest extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Saved CHEFS form IDs are exposed through the REST API for users who can edit posts.
+	 *
+	 * @return void
+	 */
+	public function test_rest_route_returns_saved_form_ids() {
+		$user_id = self::factory()->user->create( array( 'role' => 'author' ) );
+		wp_set_current_user( $user_id );
+
+		activate_plugin( 'bcew-chefs-embed/bcew-chefs-embed.php' );
+		do_action( 'rest_api_init' );
+
+		CredentialsManager::install();
+		CredentialsManager::save( $this->form_id, 'test-api-key-value', $user_id );
+		$second_form_id = 'deadbeef-1234-5678-90ab-cdef12345678';
+		CredentialsManager::save( $second_form_id, 'another-test-key', $user_id );
+
+		$request  = new \WP_REST_Request( 'GET', '/bcew-chefs-embed/v1/form-ids' );
+		$response = rest_do_request( $request );
+
+		$this->assertSame( 200, $response->get_status() );
+		$this->assertEqualsCanonicalizing( array( $this->form_id, $second_form_id ), $response->get_data() );
+
+		foreach ( $response->get_data() as $saved_form_id ) {
+			$this->assertIsString( $saved_form_id );
+			$this->assertNotEmpty( $saved_form_id );
+		}
+	}
+
+	/**
+	 * REST route denies access to users without the edit_posts capability.
+	 *
+	 * @return void
+	 */
+	public function test_rest_route_blocks_users_without_edit_posts_capability() {
+		$user_id = self::factory()->user->create( array( 'role' => 'subscriber' ) );
+		wp_set_current_user( $user_id );
+
+		activate_plugin( 'bcew-chefs-embed/bcew-chefs-embed.php' );
+		do_action( 'rest_api_init' );
+
+		CredentialsManager::install();
+		CredentialsManager::save( $this->form_id, 'test-api-key-value', $user_id );
+
+		$request  = new \WP_REST_Request( 'GET', '/bcew-chefs-embed/v1/form-ids' );
+		$response = rest_do_request( $request );
+
+		$this->assertSame( 403, $response->get_status() );
+		$this->assertSame( 'rest_forbidden', $response->get_data()['code'] );
+	}
+
+	/**
 	 * Plugin deactivation should not delete credentials data.
 	 *
 	 * @return void
