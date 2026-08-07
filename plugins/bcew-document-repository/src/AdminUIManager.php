@@ -33,22 +33,6 @@ class AdminUIManager {
     private DocumentMetadataManager $metadata_manager;
 
     /**
-     * Hook suffix for the main repository admin page.
-     *
-     * @var string
-     */
-    private string $repository_page_hook = '';
-
-    /**
-     * Hook suffix for the metadata settings admin page.
-     *
-     * False when the current user cannot access the submenu.
-     *
-     * @var string|false
-     */
-    private $metadata_page_hook = '';
-
-    /**
      * Constructor.
      *
      * @param RepositoryConfig        $config Configuration service.
@@ -69,7 +53,7 @@ class AdminUIManager {
      * Add the document repository menu to the WordPress admin.
      */
     public function add_repository_menu(): void {
-        $this->repository_page_hook = add_menu_page(
+        add_menu_page(
             'Document Repository',
             'Document Repository',
             $this->config->get_capability(),
@@ -84,7 +68,7 @@ class AdminUIManager {
      * Add the metadata settings submenu.
      */
     public function add_metadata_settings_submenu(): void {
-        $this->metadata_page_hook = add_submenu_page(
+        add_submenu_page(
             $this->config->get( 'menu_slug' ),
             'Metadata Settings',
             'Metadata Settings',
@@ -100,14 +84,13 @@ class AdminUIManager {
      * @param string $hook Current admin page hook.
      */
     public function enqueue_admin_scripts( string $hook ): void {
-        // Use hooks returned by add_*_page(); submenu hooks are based on the
-        // sanitized menu title, not the menu slug (WP ticket #18857).
-        $valid_hooks = array_filter(
-            [
-                $this->repository_page_hook,
-                $this->metadata_page_hook,
-            ]
-        );
+        // Only load on our plugin pages.
+        // Submenu hook prefix comes from the parent menu title ("Document Repository"),
+        // not the menu slug.
+        $valid_hooks = [
+            'toplevel_page_' . $this->config->get( 'menu_slug' ),
+            'document-repository_page_' . $this->config->get( 'metadata_slug' ),
+        ];
 
         if ( ! in_array( $hook, $valid_hooks, true ) ) {
             return;
@@ -117,7 +100,7 @@ class AdminUIManager {
         $this->register_admin_scripts();
 
         // Load the appropriate script for the current page.
-        if ( $this->repository_page_hook === $hook ) {
+        if ( 'toplevel_page_' . $this->config->get( 'menu_slug' ) === $hook ) {
             wp_enqueue_script( 'bcew-document-repository-app' );
         } else {
             wp_enqueue_script( 'bcew-document-repository-metadata-app' );
@@ -208,7 +191,7 @@ class AdminUIManager {
         $data['userRole'] = ! empty( $user->roles ) ? $user->roles[0] : '';
 
         // Add page-specific data.
-        if ( $this->repository_page_hook === $hook ) {
+        if ( 'toplevel_page_' . $this->config->get( 'menu_slug' ) === $hook ) {
             // For main repository page.
             $data['metadataFields'] = $this->metadata_manager->get_metadata_fields();
         } else {
@@ -222,7 +205,7 @@ class AdminUIManager {
         }
 
         wp_localize_script(
-            $this->repository_page_hook === $hook ? 'bcew-document-repository-app' : 'bcew-document-repository-metadata-app',
+            'toplevel_page_' . $this->config->get( 'menu_slug' ) === $hook ? 'bcew-document-repository-app' : 'bcew-document-repository-metadata-app',
             'documentRepositorySettings',
             $data
         );
