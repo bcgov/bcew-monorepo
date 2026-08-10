@@ -58,28 +58,24 @@ function bcew_chefs_embed_register_menu() {
 }
 
 /**
- * Registers the block(s) metadata from the `blocks-manifest.php` and registers the block type(s)
- * based on the registered block metadata. Behind the scenes, it registers also all assets so they can be enqueued
- * through the block editor in the corresponding context.
+ * Register the CHEFS block using the WordPress 6.7 metadata collection pattern.
  *
- * @see https://make.wordpress.org/core/2025/03/13/more-efficient-block-type-registration-in-6-8/
+ * The manifest is a metadata cache for performance. The block still needs its own
+ * `register_block_type_from_metadata()` call so WordPress registers its assets and render callback.
+ *
  * @see https://make.wordpress.org/core/2024/10/17/new-block-type-registration-apis-to-improve-performance-in-wordpress-6-7/
  */
 function bcew_chefs_embed_init() {
-	if ( function_exists( 'wp_register_block_types_from_metadata_collection' ) ) {
-		wp_register_block_types_from_metadata_collection( __DIR__ . '/dist', __DIR__ . '/dist/blocks-manifest.php' );
-	} else {
-		// Define the path to the build directory.
-		$build_dir = plugin_dir_path( __FILE__ ) . 'dist/';
+	$build_dir     = __DIR__ . '/dist';
+	$manifest_path = $build_dir . '/blocks-manifest.php';
 
-		// Use glob to find all block.json files in the subdirectories of the build folder.
-		$block_files = glob( $build_dir . '*/block.json' );
-		// Loop through each block.json file.
-		foreach ( $block_files as $block_file ) {
-			// Register the block type from the metadata in block.json.
-			register_block_type_from_metadata( $block_file );
-		}
+	// Load block metadata from the generated manifest when available.
+	if ( function_exists( 'wp_register_block_metadata_collection' ) && file_exists( $manifest_path ) ) {
+		wp_register_block_metadata_collection( $build_dir, $manifest_path );
 	}
+
+	// Register the actual block from its built metadata directory.
+	register_block_type_from_metadata( $build_dir . '/chefs-form' );
 }
 
 // Initialize admin settings (menu, forms, actions).

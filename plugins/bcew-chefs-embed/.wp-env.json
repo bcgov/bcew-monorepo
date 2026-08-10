@@ -5,5 +5,8 @@
     "themes": ["bcgov/design-system-wordpress-theme"],
 	"config": { "WP_AUTO_UPDATE_CORE": false },
 	"port": 9012,
-	"testsPort": 9013
+	"testsPort": 9013,
+	"lifecycleScripts": {
+		"afterStart": "wp-env run tests-cli wp plugin activate bcew-chefs-embed"
+	}
 }
