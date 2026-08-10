@@ -74,10 +74,18 @@ function bcew_chefs_embed_init() {
 		wp_register_block_metadata_collection( $build_dir, $manifest_path );
 	}
 
-	// Register the actual block from its built metadata directory (when present).
+	// Prefer the explicit block directory when present.
 	$block_path = $build_dir . '/chefs-form';
-	if ( file_exists( $block_path . '/block.json' ) ) {
+	if ( file_exists( $block_path . '/block.json' ) && function_exists( 'register_block_type_from_metadata' ) ) {
 		register_block_type_from_metadata( $block_path );
+		return;
+	}
+
+	// Fallback for older builds or environments that still emit multiple block.json files.
+	foreach ( glob( $build_dir . '*/block.json' ) as $block_file ) {
+		if ( function_exists( 'register_block_type_from_metadata' ) ) {
+			register_block_type_from_metadata( dirname( $block_file ) );
+		}
 	}
 }
 
