@@ -74,8 +74,11 @@ function bcew_chefs_embed_init() {
 		wp_register_block_metadata_collection( $build_dir, $manifest_path );
 	}
 
-	// Register the actual block from its built metadata directory.
-	register_block_type_from_metadata( $build_dir . '/chefs-form' );
+	// Register the actual block from its built metadata directory (when present).
+	$block_path = $build_dir . '/chefs-form';
+	if ( file_exists( $block_path . '/block.json' ) ) {
+		register_block_type_from_metadata( $block_path );
+	}
 }
 
 // Initialize admin settings (menu, forms, actions).
