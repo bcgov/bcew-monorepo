@@ -5,7 +5,6 @@ const config = defineConfig( {
     ...baseConfig,
     testDir: 'tests/e2e',
     workers: 1,
-    globalSetup: require.resolve( './tests/e2e/global-setup.js' ),
 } );
 
 export default config;
