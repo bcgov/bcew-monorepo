@@ -31,6 +31,13 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	private $api_key = 'test-api-key-12345';
 
 	/**
+	 * Administrator user ID for testing.
+	 *
+	 * @var int
+	 */
+	private $admin_user_id;
+
+	/**
 	 * Ensure the table exists and clear rows before each test.
 	 *
 	 * @return void
@@ -45,6 +52,9 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		$table = CredentialsManager::table_name();
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
 		$wpdb->query( "DELETE FROM `{$table}`" );
+
+		$this->admin_user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $this->admin_user_id );
 	}
 
 	/**
@@ -55,10 +65,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_can_save_credentials() {
-		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
-
-		$result = CredentialsManager::save( $this->form_id, $this->api_key, $user_id );
+		$result = CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
 
 		$this->assertSame( $this->form_id, $result, 'save() should return the form_id on success.' );
 	}
@@ -71,10 +78,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_credentials_table_stores_form_id_and_api_key() {
-		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
-
-		CredentialsManager::save( $this->form_id, $this->api_key, $user_id );
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
 
 		$row = CredentialsManager::get_by_form_id( $this->form_id );
 
@@ -91,15 +95,12 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_credentials_table_stores_user_id() {
-		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
-
-		CredentialsManager::save( $this->form_id, $this->api_key, $user_id );
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
 
 		$row = CredentialsManager::get_by_form_id( $this->form_id );
 
 		$this->assertIsArray( $row );
-		$this->assertSame( $user_id, $row['user_id'], 'user_id should be stored automatically.' );
+		$this->assertSame( $this->admin_user_id, $row['user_id'], 'user_id should be stored automatically.' );
 	}
 
 	/**
@@ -110,23 +111,13 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_credentials_table_stores_created_at_timestamp() {
-		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
-
-		CredentialsManager::save( $this->form_id, $this->api_key, $user_id );
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
 
 		$row = CredentialsManager::get_by_form_id( $this->form_id );
 
 		$this->assertIsArray( $row );
 		$this->assertNotEmpty( $row['created_at'], 'created_at should be stored automatically.' );
-
-		// Verify the timestamp is in valid datetime format.
-		$datetime = \DateTime::createFromFormat( 'Y-m-d H:i:s', $row['created_at'] );
-		$this->assertInstanceOf(
-			\DateTime::class,
-			$datetime,
-			'created_at should be a valid datetime (Y-m-d H:i:s).'
-		);
+		$this->assertValidDatetime( $row['created_at'] );
 	}
 
 	/**
@@ -137,17 +128,14 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_duplicate_form_id_updates_existing_row() {
-		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
-
 		$first_key  = 'first-api-key';
 		$second_key = 'second-api-key';
 
 		// Save first time with first_key.
-		CredentialsManager::save( $this->form_id, $first_key, $user_id );
+		CredentialsManager::save( $this->form_id, $first_key, $this->admin_user_id );
 
 		// Save same form_id again with second_key (should update, not insert).
-		CredentialsManager::save( $this->form_id, $second_key, $user_id );
+		CredentialsManager::save( $this->form_id, $second_key, $this->admin_user_id );
 
 		$row = CredentialsManager::get_by_form_id( $this->form_id );
 
@@ -173,17 +161,14 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_credentials_are_readable_by_form_id() {
-		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
-
-		CredentialsManager::save( $this->form_id, $this->api_key, $user_id );
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
 
 		$row = CredentialsManager::get_by_form_id( $this->form_id );
 
 		$this->assertIsArray( $row );
 		$this->assertSame( $this->form_id, $row['form_id'] );
 		$this->assertSame( $this->api_key, $row['api_key'] );
-		$this->assertSame( $user_id, $row['user_id'] );
+		$this->assertSame( $this->admin_user_id, $row['user_id'] );
 		$this->assertNotEmpty( $row['created_at'] );
 	}
 
@@ -204,10 +189,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_credentials_can_be_deleted() {
-		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
-
-		CredentialsManager::save( $this->form_id, $this->api_key, $user_id );
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
 
 		// Verify it was saved.
 		$row = CredentialsManager::get_by_form_id( $this->form_id );
@@ -223,28 +205,74 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * List_forms() returns all configured form IDs in reverse chronological order.
+	 * List_forms() returns all configured forms as arrays with form_id and created_at.
 	 *
 	 * @return void
 	 */
 	public function test_list_forms_returns_all_configured_form_ids() {
-		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
-
 		$form_id_1 = 'form-1-' . time();
 		$form_id_2 = 'form-2-' . time();
 		$form_id_3 = 'form-3-' . time();
 
-		CredentialsManager::save( $form_id_1, 'key-1', $user_id );
-		CredentialsManager::save( $form_id_2, 'key-2', $user_id );
-		CredentialsManager::save( $form_id_3, 'key-3', $user_id );
+		CredentialsManager::save( $form_id_1, 'key-1', $this->admin_user_id );
+		CredentialsManager::save( $form_id_2, 'key-2', $this->admin_user_id );
+		CredentialsManager::save( $form_id_3, 'key-3', $this->admin_user_id );
 
 		$forms = CredentialsManager::list_forms();
 
 		$this->assertIsArray( $forms );
-		$this->assertContains( $form_id_1, $forms );
-		$this->assertContains( $form_id_2, $forms );
-		$this->assertContains( $form_id_3, $forms );
+
+		$returned_ids = array_column( $forms, 'form_id' );
+		$this->assertContains( $form_id_1, $returned_ids );
+		$this->assertContains( $form_id_2, $returned_ids );
+		$this->assertContains( $form_id_3, $returned_ids );
+	}
+
+	/**
+	 * List_forms() returns a created_at timestamp for each form.
+	 *
+	 * @return void
+	 */
+	public function test_list_forms_returns_created_at_for_each_form() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+
+		$forms = CredentialsManager::list_forms();
+
+		$this->assertNotEmpty( $forms );
+
+		$form = $forms[0];
+		$this->assertArrayHasKey( 'form_id', $form, 'Each list_forms() row must have a form_id key.' );
+		$this->assertArrayHasKey( 'created_at', $form, 'Each list_forms() row must have a created_at key.' );
+		$this->assertNotEmpty( $form['created_at'], 'created_at should not be empty.' );
+		$this->assertValidDatetime( $form['created_at'] );
+	}
+
+	/**
+	 * The 'Configured Forms' table renders the Form ID and formatted date for each saved form.
+	 *
+	 * @return void
+	 */
+	public function test_settings_page_renders_form_id_and_date_in_table() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+
+		$row           = CredentialsManager::get_by_form_id( $this->form_id );
+		$timestamp     = strtotime( $row['created_at'] );
+		$expected_date = $timestamp ? date_i18n( get_option( 'date_format' ), $timestamp ) : $row['created_at'];
+
+		ob_start();
+		( new \Bcgov\BcewChefsEmbed\Settings() )->render_page();
+		$html = ob_get_clean();
+
+		$this->assertStringContainsString(
+			esc_html( $this->form_id ),
+			$html,
+			'The Configured Forms table should display the Form ID.'
+		);
+		$this->assertStringContainsString(
+			esc_html( $expected_date ),
+			$html,
+			'The Configured Forms table should display the formatted created_at date.'
+		);
 	}
 
 	/**
@@ -284,13 +312,31 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 
 		CredentialsManager::activate( true );
 
+		// switch_to_blog changes DB context, so a new user is needed for that site.
 		switch_to_blog( $blog_id );
-		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
-		CredentialsManager::save( $this->form_id, $this->api_key, $user_id );
+		$switched_user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		CredentialsManager::save( $this->form_id, $this->api_key, $switched_user_id );
 		$row = CredentialsManager::get_by_form_id( $this->form_id );
 		$this->assertIsArray( $row, 'Credentials should be saveable on switched blog.' );
 		restore_current_blog();
 
 		$this->assertTrue( true, 'Multisite table support verified.' );
+	}
+
+	/**
+     * Assert that a given value is a valid Y-m-d H:i:s datetime string.
+     *
+     * @param string $value The value to check.
+     * @return void
+     */
+	private function assertValidDatetime( $value ) {
+		$datetime = \DateTime::createFromFormat( 'Y-m-d H:i:s', $value );
+		$errors   = \DateTime::getLastErrors();
+
+		$this->assertInstanceOf( \DateTime::class, $datetime, "'{$value}' should be a valid Y-m-d H:i:s datetime." );
+		$this->assertIsArray( $errors );
+		$this->assertSame( 0, (int) $errors['warning_count'], "'{$value}' should not produce DateTime parse warnings." );
+		$this->assertSame( 0, (int) $errors['error_count'], "'{$value}' should not produce DateTime parse errors." );
+		$this->assertSame( $value, $datetime->format( 'Y-m-d H:i:s' ), "'{$value}' should match the expected datetime format exactly." );
 	}
 }
