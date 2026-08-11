@@ -31,6 +31,13 @@ const ensurePluginIsActive = async ( requestUtils ) => {
 const clearSavedForms = async ( admin, page ) => {
     await admin.visitAdminPage( 'admin.php', SETTINGS_PAGE_QUERY );
 
+    await expect( page ).toHaveURL(
+        /\/wp-admin\/admin\.php\?page=bcew-chefs-embed-settings/
+    );
+    await expect(
+        page.getByRole( 'heading', { name: 'CHEFS Settings' } )
+    ).toBeVisible();
+
     const removeButton = page.getByRole( 'button', { name: 'Remove' } );
 
     while ( ( await removeButton.count() ) > 0 ) {
@@ -42,8 +49,21 @@ const clearSavedForms = async ( admin, page ) => {
 const addSavedForm = async ( admin, page, formId, apiKey ) => {
     await admin.visitAdminPage( 'admin.php', SETTINGS_PAGE_QUERY );
 
-    await page.getByLabel( 'Form ID' ).fill( formId );
-    await page.getByLabel( 'API Key' ).fill( apiKey );
+    await expect( page ).toHaveURL(
+        /\/wp-admin\/admin\.php\?page=bcew-chefs-embed-settings/
+    );
+    await expect(
+        page.getByRole( 'heading', { name: 'CHEFS Settings' } )
+    ).toBeVisible();
+
+    const formIdField = page.getByLabel( 'Form ID' ).first();
+    const apiKeyField = page.getByLabel( 'API Key' ).first();
+
+    await expect( formIdField ).toBeVisible();
+    await expect( apiKeyField ).toBeVisible();
+
+    await formIdField.fill( formId );
+    await apiKeyField.fill( apiKey );
     await page.getByRole( 'button', { name: 'Save' } ).click();
 
     await expect( page.locator( '.notice-success' ) ).toContainText( 'Saved.' );
@@ -194,9 +214,7 @@ test.describe( 'CHEFS Form block', () => {
             .first();
 
         await expect(
-            chefsPanel.getByText( 'No CHEFS forms have been saved yet.', {
-                exact: true,
-            } )
+            chefsPanel.getByText( /No CHEFS forms have been saved yet\./i )
         ).toBeVisible();
 
         const settingsLink = chefsPanel.getByRole( 'link', {
