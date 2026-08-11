@@ -1,12 +1,9 @@
 {
 	"core": "WordPress/WordPress#6.7.2",
 	"phpVersion": "7.4",
-	"plugins": [
-		"."
-	],
-	"config": {
-		"WP_AUTO_UPDATE_CORE": false
-	},
+	"plugins": ["."],
+    "themes": ["bcgov/design-system-wordpress-theme"],
+	"config": { "WP_AUTO_UPDATE_CORE": false },
 	"port": 9012,
 	"testsPort": 9013
 }
