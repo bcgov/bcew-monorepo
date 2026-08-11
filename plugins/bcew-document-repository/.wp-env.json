@@ -4,9 +4,12 @@
 	"plugins": [
 		"."
 	],
-    "config": {
-        "WP_AUTO_UPDATE_CORE": false
-    },
-    "port": 9010,
-    "testsPort": 9011
+	"config": {
+		"WP_AUTO_UPDATE_CORE": false
+	},
+	"port": 9010,
+	"testsPort": 9011,
+	"lifecycleScripts": {
+		"afterStart": "wp-env run tests-cli wp theme activate twentytwentyfive"
+	}
 }
