@@ -53,9 +53,9 @@ class Crypto {
 			// Encrypt+authenticate the plaintext into a binary "box".
 			$box = sodium_crypto_secretbox( $plaintext, $nonce, $key );
 
-			// Store as: "s1:" + base64( nonce + ciphertext ).
-			// base64 makes binary safe for a text DB column.
-			return self::PREFIX_SODIUM . base64_encode( $nonce . $box );
+			// Store as: "s1:" + hex( nonce + ciphertext ).
+			// Hex keeps binary ciphertext safe for a text DB column.
+			return self::PREFIX_SODIUM . bin2hex( $nonce . $box );
 		}
 
 		// Fallback if sodium is missing: AES-256-GCM via OpenSSL.
@@ -71,8 +71,8 @@ class Crypto {
 				return false;
 			}
 
-			// Store as: "o1:" + base64( iv + tag + ciphertext ).
-			return self::PREFIX_OPENSSL . base64_encode( $iv . $tag . $ciphertext );
+			// Store as: "o1:" + hex( iv + tag + ciphertext ).
+			return self::PREFIX_OPENSSL . bin2hex( $iv . $tag . $ciphertext );
 		}
 
 		// Neither sodium nor openssl available — cannot encrypt.
@@ -103,10 +103,10 @@ class Crypto {
 				return false;
 			}
 
-			// Strip "s1:" then base64-decode back to raw binary (nonce + box).
-			$raw = base64_decode( substr( $payload, strlen( self::PREFIX_SODIUM ) ), true );
+			// Strip "s1:" then hex-decode back to raw binary (nonce + box).
+			$raw = self::hex_to_bin( substr( $payload, strlen( self::PREFIX_SODIUM ) ) );
 
-			// Invalid base64, or too short to contain a full nonce.
+			// Invalid hex, or too short to contain a full nonce.
 			if ( false === $raw || strlen( $raw ) < SODIUM_CRYPTO_SECRETBOX_NONCEBYTES ) {
 				return false;
 			}
@@ -127,7 +127,7 @@ class Crypto {
 			}
 
 			// Strip "o1:" then decode binary: iv (12) + tag (16) + ciphertext.
-			$raw = base64_decode( substr( $payload, strlen( self::PREFIX_OPENSSL ) ), true );
+			$raw = self::hex_to_bin( substr( $payload, strlen( self::PREFIX_OPENSSL ) ) );
 
 			// 12 + 16 = 28 minimum bytes before any ciphertext.
 			if ( false === $raw || strlen( $raw ) < 28 ) {
@@ -145,6 +145,20 @@ class Crypto {
 
 		// Unknown prefix (legacy plaintext, corrupt row, or future format we don't know).
 		return false;
+	}
+
+	/**
+	 * Decode a hex string to binary, or false if invalid.
+	 *
+	 * @param string $hex Hex-encoded binary data.
+	 * @return string|false
+	 */
+	private static function hex_to_bin( $hex ) {
+		if ( '' === $hex || 1 === strlen( $hex ) % 2 || ! ctype_xdigit( $hex ) ) {
+			return false;
+		}
+
+		return hex2bin( $hex );
 	}
 
 	/**
