@@ -31,6 +31,8 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	private $api_key = 'test-api-key-12345';
 
 	/**
+     * Administrator user ID for testing.
+     *
 	 * @var int
 	 */
 	private $admin_user_id;
@@ -254,7 +256,8 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
 
 		$row           = CredentialsManager::get_by_form_id( $this->form_id );
-		$expected_date = date_i18n( get_option( 'date_format' ), strtotime( $row['created_at'] ) );
+		$timestamp     = strtotime( $row['created_at'] );
+		$expected_date = $timestamp ? date_i18n( get_option( 'date_format' ), $timestamp ) : $row['created_at'];
 
 		ob_start();
 		( new \Bcgov\BcewChefsEmbed\Settings() )->render_page();
@@ -321,8 +324,11 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * @param string $value
-	 */
+     * Assert that a given value is a valid Y-m-d H:i:s datetime string.
+     *
+     * @param string $value The value to check.
+     * @return void
+     */
 	private function assertValidDatetime( $value ) {
 		$datetime = \DateTime::createFromFormat( 'Y-m-d H:i:s', $value );
 		$this->assertInstanceOf( \DateTime::class, $datetime, "'{$value}' should be a valid Y-m-d H:i:s datetime." );

@@ -125,7 +125,12 @@ class Settings {
 					<?php foreach ( $forms as $form ) : ?>
 						<tr>
 							<td><code><?php echo esc_html( $form['form_id'] ); ?></code></td>
-							<td><?php $timestamp = strtotime( $form['created_at'] ); echo esc_html( $timestamp ? date_i18n( get_option( 'date_format' ), $timestamp ) : $form['created_at'] ); ?></td>
+							<td>
+                                <?php
+                                $timestamp = strtotime( $form['created_at'] );
+                                echo esc_html( $timestamp ? date_i18n( get_option( 'date_format' ), $timestamp ) : $form['created_at'] );
+                                ?>
+						    </td>
 							<td>
 								<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display: inline;">
 									<?php wp_nonce_field( 'bcew_chefs_delete' ); ?>
