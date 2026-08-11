@@ -331,6 +331,12 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
      */
 	private function assertValidDatetime( $value ) {
 		$datetime = \DateTime::createFromFormat( 'Y-m-d H:i:s', $value );
+		$errors   = \DateTime::getLastErrors();
+
 		$this->assertInstanceOf( \DateTime::class, $datetime, "'{$value}' should be a valid Y-m-d H:i:s datetime." );
+		$this->assertIsArray( $errors );
+		$this->assertSame( 0, (int) $errors['warning_count'], "'{$value}' should not produce DateTime parse warnings." );
+		$this->assertSame( 0, (int) $errors['error_count'], "'{$value}' should not produce DateTime parse errors." );
+		$this->assertSame( $value, $datetime->format( 'Y-m-d H:i:s' ), "'{$value}' should match the expected datetime format exactly." );
 	}
 }
