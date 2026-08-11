@@ -103,9 +103,9 @@ class CredentialsManager {
 	}
 
 	/**
-	 * List configured form IDs for the settings page.
+	 * List configured forms for the settings page.
 	 *
-	 * @return array<int,string>
+	 * @return array<int,array{form_id:string,created_at:string}>
 	 */
 	public static function list_forms() {
 		global $wpdb;
@@ -113,7 +113,7 @@ class CredentialsManager {
 		$table = self::table_name();
 
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- no user input; table name cannot be parameterized.
-		return $wpdb->get_col( 'SELECT form_id FROM `' . $table . '` ORDER BY created_at DESC' );
+		return $wpdb->get_results( 'SELECT form_id, created_at FROM `' . $table . '` ORDER BY created_at DESC', ARRAY_A );
 	}
 
 	/**
