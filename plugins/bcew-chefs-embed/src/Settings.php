@@ -117,18 +117,20 @@ class Settings {
 					<thead>
 						<tr>
 							<th><?php esc_html_e( 'Form ID', 'bcew-chefs-embed' ); ?></th>
+							<th><?php esc_html_e( 'Date', 'bcew-chefs-embed' ); ?></th>
 							<th></th>
 						</tr>
 					</thead>
 					<tbody>
-						<?php foreach ( $forms as $form_id ) : ?>
-							<tr>
-								<td><code><?php echo esc_html( $form_id ); ?></code></td>
-								<td>
-									<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display: inline;">
-										<?php wp_nonce_field( 'bcew_chefs_delete' ); ?>
-										<input type="hidden" name="action" value="bcew_chefs_delete" />
-										<input type="hidden" name="form_id" value="<?php echo esc_attr( $form_id ); ?>" />
+					<?php foreach ( $forms as $form ) : ?>
+						<tr>
+							<td><code><?php echo esc_html( $form['form_id'] ); ?></code></td>
+							<td><?php $timestamp = strtotime( $form['created_at'] ); echo esc_html( $timestamp ? date_i18n( get_option( 'date_format' ), $timestamp ) : $form['created_at'] ); ?></td>
+							<td>
+								<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display: inline;">
+									<?php wp_nonce_field( 'bcew_chefs_delete' ); ?>
+									<input type="hidden" name="action" value="bcew_chefs_delete" />
+									<input type="hidden" name="form_id" value="<?php echo esc_attr( $form['form_id'] ); ?>" />
 										<?php submit_button( __( 'Remove', 'bcew-chefs-embed' ), 'delete small', 'submit', false ); ?>
 									</form>
 								</td>
