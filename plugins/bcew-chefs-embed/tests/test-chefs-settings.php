@@ -31,8 +31,8 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	private $api_key = 'test-api-key-12345';
 
 	/**
-     * Administrator user ID for testing.
-     *
+	 * Administrator user ID for testing.
+	 *
 	 * @var int
 	 */
 	private $admin_user_id;
