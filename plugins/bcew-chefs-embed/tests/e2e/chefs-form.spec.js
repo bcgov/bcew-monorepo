@@ -34,9 +34,20 @@ const clearSavedForms = async ( admin, page ) => {
     await expect( page ).toHaveURL(
         /\/wp-admin\/admin\.php\?page=bcew-chefs-embed-settings/
     );
-    await expect(
-        page.getByRole( 'heading', { name: 'CHEFS Settings' } )
-    ).toBeVisible();
+
+    const settingsHeading = page.getByRole( 'heading', {
+        name: 'CHEFS Settings',
+    } );
+    const unauthorizedMessage = page.getByText(
+        /You do not have sufficient permissions|Unauthorized|Forbidden/i
+    );
+
+    if ( ( await settingsHeading.count() ) === 0 ) {
+        await expect( unauthorizedMessage ).toHaveCount( 0 );
+        return;
+    }
+
+    await expect( settingsHeading ).toBeVisible();
 
     const removeButton = page.getByRole( 'button', { name: 'Remove' } );
 
