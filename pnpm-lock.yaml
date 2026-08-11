@@ -240,6 +240,9 @@ importers:
 
   plugins/bcew-chefs-embed:
     dependencies:
+      '@wordpress/api-fetch':
+        specifier: 'catalog:'
+        version: 7.8.2
       '@wordpress/block-editor':
         specifier: 'catalog:'
         version: 14.3.16(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(@types/react-dom@18.3.7(@types/react@18.3.31))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@5.9.3))
@@ -255,6 +258,9 @@ importers:
       '@wordpress/data':
         specifier: 'catalog:'
         version: 10.8.4(@types/react@18.3.31)(react@18.3.1)
+      '@wordpress/element':
+        specifier: 'catalog:'
+        version: 6.8.1
       '@wordpress/i18n':
         specifier: 'catalog:'
         version: 5.8.2
@@ -16455,7 +16461,7 @@ snapshots:
       stylelint: 16.26.1(typescript@5.9.3)
       terser-webpack-plugin: 5.6.1(@swc/core@1.15.43(@swc/helpers@0.5.23))(cssnano@6.1.2(postcss@8.5.19))(esbuild@0.27.7)(postcss@8.5.19)(webpack@5.108.4)
       url-loader: 4.1.1(webpack@5.108.4)
-      webpack: 5.108.4(@swc/core@1.15.43(@swc/helpers@0.5.23))(cssnano@6.1.2(postcss@8.5.19))(esbuild@0.27.7)(postcss@8.5.19)(webpack-cli@5.1.4(webpack-dev-server@4.15.2)(webpack@5.108.4))
+      webpack: 5.108.4(@swc/core@1.15.43(@swc/helpers@0.5.23))(cssnano@6.1.2(postcss@8.5.19))(esbuild@0.27.7)(postcss@8.5.19)(webpack-cli@5.1.4)
       webpack-bundle-analyzer: 4.10.2
       webpack-cli: 5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@4.15.2(webpack-cli@5.1.4)(webpack@5.108.4))(webpack@5.108.4(@swc/core@1.15.43(@swc/helpers@0.5.23))(esbuild@0.27.7)(postcss@8.5.19)(webpack-cli@5.1.4))
       webpack-dev-server: 4.15.2(webpack-cli@5.1.4)(webpack@5.108.4)
@@ -21476,7 +21482,7 @@ snapshots:
     dependencies:
       minimist: 1.2.8
 
-  minimizer-webpack-plugin@5.6.1(@swc/core@1.15.43(@swc/helpers@0.5.23))(cssnano@6.1.2(postcss@8.5.19))(esbuild@0.27.7)(postcss@8.5.19)(webpack@5.108.4(@swc/core@1.15.43(@swc/helpers@0.5.23))(esbuild@0.27.7)(postcss@8.5.19)(webpack-cli@5.1.4)):
+  minimizer-webpack-plugin@5.6.1(@swc/core@1.15.43(@swc/helpers@0.5.23))(cssnano@6.1.2(postcss@8.5.19))(esbuild@0.27.7)(postcss@8.5.19)(webpack@5.108.4):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
       jest-worker: 27.5.1
@@ -24383,46 +24389,6 @@ snapshots:
 
   webpack-sources@3.5.1: {}
 
-  webpack@5.108.4(@swc/core@1.15.43(@swc/helpers@0.5.23))(cssnano@6.1.2(postcss@8.5.19))(esbuild@0.27.7)(postcss@8.5.19)(webpack-cli@5.1.4(webpack-dev-server@4.15.2)(webpack@5.108.4)):
-    dependencies:
-      '@types/estree': 1.0.9
-      '@types/json-schema': 7.0.15
-      '@webassemblyjs/ast': 1.14.1
-      '@webassemblyjs/wasm-edit': 1.14.1
-      '@webassemblyjs/wasm-parser': 1.14.1
-      acorn: 8.17.0
-      acorn-import-phases: 1.0.4(acorn@8.17.0)
-      browserslist: 4.28.6
-      chrome-trace-event: 1.0.4
-      enhanced-resolve: 5.24.2
-      es-module-lexer: 2.3.1
-      eslint-scope: 5.1.1
-      events: 3.3.0
-      graceful-fs: 4.2.11
-      loader-runner: 4.3.2
-      mime-db: 1.54.0
-      minimizer-webpack-plugin: 5.6.1(@swc/core@1.15.43(@swc/helpers@0.5.23))(cssnano@6.1.2(postcss@8.5.19))(esbuild@0.27.7)(postcss@8.5.19)(webpack@5.108.4(@swc/core@1.15.43(@swc/helpers@0.5.23))(esbuild@0.27.7)(postcss@8.5.19)(webpack-cli@5.1.4))
-      neo-async: 2.6.2
-      schema-utils: 4.3.3
-      tapable: 2.3.3
-      watchpack: 2.5.2
-      webpack-sources: 3.5.1
-    optionalDependencies:
-      webpack-cli: 5.1.4(webpack-bundle-analyzer@4.10.2)(webpack-dev-server@4.15.2(webpack-cli@5.1.4)(webpack@5.108.4))(webpack@5.108.4(@swc/core@1.15.43(@swc/helpers@0.5.23))(esbuild@0.27.7)(postcss@8.5.19)(webpack-cli@5.1.4))
-    transitivePeerDependencies:
-      - '@minify-html/node'
-      - '@swc/core'
-      - '@swc/css'
-      - '@swc/html'
-      - clean-css
-      - cssnano
-      - csso
-      - esbuild
-      - html-minifier-terser
-      - lightningcss
-      - postcss
-      - uglify-js
-
   webpack@5.108.4(@swc/core@1.15.43(@swc/helpers@0.5.23))(cssnano@6.1.2(postcss@8.5.19))(esbuild@0.27.7)(postcss@8.5.19)(webpack-cli@5.1.4):
     dependencies:
       '@types/estree': 1.0.9
@@ -24441,7 +24407,7 @@ snapshots:
       graceful-fs: 4.2.11
       loader-runner: 4.3.2
       mime-db: 1.54.0
-      minimizer-webpack-plugin: 5.6.1(@swc/core@1.15.43(@swc/helpers@0.5.23))(cssnano@6.1.2(postcss@8.5.19))(esbuild@0.27.7)(postcss@8.5.19)(webpack@5.108.4(@swc/core@1.15.43(@swc/helpers@0.5.23))(esbuild@0.27.7)(postcss@8.5.19)(webpack-cli@5.1.4))
+      minimizer-webpack-plugin: 5.6.1(@swc/core@1.15.43(@swc/helpers@0.5.23))(cssnano@6.1.2(postcss@8.5.19))(esbuild@0.27.7)(postcss@8.5.19)(webpack@5.108.4)
       neo-async: 2.6.2
       schema-utils: 4.3.3
       tapable: 2.3.3

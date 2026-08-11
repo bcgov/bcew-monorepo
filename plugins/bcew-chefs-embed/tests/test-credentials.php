@@ -1,6 +1,6 @@
 <?php
 /**
- * Integration tests for CHEFS credentials storage (DSWP-1034).
+ * Integration tests for CHEFS credentials storage
  *
  * @package bcew-chefs-embed
  */
@@ -8,6 +8,7 @@
 namespace Bcgov\BcewChefsEmbed\Test;
 
 use Bcgov\BcewChefsEmbed\CredentialsManager;
+use Bcgov\BcewChefsEmbed\Settings;
 
 /**
  * Credentials table acceptance criteria.
@@ -145,6 +146,70 @@ class CredentialsTest extends \WP_UnitTestCase {
 			$this->assertIsString( $saved_form_id );
 			$this->assertNotEmpty( $saved_form_id );
 		}
+	}
+
+	/**
+	 * REST route returns an empty list when no forms are saved.
+	 *
+	 * @return void
+	 */
+	public function test_rest_route_returns_empty_list_when_no_saved_form_ids() {
+		$user_id = self::factory()->user->create( array( 'role' => 'author' ) );
+		wp_set_current_user( $user_id );
+
+		activate_plugin( 'bcew-chefs-embed/bcew-chefs-embed.php' );
+		do_action( 'rest_api_init' );
+
+		$request  = new \WP_REST_Request( 'GET', '/bcew-chefs-embed/v1/form-ids' );
+		$response = rest_do_request( $request );
+
+		$this->assertSame( 200, $response->get_status() );
+		$this->assertSame( array(), $response->get_data() );
+	}
+
+	/**
+	 * The editor script receives the settings page URL used by the no-forms message link.
+	 *
+	 * @return void
+	 */
+	public function test_editor_script_has_inline_settings_url_config() {
+		$registry = \WP_Block_Type_Registry::get_instance();
+		if ( $registry->is_registered( 'bcew-chefs-embed/chefs-form' ) ) {
+			$registry->unregister( 'bcew-chefs-embed/chefs-form' );
+		}
+
+		wp_register_script( 'bcew-chefs-embed-test-editor-script', false, array(), '1.0.0', true );
+		register_block_type(
+			'bcew-chefs-embed/chefs-form',
+			array(
+				'editor_script' => 'bcew-chefs-embed-test-editor-script',
+			)
+		);
+
+		bcew_chefs_embed_register_editor_settings();
+
+		$block_type = $registry->get_registered( 'bcew-chefs-embed/chefs-form' );
+
+		$this->assertNotNull( $block_type );
+		$this->assertNotEmpty( $block_type->editor_script_handles );
+
+		$editor_script_handle = reset( $block_type->editor_script_handles );
+		$this->assertIsString( $editor_script_handle );
+		$this->assertNotSame( '', $editor_script_handle );
+
+		$inline_scripts = wp_scripts()->get_data( $editor_script_handle, 'before' );
+
+		$this->assertNotFalse( $inline_scripts );
+		$this->assertIsArray( $inline_scripts );
+		$this->assertNotEmpty( $inline_scripts );
+
+		$inline_script = implode( "\n", $inline_scripts );
+
+		$this->assertStringContainsString( 'window.bcewChefsEmbedSettings', $inline_script );
+		$this->assertStringContainsString( 'settingsUrl', $inline_script );
+		$this->assertStringContainsString( Settings::PAGE_SLUG, $inline_script );
+
+		$registry->unregister( 'bcew-chefs-embed/chefs-form' );
 	}
 
 	/**

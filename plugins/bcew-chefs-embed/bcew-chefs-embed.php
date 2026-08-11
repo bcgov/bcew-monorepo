@@ -68,18 +68,39 @@ function bcew_chefs_embed_register_menu() {
 function bcew_chefs_embed_init() {
 	if ( function_exists( 'wp_register_block_types_from_metadata_collection' ) ) {
 		wp_register_block_types_from_metadata_collection( __DIR__ . '/dist', __DIR__ . '/dist/blocks-manifest.php' );
+
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			$registered_block = \WP_Block_Type_Registry::get_instance()->is_registered( 'bcew-chefs-embed/chefs-form' );
+			error_log( sprintf( 'bcew-chefs-embed: metadata collection registration complete; chefs-form registered=%s', $registered_block ? 'yes' : 'no' ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+		}
 	} else {
 		// Define the path to the build directory.
 		$build_dir = plugin_dir_path( __FILE__ ) . 'dist/';
 
 		// Use glob to find all block.json files in the subdirectories of the build folder.
 		$block_files = glob( $build_dir . '*/block.json' );
+
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			error_log( sprintf( 'bcew-chefs-embed: found %d block metadata file(s) in %s', is_array( $block_files ) ? count( $block_files ) : 0, $build_dir ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+		}
+
 		// Loop through each block.json file.
 		foreach ( $block_files as $block_file ) {
 			// Register the block type from the metadata in block.json.
 			register_block_type_from_metadata( $block_file );
+
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( sprintf( 'bcew-chefs-embed: registered block metadata from %s', $block_file ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			}
+		}
+
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+			$registered_block = \WP_Block_Type_Registry::get_instance()->is_registered( 'bcew-chefs-embed/chefs-form' );
+			error_log( sprintf( 'bcew-chefs-embed: fallback registration complete; chefs-form registered=%s', $registered_block ? 'yes' : 'no' ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 		}
 	}
+
+	bcew_chefs_embed_register_editor_settings();
 }
 
 // Initialize admin settings (menu, forms, actions).
@@ -90,6 +111,45 @@ if ( is_admin() && class_exists( Settings::class ) ) {
 
 // Initialize blocks and other frontend functionality.
 add_action( 'init', 'bcew_chefs_embed_init' );
+
+/**
+ * Bridge editor-only settings into the CHEFS Form block script.
+ *
+ * @return void
+ */
+function bcew_chefs_embed_register_editor_settings() {
+	// Skip if the admin settings class is unavailable; no settings URL can be generated.
+	if ( ! class_exists( Settings::class ) ) {
+		return;
+	}
+
+	// Resolve the registered block type so we can discover its editor script handle.
+	$block_type = \WP_Block_Type_Registry::get_instance()->get_registered( 'bcew-chefs-embed/chefs-form' );
+
+	// If the block is not registered yet or has no editor script, there is nothing to attach.
+	if ( ! $block_type || empty( $block_type->editor_script_handles ) ) {
+		return;
+	}
+
+	// Use the block's first editor script handle as the inline script target.
+	$editor_script_handle = reset( $block_type->editor_script_handles );
+
+	if ( ! is_string( $editor_script_handle ) || '' === $editor_script_handle ) {
+		return;
+	}
+
+	// Inject a small JS config object before the editor script runs.
+	// The block editor reads this URL to build the "Open CHEFS settings" empty-state link.
+	wp_add_inline_script(
+		$editor_script_handle,
+		'window.bcewChefsEmbedSettings = ' . wp_json_encode(
+			array(
+				'settingsUrl' => Settings::get_page_url(),
+			)
+		) . ';',
+		'before'
+	);
+}
 
 /**
  * Register plugin REST API routes.
