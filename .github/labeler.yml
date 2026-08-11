@@ -30,9 +30,9 @@ themes/bcew-theme-2:
     - changed-files:
           - any-glob-to-any-file: 'themes/bcew-theme-2/**'
 
-plugins/wordpress-document-repository:
+plugins/bcew-document-repository:
     - changed-files:
-        - any-glob-to-any-file: 'plugins/wordpress-document-repository/**'
+        - any-glob-to-any-file: 'plugins/bcew-document-repository/**'
 
         
 plugins/bcew-chefs-embed:

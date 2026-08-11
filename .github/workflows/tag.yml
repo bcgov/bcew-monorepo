@@ -11,7 +11,7 @@ on:
           - bcew-belleville-terminal
           - bcew-theme-2
           - bcew-ticorp
-          - wordpress-document-repository
+          - bcew-document-repository
       version:
         description: 'Version to release (for example: 1.2.3)'
         required: true
