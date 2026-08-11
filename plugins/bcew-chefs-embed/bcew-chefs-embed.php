@@ -82,7 +82,7 @@ function bcew_chefs_embed_init() {
 	}
 
 	// Fallback for older builds or environments that still emit multiple block.json files.
-	foreach ( glob( $build_dir . '*/block.json' ) as $block_file ) {
+	foreach ( glob( $build_dir . '/*/block.json' ) as $block_file ) {
 		if ( function_exists( 'register_block_type_from_metadata' ) ) {
 			register_block_type_from_metadata( dirname( $block_file ) );
 		}
