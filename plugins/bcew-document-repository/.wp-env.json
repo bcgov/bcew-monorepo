@@ -10,6 +10,6 @@
 	"port": 9010,
 	"testsPort": 9011,
 	"lifecycleScripts": {
-		"afterStart": "wp-env run tests-cli wp theme activate twentytwentyfive"
+		"afterStart": "wp-env run tests-cli bash -c 'wp theme activate twentytwentyfive && wp plugin activate wordpress-document-repository'"
 	}
 }

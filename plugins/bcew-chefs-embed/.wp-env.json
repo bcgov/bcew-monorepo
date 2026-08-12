@@ -2,11 +2,11 @@
 	"core": "WordPress/WordPress#6.7.2",
 	"phpVersion": "7.4",
 	"plugins": ["."],
-    "themes": ["bcgov/design-system-wordpress-theme"],
+	"themes": ["bcgov/design-system-wordpress-theme"],
 	"config": { "WP_AUTO_UPDATE_CORE": false },
 	"port": 9012,
 	"testsPort": 9013,
 	"lifecycleScripts": {
-		"afterStart": "wp-env run tests-cli wp theme activate twentytwentyfive"
+		"afterStart": "wp-env run tests-cli bash -c 'wp theme activate twentytwentyfive && wp plugin activate bcew-chefs-embed'"
 	}
 }

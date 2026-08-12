@@ -8,6 +8,6 @@
 	"port": 9006,
 	"testsPort": 9007,
 	"lifecycleScripts": {
-		"afterStart": "wp-env run tests-cli wp theme activate twentytwentyfive"
+		"afterStart": "wp-env run tests-cli bash -c 'wp theme activate twentytwentyfive && wp plugin activate bcew-blocks'"
 	}
 }

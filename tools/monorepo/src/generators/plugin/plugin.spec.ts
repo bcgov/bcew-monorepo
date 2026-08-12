@@ -100,7 +100,7 @@ describe( 'plugin generator', () => {
         expect( wpEnvConfig.testsPort ).toBe( 9003 );
         expect( wpEnvConfig.lifecycleScripts ).toEqual( {
             afterStart:
-                'wp-env run tests-cli wp theme activate twentytwentyfive',
+                "wp-env run tests-cli bash -c 'wp theme activate twentytwentyfive && wp plugin activate wp-env-plugin'",
         } );
     } );
 

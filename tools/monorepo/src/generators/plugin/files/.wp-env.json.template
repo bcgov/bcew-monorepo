@@ -10,6 +10,6 @@
 	"port": <%= wpEnvPort %>,
 	"testsPort": <%= wpEnvPort + 1 %>,
 	"lifecycleScripts": {
-		"afterStart": "wp-env run tests-cli wp theme activate twentytwentyfive"
+		"afterStart": "wp-env run tests-cli bash -c 'wp theme activate twentytwentyfive && wp plugin activate <%= slug %>'"
 	}
 }
