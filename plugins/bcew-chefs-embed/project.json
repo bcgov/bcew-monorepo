@@ -16,11 +16,7 @@
         "start": {},
         "start-playwright": {},
         "test-e2e": {},
-        "test-e2e-docker": {
-            "options": {
-                "command": "docker exec -e WP_BASE_URL=http://localhost:9012 playwright sh -c \"cd {projectRoot} && npx wp-scripts test-playwright\""
-            }
-        },
+        "test-e2e-docker": {},
         "test-screenshot": {},
         "test-screenshot-generate": {},
         "test-integration": {
