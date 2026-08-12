@@ -186,6 +186,8 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	/**
 	 * Credentials can be deleted by Form ID.
 	 *
+	 * Acceptance: Clicking remove deletes the row for that Form ID (database).
+	 *
 	 * @return void
 	 */
 	public function test_credentials_can_be_deleted() {
@@ -199,9 +201,95 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		$deleted = CredentialsManager::delete( $this->form_id );
 		$this->assertTrue( $deleted, 'delete() should return true on successful deletion.' );
 
-		// Verify it's gone.
+		// Verify it's gone from lookup.
 		$row = CredentialsManager::get_by_form_id( $this->form_id );
 		$this->assertNull( $row, 'Deleted credential should not be retrievable.' );
+
+		// Verify the DB row is actually gone (not just the helper returning null).
+		global $wpdb;
+		$table = CredentialsManager::table_name();
+		$count = (int) $wpdb->get_var(
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table name cannot be parameterized.
+			$wpdb->prepare( 'SELECT COUNT(*) FROM `' . $table . '` WHERE form_id = %s', $this->form_id )
+		);
+		$this->assertSame( 0, $count, 'Deleted form_id should have zero rows in the credentials table.' );
+	}
+
+	/**
+	 * After delete, the form no longer appears in the saved forms list.
+	 *
+	 * Acceptance: Removed form no longer appears in the saved forms list.
+	 *
+	 * @return void
+	 */
+	public function test_deleted_form_no_longer_appears_in_list_forms() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+
+		$before_ids = array_column( CredentialsManager::list_forms(), 'form_id' );
+		$this->assertContains( $this->form_id, $before_ids );
+
+		CredentialsManager::delete( $this->form_id );
+
+		$after_ids = array_column( CredentialsManager::list_forms(), 'form_id' );
+		$this->assertNotContains( $this->form_id, $after_ids, 'Removed form must not appear in list_forms().' );
+	}
+
+	/**
+	 * Settings page shows a Remove action that posts to admin_post_bcew_chefs_delete.
+	 *
+	 * Acceptance: Each saved form on the settings page has a remove action.
+	 *
+	 * @return void
+	 */
+	public function test_settings_page_renders_remove_action_for_each_form() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+
+		ob_start();
+		( new \Bcgov\BcewChefsEmbed\Settings() )->render_page();
+		$html = ob_get_clean();
+
+		$this->assertStringContainsString(
+			'name="action" value="bcew_chefs_delete"',
+			$html,
+			'Remove form must post action=bcew_chefs_delete.'
+		);
+		$this->assertStringContainsString(
+			'name="form_id" value="' . esc_attr( $this->form_id ) . '"',
+			$html,
+			'Remove form must include the Form ID as a hidden field.'
+		);
+		$this->assertStringContainsString(
+			'Remove',
+			$html,
+			'Each saved form should expose a Remove control.'
+		);
+		$this->assertStringContainsString(
+			'bcew_chefs_delete',
+			$html,
+			'Remove form must include a nonce for bcew_chefs_delete.'
+		);
+	}
+
+	/**
+	 * handle_delete() rejects users without manage_options.
+	 *
+	 * Acceptance: Only users with manage_options can remove forms.
+	 *
+	 * @return void
+	 */
+	public function test_handle_delete_requires_manage_options() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+
+		$subscriber_id = self::factory()->user->create( array( 'role' => 'subscriber' ) );
+		wp_set_current_user( $subscriber_id );
+
+		$_POST['form_id']     = $this->form_id;
+		$_POST['_wpnonce']    = wp_create_nonce( 'bcew_chefs_delete' );
+		$_REQUEST['_wpnonce'] = $_POST['_wpnonce'];
+
+		$this->expectException( \WPDieException::class );
+
+		( new \Bcgov\BcewChefsEmbed\Settings() )->handle_delete();
 	}
 
 	/**

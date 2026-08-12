@@ -79,31 +79,42 @@ class CredentialsManager {
 	}
 
 	/**
-	 * Remove a form by CHEFS form ID.
+	 * Remove a form by CHEFS form ID (hard delete).
 	 *
-	 * @param string $form_id CHEFS form ID.
-	 * @return bool
+	 * Used by the settings page Remove action.
+	 * Deletes the entire credentials row — including the stored API key —
+	 * so the form disappears from list_forms() / get_saved_form_ids().
+	 *
+	 * @param string $form_id CHEFS form ID (primary key).
+	 * @return bool True when at least one row was deleted.
 	 */
 	public static function delete( $form_id ) {
 		global $wpdb;
 
+		// Normalize the ID the same way save()/get_by_form_id() do.
 		$form_id = self::sanitize_form_id( $form_id );
 
+		// Nothing to delete if the ID is empty after sanitize.
 		if ( '' === $form_id ) {
 			return false;
 		}
 
+		// $wpdb->delete builds a safe DELETE ... WHERE form_id = %s.
 		$deleted = $wpdb->delete(
 			self::table_name(),
 			array( 'form_id' => $form_id ),
 			array( '%s' )
 		);
 
+		// false = query error; 0 = no matching row; >0 = rows removed.
 		return false !== $deleted && $deleted > 0;
 	}
 
 	/**
 	 * List configured forms for the settings page.
+	 *
+	 * Does not select api_key — the settings table only shows form_id + date
+	 * and a Remove button. Keeps secrets off the HTML page.
 	 *
 	 * @return array<int,array{form_id:string,created_at:string}>
 	 */
