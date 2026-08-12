@@ -1,7 +1,7 @@
 const { test, expect } = require( '@wordpress/e2e-test-utils-playwright' );
 
 const BLOCK_NAME = 'bcew-chefs-embed/chefs-form';
-const PLUGIN_BASENAME = 'bcew-chefs-embed/bcew-chefs-embed.php';
+const PLUGIN_BASENAME = 'bcew-chefs-embed/bcew-chefs-embed';
 const SETTINGS_PAGE_QUERY = 'page=bcew-chefs-embed-settings';
 const ensurePluginIsActive = async ( requestUtils ) => {
     const plugins = await requestUtils.rest( {

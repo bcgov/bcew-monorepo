@@ -78,10 +78,10 @@ function bcew_chefs_embed_init() {
 		$build_dir = plugin_dir_path( __FILE__ ) . 'dist/';
 
 		// Use glob to find all block.json files in the subdirectories of the build folder.
-		$block_files = glob( $build_dir . '*/block.json' );
+		$block_files = glob( $build_dir . '*/block.json' ) ?: array();
 
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			error_log( sprintf( 'bcew-chefs-embed: found %d block metadata file(s) in %s', is_array( $block_files ) ? count( $block_files ) : 0, $build_dir ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			error_log( sprintf( 'bcew-chefs-embed: found %d block metadata file(s) in %s', count( $block_files ), $build_dir ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 		}
 
 		// Loop through each block.json file.
