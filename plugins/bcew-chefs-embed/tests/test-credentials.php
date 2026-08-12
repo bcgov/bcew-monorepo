@@ -296,4 +296,31 @@ class CredentialsTest extends \WP_UnitTestCase {
 
 		$this->assertTrue( $this->table_exists() );
 	}
+
+	/**
+	 * Embed config REST route returns an error for an unknown Form ID.
+	 *
+	 * @return void
+	 */
+	public function test_embed_config_route_returns_error_for_unknown_form_id() {
+		activate_plugin( 'bcew-chefs-embed/bcew-chefs-embed.php' );
+		do_action( 'rest_api_init' );
+
+		CredentialsManager::install();
+
+		$request = new \WP_REST_Request(
+			'GET',
+			'/bcew-chefs-embed/v1/embed-config'
+		);
+
+		$request->set_param( 'formId', '00000000-0000-0000-0000-000000000000' );
+
+		$response = rest_do_request( $request );
+
+		$this->assertSame( 404, $response->get_status() );
+		$this->assertSame(
+			'chefs_form_not_configured',
+			$response->get_data()['code']
+		);
+	}
 }
