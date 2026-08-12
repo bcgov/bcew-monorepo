@@ -249,11 +249,16 @@ class CredentialsTest extends \WP_UnitTestCase {
 		activate_plugin( $plugin );
 		deactivate_plugins( $plugin );
 
-		$this->assertTrue( $this->table_exists() );
+		try {
+			$this->assertTrue( $this->table_exists() );
 
-		$row = CredentialsManager::get_by_form_id( $this->form_id );
-		$this->assertIsArray( $row );
-		$this->assertSame( 'persist-me', $row['api_key'] );
+			$row = CredentialsManager::get_by_form_id( $this->form_id );
+			$this->assertIsArray( $row );
+			$this->assertSame( 'persist-me', $row['api_key'] );
+		} finally {
+			// Leave the shared wp-env tests site active for e2e / manual checks.
+			activate_plugin( $plugin );
+		}
 	}
 
 	/**

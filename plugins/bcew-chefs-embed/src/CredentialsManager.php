@@ -119,6 +119,8 @@ class CredentialsManager {
 	/**
 	 * Get a stored form record by form ID (primary key).
 	 *
+	 * API key is decrypted for server-side use.
+	 *
 	 * @param string $form_id CHEFS form ID.
 	 * @return array{form_id:string,api_key:string,created_at:string,user_id:int}|null
 	 */
@@ -147,9 +149,15 @@ class CredentialsManager {
 			return null;
 		}
 
+		$api_key = Crypto::decrypt( $row['api_key'] );
+
+		if ( false === $api_key ) {
+			return null;
+		}
+
 		return array(
 			'form_id'    => $row['form_id'],
-			'api_key'    => $row['api_key'],
+			'api_key'    => $api_key,
 			'created_at' => $row['created_at'],
 			'user_id'    => (int) $row['user_id'],
 		);
@@ -200,6 +208,12 @@ class CredentialsManager {
 			return false;
 		}
 
+		$api_key_encrypted = Crypto::encrypt( $api_key );
+
+		if ( false === $api_key_encrypted ) {
+			return false;
+		}
+
 		if ( null === $user_id ) {
 			$user_id = get_current_user_id();
 		}
@@ -220,7 +234,7 @@ class CredentialsManager {
 			$result = $wpdb->update(
 				$table,
 				array(
-					'api_key' => $api_key,
+					'api_key' => $api_key_encrypted,
 					'user_id' => $user_id,
 				),
 				array( 'form_id' => $form_id ),
@@ -232,7 +246,7 @@ class CredentialsManager {
 				$table,
 				array(
 					'form_id' => $form_id,
-					'api_key' => $api_key,
+					'api_key' => $api_key_encrypted,
 					'user_id' => $user_id,
 				),
 				array( '%s', '%s', '%d' )
