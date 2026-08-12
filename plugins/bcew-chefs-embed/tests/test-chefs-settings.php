@@ -271,7 +271,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * handle_delete() rejects users without manage_options.
+	 * Handle delete rejects users without manage_options.
 	 *
 	 * Acceptance: Only users with manage_options can remove forms.
 	 *
@@ -283,9 +283,10 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		$subscriber_id = self::factory()->user->create( array( 'role' => 'subscriber' ) );
 		wp_set_current_user( $subscriber_id );
 
+		$nonce                = wp_create_nonce( 'bcew_chefs_delete' );
 		$_POST['form_id']     = $this->form_id;
-		$_POST['_wpnonce']    = wp_create_nonce( 'bcew_chefs_delete' );
-		$_REQUEST['_wpnonce'] = $_POST['_wpnonce'];
+		$_POST['_wpnonce']    = $nonce;
+		$_REQUEST['_wpnonce'] = $nonce;
 
 		$this->expectException( \WPDieException::class );
 
