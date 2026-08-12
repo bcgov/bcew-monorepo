@@ -210,6 +210,46 @@ test.describe( 'CHEFS Form block', () => {
         );
     } );
 
+    test( 'clears a selected Form ID after its saved form is removed', async ( {
+        admin,
+        editor,
+        page,
+    } ) => {
+        const formId = '44444444-4444-4444-8444-444444444444';
+
+        await addSavedForm( admin, page, formId, 'removed-api-key' );
+
+        await admin.createNewPost();
+        await editor.insertBlock( { name: BLOCK_NAME } );
+        await ensureBlockSettingsVisible( editor, page );
+
+        const formSelect = page.getByLabel( 'Form ID' ).first();
+        await formSelect.selectOption( formId );
+        await expect( formSelect ).toHaveValue( formId );
+
+        const postId = await editor.publishPost();
+        expect( postId ).not.toBeNull();
+
+        await clearSavedForms( admin, page );
+        await page.goto( `/wp-admin/post.php?post=${ postId }&action=edit` );
+        await expect(
+            editor.canvas.locator( `[data-type="${ BLOCK_NAME }"]` ).first()
+        ).toBeVisible();
+
+        await expect(
+            editor.canvas.getByText(
+                'Select a CHEFS form in the block settings.'
+            )
+        ).toBeVisible();
+
+        const blocks = await editor.getBlocks();
+        const chefsBlock = blocks.find(
+            ( block ) => block.name === BLOCK_NAME
+        );
+
+        expect( chefsBlock.attributes.formId ).toBe( '' );
+    } );
+
     test( 'shows settings link when no saved forms exist', async ( {
         admin,
         editor,

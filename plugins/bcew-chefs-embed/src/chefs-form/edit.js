@@ -52,7 +52,13 @@ const Edit = ( { attributes, setAttributes } ) => {
                     return;
                 }
 
-                setFormIds( Array.isArray( response ) ? response : [] );
+                const savedFormIds = Array.isArray( response ) ? response : [];
+
+                setFormIds( savedFormIds );
+
+                if ( formId && ! savedFormIds.includes( formId ) ) {
+                    setAttributes( { formId: '' } );
+                }
             } catch ( error ) {
                 if ( ! isMounted ) {
                     return;
@@ -78,7 +84,7 @@ const Edit = ( { attributes, setAttributes } ) => {
         return () => {
             isMounted = false;
         };
-    }, [] );
+    }, [ formId, setAttributes ] );
 
     const options = [
         {
@@ -90,17 +96,6 @@ const Edit = ( { attributes, setAttributes } ) => {
             value: savedFormId,
         } ) ),
     ];
-
-    if ( formId && ! formIds.includes( formId ) ) {
-        options.push( {
-            label: sprintf(
-                /* translators: %s: saved CHEFS form ID currently stored on the block. */
-                __( '%s (currently selected)', 'bcew-chefs-embed' ),
-                formId
-            ),
-            value: formId,
-        } );
-    }
 
     return (
         <>
