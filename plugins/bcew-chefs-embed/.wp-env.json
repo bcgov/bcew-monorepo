@@ -7,6 +7,6 @@
 	"port": 9012,
 	"testsPort": 9013,
 	"lifecycleScripts": {
-		"afterStart": "wp-env run tests-cli bash -c 'wp theme activate twentytwentyfive && wp plugin activate bcew-chefs-embed'"
+		"afterStart": "wp-env run cli bash -c 'wp theme activate twentytwentyfive && wp plugin activate bcew-chefs-embed' && wp-env run tests-cli bash -c 'wp theme activate twentytwentyfive && wp plugin activate bcew-chefs-embed'"
 	}
 }

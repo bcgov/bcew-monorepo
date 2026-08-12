@@ -63,9 +63,23 @@ const addSavedForm = async ( admin, page, formId, apiKey ) => {
     await expect( page ).toHaveURL(
         /\/wp-admin\/admin\.php\?page=bcew-chefs-embed-settings/
     );
-    await expect(
-        page.getByRole( 'heading', { name: 'CHEFS Settings' } )
-    ).toBeVisible();
+
+    const settingsHeading = page.getByRole( 'heading', {
+        name: 'CHEFS Settings',
+    } );
+
+    const unauthorizedMessage = page.getByText(
+        /You do not have sufficient permissions|Unauthorized|Forbidden/i
+    );
+
+    if ( ( await unauthorizedMessage.count() ) > 0 ) {
+        throw new Error(
+            'CHEFS settings page is not accessible (permission denied). ' +
+                'Verify the test user can manage options and access admin pages.'
+        );
+    }
+
+    await expect( settingsHeading ).toBeVisible( { timeout: 15000 } );
 
     const formIdField = page.getByLabel( 'Form ID' ).first();
     const apiKeyField = page.getByLabel( 'API Key' ).first();
