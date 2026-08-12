@@ -42,7 +42,7 @@ const clearSavedForms = async ( admin, page ) => {
         /You do not have sufficient permissions|Unauthorized|Forbidden/i
     );
 
-    if ( ( await settingsHeading.count() ) === 0 ) {
+    if ( 0 === ( await settingsHeading.count() ) ) {
         await expect( unauthorizedMessage ).toHaveCount( 0 );
         return;
     }
