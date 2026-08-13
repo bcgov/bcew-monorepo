@@ -170,24 +170,7 @@ function bcew_chefs_embed_register_rest_routes() {
 		]
 	);
 
-	register_rest_route(
-		'bcew-chefs-embed/v1',
-		'/embed-config',
-		[
-			[
-				'methods'             => 'GET',
-				'callback'            => array( \Bcgov\BcewChefsEmbed\EmbedConfigController::class, 'get_config' ),
-				'permission_callback' => '__return_true',
-				'args'                => array(
-					'formId' => array(
-						'required'          => true,
-						'type'              => 'string',
-						'sanitize_callback' => 'sanitize_text_field',
-					),
-				),
-			],
-		]
-	);
+	// The embed-config route is registered by EmbedConfigController::register_routes().
 }
 
 /**
