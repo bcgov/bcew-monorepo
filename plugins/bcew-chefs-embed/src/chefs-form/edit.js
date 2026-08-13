@@ -18,6 +18,8 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import './editor.scss';
 
+import ChefsFormPreview from './components/chefs-form-preview';
+
 /**
  * The edit function describes the structure of your block in the context of the
  * editor. This represents what the editor will render when the block is used.
@@ -150,18 +152,9 @@ const Edit = ( { attributes, setAttributes } ) => {
                     ) }
                 </PanelBody>
             </InspectorControls>
-            <p { ...useBlockProps() }>
-                { formId
-                    ? sprintf(
-                          /* translators: %s: selected CHEFS form ID. */
-                          __( 'Selected CHEFS form: %s', 'bcew-chefs-embed' ),
-                          formId
-                      )
-                    : __(
-                          'Select a CHEFS form in the block settings.',
-                          'bcew-chefs-embed'
-                      ) }
-            </p>
+            <div { ...useBlockProps() }>
+                <ChefsFormPreview formId={ formId } />
+            </div>
         </>
     );
 };

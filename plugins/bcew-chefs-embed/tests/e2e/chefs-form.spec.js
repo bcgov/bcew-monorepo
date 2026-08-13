@@ -291,4 +291,41 @@ test.describe( 'CHEFS Form block', () => {
             /admin\.php\?page=bcew-chefs-embed-settings/
         );
     } );
+
+    test( 'displays empty preview container when a form is selected', async ( {
+        admin,
+        editor,
+        page,
+    } ) => {
+        const formId = '55555555-5555-4555-8555-555555555555';
+
+        await addSavedForm( admin, page, formId, 'preview-test-api-key' );
+
+        await admin.createNewPost();
+        await editor.insertBlock( { name: BLOCK_NAME } );
+        await ensureBlockSettingsVisible( editor, page );
+
+        const formSelect = page.getByLabel( 'Form ID' ).first();
+        await formSelect.selectOption( formId );
+
+        const previewContainer = editor.canvas.locator(
+            '.bcew-chefs-form-preview__container'
+        );
+
+        await expect( previewContainer ).toBeVisible();
+    } );
+
+    test( 'shows placeholder when no form is selected', async ( {
+        admin,
+        editor,
+    } ) => {
+        await admin.createNewPost();
+        await editor.insertBlock( { name: BLOCK_NAME } );
+
+        const placeholder = editor.canvas.getByText(
+            'Select a CHEFS form in block settings.'
+        );
+
+        await expect( placeholder ).toBeVisible();
+    } );
 } );
