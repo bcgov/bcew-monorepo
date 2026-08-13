@@ -298,7 +298,7 @@ class CredentialsTest extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Embed config REST route returns an error for an unknown Form ID.
+	 * Embed config REST route returns token + base URL and does not expose the API key.
 	 *
 	 * @return void
 	 */

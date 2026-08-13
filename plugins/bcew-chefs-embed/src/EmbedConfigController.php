@@ -59,6 +59,18 @@ class EmbedConfigController {
 		$credentials = CredentialsManager::get_by_form_id( $form_id );
 
 		if ( ! $credentials ) {
+			$normalized_form_id = trim( sanitize_text_field( $form_id ) );
+
+			if ( in_array( $normalized_form_id, CredentialsManager::get_saved_form_ids(), true ) ) {
+				return new \WP_Error(
+					'chefs_credentials_error',
+					__( 'Unable to decrypt the configured CHEFS credentials.', 'bcew-chefs-embed' ),
+					array(
+						'status' => \WP_Http::INTERNAL_SERVER_ERROR,
+					)
+				);
+			}
+
 			return new \WP_Error(
 				'chefs_form_not_configured',
 				__( 'The requested CHEFS form is not configured.', 'bcew-chefs-embed' ),
@@ -69,16 +81,6 @@ class EmbedConfigController {
 		}
 
 		$api_key = $credentials['api_key'];
-
-		if ( false === $api_key ) {
-			return new \WP_Error(
-				'chefs_credentials_error',
-				__( 'Unable to decrypt the configured CHEFS credentials.', 'bcew-chefs-embed' ),
-				array(
-					'status' => \WP_Http::INTERNAL_SERVER_ERROR,
-				)
-			);
-		}
 
 		$response = wp_remote_post(
 			self::CHEFS_AUTH_URL . rawurlencode( $credentials['form_id'] ),
