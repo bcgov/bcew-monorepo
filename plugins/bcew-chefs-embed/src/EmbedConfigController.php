@@ -70,14 +70,6 @@ class EmbedConfigController {
 					)
 				);
 			}
-
-			return new \WP_Error(
-				'chefs_form_not_configured',
-				__( 'The requested CHEFS form is not configured.', 'bcew-chefs-embed' ),
-				array(
-					'status' => \WP_Http::NOT_FOUND,
-				)
-			);
 		}
 
 		$api_key = $credentials['api_key'];
