@@ -6,7 +6,7 @@ packages:
 catalog:
   '@bcgov/bc-sans': ^2.1.0
   '@bcgov/design-tokens': ^4.0.0
-  '@fortawesome/fontawesome-free': 7.2.0
+  '@fortawesome/fontawesome-free': 7.3.1
   '@nx/devkit': ^23.0.2
   '@nx/plugin': ^23.0.2
   '@playwright/test': 1.61.1
