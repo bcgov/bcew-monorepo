@@ -302,6 +302,57 @@ class CredentialsTest extends \WP_UnitTestCase {
 	 *
 	 * @return void
 	 */
+	public function test_embed_config_route_returns_token_and_base_url_without_exposing_api_key() {
+		$user_id = self::factory()->user->create( array( 'role' => 'author' ) );
+		wp_set_current_user( $user_id );
+
+		activate_plugin( 'bcew-chefs-embed/bcew-chefs-embed.php' );
+		do_action( 'rest_api_init' );
+
+		CredentialsManager::install();
+		CredentialsManager::save( $this->form_id, 'test-api-key-value', $user_id );
+
+		$http_callback = function ( $preempt, $parsed_args, $url ) {
+			$this->assertStringContainsString( '/auth/token/forms/' . rawurlencode( $this->form_id ), $url );
+			$this->assertSame(
+				// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Required to validate the HTTP Basic auth header used for the CHEFS token request.
+				'Basic ' . base64_encode( $this->form_id . ':test-api-key-value' ),
+				$parsed_args['headers']['Authorization']
+			);
+
+			return array(
+				'headers'  => array( 'content-type' => 'application/json' ),
+				'body'     => wp_json_encode( array( 'token' => 'chefs-token-123' ) ),
+				'response' => array(
+					'code'    => 200,
+					'message' => 'OK',
+				),
+			);
+		};
+
+		add_filter( 'pre_http_request', $http_callback, 10, 3 );
+
+		try {
+			$request = new \WP_REST_Request( 'GET', '/bcew-chefs-embed/v1/embed-config' );
+			$request->set_param( 'formId', $this->form_id );
+			$response = rest_do_request( $request );
+
+			$this->assertSame( 200, $response->get_status() );
+			$this->assertSame( 'chefs-token-123', $response->get_data()['token'] );
+			$this->assertSame( 'https://submit.digital.gov.bc.ca/app', $response->get_data()['baseUrl'] );
+			$this->assertArrayNotHasKey( 'apiKey', $response->get_data() );
+			$this->assertArrayNotHasKey( 'api_key', $response->get_data() );
+			$this->assertStringNotContainsString( 'test-api-key-value', wp_json_encode( $response->get_data() ) );
+		} finally {
+			remove_filter( 'pre_http_request', $http_callback );
+		}
+	}
+
+	/**
+	 * Embed config REST route returns an error for an unknown Form ID.
+	 *
+	 * @return void
+	 */
 	public function test_embed_config_route_returns_error_for_unknown_form_id() {
 		activate_plugin( 'bcew-chefs-embed/bcew-chefs-embed.php' );
 		do_action( 'rest_api_init' );

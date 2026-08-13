@@ -68,7 +68,7 @@ class EmbedConfigController {
 			);
 		}
 
-		$api_key = CredentialsManager::decrypt_api_key( $credentials['api_key'] );
+		$api_key = $credentials['api_key'];
 
 		if ( false === $api_key ) {
 			return new \WP_Error(
@@ -85,6 +85,7 @@ class EmbedConfigController {
 			array(
 				'timeout' => 15,
 				'headers' => array(
+					// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Required for HTTP Basic auth when exchanging the CHEFS API key for a short-lived token.
 					'Authorization' => 'Basic ' . base64_encode(
 						$credentials['form_id'] . ':' . $api_key
 					),

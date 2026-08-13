@@ -21,6 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use Bcgov\BcewChefsEmbed\CredentialsManager;
+use Bcgov\BcewChefsEmbed\EmbedConfigController;
 
 /**
  * Load Composer autoloader and verify required class exists.
@@ -35,6 +36,7 @@ if ( class_exists( CredentialsManager::class ) ) {
 	register_activation_hook( __FILE__, array( CredentialsManager::class, 'activate' ) );
 	add_action( 'wp_initialize_site', array( CredentialsManager::class, 'on_initialize_site' ) );
 	add_action( 'rest_api_init', 'bcew_chefs_embed_register_rest_routes' );
+	add_action( 'rest_api_init', array( EmbedConfigController::class, 'register_routes' ) );
 }
 
 /**
@@ -164,6 +166,25 @@ function bcew_chefs_embed_register_rest_routes() {
 				'methods'             => 'GET',
 				'callback'            => 'bcew_chefs_embed_get_saved_form_ids',
 				'permission_callback' => 'bcew_chefs_embed_can_edit_posts',
+			],
+		]
+	);
+
+	register_rest_route(
+		'bcew-chefs-embed/v1',
+		'/embed-config',
+		[
+			[
+				'methods'             => 'GET',
+				'callback'            => array( \Bcgov\BcewChefsEmbed\EmbedConfigController::class, 'get_config' ),
+				'permission_callback' => '__return_true',
+				'args'                => array(
+					'formId' => array(
+						'required'          => true,
+						'type'              => 'string',
+						'sanitize_callback' => 'sanitize_text_field',
+					),
+				),
 			],
 		]
 	);
