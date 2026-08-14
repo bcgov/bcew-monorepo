@@ -374,4 +374,62 @@ class CredentialsTest extends \WP_UnitTestCase {
 			$response->get_data()['code']
 		);
 	}
+
+	/**
+	 * Render the CHEFS Form block template with the given Form ID attribute.
+	 *
+	 * @param string $form_id Form ID attribute value.
+	 * @return string Rendered HTML.
+	 */
+	private function render_chefs_form_template( $form_id ) {
+		$attributes = array(
+			'formId' => $form_id,
+		);
+		$content    = '';
+		$block      = null;
+		$template   = dirname( __DIR__ ) . '/src/chefs-form/render.php';
+
+		$this->assertFileExists( $template );
+
+		ob_start();
+		// phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable -- Test loads the block render template by absolute path.
+		require $template;
+
+		return (string) ob_get_clean();
+	}
+
+	/**
+	 * Frontend block markup exposes the Form ID only (no API key or token).
+	 *
+	 * @return void
+	 */
+	public function test_block_render_outputs_form_id_without_secrets() {
+		$form_id = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+		$api_key = 'super-secret-api-key-value';
+
+		CredentialsManager::install();
+		CredentialsManager::save( $form_id, $api_key, get_current_user_id() );
+
+		$html = $this->render_chefs_form_template( $form_id );
+
+		$this->assertStringContainsString( 'data-form-id="' . $form_id . '"', $html );
+		$this->assertStringContainsString( 'bcew-chefs-form__mount', $html );
+		$this->assertStringNotContainsString( $api_key, $html );
+		$this->assertStringNotContainsString( 'auth-token', $html );
+		$this->assertStringNotContainsString( 'api_key', $html );
+		$this->assertStringNotContainsString( 'api-key', $html );
+	}
+
+	/**
+	 * Empty Form ID renders a clear empty state without secrets.
+	 *
+	 * @return void
+	 */
+	public function test_block_render_empty_form_id_shows_placeholder() {
+		$html = $this->render_chefs_form_template( '' );
+
+		$this->assertStringContainsString( 'data-form-id=""', $html );
+		$this->assertStringContainsString( 'No CHEFS form selected.', $html );
+		$this->assertStringNotContainsString( 'bcew-chefs-form__mount', $html );
+	}
 }

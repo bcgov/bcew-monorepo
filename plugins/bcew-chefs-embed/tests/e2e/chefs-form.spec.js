@@ -93,6 +93,16 @@ const addSavedForm = async ( admin, page, formId, apiKey ) => {
     await expect( page.locator( '.notice-success' ) ).toContainText( 'Saved.' );
 };
 
+/**
+ * Drop auth cookies so the next navigation is an anonymous visitor.
+ * (@wordpress/e2e-test-utils-playwright@1.50 has no requestUtils.logout.)
+ *
+ * @param {import('@playwright/test').Page} page Playwright page.
+ */
+const becomeAnonymousVisitor = async ( page ) => {
+    await page.context().clearCookies();
+};
+
 const ensureBlockSettingsVisible = async ( editor, page ) => {
     const block = editor.canvas
         .locator( `[data-type="${ BLOCK_NAME }"]` )
@@ -406,6 +416,127 @@ test.describe( 'CHEFS Form block', () => {
             editor.canvas.getByText(
                 'Unable to decrypt the configured CHEFS credentials.'
             )
+        ).toBeVisible();
+    } );
+
+    test( 'published page markup includes Form ID only and loads the CHEFS viewer', async ( {
+        admin,
+        editor,
+        page,
+    } ) => {
+        const formId = '77777777-7777-4777-8777-777777777777';
+        const mockBaseUrl = 'https://chefs-frontend.test/app';
+        const mockToken = 'frontend-token-secret';
+
+        await addSavedForm( admin, page, formId, 'frontend-test-api-key' );
+
+        await page.route(
+            '**/wp-json/bcew-chefs-embed/v1/embed-config**',
+            async ( route ) => {
+                await route.fulfill( {
+                    status: 200,
+                    contentType: 'application/json',
+                    body: JSON.stringify( {
+                        token: mockToken,
+                        baseUrl: mockBaseUrl,
+                    } ),
+                } );
+            }
+        );
+
+        await page.route(
+            `${ mockBaseUrl }/embed/chefs-form-viewer.min.js`,
+            async ( route ) => {
+                await route.fulfill( {
+                    status: 200,
+                    contentType: 'application/javascript',
+                    body: `
+						class ChefsFormViewerStub extends HTMLElement {
+							connectedCallback() {
+								this.style.display = 'block';
+								this.style.minHeight = '40px';
+							}
+							load() {
+								return Promise.resolve();
+							}
+						}
+						if ( ! customElements.get( 'chefs-form-viewer' ) ) {
+							customElements.define( 'chefs-form-viewer', ChefsFormViewerStub );
+						}
+					`,
+                } );
+            }
+        );
+
+        await admin.createNewPost();
+        await editor.insertBlock( { name: BLOCK_NAME } );
+        await ensureBlockSettingsVisible( editor, page );
+        await page.getByLabel( 'Form ID' ).first().selectOption( formId );
+
+        const postId = await editor.publishPost();
+        expect( postId ).not.toBeNull();
+
+        await becomeAnonymousVisitor( page );
+
+        const response = await page.goto( `/?p=${ postId }` );
+        expect( response ).not.toBeNull();
+        const serverHtml = await response.text();
+
+        expect( serverHtml ).toContain( `data-form-id="${ formId }"` );
+        expect( serverHtml ).not.toContain( 'frontend-test-api-key' );
+        expect( serverHtml ).not.toContain( mockToken );
+        expect( serverHtml ).not.toContain( 'auth-token' );
+        expect( serverHtml ).not.toContain( 'api-key' );
+
+        const block = page.locator( '.bcew-chefs-form' ).first();
+        await expect( block ).toHaveAttribute( 'data-form-id', formId );
+
+        const viewer = page.locator( 'chefs-form-viewer' );
+        await expect( viewer ).toBeAttached();
+        await expect( viewer ).toHaveAttribute( 'form-id', formId );
+        await expect( viewer ).toHaveAttribute( 'auth-token', mockToken );
+        await expect( viewer ).toHaveAttribute( 'base-url', mockBaseUrl );
+        await expect( viewer ).not.toHaveAttribute( 'read-only' );
+    } );
+
+    test( 'published page shows an error when embed-config fails', async ( {
+        admin,
+        editor,
+        page,
+    } ) => {
+        const formId = '88888888-8888-4888-8888-888888888888';
+
+        await addSavedForm( admin, page, formId, 'frontend-error-api-key' );
+
+        await page.route(
+            '**/wp-json/bcew-chefs-embed/v1/embed-config**',
+            async ( route ) => {
+                await route.fulfill( {
+                    status: 404,
+                    contentType: 'application/json',
+                    body: JSON.stringify( {
+                        code: 'chefs_form_not_configured',
+                        message: 'Unable to load the CHEFS form configuration.',
+                    } ),
+                } );
+            }
+        );
+
+        await admin.createNewPost();
+        await editor.insertBlock( { name: BLOCK_NAME } );
+        await ensureBlockSettingsVisible( editor, page );
+        await page.getByLabel( 'Form ID' ).first().selectOption( formId );
+
+        const postId = await editor.publishPost();
+        expect( postId ).not.toBeNull();
+
+        await becomeAnonymousVisitor( page );
+        await page.goto( `/?p=${ postId }` );
+
+        await expect(
+            page.getByRole( 'alert' ).filter( {
+                hasText: 'Unable to load the CHEFS form configuration.',
+            } )
         ).toBeVisible();
     } );
 } );

@@ -1,21 +1,117 @@
 /**
- * Use this file for JavaScript code that you want to run in the front-end
- * on posts/pages that contain this block.
+ * Frontend loader for CHEFS Form blocks on published pages.
  *
- * When this file is defined as the value of the `viewScript` property
- * in `block.json` it will be enqueued on the front end of the site.
- *
- * Example:
- *
- * ```js
- * {
- *   "viewScript": "file:./view.js"
- * }
- * ```
- *
- * If you're not making any changes to this file because your project doesn't need any
- * JavaScript running in the front-end, then you should delete this file and remove
- * the `viewScript` property from `block.json`.
- *
- * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-metadata/#view-script
+ * Reads data-form-id from the server-rendered markup, calls embed-config for a
+ * short-lived token, then mounts the CHEFS web component (editable — not read-only).
  */
+import ensureChefsFormViewerDefined from './utils/ensure-chefs-form-viewer';
+
+/**
+ * Resolve the WordPress REST API root URL.
+ *
+ * @return {string} Trailing-slash REST root.
+ */
+const getRestRoot = () => {
+    const discovery = document.querySelector(
+        'link[rel="https://api.w.org/"]'
+    )?.href;
+
+    if ( discovery ) {
+        return discovery.endsWith( '/' ) ? discovery : `${ discovery }/`;
+    }
+
+    return `${ window.location.origin }/wp-json/`;
+};
+
+/**
+ * Fetch CHEFS embed configuration for a form ID.
+ *
+ * @param {string} formId CHEFS form ID.
+ * @return {Promise<{token: string, baseUrl: string}>} Embed config payload.
+ */
+const fetchEmbedConfig = async ( formId ) => {
+    const url = `${ getRestRoot() }bcew-chefs-embed/v1/embed-config?formId=${ encodeURIComponent(
+        formId
+    ) }`;
+
+    const response = await fetch( url, {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: {
+            Accept: 'application/json',
+        },
+    } );
+
+    const payload = await response.json().catch( () => ( {} ) );
+
+    if ( ! response.ok ) {
+        throw new Error(
+            payload?.message || 'Unable to load the CHEFS form configuration.'
+        );
+    }
+
+    if ( ! payload?.token || ! payload?.baseUrl ) {
+        throw new Error( 'CHEFS returned an invalid embed configuration.' );
+    }
+
+    return payload;
+};
+
+/**
+ * Show an error message inside the block mount point.
+ *
+ * @param {HTMLElement} mount   Mount element.
+ * @param {string}      message Error text.
+ */
+const showError = ( mount, message ) => {
+    mount.replaceChildren();
+    mount.removeAttribute( 'aria-busy' );
+
+    const error = document.createElement( 'p' );
+    error.className = 'bcew-chefs-form__error';
+    error.setAttribute( 'role', 'alert' );
+    error.textContent = message;
+    mount.appendChild( error );
+};
+
+/**
+ * Mount a CHEFS form viewer for one block root.
+ *
+ * @param {HTMLElement} root Block wrapper with data-form-id.
+ * @return {Promise<void>}
+ */
+const mountChefsForm = async ( root ) => {
+    const formId = root.dataset.formId?.trim() || '';
+    const mount = root.querySelector( '.bcew-chefs-form__mount' );
+
+    if ( ! formId || ! mount ) {
+        return;
+    }
+
+    try {
+        const config = await fetchEmbedConfig( formId );
+        await ensureChefsFormViewerDefined( config.baseUrl );
+
+        const viewer = document.createElement( 'chefs-form-viewer' );
+        viewer.setAttribute( 'form-id', formId );
+        viewer.setAttribute( 'auth-token', config.token );
+        viewer.setAttribute( 'base-url', config.baseUrl );
+
+        mount.replaceChildren( viewer );
+        mount.removeAttribute( 'aria-busy' );
+
+        if ( 'function' === typeof viewer.load ) {
+            await viewer.load();
+        }
+    } catch ( error ) {
+        showError( mount, error?.message || 'Unable to load the CHEFS form.' );
+    }
+};
+
+const roots = document.querySelectorAll(
+    '.wp-block-bcew-chefs-embed-chefs-form[data-form-id], .bcew-chefs-form[data-form-id]'
+);
+
+roots.forEach( ( root ) => {
+    mountChefsForm( root );
+} );
