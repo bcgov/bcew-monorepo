@@ -376,12 +376,36 @@ class CredentialsTest extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Register the CHEFS Form block from built metadata so render.php is wired.
+	 *
+	 * @return void
+	 */
+	private function register_chefs_form_block_from_metadata() {
+		$registry = \WP_Block_Type_Registry::get_instance();
+
+		if ( $registry->is_registered( 'bcew-chefs-embed/chefs-form' ) ) {
+			$registry->unregister( 'bcew-chefs-embed/chefs-form' );
+		}
+
+		$block = register_block_type_from_metadata(
+			dirname( __DIR__ ) . '/dist/chefs-form'
+		);
+
+		$this->assertNotFalse(
+			$block,
+			'CHEFS Form block must register from dist/chefs-form metadata.'
+		);
+		$this->assertNotNull( $block->render_callback );
+	}
+
+	/**
 	 * Frontend block markup exposes the Form ID only (no API key or token).
 	 *
 	 * @return void
 	 */
 	public function test_block_render_outputs_form_id_without_secrets() {
 		activate_plugin( 'bcew-chefs-embed/bcew-chefs-embed.php' );
+		$this->register_chefs_form_block_from_metadata();
 
 		$form_id = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 		$api_key = 'super-secret-api-key-value';
@@ -415,6 +439,7 @@ class CredentialsTest extends \WP_UnitTestCase {
 	 */
 	public function test_block_render_empty_form_id_shows_placeholder() {
 		activate_plugin( 'bcew-chefs-embed/bcew-chefs-embed.php' );
+		$this->register_chefs_form_block_from_metadata();
 
 		$html = render_block(
 			array(
