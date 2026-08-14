@@ -376,26 +376,26 @@ class CredentialsTest extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Register the CHEFS Form block from built metadata so render.php is wired.
+	 * Render the CHEFS Form block template with the given Form ID attribute.
 	 *
-	 * @return void
+	 * @param string $form_id Form ID attribute value.
+	 * @return string Rendered HTML.
 	 */
-	private function register_chefs_form_block_from_metadata() {
-		$registry = \WP_Block_Type_Registry::get_instance();
-
-		if ( $registry->is_registered( 'bcew-chefs-embed/chefs-form' ) ) {
-			$registry->unregister( 'bcew-chefs-embed/chefs-form' );
-		}
-
-		$block = register_block_type_from_metadata(
-			dirname( __DIR__ ) . '/dist/chefs-form'
+	private function render_chefs_form_template( $form_id ) {
+		$attributes = array(
+			'formId' => $form_id,
 		);
+		$content    = '';
+		$block      = null;
+		$template   = dirname( __DIR__ ) . '/src/chefs-form/render.php';
 
-		$this->assertNotFalse(
-			$block,
-			'CHEFS Form block must register from dist/chefs-form metadata.'
-		);
-		$this->assertNotNull( $block->render_callback );
+		$this->assertFileExists( $template );
+
+		ob_start();
+		// phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable -- Test loads the block render template by absolute path.
+		require $template;
+
+		return (string) ob_get_clean();
 	}
 
 	/**
@@ -404,25 +404,13 @@ class CredentialsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_block_render_outputs_form_id_without_secrets() {
-		activate_plugin( 'bcew-chefs-embed/bcew-chefs-embed.php' );
-		$this->register_chefs_form_block_from_metadata();
-
 		$form_id = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 		$api_key = 'super-secret-api-key-value';
 
 		CredentialsManager::install();
 		CredentialsManager::save( $form_id, $api_key, get_current_user_id() );
 
-		$html = render_block(
-			array(
-				'blockName'    => 'bcew-chefs-embed/chefs-form',
-				'attrs'        => array(
-					'formId' => $form_id,
-				),
-				'innerHTML'    => '',
-				'innerContent' => array(),
-			)
-		);
+		$html = $this->render_chefs_form_template( $form_id );
 
 		$this->assertStringContainsString( 'data-form-id="' . $form_id . '"', $html );
 		$this->assertStringContainsString( 'bcew-chefs-form__mount', $html );
@@ -438,19 +426,7 @@ class CredentialsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_block_render_empty_form_id_shows_placeholder() {
-		activate_plugin( 'bcew-chefs-embed/bcew-chefs-embed.php' );
-		$this->register_chefs_form_block_from_metadata();
-
-		$html = render_block(
-			array(
-				'blockName'    => 'bcew-chefs-embed/chefs-form',
-				'attrs'        => array(
-					'formId' => '',
-				),
-				'innerHTML'    => '',
-				'innerContent' => array(),
-			)
-		);
+		$html = $this->render_chefs_form_template( '' );
 
 		$this->assertStringContainsString( 'data-form-id=""', $html );
 		$this->assertStringContainsString( 'No CHEFS form selected.', $html );
