@@ -1,6 +1,16 @@
 /**
- * The styles here will be applied both on the front of your site
- * and in the editor.
- *
- * Add your own styles or remove this file completely.
+ * Frontend styles for the CHEFS Form block.
  */
+
+.bcew-chefs-form__mount {
+	min-height: 2rem;
+}
+
+.bcew-chefs-form__error {
+	color: #b32d2e;
+	margin: 0;
+}
+
+.bcew-chefs-form__empty {
+	margin: 0;
+}

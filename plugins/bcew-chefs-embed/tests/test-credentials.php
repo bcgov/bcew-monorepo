@@ -374,4 +374,61 @@ class CredentialsTest extends \WP_UnitTestCase {
 			$response->get_data()['code']
 		);
 	}
+
+	/**
+	 * Frontend block markup exposes the Form ID only (no API key or token).
+	 *
+	 * @return void
+	 */
+	public function test_block_render_outputs_form_id_without_secrets() {
+		activate_plugin( 'bcew-chefs-embed/bcew-chefs-embed.php' );
+
+		$form_id = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+		$api_key = 'super-secret-api-key-value';
+
+		CredentialsManager::install();
+		CredentialsManager::save( $form_id, $api_key, get_current_user_id() );
+
+		$html = render_block(
+			array(
+				'blockName'    => 'bcew-chefs-embed/chefs-form',
+				'attrs'        => array(
+					'formId' => $form_id,
+				),
+				'innerHTML'    => '',
+				'innerContent' => array(),
+			)
+		);
+
+		$this->assertStringContainsString( 'data-form-id="' . $form_id . '"', $html );
+		$this->assertStringContainsString( 'bcew-chefs-form__mount', $html );
+		$this->assertStringNotContainsString( $api_key, $html );
+		$this->assertStringNotContainsString( 'auth-token', $html );
+		$this->assertStringNotContainsString( 'api_key', $html );
+		$this->assertStringNotContainsString( 'api-key', $html );
+	}
+
+	/**
+	 * Empty Form ID renders a clear empty state without secrets.
+	 *
+	 * @return void
+	 */
+	public function test_block_render_empty_form_id_shows_placeholder() {
+		activate_plugin( 'bcew-chefs-embed/bcew-chefs-embed.php' );
+
+		$html = render_block(
+			array(
+				'blockName'    => 'bcew-chefs-embed/chefs-form',
+				'attrs'        => array(
+					'formId' => '',
+				),
+				'innerHTML'    => '',
+				'innerContent' => array(),
+			)
+		);
+
+		$this->assertStringContainsString( 'data-form-id=""', $html );
+		$this->assertStringContainsString( 'No CHEFS form selected.', $html );
+		$this->assertStringNotContainsString( 'bcew-chefs-form__mount', $html );
+	}
 }
