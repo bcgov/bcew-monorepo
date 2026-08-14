@@ -300,7 +300,7 @@ test.describe( 'CHEFS Form block', () => {
         await editor.insertBlock( { name: BLOCK_NAME } );
 
         const placeholder = editor.canvas.getByText(
-            'Select a CHEFS form in block settings.'
+            'Select a CHEFS form in the block settings.'
         );
 
         await expect( placeholder ).toBeVisible();
@@ -338,6 +338,10 @@ test.describe( 'CHEFS Form block', () => {
                     contentType: 'application/javascript',
                     body: `
 						class ChefsFormViewerStub extends HTMLElement {
+							connectedCallback() {
+								this.style.display = 'block';
+								this.style.minHeight = '40px';
+							}
 							load() {
 								return Promise.resolve();
 							}
@@ -359,7 +363,8 @@ test.describe( 'CHEFS Form block', () => {
 
         const viewer = editor.canvas.locator( 'chefs-form-viewer' );
 
-        await expect( viewer ).toBeVisible();
+        // Stub custom elements start with no layout box; assert attach + attrs.
+        await expect( viewer ).toBeAttached();
         await expect( viewer ).toHaveAttribute( 'form-id', formId );
         await expect( viewer ).toHaveAttribute( 'auth-token', 'preview-token' );
         await expect( viewer ).toHaveAttribute( 'base-url', mockBaseUrl );

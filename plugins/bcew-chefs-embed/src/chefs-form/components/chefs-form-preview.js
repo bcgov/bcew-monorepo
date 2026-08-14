@@ -112,10 +112,10 @@ const ChefsFormPreview = ( { formId } ) => {
     if ( ! formId ) {
         return (
             <p>
-                { __(
-                    'Select a CHEFS form in block settings.',
-                    'bcew-chefs-embed'
-                ) }
+				{ __(
+					'Select a CHEFS form in the block settings.',
+					'bcew-chefs-embed'
+				) }
             </p>
         );
     }
