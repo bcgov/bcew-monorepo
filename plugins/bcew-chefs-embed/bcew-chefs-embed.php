@@ -36,7 +36,29 @@ if ( class_exists( CredentialsManager::class ) ) {
 	register_activation_hook( __FILE__, array( CredentialsManager::class, 'activate' ) );
 	add_action( 'wp_initialize_site', array( CredentialsManager::class, 'on_initialize_site' ) );
 	add_action( 'rest_api_init', 'bcew_chefs_embed_register_rest_routes' );
+	// Ensure the credentials table exists even if activation ran before Composer autoload was available.
+	add_action( 'plugins_loaded', 'bcew_chefs_embed_maybe_install_credentials_table' );
+}
+
+if ( class_exists( EmbedConfigController::class ) ) {
 	add_action( 'rest_api_init', array( EmbedConfigController::class, 'register_routes' ) );
+}
+
+/**
+ * Create the credentials table when the schema version is missing or outdated.
+ *
+ * @return void
+ */
+function bcew_chefs_embed_maybe_install_credentials_table() {
+	if ( ! class_exists( CredentialsManager::class ) ) {
+		return;
+	}
+
+	if ( get_option( 'bcew_chefs_embed_db_version' ) === CredentialsManager::DB_VERSION ) {
+		return;
+	}
+
+	CredentialsManager::install();
 }
 
 /**

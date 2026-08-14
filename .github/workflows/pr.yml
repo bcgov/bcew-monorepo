@@ -97,11 +97,20 @@ jobs:
 
             - name: Run affected PHP integration tests
               if: github.event_name == 'pull_request'
-              run: pnpm nx affected --base="origin/${{ github.base_ref }}" -t test-integration --coverage-clover=coverage.xml
+              run: pnpm nx affected --base="origin/${{ github.base_ref }}" -t test-integration
 
             - name: Run PHP integration tests
               if: github.event_name == 'push'
-              run: pnpm nx run-many -t test-integration --coverage-clover=coverage.xml
+              run: pnpm nx run-many -t test-integration
+
+            # PHPUnit runs in wp-env, so clover paths use /var/www/html/wp-content/...
+            # Rewrite them to repo-relative paths Sonar can match.
+            - name: Normalize coverage paths
+              run: |
+                shopt -s nullglob
+                for f in plugins/*/coverage.xml themes/*/coverage.xml; do
+                  sed -i 's#/var/www/html/wp-content/##g' "$f"
+                done
 
             - name: Upload coverage
               uses: actions/upload-artifact@v7.0.1
@@ -110,6 +119,7 @@ jobs:
                 path: |
                   plugins/*/coverage.xml
                   themes/*/coverage.xml
+                if-no-files-found: warn
 
     test-e2e:
         name: Test e2e (affected)
@@ -221,10 +231,12 @@ jobs:
           with:
             fetch-depth: 0
 
+        # Extract php-coverage directly into sonar-artifacts/ so paths match
+        # sonar.php.coverage.reportPaths (sonar-artifacts/plugins/*/coverage.xml).
         - uses: actions/download-artifact@v8.0.1
           with:
+            name: php-coverage
             path: sonar-artifacts
-
 
         - name: SonarQube Scan
           uses: SonarSource/sonarqube-scan-action@22918119ff8e1ca75a623e15c8296b6ea4fbe28f #v8.2.1

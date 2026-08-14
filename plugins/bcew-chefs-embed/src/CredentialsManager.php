@@ -16,6 +16,13 @@ namespace Bcgov\BcewChefsEmbed;
 class CredentialsManager {
 
 	/**
+	 * Credentials table schema version.
+	 *
+	 * Bump when create_table() changes so existing installs re-run dbDelta.
+	 */
+	const DB_VERSION = '1';
+
+	/**
 	 * Credentials table name (with WP prefix for the current site).
 	 *
 	 * @return string
@@ -76,6 +83,7 @@ class CredentialsManager {
 	 */
 	public static function install() {
 		self::create_table();
+		update_option( 'bcew_chefs_embed_db_version', self::DB_VERSION, true );
 	}
 
 	/**
