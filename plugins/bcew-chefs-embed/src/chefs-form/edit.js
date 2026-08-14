@@ -8,7 +8,7 @@ import {
     Spinner,
 } from '@wordpress/components';
 import { useEffect, useState } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.

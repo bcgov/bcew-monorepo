@@ -10,9 +10,7 @@ test.describe( 'chefs-form block', () => {
             name: BLOCK_NAME,
         } );
 
-        const block = editor.canvas.locator(
-            `[data-type="${ BLOCK_NAME }"]`
-        );
+        const block = editor.canvas.locator( `[data-type="${ BLOCK_NAME }"]` );
 
         await expect( block ).toBeVisible();
 
@@ -29,9 +27,7 @@ test.describe( 'chefs-form block', () => {
             name: BLOCK_NAME,
         } );
 
-        const block = editor.canvas.locator(
-            `[data-type="${ BLOCK_NAME }"]`
-        );
+        const block = editor.canvas.locator( `[data-type="${ BLOCK_NAME }"]` );
 
         await expect( block ).toBeVisible();
         await expect( block ).toHaveScreenshot(
