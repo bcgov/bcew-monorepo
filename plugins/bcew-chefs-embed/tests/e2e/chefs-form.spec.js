@@ -93,6 +93,16 @@ const addSavedForm = async ( admin, page, formId, apiKey ) => {
     await expect( page.locator( '.notice-success' ) ).toContainText( 'Saved.' );
 };
 
+/**
+ * Drop auth cookies so the next navigation is an anonymous visitor.
+ * (@wordpress/e2e-test-utils-playwright@1.50 has no requestUtils.logout.)
+ *
+ * @param {import('@playwright/test').Page} page Playwright page.
+ */
+const becomeAnonymousVisitor = async ( page ) => {
+    await page.context().clearCookies();
+};
+
 const ensureBlockSettingsVisible = async ( editor, page ) => {
     const block = editor.canvas
         .locator( `[data-type="${ BLOCK_NAME }"]` )
@@ -413,7 +423,6 @@ test.describe( 'CHEFS Form block', () => {
         admin,
         editor,
         page,
-        requestUtils,
     } ) => {
         const formId = '77777777-7777-4777-8777-777777777777';
         const mockBaseUrl = 'https://chefs-frontend.test/app';
@@ -467,7 +476,7 @@ test.describe( 'CHEFS Form block', () => {
         const postId = await editor.publishPost();
         expect( postId ).not.toBeNull();
 
-        await requestUtils.logout();
+        await becomeAnonymousVisitor( page );
 
         const response = await page.goto( `/?p=${ postId }` );
         expect( response ).not.toBeNull();
@@ -494,7 +503,6 @@ test.describe( 'CHEFS Form block', () => {
         admin,
         editor,
         page,
-        requestUtils,
     } ) => {
         const formId = '88888888-8888-4888-8888-888888888888';
 
@@ -522,7 +530,7 @@ test.describe( 'CHEFS Form block', () => {
         const postId = await editor.publishPost();
         expect( postId ).not.toBeNull();
 
-        await requestUtils.logout();
+        await becomeAnonymousVisitor( page );
         await page.goto( `/?p=${ postId }` );
 
         await expect(
