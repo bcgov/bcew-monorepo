@@ -21,6 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use Bcgov\BcewChefsEmbed\CredentialsManager;
+use Bcgov\BcewChefsEmbed\EmbedConfigController;
 
 /**
  * Load Composer autoloader and verify required class exists.
@@ -54,6 +55,7 @@ function bcew_chefs_embed_maybe_install_credentials_table() {
 	}
 
 	CredentialsManager::install();
+	add_action( 'rest_api_init', array( EmbedConfigController::class, 'register_routes' ) );
 }
 
 /**
@@ -186,6 +188,8 @@ function bcew_chefs_embed_register_rest_routes() {
 			],
 		]
 	);
+
+	// The embed-config route is registered by EmbedConfigController::register_routes().
 }
 
 /**
