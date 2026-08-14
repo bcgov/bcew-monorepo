@@ -40,6 +40,10 @@ if ( class_exists( CredentialsManager::class ) ) {
 	add_action( 'plugins_loaded', 'bcew_chefs_embed_maybe_install_credentials_table' );
 }
 
+if ( class_exists( EmbedConfigController::class ) ) {
+	add_action( 'rest_api_init', array( EmbedConfigController::class, 'register_routes' ) );
+}
+
 /**
  * Create the credentials table when the schema version is missing or outdated.
  *
@@ -55,7 +59,6 @@ function bcew_chefs_embed_maybe_install_credentials_table() {
 	}
 
 	CredentialsManager::install();
-	add_action( 'rest_api_init', array( EmbedConfigController::class, 'register_routes' ) );
 }
 
 /**
