@@ -8,7 +8,7 @@ import {
     Spinner,
 } from '@wordpress/components';
 import { useEffect, useState } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
@@ -17,6 +17,8 @@ import { __, sprintf } from '@wordpress/i18n';
  * @see https://www.npmjs.com/package/@wordpress/scripts#using-css
  */
 import './editor.scss';
+
+import ChefsFormPreview from './components/chefs-form-preview';
 
 /**
  * The edit function describes the structure of your block in the context of the
@@ -150,18 +152,9 @@ const Edit = ( { attributes, setAttributes } ) => {
                     ) }
                 </PanelBody>
             </InspectorControls>
-            <p { ...useBlockProps() }>
-                { formId
-                    ? sprintf(
-                          /* translators: %s: selected CHEFS form ID. */
-                          __( 'Selected CHEFS form: %s', 'bcew-chefs-embed' ),
-                          formId
-                      )
-                    : __(
-                          'Select a CHEFS form in the block settings.',
-                          'bcew-chefs-embed'
-                      ) }
-            </p>
+            <div { ...useBlockProps() }>
+                <ChefsFormPreview formId={ formId } />
+            </div>
         </>
     );
 };

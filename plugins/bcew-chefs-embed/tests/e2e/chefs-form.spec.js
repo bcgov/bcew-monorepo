@@ -291,4 +291,121 @@ test.describe( 'CHEFS Form block', () => {
             /admin\.php\?page=bcew-chefs-embed-settings/
         );
     } );
+
+    test( 'shows placeholder when no form is selected', async ( {
+        admin,
+        editor,
+    } ) => {
+        await admin.createNewPost();
+        await editor.insertBlock( { name: BLOCK_NAME } );
+
+        const placeholder = editor.canvas.getByText(
+            'Select a CHEFS form in the block settings.'
+        );
+
+        await expect( placeholder ).toBeVisible();
+    } );
+
+    test( 'loads read-only CHEFS preview via embed-config when a form is selected', async ( {
+        admin,
+        editor,
+        page,
+    } ) => {
+        const formId = '55555555-5555-4555-8555-555555555555';
+        const mockBaseUrl = 'https://chefs-preview.test/app';
+
+        await addSavedForm( admin, page, formId, 'preview-test-api-key' );
+
+        await page.route(
+            '**/wp-json/bcew-chefs-embed/v1/embed-config**',
+            async ( route ) => {
+                await route.fulfill( {
+                    status: 200,
+                    contentType: 'application/json',
+                    body: JSON.stringify( {
+                        token: 'preview-token',
+                        baseUrl: mockBaseUrl,
+                    } ),
+                } );
+            }
+        );
+
+        await page.route(
+            `${ mockBaseUrl }/embed/chefs-form-viewer.min.js`,
+            async ( route ) => {
+                await route.fulfill( {
+                    status: 200,
+                    contentType: 'application/javascript',
+                    body: `
+						class ChefsFormViewerStub extends HTMLElement {
+							connectedCallback() {
+								this.style.display = 'block';
+								this.style.minHeight = '40px';
+							}
+							load() {
+								return Promise.resolve();
+							}
+						}
+						if ( ! customElements.get( 'chefs-form-viewer' ) ) {
+							customElements.define( 'chefs-form-viewer', ChefsFormViewerStub );
+						}
+					`,
+                } );
+            }
+        );
+
+        await admin.createNewPost();
+        await editor.insertBlock( { name: BLOCK_NAME } );
+        await ensureBlockSettingsVisible( editor, page );
+
+        const formSelect = page.getByLabel( 'Form ID' ).first();
+        await formSelect.selectOption( formId );
+
+        const viewer = editor.canvas.locator( 'chefs-form-viewer' );
+
+        // Stub custom elements start with no layout box; assert attach + attrs.
+        await expect( viewer ).toBeAttached();
+        await expect( viewer ).toHaveAttribute( 'form-id', formId );
+        await expect( viewer ).toHaveAttribute( 'auth-token', 'preview-token' );
+        await expect( viewer ).toHaveAttribute( 'base-url', mockBaseUrl );
+        await expect( viewer ).toHaveAttribute( 'read-only', '' );
+    } );
+
+    test( 'shows an error when embed-config cannot load the form', async ( {
+        admin,
+        editor,
+        page,
+    } ) => {
+        const formId = '66666666-6666-4666-8666-666666666666';
+
+        await addSavedForm( admin, page, formId, 'preview-error-api-key' );
+
+        await page.route(
+            '**/wp-json/bcew-chefs-embed/v1/embed-config**',
+            async ( route ) => {
+                await route.fulfill( {
+                    status: 404,
+                    contentType: 'application/json',
+                    body: JSON.stringify( {
+                        code: 'chefs_form_not_configured',
+                        message:
+                            'Unable to decrypt the configured CHEFS credentials.',
+                    } ),
+                } );
+            }
+        );
+
+        await admin.createNewPost();
+        await editor.insertBlock( { name: BLOCK_NAME } );
+        await ensureBlockSettingsVisible( editor, page );
+
+        const formSelect = page.getByLabel( 'Form ID' ).first();
+        await formSelect.selectOption( formId );
+
+        await expect(
+            editor.canvas.getByText(
+                'Unable to decrypt the configured CHEFS credentials.'
+            )
+        ).toBeVisible();
+    } );
 } );
