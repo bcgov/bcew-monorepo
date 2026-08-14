@@ -82,7 +82,9 @@
                 "command": "wp-env start",
                 "cwd": "{projectRoot}",
                 "xdebug": "coverage"
-            }
+            },
+            "dependsOn": ["composer-install"],
+            "parallelism": false
         },
         "wp-env-clean": {
             "executor": "nx:run-commands",
