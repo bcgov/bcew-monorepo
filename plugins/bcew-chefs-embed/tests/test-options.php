@@ -29,6 +29,8 @@ class OptionsTest extends \WP_UnitTestCase {
 	public function set_up() {
 		parent::set_up();
 
+		require_once __DIR__ . '/wp-multisite-stubs.php';
+
 		OptionsManager::install();
 
 		global $wpdb;
@@ -184,14 +186,18 @@ class OptionsTest extends \WP_UnitTestCase {
 	 */
 	public function test_install_for_blog_creates_table() {
 		delete_option( OptionsManager::DB_VERSION_OPTION );
+		unset( $GLOBALS['bcew_chefs_embed_switched_blog'] );
 
-		OptionsManager::install_for_blog( \get_current_blog_id() );
+		$blog_id = \get_current_blog_id();
+		OptionsManager::install_for_blog( $blog_id );
 
 		$this->assertTrue( $this->table_exists() );
 		$this->assertSame(
 			OptionsManager::DB_VERSION,
 			get_option( OptionsManager::DB_VERSION_OPTION )
 		);
+		// Stubs (or real multisite) should leave restore clearing the switch marker.
+		$this->assertArrayNotHasKey( 'bcew_chefs_embed_switched_blog', $GLOBALS );
 	}
 
 	/**
@@ -209,6 +215,34 @@ class OptionsTest extends \WP_UnitTestCase {
 			OptionsManager::DB_VERSION,
 			get_option( OptionsManager::DB_VERSION_OPTION )
 		);
+	}
+
+	/**
+	 * Network-wide activation installs via the site ID list.
+	 *
+	 * @return void
+	 */
+	public function test_activate_network_wide_installs() {
+		delete_option( OptionsManager::DB_VERSION_OPTION );
+
+		OptionsManager::activate( true );
+
+		$this->assertTrue( $this->table_exists() );
+		$this->assertSame(
+			OptionsManager::DB_VERSION,
+			get_option( OptionsManager::DB_VERSION_OPTION )
+		);
+	}
+
+	/**
+	 * Site ID helper returns at least the current blog.
+	 *
+	 * @return void
+	 */
+	public function test_site_ids_for_network_install_includes_current_blog() {
+		$site_ids = OptionsManager::site_ids_for_network_install();
+
+		$this->assertContains( \get_current_blog_id(), $site_ids );
 	}
 
 	/**
