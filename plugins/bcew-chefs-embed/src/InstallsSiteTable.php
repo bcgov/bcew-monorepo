@@ -8,19 +8,57 @@
 namespace Bcgov\BcewChefsEmbed;
 
 /**
- * Activation and new-site hooks that call static::install().
+ * Activation, install, and new-site hooks for custom tables.
  *
- * Used by CredentialsManager and OptionsManager so the network/site
- * bootstrap logic lives in one place.
+ * Using classes provide table_name() and table_definition(); this trait
+ * owns activate / install / dbDelta / multisite switching.
  */
 trait InstallsSiteTable {
+
+	/**
+	 * Prefixed table name for the current site.
+	 *
+	 * @return string
+	 */
+	abstract public static function table_name();
+
+	/**
+	 * Column and index lines for dbDelta (inside CREATE TABLE).
+	 *
+	 * @return string
+	 */
+	abstract protected static function table_definition();
 
 	/**
 	 * Create or upgrade the table and record the schema version.
 	 *
 	 * @return void
 	 */
-	abstract public static function install();
+	public static function install() {
+		static::create_table();
+		update_option( static::DB_VERSION_OPTION, static::DB_VERSION, true );
+	}
+
+	/**
+	 * Create or update the table via dbDelta.
+	 *
+	 * @return void
+	 */
+	private static function create_table() {
+		global $wpdb;
+
+		$table   = static::table_name();
+		$charset = $wpdb->get_charset_collate();
+
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- schema DDL; table name from code.
+		$sql = "CREATE TABLE {$table} (
+			" . static::table_definition() . "
+		) {$charset};";
+
+		dbDelta( $sql );
+	}
 
 	/**
 	 * Plugin activation callback (single site or network-wide).

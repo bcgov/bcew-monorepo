@@ -19,9 +19,14 @@ class CredentialsManager {
 	/**
 	 * Credentials table schema version.
 	 *
-	 * Bump when create_table() changes so existing installs re-run dbDelta.
+	 * Bump when table_definition() changes so existing installs re-run dbDelta.
 	 */
 	const DB_VERSION = '1';
+
+	/**
+	 * Option key storing the installed schema version.
+	 */
+	const DB_VERSION_OPTION = 'bcew_chefs_embed_db_version';
 
 	/**
 	 * Credentials table name (with WP prefix for the current site).
@@ -32,16 +37,6 @@ class CredentialsManager {
 		global $wpdb;
 
 		return $wpdb->prefix . 'bcew_chefs_credentials';
-	}
-
-	/**
-	 * Create the credentials table via dbDelta.
-	 *
-	 * @return void
-	 */
-	public static function install() {
-		self::create_table();
-		update_option( 'bcew_chefs_embed_db_version', self::DB_VERSION, true );
 	}
 
 	/**
@@ -244,27 +239,18 @@ class CredentialsManager {
 	}
 
 	/**
-	 * Create or update the credentials table via dbDelta.
+	 * Column and index definitions for the credentials table.
 	 *
-	 * @return void
+	 * @return string
 	 */
-	private static function create_table() {
-		global $wpdb;
-
-		$table   = self::table_name();
-		$charset = $wpdb->get_charset_collate();
-
-		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-
-		$sql = "CREATE TABLE {$table} (
+	protected static function table_definition() {
+		return '
 			form_id varchar(36) NOT NULL,
 			api_key longtext NOT NULL,
 			created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			user_id bigint(20) unsigned NOT NULL DEFAULT 0,
 			PRIMARY KEY  (form_id),
 			KEY user_id (user_id)
-		) {$charset};";
-
-		dbDelta( $sql );
+		';
 	}
 }

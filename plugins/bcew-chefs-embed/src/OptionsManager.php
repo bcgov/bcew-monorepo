@@ -21,7 +21,7 @@ class OptionsManager {
 	/**
 	 * Options table schema version.
 	 *
-	 * Bump when create_table() changes so existing installs re-run dbDelta.
+	 * Bump when table_definition() changes so existing installs re-run dbDelta.
 	 */
 	const DB_VERSION = '1';
 
@@ -39,16 +39,6 @@ class OptionsManager {
 		global $wpdb;
 
 		return $wpdb->prefix . 'bcew_chefs_options';
-	}
-
-	/**
-	 * Create the options table via dbDelta.
-	 *
-	 * @return void
-	 */
-	public static function install() {
-		self::create_table();
-		update_option( self::DB_VERSION_OPTION, self::DB_VERSION, true );
 	}
 
 	/**
@@ -90,26 +80,17 @@ class OptionsManager {
 	}
 
 	/**
-	 * Create or update the options table via dbDelta.
+	 * Column and index definitions for the options table.
 	 *
-	 * @return void
+	 * @return string
 	 */
-	private static function create_table() {
-		global $wpdb;
-
-		$table   = self::table_name();
-		$charset = $wpdb->get_charset_collate();
-
-		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-
-		$sql = "CREATE TABLE {$table} (
+	protected static function table_definition() {
+		return '
 			id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			chefs_credentials_id varchar(36) NOT NULL,
 			confirmation longtext NOT NULL,
 			PRIMARY KEY  (id),
 			KEY chefs_credentials_id (chefs_credentials_id)
-		) {$charset};";
-
-		dbDelta( $sql );
+		';
 	}
 }
