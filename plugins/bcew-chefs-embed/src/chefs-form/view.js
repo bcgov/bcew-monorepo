@@ -3,6 +3,7 @@
  *
  * Reads data-form-id from the server-rendered markup, calls embed-config for a
  * short-lived token, then mounts the CHEFS web component (editable — not read-only).
+ * On successful submit, replaces the viewer with a static success message (DSWP-1149).
  */
 import ensureChefsFormViewerDefined from './utils/ensure-chefs-form-viewer';
 
@@ -75,6 +76,31 @@ const showError = ( mount, message ) => {
 };
 
 /**
+ * Show the generic post-submit success message (DSWP-1149).
+ *
+ * Inline (not a modal): not dismissible; cleared when the page is refreshed.
+ *
+ * @param {HTMLElement} mount Mount element.
+ */
+const showSuccess = ( mount ) => {
+    mount.replaceChildren();
+    mount.removeAttribute( 'aria-busy' );
+
+    const region = document.createElement( 'div' );
+    region.className = 'bcew-chefs-form__success';
+    region.setAttribute( 'role', 'status' );
+
+    const heading = document.createElement( 'h2' );
+    heading.textContent = 'Success';
+
+    const message = document.createElement( 'p' );
+    message.textContent = 'Your form has been submitted successfully';
+
+    region.append( heading, message );
+    mount.appendChild( region );
+};
+
+/**
  * Mount a CHEFS form viewer for one block root.
  *
  * @param {HTMLElement} root Block wrapper with data-form-id.
@@ -96,6 +122,12 @@ const mountChefsForm = async ( root ) => {
         viewer.setAttribute( 'form-id', formId );
         viewer.setAttribute( 'auth-token', config.token );
         viewer.setAttribute( 'base-url', config.baseUrl );
+        // Host shows its own success UI; skip CHEFS read-only auto-reload.
+        viewer.setAttribute( 'auto-reload-on-submit', 'false' );
+
+        viewer.addEventListener( 'formio:submitDone', () => {
+            showSuccess( mount );
+        } );
 
         mount.replaceChildren( viewer );
         mount.removeAttribute( 'aria-busy' );
