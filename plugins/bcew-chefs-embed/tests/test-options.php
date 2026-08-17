@@ -135,6 +135,118 @@ class OptionsTest extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Empty credentials IDs are rejected before querying.
+	 *
+	 * @return void
+	 */
+	public function test_get_confirmation_rejects_empty_id() {
+		$this->assertNull( OptionsManager::get_confirmation( '' ) );
+		$this->assertNull( OptionsManager::get_confirmation( '   ' ) );
+	}
+
+	/**
+	 * New-site hook installs the table for a site-like object.
+	 *
+	 * @return void
+	 */
+	public function test_on_initialize_site_installs_table() {
+		$site = (object) array(
+			'blog_id' => \get_current_blog_id(),
+		);
+
+		delete_option( OptionsManager::DB_VERSION_OPTION );
+		OptionsManager::on_initialize_site( $site );
+
+		$this->assertTrue( $this->table_exists() );
+		$this->assertSame(
+			OptionsManager::DB_VERSION,
+			get_option( OptionsManager::DB_VERSION_OPTION )
+		);
+	}
+
+	/**
+	 * New-site hook ignores non-site values.
+	 *
+	 * @return void
+	 */
+	public function test_on_initialize_site_ignores_invalid_site() {
+		OptionsManager::on_initialize_site( null );
+		OptionsManager::on_initialize_site( 'not-a-site' );
+		OptionsManager::on_initialize_site( (object) array() );
+
+		$this->assertTrue( $this->table_exists() );
+	}
+
+	/**
+	 * Install_for_blog switches context then creates the table.
+	 *
+	 * @return void
+	 */
+	public function test_install_for_blog_creates_table() {
+		delete_option( OptionsManager::DB_VERSION_OPTION );
+
+		OptionsManager::install_for_blog( \get_current_blog_id() );
+
+		$this->assertTrue( $this->table_exists() );
+		$this->assertSame(
+			OptionsManager::DB_VERSION,
+			get_option( OptionsManager::DB_VERSION_OPTION )
+		);
+	}
+
+	/**
+	 * Install_on_sites installs for each provided blog ID.
+	 *
+	 * @return void
+	 */
+	public function test_install_on_sites_creates_table() {
+		delete_option( OptionsManager::DB_VERSION_OPTION );
+
+		OptionsManager::install_on_sites( array( \get_current_blog_id() ) );
+
+		$this->assertTrue( $this->table_exists() );
+		$this->assertSame(
+			OptionsManager::DB_VERSION,
+			get_option( OptionsManager::DB_VERSION_OPTION )
+		);
+	}
+
+	/**
+	 * The plugins_loaded helper installs when the schema version is missing.
+	 *
+	 * @return void
+	 */
+	public function test_maybe_install_options_table_when_version_missing() {
+		delete_option( OptionsManager::DB_VERSION_OPTION );
+
+		bcew_chefs_embed_maybe_install_options_table();
+
+		$this->assertTrue( $this->table_exists() );
+		$this->assertSame(
+			OptionsManager::DB_VERSION,
+			get_option( OptionsManager::DB_VERSION_OPTION )
+		);
+	}
+
+	/**
+	 * The plugins_loaded helper is a no-op when the schema is current.
+	 *
+	 * @return void
+	 */
+	public function test_maybe_install_options_table_skips_when_current() {
+		OptionsManager::install();
+		$this->insert_option_row( $this->form_id, 'Keep me' );
+
+		bcew_chefs_embed_maybe_install_options_table();
+
+		$this->assertSame( 'Keep me', OptionsManager::get_confirmation( $this->form_id ) );
+		$this->assertSame(
+			OptionsManager::DB_VERSION,
+			get_option( OptionsManager::DB_VERSION_OPTION )
+		);
+	}
+
+	/**
 	 * Plugin deactivation should not delete options data.
 	 *
 	 * @return void

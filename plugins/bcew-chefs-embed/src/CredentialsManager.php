@@ -14,6 +14,7 @@ namespace Bcgov\BcewChefsEmbed;
  * - user_id (integer, WordPress user ID)
  */
 class CredentialsManager {
+	use InstallsSiteTable;
 
 	/**
 	 * Credentials table schema version.
@@ -31,49 +32,6 @@ class CredentialsManager {
 		global $wpdb;
 
 		return $wpdb->prefix . 'bcew_chefs_credentials';
-	}
-
-	/**
-	 * Plugin activation callback (single site or network-wide).
-	 *
-	 * @param bool $network_wide Whether the plugin is network-activated.
-	 * @return void
-	 */
-	public static function activate( $network_wide ) {
-		if ( is_multisite() && $network_wide ) {
-			$site_ids = get_sites(
-				array(
-					'fields' => 'ids',
-					'number' => 0,
-				)
-			);
-
-			foreach ( $site_ids as $site_id ) {
-				switch_to_blog( (int) $site_id );
-				self::install();
-				restore_current_blog();
-			}
-
-			return;
-		}
-
-		self::install();
-	}
-
-	/**
-	 * Create the credentials table for a newly created multisite site.
-	 *
-	 * @param \WP_Site $new_site New site object.
-	 * @return void
-	 */
-	public static function on_initialize_site( $new_site ) {
-		if ( ! $new_site instanceof \WP_Site ) {
-			return;
-		}
-
-		switch_to_blog( (int) $new_site->blog_id );
-		self::install();
-		restore_current_blog();
 	}
 
 	/**
