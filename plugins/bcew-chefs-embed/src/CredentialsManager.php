@@ -14,13 +14,19 @@ namespace Bcgov\BcewChefsEmbed;
  * - user_id (integer, WordPress user ID)
  */
 class CredentialsManager {
+	use InstallsSiteTable;
 
 	/**
 	 * Credentials table schema version.
 	 *
-	 * Bump when create_table() changes so existing installs re-run dbDelta.
+	 * Bump when table_definition() changes so existing installs re-run dbDelta.
 	 */
 	const DB_VERSION = '1';
+
+	/**
+	 * Option key storing the installed schema version.
+	 */
+	const DB_VERSION_OPTION = 'bcew_chefs_embed_db_version';
 
 	/**
 	 * Credentials table name (with WP prefix for the current site).
@@ -31,59 +37,6 @@ class CredentialsManager {
 		global $wpdb;
 
 		return $wpdb->prefix . 'bcew_chefs_credentials';
-	}
-
-	/**
-	 * Plugin activation callback (single site or network-wide).
-	 *
-	 * @param bool $network_wide Whether the plugin is network-activated.
-	 * @return void
-	 */
-	public static function activate( $network_wide ) {
-		if ( is_multisite() && $network_wide ) {
-			$site_ids = get_sites(
-				array(
-					'fields' => 'ids',
-					'number' => 0,
-				)
-			);
-
-			foreach ( $site_ids as $site_id ) {
-				switch_to_blog( (int) $site_id );
-				self::install();
-				restore_current_blog();
-			}
-
-			return;
-		}
-
-		self::install();
-	}
-
-	/**
-	 * Create the credentials table for a newly created multisite site.
-	 *
-	 * @param \WP_Site $new_site New site object.
-	 * @return void
-	 */
-	public static function on_initialize_site( $new_site ) {
-		if ( ! $new_site instanceof \WP_Site ) {
-			return;
-		}
-
-		switch_to_blog( (int) $new_site->blog_id );
-		self::install();
-		restore_current_blog();
-	}
-
-	/**
-	 * Create the credentials table via dbDelta.
-	 *
-	 * @return void
-	 */
-	public static function install() {
-		self::create_table();
-		update_option( 'bcew_chefs_embed_db_version', self::DB_VERSION, true );
 	}
 
 	/**
@@ -286,27 +239,18 @@ class CredentialsManager {
 	}
 
 	/**
-	 * Create or update the credentials table via dbDelta.
+	 * Column and index definitions for the credentials table.
 	 *
-	 * @return void
+	 * @return string
 	 */
-	private static function create_table() {
-		global $wpdb;
-
-		$table   = self::table_name();
-		$charset = $wpdb->get_charset_collate();
-
-		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-
-		$sql = "CREATE TABLE {$table} (
+	protected static function table_definition() {
+		return '
 			form_id varchar(36) NOT NULL,
 			api_key longtext NOT NULL,
 			created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			user_id bigint(20) unsigned NOT NULL DEFAULT 0,
 			PRIMARY KEY  (form_id),
 			KEY user_id (user_id)
-		) {$charset};";
-
-		dbDelta( $sql );
+		';
 	}
 }
