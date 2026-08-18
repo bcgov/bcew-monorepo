@@ -8,6 +8,7 @@
 namespace Bcgov\BcewChefsEmbed\Test;
 
 use Bcgov\BcewChefsEmbed\CredentialsManager;
+use Bcgov\BcewChefsEmbed\OptionsManager;
 use Bcgov\BcewChefsEmbed\Settings;
 
 /**
@@ -310,6 +311,7 @@ class CredentialsTest extends \WP_UnitTestCase {
 		do_action( 'rest_api_init' );
 
 		CredentialsManager::install();
+		OptionsManager::install();
 		CredentialsManager::save( $this->form_id, 'test-api-key-value', $user_id );
 
 		$http_callback = function ( $preempt, $parsed_args, $url ) {
@@ -340,6 +342,8 @@ class CredentialsTest extends \WP_UnitTestCase {
 			$this->assertSame( 200, $response->get_status() );
 			$this->assertSame( 'chefs-token-123', $response->get_data()['token'] );
 			$this->assertSame( 'https://submit.digital.gov.bc.ca/app', $response->get_data()['baseUrl'] );
+			$this->assertArrayHasKey( 'confirmation', $response->get_data() );
+			$this->assertNull( $response->get_data()['confirmation'] );
 			$this->assertArrayNotHasKey( 'apiKey', $response->get_data() );
 			$this->assertArrayNotHasKey( 'api_key', $response->get_data() );
 			$this->assertStringNotContainsString( 'test-api-key-value', wp_json_encode( $response->get_data() ) );
@@ -373,6 +377,67 @@ class CredentialsTest extends \WP_UnitTestCase {
 			'chefs_form_not_configured',
 			$response->get_data()['code']
 		);
+	}
+
+	/**
+	 * Embed config includes a saved custom confirmation message.
+	 *
+	 * @return void
+	 */
+	public function test_embed_config_route_returns_custom_confirmation() {
+		$user_id = self::factory()->user->create( array( 'role' => 'author' ) );
+		wp_set_current_user( $user_id );
+
+		activate_plugin( 'bcew-chefs-embed/bcew-chefs-embed.php' );
+		do_action( 'rest_api_init' );
+
+		CredentialsManager::install();
+		OptionsManager::install();
+		CredentialsManager::save( $this->form_id, 'test-api-key-value', $user_id );
+		OptionsManager::save( $this->form_id, 'Thanks for applying.' );
+
+		$http_callback = function () {
+			return array(
+				'headers'  => array( 'content-type' => 'application/json' ),
+				'body'     => wp_json_encode( array( 'token' => 'chefs-token-123' ) ),
+				'response' => array(
+					'code'    => 200,
+					'message' => 'OK',
+				),
+			);
+		};
+
+		add_filter( 'pre_http_request', $http_callback, 10, 3 );
+
+		try {
+			$request = new \WP_REST_Request( 'GET', '/bcew-chefs-embed/v1/embed-config' );
+			$request->set_param( 'formId', $this->form_id );
+			$response = rest_do_request( $request );
+
+			$this->assertSame( 200, $response->get_status() );
+			$this->assertSame( 'Thanks for applying.', $response->get_data()['confirmation'] );
+		} finally {
+			remove_filter( 'pre_http_request', $http_callback );
+		}
+	}
+
+	/**
+	 * Removing credentials also removes the confirmation for that form.
+	 *
+	 * @return void
+	 */
+	public function test_deleting_credentials_also_deletes_confirmation() {
+		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		CredentialsManager::save( $this->form_id, 'test-api-key-value', $user_id );
+		OptionsManager::install();
+		OptionsManager::save( $this->form_id, 'Thanks for applying.' );
+
+		$this->assertSame( 'Thanks for applying.', OptionsManager::get_confirmation( $this->form_id ) );
+
+		CredentialsManager::delete( $this->form_id );
+
+		$this->assertNull( CredentialsManager::get_by_form_id( $this->form_id ) );
+		$this->assertNull( OptionsManager::get_confirmation( $this->form_id ) );
 	}
 
 	/**

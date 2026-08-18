@@ -2,8 +2,8 @@
 /**
  * CHEFS admin settings page.
  *
- * Lets admins save form credentials and remove saved forms from the
- * credentials table (DSWP-1038).
+ * Lets admins save form credentials, custom confirmation messages, and
+ * remove saved forms from the credentials table (DSWP-1038, DSWP-1150).
  *
  * @package bcew-chefs-embed
  */
@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Admin settings for saved CHEFS credentials.
  *
- * UI lives here; database work stays in CredentialsManager.
+ * UI lives here; database work stays in CredentialsManager and OptionsManager.
  */
 class Settings {
 
@@ -26,6 +26,16 @@ class Settings {
 	 * Query-string page slug for admin.php?page=...
 	 */
 	const PAGE_SLUG = 'bcew-chefs-embed-settings';
+
+	/**
+	 * Visitor-facing generic success heading. Must match view.js.
+	 */
+	const GENERIC_SUCCESS_HEADING = 'Success';
+
+	/**
+	 * Visitor-facing generic success body. Must match view.js.
+	 */
+	const GENERIC_SUCCESS_BODY = 'Your form has been submitted successfully';
 
 	/**
 	 * Register admin hooks (form POST handlers + plugin row links).
@@ -39,6 +49,8 @@ class Settings {
 		add_action( 'admin_post_bcew_chefs_save', array( $this, 'handle_save' ) );
 		// admin-post.php?action=bcew_chefs_delete → handle_delete() (DSWP-1038).
 		add_action( 'admin_post_bcew_chefs_delete', array( $this, 'handle_delete' ) );
+		add_action( 'admin_post_bcew_chefs_save_confirmation', array( $this, 'handle_save_confirmation' ) );
+		add_action( 'admin_post_bcew_chefs_delete_confirmation', array( $this, 'handle_delete_confirmation' ) );
 		add_filter(
 			'plugin_action_links_' . plugin_basename( dirname( __DIR__ ) . '/bcew-chefs-embed.php' ),
 			array( $this, 'add_plugin_action_links' )
@@ -93,6 +105,8 @@ class Settings {
 
 		// List only needs form_id + created_at (no API keys on this screen).
 		$forms = CredentialsManager::list_forms();
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only edit-mode flag.
+		$editing_form_id = isset( $_GET['edit_confirmation'] ) ? sanitize_text_field( wp_unslash( $_GET['edit_confirmation'] ) ) : '';
 		?>
 		<div class="wrap">
 			<h1><?php esc_html_e( 'CHEFS Settings', 'bcew-chefs-embed' ); ?></h1>
@@ -109,6 +123,15 @@ class Settings {
 			<?php // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only redirect status flag. ?>
 			<?php elseif ( isset( $_GET['chefs_deleted'] ) ) : ?>
 				<div class="notice notice-success"><p><?php esc_html_e( 'Removed.', 'bcew-chefs-embed' ); ?></p></div>
+			<?php // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only redirect status flag. ?>
+			<?php elseif ( isset( $_GET['chefs_confirmation_saved'] ) ) : ?>
+				<div class="notice notice-success"><p><?php esc_html_e( 'Confirmation message saved.', 'bcew-chefs-embed' ); ?></p></div>
+			<?php // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only redirect status flag. ?>
+			<?php elseif ( isset( $_GET['chefs_confirmation_cleared'] ) ) : ?>
+				<div class="notice notice-success"><p><?php esc_html_e( 'Custom confirmation deleted. The generic success message will be used.', 'bcew-chefs-embed' ); ?></p></div>
+			<?php // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only redirect status flag. ?>
+			<?php elseif ( isset( $_GET['chefs_confirmation_error'] ) ) : ?>
+				<div class="notice notice-error"><p><?php esc_html_e( 'Unable to save the confirmation message. Enter a message, or use Remove custom confirmation to remove one.', 'bcew-chefs-embed' ); ?></p></div>
 			<?php endif; ?>
 
 			<?php // --- Save new / update credentials --- ?>
@@ -132,39 +155,122 @@ class Settings {
 
 			<?php if ( $forms ) : ?>
 				<h2><?php esc_html_e( 'Configured Forms', 'bcew-chefs-embed' ); ?></h2>
-				<table class="widefat striped" style="max-width:720px">
+				<p class="description">
+					<?php esc_html_e( 'A custom confirmation is shown after someone submits that form. If none is saved, visitors see the generic message below.', 'bcew-chefs-embed' ); ?>
+				</p>
+				<div class="notice notice-info inline" style="margin: 0 0 12px; max-width: 720px;">
+					<p>
+						<strong><?php echo esc_html( self::GENERIC_SUCCESS_HEADING ); ?></strong><br />
+						<?php echo esc_html( self::GENERIC_SUCCESS_BODY ); ?>
+					</p>
+				</div>
+				<table class="widefat striped">
 					<thead>
 						<tr>
 							<th><?php esc_html_e( 'Form ID', 'bcew-chefs-embed' ); ?></th>
 							<th><?php esc_html_e( 'Date', 'bcew-chefs-embed' ); ?></th>
+							<th><?php esc_html_e( 'Confirmation', 'bcew-chefs-embed' ); ?></th>
 							<th><?php esc_html_e( 'Actions', 'bcew-chefs-embed' ); ?></th>
 						</tr>
 					</thead>
 					<tbody>
 					<?php foreach ( $forms as $form ) : ?>
+						<?php
+						$confirmation = OptionsManager::get_confirmation( $form['form_id'] );
+						$is_editing   = $editing_form_id === $form['form_id'];
+						$save_form_id = 'bcew-chefs-save-confirmation-' . $form['form_id'];
+						?>
 						<tr>
 							<td><code><?php echo esc_html( $form['form_id'] ); ?></code></td>
 							<td>
 								<?php
-								// Format DB datetime with the site's date_format option.
 								$timestamp = strtotime( $form['created_at'] );
 								echo esc_html( $timestamp ? date_i18n( get_option( 'date_format' ), $timestamp ) : $form['created_at'] );
 								?>
 							</td>
 							<td>
-								<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline;">
-									<?php wp_nonce_field( 'bcew_chefs_delete' ); ?>
-									<input type="hidden" name="action" value="bcew_chefs_delete" />
-									<input type="hidden" name="form_id" value="<?php echo esc_attr( $form['form_id'] ); ?>" />
-									<?php
-									submit_button(
-										__( 'Remove', 'bcew-chefs-embed' ),
-										'delete small',
-										'submit',
-										false
-									);
-									?>
-								</form>
+								<?php if ( $is_editing ) : ?>
+									<form
+										id="<?php echo esc_attr( $save_form_id ); ?>"
+										method="post"
+										action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>"
+									>
+										<?php wp_nonce_field( 'bcew_chefs_save_confirmation' ); ?>
+										<input type="hidden" name="action" value="bcew_chefs_save_confirmation" />
+										<input type="hidden" name="form_id" value="<?php echo esc_attr( $form['form_id'] ); ?>" />
+										<label class="screen-reader-text" for="confirmation-<?php echo esc_attr( $form['form_id'] ); ?>">
+											<?php esc_html_e( 'Confirmation message', 'bcew-chefs-embed' ); ?>
+										</label>
+										<textarea
+											id="confirmation-<?php echo esc_attr( $form['form_id'] ); ?>"
+											name="confirmation"
+											class="large-text"
+											rows="3"
+											required
+										><?php echo esc_textarea( (string) $confirmation ); ?></textarea>
+									</form>
+								<?php elseif ( $confirmation ) : ?>
+									<p><?php echo nl2br( esc_html( $confirmation ), false ); ?></p>
+								<?php else : ?>
+									<p class="description">
+										<?php esc_html_e( 'There is no custom confirmation for this form. The generic message will be used.', 'bcew-chefs-embed' ); ?>
+									</p>
+								<?php endif; ?>
+							</td>
+							<td>
+								<div style="display:flex;flex-direction:column;align-items:flex-start;gap:8px;">
+									<?php if ( $is_editing ) : ?>
+										<?php
+										submit_button(
+											__( 'Save confirmation', 'bcew-chefs-embed' ),
+											'primary small',
+											'submit',
+											false,
+											array(
+												'form' => $save_form_id,
+											)
+										);
+										?>
+									<?php else : ?>
+										<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+											<?php wp_nonce_field( 'bcew_chefs_delete' ); ?>
+											<input type="hidden" name="action" value="bcew_chefs_delete" />
+											<input type="hidden" name="form_id" value="<?php echo esc_attr( $form['form_id'] ); ?>" />
+											<?php
+											submit_button(
+												__( 'Remove form', 'bcew-chefs-embed' ),
+												'delete small',
+												'submit',
+												false
+											);
+											?>
+										</form>
+										<?php if ( $confirmation ) : ?>
+											<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+												<?php wp_nonce_field( 'bcew_chefs_delete_confirmation' ); ?>
+												<input type="hidden" name="action" value="bcew_chefs_delete_confirmation" />
+												<input type="hidden" name="form_id" value="<?php echo esc_attr( $form['form_id'] ); ?>" />
+												<?php
+												submit_button(
+													__( 'Remove custom confirmation', 'bcew-chefs-embed' ),
+													'delete small',
+													'submit',
+													false,
+													array(
+														'onclick' => 'return confirm( ' . wp_json_encode( __( 'Remove this custom confirmation? The generic success message will be used instead.', 'bcew-chefs-embed' ) ) . ' );',
+													)
+												);
+												?>
+											</form>
+										<?php endif; ?>
+										<a
+											class="button button-small"
+											href="<?php echo esc_url( add_query_arg( 'edit_confirmation', $form['form_id'], self::get_page_url() ) ); ?>"
+										>
+											<?php esc_html_e( 'Edit confirmation', 'bcew-chefs-embed' ); ?>
+										</a>
+									<?php endif; ?>
+								</div>
 							</td>
 						</tr>
 					<?php endforeach; ?>
@@ -227,6 +333,48 @@ class Settings {
 
 		// PRG pattern: redirect so refresh does not re-POST delete.
 		wp_safe_redirect( add_query_arg( 'chefs_deleted', '1', self::get_page_url() ) );
+		exit;
+	}
+
+	/**
+	 * Save or update a custom confirmation message for a saved form (DSWP-1150).
+	 *
+	 * @return void
+	 */
+	public function handle_save_confirmation() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'Unauthorized.', 'bcew-chefs-embed' ) );
+		}
+
+		check_admin_referer( 'bcew_chefs_save_confirmation' );
+
+		$form_id = sanitize_text_field( wp_unslash( $_POST['form_id'] ?? '' ) );
+		$message = sanitize_textarea_field( wp_unslash( $_POST['confirmation'] ?? '' ) );
+
+		$saved        = OptionsManager::save( $form_id, $message );
+		$redirect_arg = false === $saved ? 'chefs_confirmation_error' : 'chefs_confirmation_saved';
+
+		wp_safe_redirect( add_query_arg( $redirect_arg, '1', self::get_page_url() ) );
+		exit;
+	}
+
+	/**
+	 * Remove a custom confirmation so the form uses the generic success message.
+	 *
+	 * @return void
+	 */
+	public function handle_delete_confirmation() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'Unauthorized.', 'bcew-chefs-embed' ) );
+		}
+
+		check_admin_referer( 'bcew_chefs_delete_confirmation' );
+
+		$form_id = sanitize_text_field( wp_unslash( $_POST['form_id'] ?? '' ) );
+
+		OptionsManager::delete( $form_id );
+
+		wp_safe_redirect( add_query_arg( 'chefs_confirmation_cleared', '1', self::get_page_url() ) );
 		exit;
 	}
 

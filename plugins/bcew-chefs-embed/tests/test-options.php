@@ -321,6 +321,80 @@ class OptionsTest extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Save creates a confirmation message for a form.
+	 *
+	 * @return void
+	 */
+	public function test_save_creates_confirmation() {
+		$result = OptionsManager::save( $this->form_id, 'Thanks for submitting!' );
+
+		$this->assertSame( $this->form_id, $result );
+		$this->assertSame( 'Thanks for submitting!', OptionsManager::get_confirmation( $this->form_id ) );
+	}
+
+	/**
+	 * Saving the same form ID again updates the existing message.
+	 *
+	 * @return void
+	 */
+	public function test_save_updates_existing_confirmation() {
+		OptionsManager::save( $this->form_id, 'First message' );
+		$result = OptionsManager::save( $this->form_id, 'Updated message' );
+
+		$this->assertSame( $this->form_id, $result );
+		$this->assertSame( 'Updated message', OptionsManager::get_confirmation( $this->form_id ) );
+	}
+
+	/**
+	 * Empty form ID or empty message is rejected and does not clear an existing row.
+	 *
+	 * @return void
+	 */
+	public function test_save_rejects_empty_values() {
+		OptionsManager::save( $this->form_id, 'Keep me' );
+
+		$this->assertFalse( OptionsManager::save( '', 'Thanks' ) );
+		$this->assertFalse( OptionsManager::save( $this->form_id, '' ) );
+		$this->assertFalse( OptionsManager::save( $this->form_id, '   ' ) );
+		$this->assertSame( 'Keep me', OptionsManager::get_confirmation( $this->form_id ) );
+	}
+
+	/**
+	 * Multiline confirmation text keeps newlines.
+	 *
+	 * @return void
+	 */
+	public function test_save_preserves_newlines() {
+		$message = "Line one.\nLine two.";
+
+		OptionsManager::save( $this->form_id, $message );
+
+		$this->assertSame( $message, OptionsManager::get_confirmation( $this->form_id ) );
+	}
+
+	/**
+	 * Delete removes the confirmation so lookups fall back to generic.
+	 *
+	 * @return void
+	 */
+	public function test_delete_removes_confirmation() {
+		OptionsManager::save( $this->form_id, 'Thanks for submitting!' );
+
+		$this->assertTrue( OptionsManager::delete( $this->form_id ) );
+		$this->assertNull( OptionsManager::get_confirmation( $this->form_id ) );
+	}
+
+	/**
+	 * Delete returns false when the ID is empty or no row exists.
+	 *
+	 * @return void
+	 */
+	public function test_delete_returns_false_when_nothing_to_remove() {
+		$this->assertFalse( OptionsManager::delete( '' ) );
+		$this->assertFalse( OptionsManager::delete( $this->form_id ) );
+	}
+
+	/**
 	 * Install uses the current blog table prefix (regular / network site support).
 	 *
 	 * @return void

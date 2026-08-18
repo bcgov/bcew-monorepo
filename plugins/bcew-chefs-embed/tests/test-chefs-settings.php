@@ -10,6 +10,7 @@
 namespace Bcgov\BcewChefsEmbed\Test;
 
 use Bcgov\BcewChefsEmbed\CredentialsManager;
+use Bcgov\BcewChefsEmbed\OptionsManager;
 
 /**
  * CHEFS Settings page acceptance criteria.
@@ -46,12 +47,16 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		parent::set_up();
 
 		CredentialsManager::install();
+		OptionsManager::install();
 
 		global $wpdb;
 
-		$table = CredentialsManager::table_name();
+		$credentials_table = CredentialsManager::table_name();
+		$options_table     = OptionsManager::table_name();
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
-		$wpdb->query( "DELETE FROM `{$table}`" );
+		$wpdb->query( "DELETE FROM `{$credentials_table}`" );
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
+		$wpdb->query( "DELETE FROM `{$options_table}`" );
 
 		$this->admin_user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $this->admin_user_id );
@@ -259,15 +264,336 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 			'Remove form must include the Form ID as a hidden field.'
 		);
 		$this->assertStringContainsString(
-			'Remove',
+			'Remove form',
 			$html,
-			'Each saved form should expose a Remove control.'
+			'Each saved form should expose a Remove form control.'
 		);
 		$this->assertStringContainsString(
 			'bcew_chefs_delete',
 			$html,
 			'Remove form must include a nonce for bcew_chefs_delete.'
 		);
+	}
+
+	/**
+	 * Settings page shows confirmation as text, with edit on the right.
+	 *
+	 * @return void
+	 */
+	public function test_settings_page_renders_confirmation_field_for_each_form() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+
+		ob_start();
+		( new \Bcgov\BcewChefsEmbed\Settings() )->render_page();
+		$html = ob_get_clean();
+
+		$this->assertStringContainsString(
+			'Edit confirmation',
+			$html,
+			'Each saved form should expose an Edit confirmation control.'
+		);
+		$this->assertStringNotContainsString(
+			'name="action" value="bcew_chefs_save_confirmation"',
+			$html,
+			'The save form should not render until Edit confirmation is clicked.'
+		);
+		$this->assertStringNotContainsString(
+			'name="confirmation"',
+			$html,
+			'Confirmation should be plain text until Edit confirmation is clicked.'
+		);
+		$this->assertStringContainsString(
+			'Your form has been submitted successfully',
+			$html,
+			'The generic success body should be visible above the table.'
+		);
+		$this->assertStringContainsString(
+			'There is no custom confirmation for this form. The generic message will be used.',
+			$html,
+			'Forms without a custom message should say the generic message will be used.'
+		);
+		$this->assertStringNotContainsString(
+			'name="action" value="bcew_chefs_delete_confirmation"',
+			$html,
+			'Remove custom confirmation should be hidden until a custom message exists.'
+		);
+	}
+
+	/**
+	 * Saved confirmation text is shown as plain text, with remove and edit actions.
+	 *
+	 * @return void
+	 */
+	public function test_settings_page_shows_saved_confirmation_and_delete_action() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+		OptionsManager::save( $this->form_id, 'Thanks for applying.' );
+
+		ob_start();
+		( new \Bcgov\BcewChefsEmbed\Settings() )->render_page();
+		$html = ob_get_clean();
+
+		$this->assertStringContainsString(
+			'Thanks for applying.',
+			$html,
+			'The confirmation column should show the saved message as text.'
+		);
+		$this->assertStringNotContainsString(
+			'<textarea',
+			$html,
+			'The confirmation should not be an input until Edit confirmation is clicked.'
+		);
+		$this->assertStringContainsString(
+			'name="action" value="bcew_chefs_delete_confirmation"',
+			$html,
+			'Remove custom confirmation must post action=bcew_chefs_delete_confirmation.'
+		);
+		$this->assertStringContainsString(
+			'Remove this custom confirmation?',
+			$html,
+			'Remove custom confirmation must ask before submitting.'
+		);
+		$this->assertStringContainsString(
+			'Edit confirmation',
+			$html,
+			'A saved confirmation should expose Edit confirmation.'
+		);
+		$this->assertStringNotContainsString(
+			'There is no custom confirmation for this form. The generic message will be used.',
+			$html,
+			'Empty-state copy should not show while a custom message is saved.'
+		);
+	}
+
+	/**
+	 * Edit mode shows a textarea and replaces Edit with Save confirmation.
+	 *
+	 * @return void
+	 */
+	public function test_settings_page_edit_mode_shows_textarea_and_save() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+		OptionsManager::save( $this->form_id, 'Thanks for applying.' );
+
+		$_GET['edit_confirmation'] = $this->form_id;
+
+		ob_start();
+		( new \Bcgov\BcewChefsEmbed\Settings() )->render_page();
+		$html = ob_get_clean();
+
+		unset( $_GET['edit_confirmation'] );
+
+		$this->assertStringContainsString(
+			'name="action" value="bcew_chefs_save_confirmation"',
+			$html,
+			'Edit mode must post action=bcew_chefs_save_confirmation.'
+		);
+		$this->assertStringContainsString(
+			'<textarea',
+			$html,
+			'Edit mode should show a confirmation text box.'
+		);
+		$this->assertStringContainsString(
+			'Save confirmation',
+			$html,
+			'Edit mode should replace Edit confirmation with Save confirmation.'
+		);
+		$this->assertStringNotContainsString(
+			'Edit confirmation',
+			$html,
+			'Edit confirmation should not show while that row is in edit mode.'
+		);
+		$this->assertStringNotContainsString(
+			'Remove form',
+			$html,
+			'Remove form should not show while that row is in edit mode.'
+		);
+		$this->assertStringNotContainsString(
+			'Remove custom confirmation',
+			$html,
+			'Remove custom confirmation should not show while that row is in edit mode.'
+		);
+	}
+
+	/**
+	 * Handle save confirmation rejects users without manage_options.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_confirmation_requires_manage_options() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+
+		$subscriber_id = self::factory()->user->create( array( 'role' => 'subscriber' ) );
+		wp_set_current_user( $subscriber_id );
+
+		$nonce                 = wp_create_nonce( 'bcew_chefs_save_confirmation' );
+		$_POST['form_id']      = $this->form_id;
+		$_POST['confirmation'] = 'Thanks';
+		$_POST['_wpnonce']     = $nonce;
+		$_REQUEST['_wpnonce']  = $nonce;
+
+		$this->expectException( \WPDieException::class );
+
+		( new \Bcgov\BcewChefsEmbed\Settings() )->handle_save_confirmation();
+	}
+
+	/**
+	 * Handle delete confirmation rejects users without manage_options.
+	 *
+	 * @return void
+	 */
+	public function test_handle_delete_confirmation_requires_manage_options() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+		OptionsManager::save( $this->form_id, 'Thanks' );
+
+		$subscriber_id = self::factory()->user->create( array( 'role' => 'subscriber' ) );
+		wp_set_current_user( $subscriber_id );
+
+		$nonce                = wp_create_nonce( 'bcew_chefs_delete_confirmation' );
+		$_POST['form_id']     = $this->form_id;
+		$_POST['_wpnonce']    = $nonce;
+		$_REQUEST['_wpnonce'] = $nonce;
+
+		$this->expectException( \WPDieException::class );
+
+		( new \Bcgov\BcewChefsEmbed\Settings() )->handle_delete_confirmation();
+	}
+
+	/**
+	 * Saving a confirmation stores it and redirects with a success flag.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_confirmation_stores_message_and_redirects() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+
+		$nonce                 = wp_create_nonce( 'bcew_chefs_save_confirmation' );
+		$_POST['form_id']      = $this->form_id;
+		$_POST['confirmation'] = "Thanks for applying.\nPlease keep your reference number.";
+		$_POST['_wpnonce']     = $nonce;
+		$_REQUEST['_wpnonce']  = $nonce;
+
+		$location = $this->capture_settings_redirect(
+			static function () {
+				( new \Bcgov\BcewChefsEmbed\Settings() )->handle_save_confirmation();
+			}
+		);
+
+		$this->assertStringContainsString( 'chefs_confirmation_saved=1', $location );
+		$this->assertSame(
+			"Thanks for applying.\nPlease keep your reference number.",
+			OptionsManager::get_confirmation( $this->form_id )
+		);
+	}
+
+	/**
+	 * Saving a blank confirmation is rejected and does not clear an existing message.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_confirmation_rejects_empty_message() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+		OptionsManager::save( $this->form_id, 'Keep me' );
+
+		$nonce                 = wp_create_nonce( 'bcew_chefs_save_confirmation' );
+		$_POST['form_id']      = $this->form_id;
+		$_POST['confirmation'] = '   ';
+		$_POST['_wpnonce']     = $nonce;
+		$_REQUEST['_wpnonce']  = $nonce;
+
+		$location = $this->capture_settings_redirect(
+			static function () {
+				( new \Bcgov\BcewChefsEmbed\Settings() )->handle_save_confirmation();
+			}
+		);
+
+		$this->assertStringContainsString( 'chefs_confirmation_error=1', $location );
+		$this->assertSame( 'Keep me', OptionsManager::get_confirmation( $this->form_id ) );
+	}
+
+	/**
+	 * Removing a confirmation deletes it and redirects with a cleared flag.
+	 *
+	 * @return void
+	 */
+	public function test_handle_delete_confirmation_removes_message_and_redirects() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+		OptionsManager::save( $this->form_id, 'Thanks for applying.' );
+
+		$nonce                = wp_create_nonce( 'bcew_chefs_delete_confirmation' );
+		$_POST['form_id']     = $this->form_id;
+		$_POST['_wpnonce']    = $nonce;
+		$_REQUEST['_wpnonce'] = $nonce;
+
+		$location = $this->capture_settings_redirect(
+			static function () {
+				( new \Bcgov\BcewChefsEmbed\Settings() )->handle_delete_confirmation();
+			}
+		);
+
+		$this->assertStringContainsString( 'chefs_confirmation_cleared=1', $location );
+		$this->assertNull( OptionsManager::get_confirmation( $this->form_id ) );
+	}
+
+	/**
+	 * Editing one form does not put other forms into edit mode.
+	 *
+	 * @return void
+	 */
+	public function test_settings_page_edit_mode_is_limited_to_one_form() {
+		$other_form_id = 'c3d4e5f6-a7b8-9012-cdef-123456789012';
+
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+		CredentialsManager::save( $other_form_id, $this->api_key, $this->admin_user_id );
+		OptionsManager::save( $this->form_id, 'Thanks for applying.' );
+
+		$_GET['edit_confirmation'] = $this->form_id;
+
+		ob_start();
+		( new \Bcgov\BcewChefsEmbed\Settings() )->render_page();
+		$html = ob_get_clean();
+
+		unset( $_GET['edit_confirmation'] );
+
+		$this->assertSame( 1, substr_count( $html, 'Save confirmation' ) );
+		$this->assertSame( 1, substr_count( $html, 'Edit confirmation' ) );
+		$this->assertSame( 1, substr_count( $html, 'Remove form' ) );
+		$this->assertStringContainsString(
+			'There is no custom confirmation for this form. The generic message will be used.',
+			$html
+		);
+	}
+
+	/**
+	 * Confirmation status notices render from redirect flags.
+	 *
+	 * @return void
+	 */
+	public function test_settings_page_renders_confirmation_notices() {
+		$_GET['chefs_confirmation_saved'] = '1';
+		ob_start();
+		( new \Bcgov\BcewChefsEmbed\Settings() )->render_page();
+		$saved_html = ob_get_clean();
+		unset( $_GET['chefs_confirmation_saved'] );
+
+		$this->assertStringContainsString( 'Confirmation message saved.', $saved_html );
+
+		$_GET['chefs_confirmation_cleared'] = '1';
+		ob_start();
+		( new \Bcgov\BcewChefsEmbed\Settings() )->render_page();
+		$cleared_html = ob_get_clean();
+		unset( $_GET['chefs_confirmation_cleared'] );
+
+		$this->assertStringContainsString(
+			'Custom confirmation deleted. The generic success message will be used.',
+			$cleared_html
+		);
+
+		$_GET['chefs_confirmation_error'] = '1';
+		ob_start();
+		( new \Bcgov\BcewChefsEmbed\Settings() )->render_page();
+		$error_html = ob_get_clean();
+		unset( $_GET['chefs_confirmation_error'] );
+
+		$this->assertStringContainsString( 'Unable to save the confirmation message.', $error_html );
 	}
 
 	/**
@@ -427,5 +753,30 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		$this->assertSame( 0, (int) $errors['warning_count'], "'{$value}' should not produce DateTime parse warnings." );
 		$this->assertSame( 0, (int) $errors['error_count'], "'{$value}' should not produce DateTime parse errors." );
 		$this->assertSame( $value, $datetime->format( 'Y-m-d H:i:s' ), "'{$value}' should match the expected datetime format exactly." );
+	}
+
+	/**
+	 * Run a settings handler and capture the redirect location.
+	 *
+	 * @param callable $callback Handler to invoke.
+	 * @return string Redirect URL.
+	 */
+	private function capture_settings_redirect( $callback ) {
+		add_filter(
+			'wp_redirect',
+			static function ( $location ) {
+				// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Redirect URL is captured for assertions, not printed.
+				throw new \RuntimeException( $location );
+			}
+		);
+
+		try {
+			$callback();
+			$this->fail( 'Expected a redirect.' );
+		} catch ( \RuntimeException $exception ) {
+			return $exception->getMessage();
+		} finally {
+			remove_all_filters( 'wp_redirect' );
+		}
 	}
 }

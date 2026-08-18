@@ -3,7 +3,8 @@
  *
  * Reads data-form-id from the server-rendered markup, calls embed-config for a
  * short-lived token, then mounts the CHEFS web component (editable — not read-only).
- * On successful submit, replaces the viewer with a static success message (DSWP-1149).
+ * On successful submit, replaces the viewer with a static success message
+ * (DSWP-1149 generic, DSWP-1150 custom confirmation).
  */
 import ensureChefsFormViewerDefined from './utils/ensure-chefs-form-viewer';
 
@@ -28,7 +29,7 @@ const getRestRoot = () => {
  * Fetch CHEFS embed configuration for a form ID.
  *
  * @param {string} formId CHEFS form ID.
- * @return {Promise<{token: string, baseUrl: string}>} Embed config payload.
+ * @return {Promise<{token: string, baseUrl: string, confirmation?: string|null}>} Embed config payload.
  */
 const fetchEmbedConfig = async ( formId ) => {
     const url = `${ getRestRoot() }bcew-chefs-embed/v1/embed-config?formId=${ encodeURIComponent(
@@ -76,13 +77,22 @@ const showError = ( mount, message ) => {
 };
 
 /**
- * Show the generic post-submit success message (DSWP-1149).
+ * Default success copy when no custom confirmation is saved (DSWP-1149).
+ */
+const GENERIC_SUCCESS_MESSAGE = 'Your form has been submitted successfully';
+
+/**
+ * Show the post-submit success message (DSWP-1149, DSWP-1150).
+ *
+ * Uses the custom confirmation when one is saved for this form.
+ * Otherwise shows the generic success text.
  *
  * Inline (not a modal): not dismissible; cleared when the page is refreshed.
  *
- * @param {HTMLElement} mount Mount element.
+ * @param {HTMLElement} mount         Mount element.
+ * @param {string|null} customMessage Custom confirmation from embed-config.
  */
-const showSuccess = ( mount ) => {
+const showSuccess = ( mount, customMessage ) => {
     mount.replaceChildren();
     mount.removeAttribute( 'aria-busy' );
 
@@ -93,8 +103,11 @@ const showSuccess = ( mount ) => {
     const heading = document.createElement( 'h2' );
     heading.textContent = 'Success';
 
+    const trimmed =
+        'string' === typeof customMessage ? customMessage.trim() : '';
+
     const message = document.createElement( 'p' );
-    message.textContent = 'Your form has been submitted successfully';
+    message.textContent = trimmed || GENERIC_SUCCESS_MESSAGE;
 
     region.append( heading, message );
     mount.appendChild( region );
@@ -126,7 +139,7 @@ const mountChefsForm = async ( root ) => {
         viewer.setAttribute( 'auto-reload-on-submit', 'false' );
 
         viewer.addEventListener( 'formio:submitDone', () => {
-            showSuccess( mount );
+            showSuccess( mount, config.confirmation );
         } );
 
         mount.replaceChildren( viewer );
