@@ -67,6 +67,12 @@ class CredentialsManager {
 			array( '%s' )
 		);
 
+		/*
+		 * Removing a form should also remove its confirmation so leftover
+		 * messages are not shown if the same form ID is saved again later.
+		 */
+		OptionsManager::delete( $form_id );
+
 		// false = query error; 0 = no matching row; >0 = rows removed.
 		return false !== $deleted && $deleted > 0;
 	}

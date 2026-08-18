@@ -48,7 +48,10 @@ const clearSavedForms = async ( admin, page ) => {
 
     await expect( settingsHeading ).toBeVisible();
 
-    const removeButton = page.getByRole( 'button', { name: 'Remove' } );
+    const removeButton = page.getByRole( 'button', {
+        name: 'Remove form',
+        exact: true,
+    } );
 
     while ( ( await removeButton.count() ) > 0 ) {
         await removeButton.first().click();
@@ -88,7 +91,7 @@ const addSavedForm = async ( admin, page, formId, apiKey ) => {
 
     await formIdField.fill( formId );
     await apiKeyField.fill( apiKey );
-    await page.getByRole( 'button', { name: 'Save' } ).click();
+    await page.getByRole( 'button', { name: 'Save', exact: true } ).click();
 
     await expect( page.locator( '.notice-success' ) ).toContainText( 'Saved.' );
 };
@@ -589,6 +592,182 @@ test.describe( 'CHEFS Form block', () => {
         await expect(
             success.getByText( 'Your form has been submitted successfully' )
         ).toBeVisible();
+        await expect( page.locator( 'chefs-form-viewer' ) ).toHaveCount( 0 );
+    } );
+
+    test( 'settings page can save, show, and delete a confirmation message', async ( {
+        admin,
+        page,
+        requestUtils,
+    } ) => {
+        await ensurePluginIsActive( requestUtils );
+        await clearSavedForms( admin, page );
+
+        const formId = 'bbbbbbbb-cccc-4ddd-8eee-ffffffffffff';
+        await addSavedForm( admin, page, formId, 'confirmation-api-key' );
+
+        await expect(
+            page.getByText( 'Your form has been submitted successfully' )
+        ).toBeVisible();
+        await expect(
+            page.getByText(
+                'There is no custom confirmation for this form. The generic message will be used.'
+            )
+        ).toBeVisible();
+        await expect( page.getByLabel( 'Confirmation message' ) ).toHaveCount(
+            0
+        );
+
+        await page.getByRole( 'link', { name: 'Edit confirmation' } ).click();
+
+        const confirmationField = page.getByLabel( 'Confirmation message' );
+        await expect( confirmationField ).toBeVisible();
+        await expect(
+            page.getByRole( 'button', { name: 'Save confirmation' } )
+        ).toBeVisible();
+        await expect(
+            page.getByRole( 'link', { name: 'Edit confirmation' } )
+        ).toHaveCount( 0 );
+        await expect(
+            page.getByRole( 'button', { name: 'Remove form', exact: true } )
+        ).toHaveCount( 0 );
+        await expect(
+            page.getByRole( 'button', { name: 'Remove custom confirmation' } )
+        ).toHaveCount( 0 );
+
+        await confirmationField.fill( 'Thanks for applying.' );
+        await page.getByRole( 'button', { name: 'Save confirmation' } ).click();
+
+        await expect( page.locator( '.notice-success' ) ).toContainText(
+            'Confirmation message saved.'
+        );
+        await expect( page.getByText( 'Thanks for applying.' ) ).toBeVisible();
+        await expect( page.getByLabel( 'Confirmation message' ) ).toHaveCount(
+            0
+        );
+        await expect(
+            page.getByText(
+                'There is no custom confirmation for this form. The generic message will be used.'
+            )
+        ).toHaveCount( 0 );
+        await expect(
+            page.getByRole( 'button', { name: 'Remove form', exact: true } )
+        ).toBeVisible();
+        await expect(
+            page.getByRole( 'link', { name: 'Edit confirmation' } )
+        ).toBeVisible();
+        await expect(
+            page.getByRole( 'button', { name: 'Remove custom confirmation' } )
+        ).toBeVisible();
+
+        page.once( 'dialog', ( dialog ) => dialog.dismiss() );
+        await page
+            .getByRole( 'button', { name: 'Remove custom confirmation' } )
+            .click();
+        await expect( page.getByText( 'Thanks for applying.' ) ).toBeVisible();
+
+        page.once( 'dialog', ( dialog ) => dialog.accept() );
+        await page
+            .getByRole( 'button', { name: 'Remove custom confirmation' } )
+            .click();
+
+        await expect( page.locator( '.notice-success' ) ).toContainText(
+            'Custom confirmation deleted. The generic success message will be used.'
+        );
+        await expect(
+            page.getByText(
+                'There is no custom confirmation for this form. The generic message will be used.'
+            )
+        ).toBeVisible();
+        await expect(
+            page.getByRole( 'button', { name: 'Remove custom confirmation' } )
+        ).toHaveCount( 0 );
+        await expect(
+            page.getByRole( 'link', { name: 'Edit confirmation' } )
+        ).toBeVisible();
+    } );
+
+    test( 'published page shows custom success message after submit', async ( {
+        admin,
+        editor,
+        page,
+    } ) => {
+        const formId = 'cccccccc-dddd-4eee-8fff-000000000000';
+        const mockBaseUrl = 'https://chefs-frontend.test/app';
+        const mockToken = 'frontend-custom-success-token';
+        const customMessage = 'Thanks for applying to this program.';
+
+        await addSavedForm( admin, page, formId, 'frontend-custom-api-key' );
+
+        await page.route(
+            '**/wp-json/bcew-chefs-embed/v1/embed-config**',
+            async ( route ) => {
+                await route.fulfill( {
+                    status: 200,
+                    contentType: 'application/json',
+                    body: JSON.stringify( {
+                        token: mockToken,
+                        baseUrl: mockBaseUrl,
+                        confirmation: customMessage,
+                    } ),
+                } );
+            }
+        );
+
+        await page.route(
+            `${ mockBaseUrl }/embed/chefs-form-viewer.min.js`,
+            async ( route ) => {
+                await route.fulfill( {
+                    status: 200,
+                    contentType: 'application/javascript',
+                    body: [
+                        'class ChefsFormViewerStub extends HTMLElement {',
+                        '  connectedCallback() {',
+                        "    this.style.display = 'block';",
+                        "    this.style.minHeight = '40px';",
+                        '  }',
+                        '  load() { return Promise.resolve(); }',
+                        '}',
+                        "if ( ! customElements.get( 'chefs-form-viewer' ) ) {",
+                        "  customElements.define( 'chefs-form-viewer', ChefsFormViewerStub );",
+                        '}',
+                    ].join( '\n' ),
+                } );
+            }
+        );
+
+        await admin.createNewPost();
+        await editor.insertBlock( { name: BLOCK_NAME } );
+        await ensureBlockSettingsVisible( editor, page );
+        await page.getByLabel( 'Form ID' ).first().selectOption( formId );
+
+        const postId = await editor.publishPost();
+        expect( postId ).not.toBeNull();
+
+        await becomeAnonymousVisitor( page );
+
+        const response = await page.goto( `/?p=${ postId }` );
+        expect( response ).not.toBeNull();
+
+        const viewer = page.locator( 'chefs-form-viewer' );
+        await expect( viewer ).toBeAttached();
+
+        await viewer.evaluate( ( el ) => {
+            el.dispatchEvent(
+                new CustomEvent( 'formio:submitDone', {
+                    bubbles: true,
+                    composed: true,
+                    detail: { submission: {} },
+                } )
+            );
+        } );
+
+        const success = page.locator( '.bcew-chefs-form__success' );
+        await expect( success ).toBeVisible();
+        await expect( success.getByText( customMessage ) ).toBeVisible();
+        await expect(
+            success.getByText( 'Your form has been submitted successfully' )
+        ).toHaveCount( 0 );
         await expect( page.locator( 'chefs-form-viewer' ) ).toHaveCount( 0 );
     } );
 

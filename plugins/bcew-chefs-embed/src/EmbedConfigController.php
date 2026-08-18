@@ -119,8 +119,9 @@ class EmbedConfigController {
 
 		return rest_ensure_response(
 			array(
-				'token'   => $body['token'],
-				'baseUrl' => 'https://submit.digital.gov.bc.ca/app',
+				'token'        => $body['token'],
+				'baseUrl'      => 'https://submit.digital.gov.bc.ca/app',
+				'confirmation' => OptionsManager::get_confirmation( $form_id ),
 			)
 		);
 	}
