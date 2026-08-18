@@ -22,27 +22,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use Bcgov\BcewChefsEmbed\CredentialsManager;
 use Bcgov\BcewChefsEmbed\EmbedConfigController;
+use Bcgov\BcewChefsEmbed\OptionsManager;
 
 /**
- * Load Composer autoloader and verify required class exists.
- * If the autoloader or the required class is missing, halt plugin execution.
+ * Load Composer autoloader when present.
  */
 $autoloader_path = __DIR__ . '/vendor/autoload.php';
 if ( file_exists( $autoloader_path ) ) {
 	require_once $autoloader_path;
 }
 
-if ( class_exists( CredentialsManager::class ) ) {
-	register_activation_hook( __FILE__, array( CredentialsManager::class, 'activate' ) );
-	add_action( 'wp_initialize_site', array( CredentialsManager::class, 'on_initialize_site' ) );
-	add_action( 'rest_api_init', 'bcew_chefs_embed_register_rest_routes' );
-	// Ensure the credentials table exists even if activation ran before Composer autoload was available.
-	add_action( 'plugins_loaded', 'bcew_chefs_embed_maybe_install_credentials_table' );
-}
+register_activation_hook( __FILE__, array( CredentialsManager::class, 'activate' ) );
+add_action( 'wp_initialize_site', array( CredentialsManager::class, 'on_initialize_site' ) );
+add_action( 'rest_api_init', 'bcew_chefs_embed_register_rest_routes' );
+// Ensure the credentials table exists even if activation ran before Composer autoload was available.
+add_action( 'plugins_loaded', 'bcew_chefs_embed_maybe_install_credentials_table' );
 
-if ( class_exists( EmbedConfigController::class ) ) {
-	add_action( 'rest_api_init', array( EmbedConfigController::class, 'register_routes' ) );
-}
+register_activation_hook( __FILE__, array( OptionsManager::class, 'activate' ) );
+add_action( 'wp_initialize_site', array( OptionsManager::class, 'on_initialize_site' ) );
+add_action( 'plugins_loaded', 'bcew_chefs_embed_maybe_install_options_table' );
+
+add_action( 'rest_api_init', array( EmbedConfigController::class, 'register_routes' ) );
 
 /**
  * Create the credentials table when the schema version is missing or outdated.
@@ -50,15 +50,24 @@ if ( class_exists( EmbedConfigController::class ) ) {
  * @return void
  */
 function bcew_chefs_embed_maybe_install_credentials_table() {
-	if ( ! class_exists( CredentialsManager::class ) ) {
-		return;
-	}
-
-	if ( get_option( 'bcew_chefs_embed_db_version' ) === CredentialsManager::DB_VERSION ) {
+	if ( get_option( CredentialsManager::DB_VERSION_OPTION ) === CredentialsManager::DB_VERSION ) {
 		return;
 	}
 
 	CredentialsManager::install();
+}
+
+/**
+ * Create the options table when the schema version is missing or outdated.
+ *
+ * @return void
+ */
+function bcew_chefs_embed_maybe_install_options_table() {
+	if ( get_option( OptionsManager::DB_VERSION_OPTION ) === OptionsManager::DB_VERSION ) {
+		return;
+	}
+
+	OptionsManager::install();
 }
 
 /**

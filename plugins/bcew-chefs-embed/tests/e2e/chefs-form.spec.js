@@ -497,6 +497,99 @@ test.describe( 'CHEFS Form block', () => {
         await expect( viewer ).toHaveAttribute( 'auth-token', mockToken );
         await expect( viewer ).toHaveAttribute( 'base-url', mockBaseUrl );
         await expect( viewer ).not.toHaveAttribute( 'read-only' );
+        await expect( viewer ).toHaveAttribute(
+            'auto-reload-on-submit',
+            'false'
+        );
+    } );
+
+    test( 'published page shows generic success message after submit', async ( {
+        admin,
+        editor,
+        page,
+    } ) => {
+        const formId = 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee';
+        const mockBaseUrl = 'https://chefs-frontend.test/app';
+        const mockToken = 'frontend-success-token';
+
+        await addSavedForm( admin, page, formId, 'frontend-success-api-key' );
+
+        await page.route(
+            '**/wp-json/bcew-chefs-embed/v1/embed-config**',
+            async ( route ) => {
+                await route.fulfill( {
+                    status: 200,
+                    contentType: 'application/json',
+                    body: JSON.stringify( {
+                        token: mockToken,
+                        baseUrl: mockBaseUrl,
+                    } ),
+                } );
+            }
+        );
+
+        await page.route(
+            `${ mockBaseUrl }/embed/chefs-form-viewer.min.js`,
+            async ( route ) => {
+                await route.fulfill( {
+                    status: 200,
+                    contentType: 'application/javascript',
+                    body: [
+                        'class ChefsFormViewerStub extends HTMLElement {',
+                        '  connectedCallback() {',
+                        "    this.style.display = 'block';",
+                        "    this.style.minHeight = '40px';",
+                        '  }',
+                        '  load() { return Promise.resolve(); }',
+                        '}',
+                        "if ( ! customElements.get( 'chefs-form-viewer' ) ) {",
+                        "  customElements.define( 'chefs-form-viewer', ChefsFormViewerStub );",
+                        '}',
+                    ].join( '\n' ),
+                } );
+            }
+        );
+
+        await admin.createNewPost();
+        await editor.insertBlock( { name: BLOCK_NAME } );
+        await ensureBlockSettingsVisible( editor, page );
+        await page.getByLabel( 'Form ID' ).first().selectOption( formId );
+
+        const postId = await editor.publishPost();
+        expect( postId ).not.toBeNull();
+
+        await becomeAnonymousVisitor( page );
+
+        const response = await page.goto( `/?p=${ postId }` );
+        expect( response ).not.toBeNull();
+
+        const viewer = page.locator( 'chefs-form-viewer' );
+        await expect( viewer ).toBeAttached();
+        await expect( viewer ).toHaveAttribute(
+            'auto-reload-on-submit',
+            'false'
+        );
+
+        await viewer.evaluate( ( el ) => {
+            el.dispatchEvent(
+                new CustomEvent( 'formio:submitDone', {
+                    bubbles: true,
+                    composed: true,
+                    detail: { submission: {} },
+                } )
+            );
+        } );
+
+        const success = page.locator( '.bcew-chefs-form__success' );
+        await expect( success ).toBeVisible();
+        await expect( success ).toHaveAttribute( 'role', 'status' );
+        await expect( success.getByRole( 'heading', { level: 2 } ) ).toHaveText(
+            'Success'
+        );
+        await expect(
+            success.getByText( 'Your form has been submitted successfully' )
+        ).toBeVisible();
+        await expect( page.locator( 'chefs-form-viewer' ) ).toHaveCount( 0 );
     } );
 
     test( 'published page shows an error when embed-config fails', async ( {
