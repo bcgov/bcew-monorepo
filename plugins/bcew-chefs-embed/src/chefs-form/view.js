@@ -5,6 +5,8 @@
  * short-lived token, then mounts the CHEFS web component (editable — not read-only).
  * On successful submit, replaces the viewer with a static success message
  * (DSWP-1149 generic, DSWP-1150 custom confirmation).
+ * On CHEFS submit/load HTTP errors, shows title, status, and detail above
+ * the form (DSWP-1151) and leaves the form on the page.
  */
 import ensureChefsFormViewerDefined from './utils/ensure-chefs-form-viewer';
 
@@ -62,6 +64,9 @@ const fetchEmbedConfig = async ( formId ) => {
 /**
  * Show an error message inside the block mount point.
  *
+ * Used when the form never loaded (embed-config or script failure). There is
+ * no form to keep on the page, so the mount is replaced.
+ *
  * @param {HTMLElement} mount   Mount element.
  * @param {string}      message Error text.
  */
@@ -74,6 +79,118 @@ const showError = ( mount, message ) => {
     error.setAttribute( 'role', 'alert' );
     error.textContent = message;
     mount.appendChild( error );
+};
+
+/*
+ * CHEFS HTTP errors use title, status, and detail. The web component emits
+ * formio:error. Sometimes the payload has those three fields; often it is
+ * only { error: "<detail string>" } because the viewer already pulled
+ * json.detail. Show whatever we have above the form so the visitor can
+ * read it and retry.
+ */
+const asPlainText = ( value ) => {
+    if ( 'number' === typeof value || 'boolean' === typeof value ) {
+        return String( value );
+    }
+
+    if ( 'string' === typeof value ) {
+        return value.trim();
+    }
+
+    return '';
+};
+
+/**
+ * Read title, status, and detail from a formio:error payload.
+ *
+ * @param {unknown} payload Event detail from formio:error.
+ * @return {{title: string, status: string, detail: string}} Error fields.
+ */
+const readChefsError = ( payload ) => {
+    if ( ! payload || 'object' !== typeof payload ) {
+        return { title: '', status: '', detail: asPlainText( payload ) };
+    }
+
+    let source = payload;
+
+    if (
+        payload.error &&
+        'object' === typeof payload.error &&
+        ! Array.isArray( payload.error )
+    ) {
+        source = payload.error;
+    }
+
+    const title = asPlainText( source.title );
+    const status = asPlainText( source.status );
+    let detail = asPlainText( source.detail );
+
+    if ( ! detail ) {
+        detail = asPlainText( source.message );
+    }
+
+    if ( ! detail && 'string' === typeof payload.error ) {
+        detail = payload.error.trim();
+    }
+
+    return { title, status, detail };
+};
+
+/**
+ * Remove a previous CHEFS error banner (direct child of the block root).
+ *
+ * @param {HTMLElement} root Block wrapper.
+ */
+const clearChefsError = ( root ) => {
+    root.querySelectorAll( ':scope > .bcew-chefs-form__error' ).forEach(
+        ( node ) => {
+            node.remove();
+        }
+    );
+};
+
+/**
+ * Show a CHEFS error message above the form (DSWP-1151).
+ *
+ * Heading is "{title} - {status}". Body is detail. The form stays visible.
+ *
+ * @param {HTMLElement} root  Block wrapper.
+ * @param {Object}      error Error fields (title, status, detail).
+ */
+const showChefsError = ( root, error ) => {
+    if ( ! error.title && ! error.status && ! error.detail ) {
+        return;
+    }
+
+    clearChefsError( root );
+
+    const region = document.createElement( 'div' );
+    region.className = 'bcew-chefs-form__error';
+    region.setAttribute( 'role', 'alert' );
+
+    const headingText = [ error.title, error.status ]
+        .filter( Boolean )
+        .join( ' - ' );
+
+    if ( headingText ) {
+        const heading = document.createElement( 'h2' );
+        heading.textContent = headingText;
+        region.append( heading );
+    }
+
+    if ( error.detail ) {
+        const message = document.createElement( 'p' );
+        message.textContent = error.detail;
+        region.append( message );
+    }
+
+    const mount = root.querySelector( '.bcew-chefs-form__mount' );
+
+    if ( mount ) {
+        root.insertBefore( region, mount );
+    } else {
+        root.prepend( region );
+    }
 };
 
 /**
@@ -93,6 +210,10 @@ const GENERIC_SUCCESS_MESSAGE = 'Your form has been submitted successfully';
  * @param {string|null} customMessage Custom confirmation from embed-config.
  */
 const showSuccess = ( mount, customMessage ) => {
+    if ( mount.parentElement ) {
+        clearChefsError( mount.parentElement );
+    }
+
     mount.replaceChildren();
     mount.removeAttribute( 'aria-busy' );
 
@@ -140,6 +261,10 @@ const mountChefsForm = async ( root ) => {
 
         viewer.addEventListener( 'formio:submitDone', () => {
             showSuccess( mount, config.confirmation );
+        } );
+
+        viewer.addEventListener( 'formio:error', ( event ) => {
+            showChefsError( root, readChefsError( event?.detail ) );
         } );
 
         mount.replaceChildren( viewer );

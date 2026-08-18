@@ -595,6 +595,127 @@ test.describe( 'CHEFS Form block', () => {
         await expect( page.locator( 'chefs-form-viewer' ) ).toHaveCount( 0 );
     } );
 
+    test( 'published page shows CHEFS error above the form', async ( {
+        admin,
+        editor,
+        page,
+    } ) => {
+        const formId = 'cccccccc-dddd-4eee-8fff-111111111111';
+        const mockBaseUrl = 'https://chefs-frontend.test/app';
+        const mockToken = 'frontend-error-handler-token';
+
+        await addSavedForm( admin, page, formId, 'frontend-error-handler-key' );
+
+        await page.route(
+            '**/wp-json/bcew-chefs-embed/v1/embed-config**',
+            async ( route ) => {
+                await route.fulfill( {
+                    status: 200,
+                    contentType: 'application/json',
+                    body: JSON.stringify( {
+                        token: mockToken,
+                        baseUrl: mockBaseUrl,
+                    } ),
+                } );
+            }
+        );
+
+        await page.route(
+            `${ mockBaseUrl }/embed/chefs-form-viewer.min.js`,
+            async ( route ) => {
+                await route.fulfill( {
+                    status: 200,
+                    contentType: 'application/javascript',
+                    body: [
+                        'class ChefsFormViewerStub extends HTMLElement {',
+                        '  connectedCallback() {',
+                        "    this.style.display = 'block';",
+                        "    this.style.minHeight = '40px';",
+                        '  }',
+                        '  load() { return Promise.resolve(); }',
+                        '}',
+                        "if ( ! customElements.get( 'chefs-form-viewer' ) ) {",
+                        "  customElements.define( 'chefs-form-viewer', ChefsFormViewerStub );",
+                        '}',
+                    ].join( '\n' ),
+                } );
+            }
+        );
+
+        await admin.createNewPost();
+        await editor.insertBlock( { name: BLOCK_NAME } );
+        await ensureBlockSettingsVisible( editor, page );
+        await page.getByLabel( 'Form ID' ).first().selectOption( formId );
+
+        const postId = await editor.publishPost();
+        expect( postId ).not.toBeNull();
+
+        await becomeAnonymousVisitor( page );
+
+        const response = await page.goto( `/?p=${ postId }` );
+        expect( response ).not.toBeNull();
+
+        const viewer = page.locator( 'chefs-form-viewer' );
+        await expect( viewer ).toBeAttached();
+
+        await viewer.evaluate( ( el ) => {
+            el.dispatchEvent(
+                new CustomEvent( 'formio:error', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        title: 'Bad Request',
+                        status: 400,
+                        detail: 'Request is missing content or is malformed',
+                    },
+                } )
+            );
+        } );
+
+        const error = page.locator(
+            '.bcew-chefs-form > .bcew-chefs-form__error'
+        );
+        await expect( error ).toBeVisible();
+        await expect( error ).toHaveAttribute( 'role', 'alert' );
+        await expect( error.getByRole( 'heading', { level: 2 } ) ).toHaveText(
+            'Bad Request - 400'
+        );
+        await expect(
+            error.getByText( 'Request is missing content or is malformed' )
+        ).toBeVisible();
+        await expect( viewer ).toBeAttached();
+
+        const errorIsAboveForm = await page.evaluate( () => {
+            const banner = document.querySelector(
+                '.bcew-chefs-form > .bcew-chefs-form__error'
+            );
+            const mount = document.querySelector( '.bcew-chefs-form__mount' );
+            return banner && mount && banner.nextElementSibling === mount;
+        } );
+        expect( errorIsAboveForm ).toBe( true );
+
+        await viewer.evaluate( ( el ) => {
+            el.dispatchEvent(
+                new CustomEvent( 'formio:error', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {
+                        error: 'Submission failed',
+                    },
+                } )
+            );
+        } );
+
+        await expect( error.getByRole( 'heading', { level: 2 } ) ).toHaveCount(
+            0
+        );
+        await expect( error.getByText( 'Submission failed' ) ).toBeVisible();
+        await expect( viewer ).toBeAttached();
+        await expect(
+            page.locator( '.bcew-chefs-form > .bcew-chefs-form__error' )
+        ).toHaveCount( 1 );
+    } );
+
     test( 'settings page can save, show, and delete a confirmation message', async ( {
         admin,
         page,
