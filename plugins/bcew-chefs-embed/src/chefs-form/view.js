@@ -111,29 +111,30 @@ const readChefsError = ( payload ) => {
         return { title: '', status: '', detail: asPlainText( payload ) };
     }
 
-    let source = payload;
-
     if (
         payload.error &&
         'object' === typeof payload.error &&
         ! Array.isArray( payload.error )
     ) {
-        source = payload.error;
+        return {
+            title: asPlainText( payload.error.title ),
+            status: asPlainText( payload.error.status ),
+            detail:
+                asPlainText( payload.error.detail ) ||
+                asPlainText( payload.error.message ),
+        };
     }
 
-    const title = asPlainText( source.title );
-    const status = asPlainText( source.status );
-    let detail = asPlainText( source.detail );
-
-    if ( ! detail ) {
-        detail = asPlainText( source.message );
-    }
-
-    if ( ! detail && 'string' === typeof payload.error ) {
-        detail = payload.error.trim();
-    }
-
-    return { title, status, detail };
+    return {
+        title: asPlainText( payload.title ),
+        status: asPlainText( payload.status ),
+        detail:
+            asPlainText( payload.detail ) ||
+            asPlainText( payload.message ) ||
+            ( 'string' === typeof payload.error
+                ? asPlainText( payload.error )
+                : '' ),
+    };
 };
 
 /**
@@ -187,7 +188,7 @@ const showChefsError = ( root, error ) => {
     const mount = root.querySelector( '.bcew-chefs-form__mount' );
 
     if ( mount ) {
-        root.insertBefore( region, mount );
+        mount.before( region );
     } else {
         root.prepend( region );
     }
