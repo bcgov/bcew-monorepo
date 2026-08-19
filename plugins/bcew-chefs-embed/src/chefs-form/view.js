@@ -16,6 +16,11 @@ import ensureChefsFormViewerDefined from './utils/ensure-chefs-form-viewer';
  * @return {string} Trailing-slash REST root.
  */
 const getRestRoot = () => {
+    /*
+     * WordPress prints a discovery link with the REST API root. Prefer that
+     * so the plugin still works when the site lives in a subdirectory.
+     * If the tag is missing, assume /wp-json/ on this origin.
+     */
     const discovery = document.querySelector(
         'link[rel="https://api.w.org/"]'
     )?.href;
@@ -46,6 +51,10 @@ const fetchEmbedConfig = async ( formId ) => {
         },
     } );
 
+    /*
+     * A failed status or a body without token and base URL means the form
+     * cannot load. Throw so mountChefsForm can show the load-error message.
+     */
     const payload = await response.json().catch( () => ( {} ) );
 
     if ( ! response.ok ) {
@@ -71,6 +80,10 @@ const fetchEmbedConfig = async ( formId ) => {
  * @param {string}      message Error text.
  */
 const showError = ( mount, message ) => {
+    /*
+     * The form never appeared, so empty the mount and show one alert.
+     * This is not the CHEFS submit-error banner; that path keeps the form.
+     */
     mount.replaceChildren();
     mount.removeAttribute( 'aria-busy' );
 
@@ -82,11 +95,9 @@ const showError = ( mount, message ) => {
 };
 
 /*
- * CHEFS HTTP errors use title, status, and detail. The web component emits
- * formio:error. Sometimes the payload has those three fields; often it is
- * only { error: "<detail string>" } because the viewer already pulled
- * json.detail. Show whatever we have above the form so the visitor can
- * read it and retry.
+ * Only strings, numbers, and booleans become visible text. String(null)
+ * would show "null", and a leftover object would show "[object Object]".
+ * Those must not appear on the page.
  */
 const asPlainText = ( value ) => {
     if ( 'number' === typeof value || 'boolean' === typeof value ) {
@@ -107,6 +118,13 @@ const asPlainText = ( value ) => {
  * @return {{title: string, status: string, detail: string}} Error fields.
  */
 const readChefsError = ( payload ) => {
+    /*
+     * CHEFS errors use title, status, and detail. The web component may send
+     * that object, wrap it as { error: { title, status, detail } }, or — most
+     * often — only { error: "detail string" } after it has already pulled
+     * json.detail. Map all three onto the same three fields. Prefer detail,
+     * then message, then a string error field.
+     */
     if ( ! payload || 'object' !== typeof payload ) {
         return { title: '', status: '', detail: asPlainText( payload ) };
     }
@@ -143,6 +161,11 @@ const readChefsError = ( payload ) => {
  * @param {HTMLElement} root Block wrapper.
  */
 const clearChefsError = ( root ) => {
+    /*
+     * Only remove banners that are direct children of this block. A second
+     * form on the page keeps its own message. A load-error paragraph inside
+     * the mount is also left alone.
+     */
     root.querySelectorAll( ':scope > .bcew-chefs-form__error' ).forEach(
         ( node ) => {
             node.remove();
@@ -159,6 +182,11 @@ const clearChefsError = ( root ) => {
  * @param {Object}      error Error fields (title, status, detail).
  */
 const showChefsError = ( root, error ) => {
+    /*
+     * Skip an empty payload so we do not insert a blank alert. Heading is
+     * "title - status" when those fields exist. Place the banner above the
+     * form so the visitor can read it and try again.
+     */
     if ( ! error.title && ! error.status && ! error.detail ) {
         return;
     }
@@ -211,6 +239,11 @@ const GENERIC_SUCCESS_MESSAGE = 'Your form has been submitted successfully';
  * @param {string|null} customMessage Custom confirmation from embed-config.
  */
 const showSuccess = ( mount, customMessage ) => {
+    /*
+     * Success replaces the form. Clear any CHEFS error banner first.
+     * Heading is always "Success". The paragraph is the custom confirmation
+     * from Settings, or the generic sentence when none is saved.
+     */
     if ( mount.parentElement ) {
         clearChefsError( mount.parentElement );
     }
@@ -250,6 +283,11 @@ const mountChefsForm = async ( root ) => {
     }
 
     try {
+        /*
+         * Fetch a short-lived token and any custom confirmation, then create
+         * the CHEFS web component. We draw success and error ourselves, so
+         * turn off CHEFS auto-reload after submit.
+         */
         const config = await fetchEmbedConfig( formId );
         await ensureChefsFormViewerDefined( config.baseUrl );
 
@@ -257,9 +295,12 @@ const mountChefsForm = async ( root ) => {
         viewer.setAttribute( 'form-id', formId );
         viewer.setAttribute( 'auth-token', config.token );
         viewer.setAttribute( 'base-url', config.baseUrl );
-        // Host shows its own success UI; skip CHEFS read-only auto-reload.
         viewer.setAttribute( 'auto-reload-on-submit', 'false' );
 
+        /*
+         * Submit success and CHEFS HTTP errors are separate events. Success
+         * replaces the form. A CHEFS error is shown above it and the form stays.
+         */
         viewer.addEventListener( 'formio:submitDone', () => {
             showSuccess( mount, config.confirmation );
         } );
@@ -275,10 +316,19 @@ const mountChefsForm = async ( root ) => {
             await viewer.load();
         }
     } catch ( error ) {
+        /*
+         * Embed-config or the viewer script failed. There is no form to keep,
+         * so replace the mount with a single error paragraph.
+         */
         showError( mount, error?.message || 'Unable to load the CHEFS form.' );
     }
 };
 
+/*
+ * Each CHEFS Form block on the published page is mounted on its own. The
+ * two selectors cover the class WordPress adds on the wrapper and our own
+ * class on the same element.
+ */
 const roots = document.querySelectorAll(
     '.wp-block-bcew-chefs-embed-chefs-form[data-form-id], .bcew-chefs-form[data-form-id]'
 );
