@@ -57,6 +57,7 @@ function packageDocsSection(
             }
           : { text: name, link: `/content/${dirName}/${name}/` }
       ];
+  });
 
   return {
     text: sectionTitle,
