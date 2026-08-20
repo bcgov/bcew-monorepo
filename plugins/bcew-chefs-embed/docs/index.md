@@ -10,23 +10,24 @@ Plugin block reference for blocks provided by `bcew-chefs-embed`.
 ## Plugin Instructions
 
 1. Install and activate the `bcew-chefs-embed` plugin in WordPress.
-2. Ensure plugin assets are built so blocks are registered (`build/` output must exist).
+2. From the monorepo root, build plugin assets so blocks are registered (`build/` output must exist): `npx nx run bcew-chefs-embed:build`.
 3. In the editor, insert blocks using the block inserter and search for the block name.
 4. Configure block settings in the sidebar and publish/update the page.
 
 ## Local Development
 
-This plugin includes its own `.wp-env.json`, and the recommended way to start it in this monorepo is via Nx targets.
+This plugin includes its own `.wp-env.json`. Run the following commands from the monorepo root.
 
-    # from the monorepo root
-    pnpm install
-    npx nx run bcew-chefs-embed:wp-env-start
+```bash
+pnpm install
+npx nx run bcew-chefs-embed:wp-env-start
+```
 
-Notes:
+All commands below run from the monorepo root:
 
-- Run `pnpm build` at least once if blocks do not appear in the inserter.
-- Use `pnpm wp-env-stop` from the monorepo root (or `npx nx wp-env-stop` in this directory) to stop the local environment.
-- Use `pnpm wp-env clean` to reset the local WordPress instance.
+- Build assets if blocks do not appear in the inserter: `npx nx run bcew-chefs-embed:build`
+- Stop the local environment: `npx nx run bcew-chefs-embed:wp-env-stop`
+- Reset the local WordPress instance: `npx nx run bcew-chefs-embed:wp-env-clean`
 
 ## Blocks
 
@@ -45,4 +46,4 @@ Admin-focused setup and content authoring guidance is available in [User Docs](.
 
 ## Developer Docs
 
-Technical implementation details, architecture notes, and development workflows are available in [Developer Docs](./developer-docs).
+A work-in-progress developer guide is available in [Developer Docs](./developer-docs).
