@@ -16,13 +16,11 @@ Plugin block reference for blocks provided by `bcew-chefs-embed`.
 
 ## Local Development
 
-This plugin includes its own `.wp-env.json`, so you can run WordPress from the plugin directory.
+This plugin includes its own `.wp-env.json`, and the recommended way to start it in this monorepo is via Nx targets.
 
-```bash
-cd plugins/bcew-chefs-embed
-pnpm install
-pnpm wp-env start
-```
+    # from the monorepo root
+    pnpm install
+    npx nx run bcew-chefs-embed:wp-env-start
 
 Notes:
 
