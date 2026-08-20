@@ -5,7 +5,7 @@ This guide explains how site administrators can add and manage CHEFS forms for u
 ## CHEFS references
 
 - CHEFS service portal: <https://submit.digital.gov.bc.ca/app>
-- Use your organization CHEFS documentation and onboarding materials to:
+- Use your organization's CHEFS documentation and onboarding materials to:
     - create a form
     - find the Form ID
     - generate or retrieve the API key
