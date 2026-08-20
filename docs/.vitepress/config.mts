@@ -30,28 +30,33 @@ function packageDocsSection(
         return [];
       }
 
-      if (dirName === 'plugins' && name === 'bcew-chefs-embed') {
-        return [
-          {
-            text: name,
-            link: `/content/${dirName}/${name}/`,
-            collapsed: false,
-            items: [
-              {
-                text: 'User Docs',
-                link: `/content/${dirName}/${name}/user-docs`
-              },
-              {
-                text: 'Developer Docs',
-                link: `/content/${dirName}/${name}/developer-docs`
-              }
-            ]
-          }
-        ];
+      const docsDir = resolve(baseDir, name, 'docs');
+      const nestedItems: Array<{ text: string; link: string }> = [];
+
+      if (existsSync(resolve(docsDir, 'user-docs.md'))) {
+        nestedItems.push({
+          text: 'User Docs',
+          link: `/content/${dirName}/${name}/user-docs`
+        });
       }
 
-      return [{ text: name, link: `/content/${dirName}/${name}/` }];
-    });
+      if (existsSync(resolve(docsDir, 'developer-docs.md'))) {
+        nestedItems.push({
+          text: 'Developer Docs',
+          link: `/content/${dirName}/${name}/developer-docs`
+        });
+      }
+
+      return [
+        nestedItems.length > 0
+          ? {
+              text: name,
+              link: `/content/${dirName}/${name}/`,
+              collapsed: false,
+              items: nestedItems
+            }
+          : { text: name, link: `/content/${dirName}/${name}/` }
+      ];
 
   return {
     text: sectionTitle,
