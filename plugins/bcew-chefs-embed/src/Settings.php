@@ -38,7 +38,17 @@ class Settings {
 	const GENERIC_SUCCESS_BODY = 'Your form has been submitted successfully';
 
 	/**
-	 * Register admin hooks (form POST handlers + plugin row links).
+	 * Public documentation URL for this plugin.
+	 */
+	const DOCUMENTATION_URL = 'https://bcgov.github.io/bcew-monorepo/docs/content/plugins/bcew-chefs-embed/';
+
+	/**
+	 * Admin submenu slug for the Documentation entry.
+	 */
+	const DOCUMENTATION_SUBMENU_SLUG = 'bcew-chefs-embed-documentation';
+
+	/**
+	 * Register admin hooks (form handlers + admin links behavior).
 	 *
 	 * Menu registration is separate (see register_menu) so it can run on admin_menu.
 	 *
@@ -55,21 +65,28 @@ class Settings {
 			'plugin_action_links_' . plugin_basename( dirname( __DIR__ ) . '/bcew-chefs-embed.php' ),
 			array( $this, 'add_plugin_action_links' )
 		);
+		add_filter( 'allowed_redirect_hosts', array( $this, 'allow_documentation_redirect_host' ) );
+		add_action( 'admin_footer', array( $this, 'decorate_documentation_submenu_link' ) );
 	}
 
 	/**
-	 * Add Settings link to the plugin row on Plugins screen.
+	 * Add Settings and Documentation links to the plugin row on Plugins screen.
 	 *
 	 * @param array $links Existing plugin action links.
 	 * @return array
 	 */
 	public function add_plugin_action_links( array $links ) {
-		$settings_link = sprintf(
+		$settings_link      = sprintf(
 			'<a href="%s">%s</a>',
 			esc_url( self::get_page_url() ),
 			esc_html__( 'Settings', 'bcew-chefs-embed' )
 		);
-		array_unshift( $links, $settings_link );
+		$documentation_link = sprintf(
+			'<a href="%s">%s</a>',
+			esc_url( self::get_documentation_url() ),
+			esc_html__( 'Documentation', 'bcew-chefs-embed' )
+		);
+		array_unshift( $links, $settings_link, $documentation_link );
 		return $links;
 	}
 
@@ -90,6 +107,85 @@ class Settings {
 			'dashicons-feedback',
 			58
 		);
+
+		add_submenu_page(
+			self::PAGE_SLUG,
+			__( 'CHEFS Settings', 'bcew-chefs-embed' ),
+			__( 'Settings', 'bcew-chefs-embed' ),
+			'manage_options',
+			self::PAGE_SLUG,
+			array( $this, 'render_page' )
+		);
+
+		add_submenu_page(
+			self::PAGE_SLUG,
+			__( 'Documentation', 'bcew-chefs-embed' ),
+			__( 'Documentation', 'bcew-chefs-embed' ),
+			'manage_options',
+			self::DOCUMENTATION_SUBMENU_SLUG,
+			array( $this, 'render_documentation_page' )
+		);
+	}
+
+	/**
+	 * Render the Documentation submenu page.
+	 *
+	 * Fallback: if JS link decoration does not run, opening this submenu
+	 * still redirects to the public documentation URL.
+	 *
+	 * @return void
+	 */
+	public function render_documentation_page() {
+		wp_safe_redirect( self::get_documentation_url() );
+		exit;
+	}
+
+	/**
+	 * Make the Documentation submenu open the public docs in a new tab.
+	 *
+	 * @return void
+	 */
+	public function decorate_documentation_submenu_link() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+		?>
+		<script>
+			(function() {
+				const docsLink = document.querySelector(
+					'#toplevel_page_<?php echo esc_js( self::PAGE_SLUG ); ?> a[href*="page=<?php echo esc_js( self::DOCUMENTATION_SUBMENU_SLUG ); ?>"]'
+				);
+
+				if ( ! docsLink ) {
+					return;
+				}
+
+				docsLink.setAttribute( 'href', '<?php echo esc_js( self::get_documentation_url() ); ?>' );
+				docsLink.setAttribute( 'target', '_blank' );
+				docsLink.setAttribute( 'rel', 'noopener noreferrer' );
+			})();
+		</script>
+		<?php
+	}
+
+	/**
+	 * Allow safe redirects to the configured public documentation host.
+	 *
+	 * @param array $hosts Allowed redirect hosts.
+	 * @return array
+	 */
+	public function allow_documentation_redirect_host( array $hosts ) {
+		$documentation_host = wp_parse_url( self::get_documentation_url(), PHP_URL_HOST );
+
+		if ( ! is_string( $documentation_host ) || '' === $documentation_host ) {
+			return $hosts;
+		}
+
+		if ( ! in_array( $documentation_host, $hosts, true ) ) {
+			$hosts[] = $documentation_host;
+		}
+
+		return $hosts;
 	}
 
 	/**
@@ -112,6 +208,9 @@ class Settings {
 			<h1><?php esc_html_e( 'CHEFS Settings', 'bcew-chefs-embed' ); ?></h1>
 			<p class="description">
 				<?php esc_html_e( 'Form IDs are stored for block lookup. API keys are stored in the database and are not shown again after save.', 'bcew-chefs-embed' ); ?>
+			</p>
+			<p class="description">
+				<?php esc_html_e( 'For information and help please view the ', 'bcew-chefs-embed' ); ?><a href="<?php echo esc_url( self::get_documentation_url() ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'documentation', 'bcew-chefs-embed' ); ?></a>.
 			</p>
 
 			<?php // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only redirect status flag. ?>
@@ -385,5 +484,14 @@ class Settings {
 	 */
 	public static function get_page_url() {
 		return admin_url( 'admin.php?page=' . self::PAGE_SLUG );
+	}
+
+	/**
+	 * Get the public documentation URL for the CHEFS plugin.
+	 *
+	 * @return string
+	 */
+	public static function get_documentation_url() {
+		return self::DOCUMENTATION_URL;
 	}
 }

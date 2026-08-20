@@ -16,12 +16,22 @@
 
 $form_id = isset( $attributes['formId'] ) ? sanitize_text_field( (string) $attributes['formId'] ) : '';
 
-$wrapper_attributes = get_block_wrapper_attributes(
-	array(
-		'class'        => 'bcew-chefs-form',
-		'data-form-id' => $form_id,
-	)
+$wrapper_args = array(
+	'class'        => 'bcew-chefs-form',
+	'data-form-id' => $form_id,
 );
+
+// Some tests load this template directly (without a WP_Block context), so
+// fall back to a safe manual wrapper when block supports are unavailable.
+if ( isset( $block ) && $block instanceof \WP_Block ) {
+	$wrapper_attributes = get_block_wrapper_attributes( $wrapper_args );
+} else {
+	$wrapper_attributes = sprintf(
+		'class="%s" data-form-id="%s"',
+		esc_attr( $wrapper_args['class'] ),
+		esc_attr( $wrapper_args['data-form-id'] )
+	);
+}
 ?>
 <div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() is escaped. ?>>
 	<?php if ( '' === $form_id ) : ?>
