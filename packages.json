@@ -362,6 +362,40 @@
                     "reference": "bcew-ticorp/v1.0.0-alpha.1"
                 }
             }
+        },
+        "bcgov-plugin/bcew-document-repository": {
+            "1.2.0-alpha.1": {
+                "name": "bcgov-plugin/bcew-document-repository",
+                "description": "BCEW Document Repository",
+                "type": "wordpress-plugin",
+                "license": "Apache-2.0",
+                "autoload": {
+                    "psr-4": {
+                        "Bcgov\\Bcew\\DocumentRepository\\": "src/"
+                    }
+                },
+                "autoload-dev": {
+                    "psr-4": {
+                        "Bcgov\\Bcew\\DocumentRepository\\Tests\\": "tests/"
+                    }
+                },
+                "config": {
+                    "platform": {
+                        "php": "7.4.30"
+                    }
+                },
+                "version": "1.2.0-alpha.1",
+                "dist": {
+                    "url": "https://github.com/bcgov/bcew-monorepo/releases/download/bcew-document-repository/v1.2.0-alpha.1/bcew-document-repository-1.2.0-alpha.1.zip",
+                    "type": "zip",
+                    "reference": "bcew-document-repository/v1.2.0-alpha.1"
+                },
+                "source": {
+                    "type": "git",
+                    "url": "https://github.com/bcgov/bcew-monorepo.git",
+                    "reference": "bcew-document-repository/v1.2.0-alpha.1"
+                }
+            }
         }
     }
 }
