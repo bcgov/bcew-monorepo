@@ -240,6 +240,58 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Plugin action links include Settings and Documentation entries.
+	 *
+	 * @return void
+	 */
+	public function test_plugin_action_links_include_settings_and_documentation() {
+		$settings = new \Bcgov\BcewChefsEmbed\Settings();
+		$links    = $settings->add_plugin_action_links( array() );
+
+		$this->assertCount( 2, $links, 'Settings and Documentation links should be prepended.' );
+		$this->assertStringContainsString( 'Settings', $links[0] );
+		$this->assertStringContainsString( \Bcgov\BcewChefsEmbed\Settings::get_page_url(), $links[0] );
+		$this->assertStringContainsString( 'Documentation', $links[1] );
+		$this->assertStringContainsString( \Bcgov\BcewChefsEmbed\Settings::DOCUMENTATION_URL, $links[1] );
+	}
+
+	/**
+	 * Settings page renders the documentation helper sentence and link.
+	 *
+	 * @return void
+	 */
+	public function test_settings_page_renders_documentation_help_link() {
+		ob_start();
+		( new \Bcgov\BcewChefsEmbed\Settings() )->render_page();
+		$html = ob_get_clean();
+
+		$this->assertStringContainsString( 'For information and help please view the', $html );
+		$this->assertStringContainsString( 'documentation', $html );
+		$this->assertStringContainsString( 'href="' . esc_url( \Bcgov\BcewChefsEmbed\Settings::DOCUMENTATION_URL ) . '"', $html );
+		$this->assertStringNotContainsString( 'target="_blank"', $html );
+	}
+
+	/**
+	 * Registering the admin menu adds Settings and Documentation submenu items.
+	 *
+	 * @return void
+	 */
+	public function test_register_menu_adds_settings_and_documentation_submenus() {
+		global $submenu;
+
+		$submenu = array();
+
+		$settings = new \Bcgov\BcewChefsEmbed\Settings();
+		$settings->register_menu();
+
+		$this->assertArrayHasKey( \Bcgov\BcewChefsEmbed\Settings::PAGE_SLUG, $submenu );
+
+		$submenu_titles = array_column( $submenu[ \Bcgov\BcewChefsEmbed\Settings::PAGE_SLUG ], 0 );
+		$this->assertContains( 'Settings', $submenu_titles );
+		$this->assertContains( 'CHEFS Documentation', $submenu_titles );
+	}
+
+	/**
 	 * Settings page shows a Remove action that posts to admin_post_bcew_chefs_delete.
 	 *
 	 * Acceptance: Each saved form on the settings page has a remove action.

@@ -38,7 +38,12 @@ class Settings {
 	const GENERIC_SUCCESS_BODY = 'Your form has been submitted successfully';
 
 	/**
-	 * Register admin hooks (form POST handlers + plugin row links).
+	 * Public documentation URL for this plugin.
+	 */
+	const DOCUMENTATION_URL = 'https://bcgov.github.io/bcew-monorepo/docs/content/plugins/bcew-chefs-embed/';
+
+	/**
+	 * Register admin hooks (form handlers + admin links behavior).
 	 *
 	 * Menu registration is separate (see register_menu) so it can run on admin_menu.
 	 *
@@ -58,18 +63,23 @@ class Settings {
 	}
 
 	/**
-	 * Add Settings link to the plugin row on Plugins screen.
+	 * Add Settings and Documentation links to the plugin row on Plugins screen.
 	 *
 	 * @param array $links Existing plugin action links.
 	 * @return array
 	 */
 	public function add_plugin_action_links( array $links ) {
-		$settings_link = sprintf(
+		$settings_link      = sprintf(
 			'<a href="%s">%s</a>',
 			esc_url( self::get_page_url() ),
 			esc_html__( 'Settings', 'bcew-chefs-embed' )
 		);
-		array_unshift( $links, $settings_link );
+		$documentation_link = sprintf(
+			'<a href="%s">%s</a>',
+			esc_url( self::DOCUMENTATION_URL ),
+			esc_html__( 'Documentation', 'bcew-chefs-embed' )
+		);
+		array_unshift( $links, $settings_link, $documentation_link );
 		return $links;
 	}
 
@@ -89,6 +99,23 @@ class Settings {
 			array( $this, 'render_page' ),
 			'dashicons-feedback',
 			58
+		);
+
+		add_submenu_page(
+			self::PAGE_SLUG,
+			__( 'CHEFS Settings', 'bcew-chefs-embed' ),
+			__( 'Settings', 'bcew-chefs-embed' ),
+			'manage_options',
+			self::PAGE_SLUG,
+			array( $this, 'render_page' )
+		);
+
+		add_submenu_page(
+			self::PAGE_SLUG,
+			__( 'CHEFS Documentation', 'bcew-chefs-embed' ),
+			__( 'CHEFS Documentation', 'bcew-chefs-embed' ),
+			'manage_options',
+			self::DOCUMENTATION_URL
 		);
 	}
 
@@ -112,6 +139,9 @@ class Settings {
 			<h1><?php esc_html_e( 'CHEFS Settings', 'bcew-chefs-embed' ); ?></h1>
 			<p class="description">
 				<?php esc_html_e( 'Form IDs are stored for block lookup. API keys are stored in the database and are not shown again after save.', 'bcew-chefs-embed' ); ?>
+			</p>
+			<p class="description">
+				<?php esc_html_e( 'For information and help please view the ', 'bcew-chefs-embed' ); ?><a href="<?php echo esc_url( self::DOCUMENTATION_URL ); ?>"><?php esc_html_e( 'documentation', 'bcew-chefs-embed' ); ?></a>.
 			</p>
 
 			<?php // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only redirect status flag. ?>
