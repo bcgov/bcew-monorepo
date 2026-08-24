@@ -44,7 +44,7 @@ The Configured Forms table shows:
 
 Note: API keys are not shown after save.
 
-### Delete
+### Remove
 
 Use Remove form in the Configured Forms table.
 
