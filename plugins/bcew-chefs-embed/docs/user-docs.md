@@ -34,7 +34,7 @@ Result:
 - The form is added to the Configured Forms list.
 - The Form ID becomes available in the CHEFS Form block options.
 
-### Read
+### View
 
 The Configured Forms table shows:
 
