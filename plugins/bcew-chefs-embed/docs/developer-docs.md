@@ -59,7 +59,11 @@ The API key and runtime token are never block attributes.
 
 ### Editor flow
 
-`src/chefs-form/edit.js` loads saved Form IDs from the `form-ids` REST route and displays them in the block sidebar. Selecting a Form ID updates the `formId` attribute. If an administrator deletes a previously selected form, the editor clears the stale selection.
+1. `src/chefs-form/edit.js` requests the saved Form IDs from the `form-ids` REST route.
+2. The Form IDs are displayed in the block sidebar.
+3. Selecting a Form ID updates the persisted `formId` attribute.
+4. If the selected Form ID is deleted by an administrator, the editor clears the stale selection.
+5. The editor preview uses the runtime configuration endpoint and CHEFS viewer used by the published block.
 
 The editor preview is provided by `src/chefs-form/components/chefs-form-preview.js`. It uses the same runtime configuration endpoint as the published block and loads the CHEFS viewer through `src/chefs-form/utils/ensure-chefs-form-viewer.js`.
 
