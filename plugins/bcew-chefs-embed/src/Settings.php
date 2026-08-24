@@ -117,14 +117,12 @@ class Settings {
 			array( $this, 'render_page' )
 		);
 
-		add_submenu_page(
-			self::PAGE_SLUG,
-			__( 'Documentation', 'bcew-chefs-embed' ),
-			__( 'Documentation', 'bcew-chefs-embed' ),
-			'manage_options',
-			self::DOCUMENTATION_SUBMENU_SLUG,
-			array( $this, 'render_documentation_page' )
-		);
+        global $submenu;
+        $submenu['bcew-chefs-embed-settings'][] = array(
+            'CHEFS Documentation',
+            'manage_options',
+            'https://bcgov.github.io/bcew-monorepo/docs/content/plugins/bcew-chefs-embed/'
+        );
 	}
 
 	/**
