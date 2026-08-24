@@ -7,7 +7,7 @@ Plugin block reference for blocks provided by `bcew-chefs-embed`.
 - This section documents block behavior and content authoring expectations.
 - Monorepo operational workflows are documented in central docs.
 
-## Plugin Instructions
+## Getting Started
 
 1. Install and activate the `bcew-chefs-embed` plugin in WordPress.
 2. From the monorepo root, build plugin assets so blocks are registered (`build/` output must exist): `npx nx run bcew-chefs-embed:build`.
