@@ -29,6 +29,7 @@ npx nx run bcew-chefs-embed:wp-env-start
 ```
 
 The local site is available at `http://localhost:9012`. WordPress Admin is available at `http://localhost:9012/wp-admin`. The CHEFS settings page is available at `http://localhost:9012/wp-admin/admin.php?page=bcew-chefs-embed-settings`.
+The test environment uses port `9013` and is used by the Playwright targets. It is separate from the normal development site on port `9012`.
 
 The `wp-env` lifecycle script activates the plugin after the environment starts. Build the assets again after changing block JavaScript, styles, or metadata.
 
