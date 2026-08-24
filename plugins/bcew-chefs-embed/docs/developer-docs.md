@@ -147,7 +147,8 @@ Use `test-screenshot-generate` when updating approved screenshot baselines. The 
 5. Confirm the saved Form ID appears in the block sidebar.
 6. Select the Form ID and confirm the editor preview loads when valid CHEFS credentials and network access are available.
 7. Publish the post and open it as an anonymous visitor.
-8. Confirm the form loads through embed-config. Verify that the CHEFS API key is not present in the page source, frontend code, or REST response. The REST response may contain the short-lived token used to load the form.
+8. Confirm the form loads through `embed-config`.
+9. Verify that the CHEFS API key is not present in the page source, frontend code, or REST response. The REST response may contain the short-lived token used to load the form.
 
 The local WordPress environment can be started without live CHEFS credentials, but loading and submitting a real form requires valid credentials and access to the CHEFS service.
 
