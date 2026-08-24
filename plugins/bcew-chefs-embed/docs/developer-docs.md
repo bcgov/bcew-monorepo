@@ -39,7 +39,6 @@ npx nx run bcew-chefs-embed:wp-env-stop
 npx nx run bcew-chefs-embed:wp-env-clean
 ```
 
-The test environment uses port `9013` and is used by the Playwright targets. It is separate from the normal development site on port `9012`.
 
 ## Block architecture
 
