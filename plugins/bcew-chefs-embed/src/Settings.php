@@ -43,11 +43,6 @@ class Settings {
 	const DOCUMENTATION_URL = 'https://bcgov.github.io/bcew-monorepo/docs/content/plugins/bcew-chefs-embed/';
 
 	/**
-	 * Admin submenu slug for the Documentation entry.
-	 */
-	const DOCUMENTATION_SUBMENU_SLUG = 'bcew-chefs-embed-documentation';
-
-	/**
 	 * Register admin hooks (form handlers + admin links behavior).
 	 *
 	 * Menu registration is separate (see register_menu) so it can run on admin_menu.
@@ -65,8 +60,6 @@ class Settings {
 			'plugin_action_links_' . plugin_basename( dirname( __DIR__ ) . '/bcew-chefs-embed.php' ),
 			array( $this, 'add_plugin_action_links' )
 		);
-		add_filter( 'allowed_redirect_hosts', array( $this, 'allow_documentation_redirect_host' ) );
-		add_action( 'admin_footer', array( $this, 'decorate_documentation_submenu_link' ) );
 	}
 
 	/**
@@ -83,7 +76,7 @@ class Settings {
 		);
 		$documentation_link = sprintf(
 			'<a href="%s">%s</a>',
-			esc_url( self::get_documentation_url() ),
+			esc_url( self::DOCUMENTATION_URL ),
 			esc_html__( 'Documentation', 'bcew-chefs-embed' )
 		);
 		array_unshift( $links, $settings_link, $documentation_link );
@@ -117,73 +110,13 @@ class Settings {
 			array( $this, 'render_page' )
 		);
 
-        global $submenu;
-        $submenu['bcew-chefs-embed-settings'][] = array(
-            'CHEFS Documentation',
-            'manage_options',
-            'https://bcgov.github.io/bcew-monorepo/docs/content/plugins/bcew-chefs-embed/'
-        );
-	}
-
-	/**
-	 * Render the Documentation submenu page.
-	 *
-	 * Fallback: if JS link decoration does not run, opening this submenu
-	 * still redirects to the public documentation URL.
-	 *
-	 * @return void
-	 */
-	public function render_documentation_page() {
-		wp_safe_redirect( self::get_documentation_url() );
-		exit;
-	}
-
-	/**
-	 * Make the Documentation submenu open the public docs in a new tab.
-	 *
-	 * @return void
-	 */
-	public function decorate_documentation_submenu_link() {
-		if ( ! current_user_can( 'manage_options' ) ) {
-			return;
-		}
-		?>
-		<script>
-			(function() {
-				const docsLink = document.querySelector(
-					'#toplevel_page_<?php echo esc_js( self::PAGE_SLUG ); ?> a[href*="page=<?php echo esc_js( self::DOCUMENTATION_SUBMENU_SLUG ); ?>"]'
-				);
-
-				if ( ! docsLink ) {
-					return;
-				}
-
-				docsLink.setAttribute( 'href', '<?php echo esc_js( self::get_documentation_url() ); ?>' );
-				docsLink.setAttribute( 'target', '_blank' );
-				docsLink.setAttribute( 'rel', 'noopener noreferrer' );
-			})();
-		</script>
-		<?php
-	}
-
-	/**
-	 * Allow safe redirects to the configured public documentation host.
-	 *
-	 * @param array $hosts Allowed redirect hosts.
-	 * @return array
-	 */
-	public function allow_documentation_redirect_host( array $hosts ) {
-		$documentation_host = wp_parse_url( self::get_documentation_url(), PHP_URL_HOST );
-
-		if ( ! is_string( $documentation_host ) || '' === $documentation_host ) {
-			return $hosts;
-		}
-
-		if ( ! in_array( $documentation_host, $hosts, true ) ) {
-			$hosts[] = $documentation_host;
-		}
-
-		return $hosts;
+		add_submenu_page(
+			self::PAGE_SLUG,
+			__( 'CHEFS Documentation', 'bcew-chefs-embed' ),
+			__( 'CHEFS Documentation', 'bcew-chefs-embed' ),
+			'manage_options',
+			self::DOCUMENTATION_URL
+		);
 	}
 
 	/**
@@ -208,7 +141,7 @@ class Settings {
 				<?php esc_html_e( 'Form IDs are stored for block lookup. API keys are stored in the database and are not shown again after save.', 'bcew-chefs-embed' ); ?>
 			</p>
 			<p class="description">
-				<?php esc_html_e( 'For information and help please view the ', 'bcew-chefs-embed' ); ?><a href="<?php echo esc_url( self::get_documentation_url() ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'documentation', 'bcew-chefs-embed' ); ?></a>.
+				<?php esc_html_e( 'For information and help please view the ', 'bcew-chefs-embed' ); ?><a href="<?php echo esc_url( self::DOCUMENTATION_URL ); ?>"><?php esc_html_e( 'documentation', 'bcew-chefs-embed' ); ?></a>.
 			</p>
 
 			<?php // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only redirect status flag. ?>
@@ -482,14 +415,5 @@ class Settings {
 	 */
 	public static function get_page_url() {
 		return admin_url( 'admin.php?page=' . self::PAGE_SLUG );
-	}
-
-	/**
-	 * Get the public documentation URL for the CHEFS plugin.
-	 *
-	 * @return string
-	 */
-	public static function get_documentation_url() {
-		return self::DOCUMENTATION_URL;
 	}
 }

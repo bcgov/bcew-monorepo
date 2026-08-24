@@ -19,6 +19,8 @@
 	<exclude-pattern>*/build/*</exclude-pattern>
 	<exclude-pattern>*/dist/*</exclude-pattern>
 	<exclude-pattern>*/coverage/*</exclude-pattern>
+	<exclude-pattern>*/artifacts/*</exclude-pattern>
+	<exclude-pattern>*/test-results/*</exclude-pattern>
 	<exclude-pattern>*/tests/_*</exclude-pattern>
     <exclude-pattern>packages/phpunit-config/integration-test-bootstrap.php</exclude-pattern>
 	<exclude-pattern>tools/monorepo/src/generators/*</exclude-pattern>

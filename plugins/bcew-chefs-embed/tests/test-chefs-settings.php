@@ -252,7 +252,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		$this->assertStringContainsString( 'Settings', $links[0] );
 		$this->assertStringContainsString( \Bcgov\BcewChefsEmbed\Settings::get_page_url(), $links[0] );
 		$this->assertStringContainsString( 'Documentation', $links[1] );
-		$this->assertStringContainsString( \Bcgov\BcewChefsEmbed\Settings::get_documentation_url(), $links[1] );
+		$this->assertStringContainsString( \Bcgov\BcewChefsEmbed\Settings::DOCUMENTATION_URL, $links[1] );
 	}
 
 	/**
@@ -267,8 +267,8 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 
 		$this->assertStringContainsString( 'For information and help please view the', $html );
 		$this->assertStringContainsString( 'documentation', $html );
-		$this->assertStringContainsString( 'href="' . esc_url( \Bcgov\BcewChefsEmbed\Settings::get_documentation_url() ) . '"', $html );
-		$this->assertStringContainsString( 'target="_blank"', $html );
+		$this->assertStringContainsString( 'href="' . esc_url( \Bcgov\BcewChefsEmbed\Settings::DOCUMENTATION_URL ) . '"', $html );
+		$this->assertStringNotContainsString( 'target="_blank"', $html );
 	}
 
 	/**
@@ -288,25 +288,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 
 		$submenu_titles = array_column( $submenu[ \Bcgov\BcewChefsEmbed\Settings::PAGE_SLUG ], 0 );
 		$this->assertContains( 'Settings', $submenu_titles );
-		$this->assertContains( 'Documentation', $submenu_titles );
-	}
-
-	/**
-	 * Documentation submenu callback redirects to the public docs URL.
-	 *
-	 * @return void
-	 */
-	public function test_render_documentation_page_redirects_to_docs_url() {
-		$settings = new \Bcgov\BcewChefsEmbed\Settings();
-		$settings->init();
-
-		$location = $this->capture_settings_redirect(
-			static function () use ( $settings ) {
-				$settings->render_documentation_page();
-			}
-		);
-
-		$this->assertSame( \Bcgov\BcewChefsEmbed\Settings::get_documentation_url(), $location );
+		$this->assertContains( 'CHEFS Documentation', $submenu_titles );
 	}
 
 	/**
