@@ -12,6 +12,7 @@ on:
           - bcew-theme-2
           - bcew-ticorp
           - bcew-document-repository
+          - bcew-chefs-embed
       version:
         description: 'Version to release (for example: 1.2.3)'
         required: true
