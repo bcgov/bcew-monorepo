@@ -4,7 +4,12 @@ import { defineConfig } from 'vitepress';
 
 type Section = {
   text: string;
-  items: Array<{ text: string; link: string }>;
+  items: Array<{
+    text: string;
+    link?: string;
+    collapsed?: boolean;
+    items?: Array<{ text: string; link: string }>;
+  }>;
 };
 
 const repoRoot = resolve(__dirname, '..', '..');
@@ -19,16 +24,40 @@ function packageDocsSection(
     .map((entry) => entry.name)
     .sort((a, b) => a.localeCompare(b));
 
-  const items = entries
-    .map((name) => {
+  const items = entries.flatMap((name) => {
       const docsIndex = resolve(baseDir, name, 'docs', 'index.md');
       if (!existsSync(docsIndex)) {
-        return null;
+        return [];
       }
 
-      return { text: name, link: `/content/${dirName}/${name}/` };
-    })
-    .filter((item): item is { text: string; link: string } => item !== null);
+      const docsDir = resolve(baseDir, name, 'docs');
+      const nestedItems: Array<{ text: string; link: string }> = [];
+
+      if (existsSync(resolve(docsDir, 'user-docs.md'))) {
+        nestedItems.push({
+          text: 'User Docs',
+          link: `/content/${dirName}/${name}/user-docs`
+        });
+      }
+
+      if (existsSync(resolve(docsDir, 'developer-docs.md'))) {
+        nestedItems.push({
+          text: 'Developer Docs',
+          link: `/content/${dirName}/${name}/developer-docs`
+        });
+      }
+
+      return [
+        nestedItems.length > 0
+          ? {
+              text: name,
+              link: `/content/${dirName}/${name}/`,
+              collapsed: false,
+              items: nestedItems
+            }
+          : { text: name, link: `/content/${dirName}/${name}/` }
+      ];
+  });
 
   return {
     text: sectionTitle,
