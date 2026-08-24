@@ -1,6 +1,13 @@
 # User Docs
 
 This guide explains how site administrators can add and manage CHEFS forms for use in WordPress pages and posts.
+## Before you begin
+
+Before configuring a form in WordPress, you will need:
+
+- access to the CHEFS service
+- the Form ID for the form
+- the API key for the form
 
 ## CHEFS references
 
