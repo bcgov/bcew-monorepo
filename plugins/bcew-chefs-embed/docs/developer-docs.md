@@ -106,7 +106,7 @@ The editor preview and published frontend use this route. It is public because a
 3. Sends a server-to-server Basic Authentication request to CHEFS.
 4. Returns the short-lived token, CHEFS base URL, and configured confirmation message.
 
-The API key is not included in the response. A missing or undecryptable Form ID returns `404`; failures contacting CHEFS or invalid CHEFS responses return an error response from the gateway/authentication path.
+The API key is not included in the response. Omitting the required `formId` parameter returns `400`; an unknown or undecryptable Form ID returns `404`. Failures contacting CHEFS or invalid CHEFS responses return an error response from the gateway/authentication path.
 
 The route is registered and handled by `src/EmbedConfigController.php`.
 
