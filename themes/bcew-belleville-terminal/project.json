@@ -21,6 +21,9 @@
         "wp-env-clean": {},
         "wp-env-stop": {}
     },
-    "implicitDependencies": ["packages/phpunit-config/"],
+    "implicitDependencies": [
+        "packages/phpunit-config/",
+        "themes/design-system-wordpress-theme"
+    ],
     "tags": ["type:wp-theme"]
 }
