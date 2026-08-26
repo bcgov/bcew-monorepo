@@ -59,14 +59,24 @@
             "options": {
                 "command": "docker exec playwright sh -c \"cd {projectRoot} && npx wp-scripts test-playwright\""
             },
-            "dependsOn": ["composer-install", "start-playwright", "build", "wp-env-start"]
+            "dependsOn": [
+                "composer-install",
+                "start-playwright",
+                "build",
+                "wp-env-start"
+            ]
         },
         "test-screenshot": {
             "executor": "nx:run-commands",
             "options": {
                 "command": "docker exec playwright sh -c \"cd {projectRoot} && npx wp-scripts test-playwright --config playwright.regression.config.js --update-snapshots none\""
             },
-            "dependsOn": ["composer-install", "start-playwright", "build", "wp-env-start"]
+            "dependsOn": [
+                "composer-install",
+                "start-playwright",
+                "build",
+                "wp-env-start"
+            ]
         },
         "test-screenshot-generate": {
             "executor": "nx:run-commands",
@@ -74,7 +84,12 @@
                 "command": "docker exec playwright sh -c \"cd {projectRoot} && npx wp-scripts test-playwright --config playwright.regression.config.js --update-snapshots all\""
             },
             "parallelism": false,
-            "dependsOn": ["composer-install", "start-playwright", "build", "wp-env-start"]
+            "dependsOn": [
+                "composer-install",
+                "start-playwright",
+                "build",
+                "wp-env-start"
+            ]
         },
         "wp-env-start": {
             "executor": "nx:run-commands",
@@ -119,5 +134,13 @@
         }
     },
     "parallel": 3,
-    "analytics": true
+    "analytics": true,
+    "plugins": [
+        {
+            "plugin": "@nx/playwright/plugin",
+            "options": {
+                "targetName": "e2e"
+            }
+        }
+    ]
 }
