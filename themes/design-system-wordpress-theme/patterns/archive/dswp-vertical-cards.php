@@ -69,10 +69,16 @@
                                 data-id="15259"
                                 >Neque porro quisquam</a
                             >
-                            <span
-                                class="dashicons dashicons-arrow-right-alt2"
-                                
-                            ></span>
+                            <svg
+                                aria-hidden="true"
+                                focusable="false"
+                                width="1em"
+                                height="1em"
+                                viewBox="0 0 20 20"
+                                style="color: var(--dswp-typography-color-link); vertical-align: middle"
+                            >
+                                <path fill="currentColor" d="M6 15l5-5-5-5 1-2 7 7-7 7z" />
+                            </svg>
                         </p>
                         <!-- /wp:paragraph -->
                     </div>
@@ -133,10 +139,16 @@
                                 data-id="15259"
                                 >Neque porro quisquam</a
                             >
-                            <span
-                                class="dashicons dashicons-arrow-right-alt2"
-                                
-                            ></span>
+                            <svg
+                                aria-hidden="true"
+                                focusable="false"
+                                width="1em"
+                                height="1em"
+                                viewBox="0 0 20 20"
+                                style="color: var(--dswp-typography-color-link); vertical-align: middle"
+                            >
+                                <path fill="currentColor" d="M6 15l5-5-5-5 1-2 7 7-7 7z" />
+                            </svg>
                         </p>
                         <!-- /wp:paragraph -->
                     </div>
@@ -197,10 +209,16 @@
                                 data-id="15259"
                                 >Neque porro quisquam</a
                             >
-                            <span
-                                class="dashicons dashicons-arrow-right-alt2"
-                                
-                            ></span>
+                            <svg
+                                aria-hidden="true"
+                                focusable="false"
+                                width="1em"
+                                height="1em"
+                                viewBox="0 0 20 20"
+                                style="color: var(--dswp-typography-color-link); vertical-align: middle"
+                            >
+                                <path fill="currentColor" d="M6 15l5-5-5-5 1-2 7 7-7 7z" />
+                            </svg>
                         </p>
                         <!-- /wp:paragraph -->
                     </div>
@@ -261,10 +279,16 @@
                                 data-id="15259"
                                 >Neque porro quisquam</a
                             >
-                            <span
-                                class="dashicons dashicons-arrow-right-alt2"
-                                
-                            ></span>
+                            <svg
+                                aria-hidden="true"
+                                focusable="false"
+                                width="1em"
+                                height="1em"
+                                viewBox="0 0 20 20"
+                                style="color: var(--dswp-typography-color-link); vertical-align: middle"
+                            >
+                                <path fill="currentColor" d="M6 15l5-5-5-5 1-2 7 7-7 7z" />
+                            </svg>
                         </p>
                         <!-- /wp:paragraph -->
                     </div>
