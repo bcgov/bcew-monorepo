@@ -5,11 +5,19 @@
     "license": "Apache-2.0",
     "repositories": [
         {
+            "type": "path",
+            "url": "../../packages/phpunit-config",
+            "options": {
+                "symlink": false
+            }
+        },
+        {
             "type": "vcs",
             "url": "https://github.com/bcgov/wordpress-utils.git"
         }
     ],
     "require-dev": {
+        "bcew-monorepo/phpunit-config": "@dev",
         "bcgov/wordpress-utils": "2.5.0",
         "yoast/phpunit-polyfills": "^1.0"
     },

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b0cdcfd81d6f4ae6e35c026e01dfe50a",
+    "content-hash": "62c2786e70f199a82adc814546778988",
     "packages": [],
     "packages-dev": [
         {
@@ -54,6 +54,26 @@
                 "source": "https://github.com/antecedent/patchwork/tree/2.2.3"
             },
             "time": "2025-09-17T09:00:56+00:00"
+        },
+        {
+            "name": "bcew-monorepo/phpunit-config",
+            "version": "dev-feature/dswp-1056_import-dswp-theme-history",
+            "dist": {
+                "type": "path",
+                "url": "../../packages/phpunit-config",
+                "reference": "42c86c354e10b722f12baa34414ffcfb9a6d044f"
+            },
+            "type": "library",
+            "authors": [
+                {
+                    "name": "Michael Haswell",
+                    "email": "Michael.Haswell@gov.bc.ca"
+                }
+            ],
+            "transport-options": {
+                "symlink": false,
+                "relative": true
+            }
         },
         {
             "name": "bcgov/wordpress-utils",
@@ -2960,7 +2980,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "bcew-monorepo/phpunit-config": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {},
