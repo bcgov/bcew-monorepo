@@ -3,10 +3,10 @@ import baseConfig from '@wordpress/scripts/config/playwright.config.js';
 
 const config = defineConfig( {
     ...baseConfig,
-    // Run Playwright tests under `tests/` but ignore unit tests
-    // so Jest-style files in `tests/unit` are not executed by Playwright.
-    testDir: 'tests',
-    testIgnore: [ '**/unit/**' ],
+    // Scope regular E2E runs to the dedicated end-to-end suite only.
+    // Screenshot regression tests live under `tests/screenshot` and are
+    // intentionally run by the dedicated regression config instead.
+    testDir: 'tests/e2e',
 } );
 
 export default config;
