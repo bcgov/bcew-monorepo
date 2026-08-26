@@ -4,41 +4,43 @@
 
 ## Development Setup
 
+This theme is developed inside the monorepo checkout, not as a standalone repository.
+
 ```bash
-git clone https://github.com/bcgov/design-system-wordpress-theme.git
-cd design-system-wordpress-theme
+git clone https://github.com/bcgov/bcew-monorepo.git
+cd bcew-monorepo
+pnpm install
 composer install
-npm i
-npm run start
+npx nx run design-system-wordpress-theme:wp-env-start
+npx nx run design-system-wordpress-theme:start
 ```
 
 ## Build
 
 ```bash
-npm run build:production
-composer checklist
+npx nx run design-system-wordpress-theme:build
 ```
 
 ## E2E Testing
 
-This project uses Playwright with `@wordpress/e2e-test-utils-playwright` for end-to-end tests that run against a live WordPress environment. Tests are located in `tests/e2e/`.
+This project uses Playwright with `@wordpress/e2e-test-utils-playwright` for end-to-end tests that run against a live WordPress environment. Tests are located in `themes/design-system-wordpress-theme/tests/e2e/`.
 
 ```bash
-npm run wp-env start # Unless already running
-npm run test:e2e
+npx nx run design-system-wordpress-theme:wp-env-start
+npx nx run design-system-wordpress-theme:test-e2e
 ```
 
 To run a single test file:
 
 ```bash
-npm run wp-env start # Unless already running
-npx playwright test tests/e2e/copyright-shortcode.spec.ts
+npx nx run design-system-wordpress-theme:wp-env-start
+npx playwright test themes/design-system-wordpress-theme/tests/e2e/copyright-shortcode.spec.ts
 ```
 
 To step through each test in headed mode for debugging:
 
 ```bash
-npx playwright test tests/e2e/ --debug
+npx playwright test themes/design-system-wordpress-theme/tests/e2e/ --debug
 ```
 
 ## Visual Regression Testing
@@ -46,19 +48,19 @@ npx playwright test tests/e2e/ --debug
 This project uses Playwright to perform visual regression testing of patterns to help catch unintended changes.
 
 ```bash
-npm run wp-env start # Unless already running
-npm run test:screenshot
+npx nx run design-system-wordpress-theme:wp-env-start
+npx nx run design-system-wordpress-theme:test-screenshot
 ```
 
-**Note**: When creating a new pattern it must be added to `tests/screenshot/patterns.spec.js` in order to be included in regression tests.
+**Note**: When creating a new pattern it must be added to `themes/design-system-wordpress-theme/tests/screenshot/patterns.spec.js` in order to be included in regression tests.
 
 ### Updating Screenshots
 
-The `visual-regression` workflow runs the `update` script and commits changes automatically on pull requests, so it's not necessary to commit any updates made locally to the screenshots, but it can still be useful for local development to see what effects your changes will have.
+The visual-regression workflow runs the update script and commits changes automatically on pull requests, so it's not necessary to commit any updates made locally to the screenshots, but it can still be useful for local development to see what effects your changes will have.
 
 ```bash
-npm run wp-env start # Unless already running
-npm run test:screenshot:update
+npx nx run design-system-wordpress-theme:wp-env-start
+npx nx run design-system-wordpress-theme:test-screenshot-generate
 ```
 
 ## End-to-End (E2E) Testing
@@ -68,8 +70,8 @@ This project uses Playwright for end-to-end testing, which includes theme functi
 ### Run all E2E tests
 
 ```bash
-npm run wp-env start # Unless already running
-npm run test:e2e
+npx nx run design-system-wordpress-theme:wp-env-start
+npx nx run design-system-wordpress-theme:test-e2e
 ```
 
 ### Available E2E tests
@@ -87,8 +89,8 @@ Validates that theme CSS custom properties are properly defined in both standalo
 **Run individually:**
 
 ```bash
-npm run wp-env start # Unless already running
-npx playwright test tests/e2e/css-props.spec.ts
+npx nx run design-system-wordpress-theme:wp-env-start
+npx playwright test themes/design-system-wordpress-theme/tests/e2e/css-props.spec.ts
 ```
 
 If a check fails, the test output will list the missing properties or incorrect values, indicating a potential mismatch between `theme.json` definitions and the compiled CSS or WordPress runtime state.
@@ -100,8 +102,8 @@ Validates that the Hero Image block (cover block with inner content) renders cor
 **Run individually:**
 
 ```bash
-npm run wp-env start # Unless already running
-npx playwright test tests/e2e/hero-variation.spec.ts
+npx nx run design-system-wordpress-theme:wp-env-start
+npx playwright test themes/design-system-wordpress-theme/tests/e2e/hero-variation.spec.ts
 ```
 
 ## Child Themes
