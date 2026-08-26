@@ -1,8 +1,13 @@
 {
-    "core": "WordPress/WordPress#6.8",
+    "core": "WordPress/WordPress#6.7.2",
     "phpVersion": "7.4",
     "themes": [ "." ],
+    "config": {
+        "WP_AUTO_UPDATE_CORE": false
+    },
+    "port": 9014,
+    "testsPort": 9015,
     "lifecycleScripts": {
-        "afterStart": "wp-env run tests-cli wp theme activate design-system-wordpress-theme"
+        "afterStart": "wp-env run cli wp theme activate design-system-wordpress-theme && wp-env run tests-cli wp theme activate design-system-wordpress-theme"
     }
 }

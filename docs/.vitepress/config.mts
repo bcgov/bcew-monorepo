@@ -2,17 +2,150 @@ import { existsSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { defineConfig } from 'vitepress';
 
+type SidebarItem = {
+  text: string;
+  link?: string;
+  collapsed?: boolean;
+  items?: SidebarItem[];
+};
+
 type Section = {
   text: string;
-  items: Array<{
-    text: string;
-    link?: string;
-    collapsed?: boolean;
-    items?: Array<{ text: string; link: string }>;
-  }>;
+  items: SidebarItem[];
 };
 
 const repoRoot = resolve(__dirname, '..', '..');
+
+const packageDisplayNames: Record<string, string> = {
+  'design-system-wordpress-theme': 'Design System WordPress Theme',
+  'bcew-belleville-terminal': 'BCEW Belleville Terminal',
+  'bcew-blocks': 'BCEW Blocks',
+  'bcew-chefs-embed': 'BCEW CHEFS Embed',
+  'bcew-document-repository': 'BCEW Document Repository',
+  'bcew-theme-2': 'BCEW Theme 2',
+  'bcew-ticorp': 'BCEW TI Corp'
+};
+
+const docTitleOverrides: Record<string, string> = {
+  SiteEditor: 'Site Editor',
+  Developers: 'Developers',
+  Patterns: 'Patterns',
+  HowToUsePatterns: 'How to Use Patterns',
+  PatternsOverview: 'Patterns Overview',
+  DSWPCardWithHyperLinkList: 'Card with Hyperlink List',
+  DSWPDefaultHeading: 'Default Heading',
+  DSWPFooterWithTerritorialAcknowledgement: 'Footer with Territorial Acknowledgement',
+  DSWPHeadingWithParagraphs: 'Heading with Paragraphs',
+  DSWPHeroImageWithTitle: 'Hero Image with Title',
+  DSWPHorizontalCard: 'Horizontal Card',
+  DSWPHorizontalCardLargeImageLeft: 'Horizontal Card Large Image Left',
+  DSWPHorizontalCardLargeImageRight: 'Horizontal Card Large Image Right',
+  DSWPHorizontalCardNoShadow: 'Horizontal Card No Shadow',
+  DSWPIconWithExcerpt: 'Icon with Excerpt',
+  DSWPImageAndText: 'Image & Text',
+  DSWPImageAndTextFlipped: 'Image & Text Flipped',
+  DSWPInformationContactSocials: 'Information Contact Socials',
+  DSWPLinkWithArrow: 'Link with Arrow',
+  DSWPSecondaryHeroImageWithTitle: 'Secondary Hero Image with Title',
+  DSWPTeamPattern: 'Team Pattern',
+  DSWPVerticalCards: 'Vertical Cards',
+  DSWPVerticalCardsWithIcon: 'Vertical Cards with Icon',
+  PatternsTroubleShooting: 'Patterns Troubleshooting',
+  TemplateParts: 'Template Parts',
+  'user-docs': 'User Docs',
+  'developer-docs': 'Developer Docs',
+  'metadata-settings': 'Metadata Settings',
+  'bcew-document-repository-feature': 'Feature Overview',
+  icon: 'Icon',
+  'media-text-layout': 'Media & Text Layout',
+  overview: 'Overview'
+};
+
+const itemPriority: Record<string, number> = {
+  'Site Editor': 1,
+  'How to Use Patterns': 2,
+  'Patterns Overview': 3,
+  'Developers': 100
+};
+
+function getPackageDisplayName(name: string): string {
+  if (packageDisplayNames[name]) {
+    return packageDisplayNames[name];
+  }
+  return name
+    .split('-')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
+function formatDocTitle(key: string): string {
+  if (docTitleOverrides[key]) {
+    return docTitleOverrides[key];
+  }
+  return key
+    .replace(/^DSWP/, '')
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/-/g, ' ')
+    .replace(/\b\w/g, (l) => l.toUpperCase());
+}
+
+function buildSidebarForDir(dirPath: string, urlPrefix: string): SidebarItem[] {
+  if (!existsSync(dirPath)) {
+    return [];
+  }
+
+  const entries = readdirSync(dirPath, { withFileTypes: true });
+  const items: SidebarItem[] = [];
+
+  for (const entry of entries) {
+    if (entry.isFile() && entry.name.endsWith('.md')) {
+      const slug = entry.name.replace(/\.md$/, '');
+      if (slug === 'index' || slug === 'overview') {
+        continue;
+      }
+      items.push({
+        text: formatDocTitle(slug),
+        link: `${urlPrefix}/${slug}`
+      });
+    } else if (
+      entry.isDirectory() &&
+      entry.name !== 'images' &&
+      entry.name !== 'public' &&
+      !entry.name.startsWith('.')
+    ) {
+      if (entry.name === 'guide') {
+        const guideItems = buildSidebarForDir(
+          resolve(dirPath, 'guide'),
+          `${urlPrefix}/guide`
+        );
+        items.push(...guideItems);
+      } else {
+        const subItems = buildSidebarForDir(
+          resolve(dirPath, entry.name),
+          `${urlPrefix}/${entry.name}`
+        );
+        if (subItems.length > 0) {
+          items.push({
+            text: formatDocTitle(entry.name),
+            collapsed: true,
+            items: subItems
+          });
+        }
+      }
+    }
+  }
+
+  items.sort((a, b) => {
+    const priorityA = itemPriority[a.text] ?? 50;
+    const priorityB = itemPriority[b.text] ?? 50;
+    if (priorityA !== priorityB) {
+      return priorityA - priorityB;
+    }
+    return a.text.localeCompare(b.text);
+  });
+
+  return items;
+}
 
 function packageDocsSection(
   dirName: 'plugins' | 'themes',
@@ -25,38 +158,28 @@ function packageDocsSection(
     .sort((a, b) => a.localeCompare(b));
 
   const items = entries.flatMap((name) => {
-      const docsIndex = resolve(baseDir, name, 'docs', 'index.md');
-      if (!existsSync(docsIndex)) {
-        return [];
-      }
+    const docsIndex = resolve(baseDir, name, 'docs', 'index.md');
+    if (!existsSync(docsIndex)) {
+      return [];
+    }
 
-      const docsDir = resolve(baseDir, name, 'docs');
-      const nestedItems: Array<{ text: string; link: string }> = [];
+    const docsDir = resolve(baseDir, name, 'docs');
+    const displayName = getPackageDisplayName(name);
+    const nestedItems = buildSidebarForDir(
+      docsDir,
+      `/content/${dirName}/${name}`
+    );
 
-      if (existsSync(resolve(docsDir, 'user-docs.md'))) {
-        nestedItems.push({
-          text: 'User Docs',
-          link: `/content/${dirName}/${name}/user-docs`
-        });
-      }
-
-      if (existsSync(resolve(docsDir, 'developer-docs.md'))) {
-        nestedItems.push({
-          text: 'Developer Docs',
-          link: `/content/${dirName}/${name}/developer-docs`
-        });
-      }
-
-      return [
-        nestedItems.length > 0
-          ? {
-              text: name,
-              link: `/content/${dirName}/${name}/`,
-              collapsed: false,
-              items: nestedItems
-            }
-          : { text: name, link: `/content/${dirName}/${name}/` }
-      ];
+    return [
+      nestedItems.length > 0
+        ? {
+            text: displayName,
+            link: `/content/${dirName}/${name}/`,
+            collapsed: false,
+            items: nestedItems
+          }
+        : { text: displayName, link: `/content/${dirName}/${name}/` }
+    ];
   });
 
   return {

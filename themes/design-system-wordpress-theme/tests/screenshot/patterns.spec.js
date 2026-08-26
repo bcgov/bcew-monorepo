@@ -1,11 +1,11 @@
 import { test } from '@wordpress/e2e-test-utils-playwright';
 
-test.describe('pattern', () => {
+test.describe( 'pattern', () => {
     // TODO: Run e2e tests in Playwright Docker container for consistency.
-    test.beforeEach(async ({ admin }) => {
+    test.beforeEach( async ( { admin } ) => {
         // Create a new post before each test
         await admin.createNewPost();
-    });
+    } );
 
     [
         { name: 'bc-gov-logo-dark' },
@@ -33,49 +33,49 @@ test.describe('pattern', () => {
         { name: 'dswp-team-pattern' },
         { name: 'dswp-vertical-cards-with-icon' },
         { name: 'dswp-vertical-cards' },
-    ].forEach(({ name }) => {
-        test(name, async ({ editor }) => {
+    ].forEach( ( { name } ) => {
+        test( name, async ( { editor } ) => {
             // TODO: There's probably a faster way to add a pattern than this.
             await editor.page
-                .getByRole('button', { name: 'Options', exact: true })
+                .getByRole( 'button', { name: 'Options', exact: true } )
                 .click();
             await editor.page
-                .getByRole('menuitemradio', { name: /Code editor/ })
+                .getByRole( 'menuitemradio', { name: /Code editor/ } )
                 .click();
             await editor.page
-                .getByRole('textbox', { name: 'Type text or HTML' })
+                .getByRole( 'textbox', { name: 'Type text or HTML' } )
                 .fill(
-                    `<!-- wp:pattern {"slug":"design-system-wordpress-theme/${name}"} /-->`
+                    `<!-- wp:pattern {"slug":"design-system-wordpress-theme/${ name }"} /-->`
                 );
             await editor.page
-                .getByRole('button', { name: 'Exit code editor' })
+                .getByRole( 'button', { name: 'Exit code editor' } )
                 .click();
 
             // Capture editor canvas (inside editor iframe)
-            await editor.page.waitForSelector('iframe[name="editor-canvas"]');
+            await editor.page.waitForSelector( 'iframe[name="editor-canvas"]' );
             const frame = editor.page.frameLocator(
                 'iframe[name="editor-canvas"]'
             );
-            const canvas = frame.locator('.editor-styles-wrapper');
+            const canvas = frame.locator( '.editor-styles-wrapper' );
             await canvas.waitFor();
-            await canvas.screenshot({
+            await canvas.screenshot( {
                 animations: 'disabled',
                 path:
                     'tests/screenshot/__snapshots__/pattern-' +
                     name +
                     '-editor.png',
-            });
+            } );
 
             // Capture frontend content.
             const previewPage = await editor.openPreviewPage();
-            const preview = previewPage.locator('.entry-content').first();
-            await preview.screenshot({
+            const preview = previewPage.locator( '.entry-content' ).first();
+            await preview.screenshot( {
                 animations: 'disabled',
                 path:
                     'tests/screenshot/__snapshots__/pattern-' +
                     name +
                     '-frontend.png',
-            });
-        });
-    });
-});
+            } );
+        } );
+    } );
+} );

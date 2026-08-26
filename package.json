@@ -41,6 +41,10 @@
     "nx": "catalog:",
     "vitepress": "catalog:"
   },
+  "devDependencies": {
+    "@nx/playwright": "23.0.2",
+    "nx": "23.0.2"
+  },
   "peerDependencies": {
     "@swc-node/register": "catalog:",
     "@swc/cli": "catalog:",
@@ -85,9 +89,5 @@
     "docs:build": "pnpm docs:sync && vitepress build docs",
     "docs:preview": "vitepress preview docs",
     "release": "npx nx g monorepo:release-tag"
-  },
-  "devDependencies": {
-    "nx": "23.0.2",
-    "@nx/playwright": "23.0.2"
   }
 }
