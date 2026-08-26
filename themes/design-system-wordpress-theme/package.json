@@ -32,7 +32,6 @@
         "@playwright/test": "catalog:",
         "@wordpress/base-styles": "catalog:",
         "@wordpress/e2e-test-utils-playwright": "catalog:",
-        "@wordpress/scripts": "catalog:",
-        "glob": "^10.0.0"
+        "@wordpress/scripts": "catalog:"
     }
 }

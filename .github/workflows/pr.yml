@@ -68,6 +68,9 @@ jobs:
 
             - name: Run package.json lint
               run: pnpm run lint-pkg-json
+
+            - name: Run template parts lint
+              run: pnpm run lint-template-parts
     
     test-integration:
         name: Test integration

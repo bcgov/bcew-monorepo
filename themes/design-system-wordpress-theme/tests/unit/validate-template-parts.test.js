@@ -10,7 +10,7 @@ const { spawnSync } = require( 'child_process' );
 
 const validatorScriptPath = path.resolve(
     __dirname,
-    '../../scripts/validate-template-parts.js'
+    '../../../../tools/validate-template-parts.mjs'
 );
 const validationSuccessMessage = 'no theme attributes found';
 const validationFailureMessage = 'Template Part Validation Failed';

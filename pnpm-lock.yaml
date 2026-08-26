@@ -377,9 +377,6 @@ importers:
       '@wordpress/scripts':
         specifier: 'catalog:'
         version: 31.8.0(@playwright/test@1.61.1)(@swc/core@1.15.43(@swc/helpers@0.5.23))(@types/node@20.19.9)(@types/react@18.3.31)(@wordpress/env@11.12.0(@types/node@20.19.9)(supports-color@10.2.2))(babel-plugin-macros@3.1.0)(csso@5.0.5)(debug@4.4.3(supports-color@10.2.2))(esbuild@0.27.7)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint-scss@6.14.0(stylelint@16.26.1(supports-color@10.2.2)(typescript@5.3.3)))(supports-color@10.2.2)(type-fest@4.41.0)(typescript@5.3.3)(vite@7.3.6(@types/node@20.19.9)(sass@1.101.0)(terser@5.49.0)(yaml@2.9.0))
-      glob:
-        specifier: ^10.0.0
-        version: 10.5.0
 
   tools/monorepo:
     dependencies:

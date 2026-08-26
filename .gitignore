@@ -47,3 +47,4 @@ AGENTS.md
 .github/prompts/**
 .github/agents/*.md
 .github/*.md
+plan.md

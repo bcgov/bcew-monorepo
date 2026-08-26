@@ -122,5 +122,7 @@ To ensure child themes can properly override template parts, parent theme templa
 <!-- wp:template-part {"slug":"breadcrumb","align":"full"} /-->
 ```
 
-Run `npm run lint:template-parts` to validate locally. This check also runs automatically on pull requests as part of the linting workflow.
+Run `pnpm lint-template-parts` from the monorepo root (or `npx nx run design-system-wordpress-theme:lint-template-parts` for this theme only) to validate locally. This check also runs automatically on pull requests as part of the `Lint monorepo` workflow job.
+
+The validator lives at `tools/validate-template-parts.mjs` and is opt-in: a theme enables it by declaring the `lint-template-parts` target in its `project.json`. Child themes intentionally do not enable it, since nothing overrides their template parts.
 

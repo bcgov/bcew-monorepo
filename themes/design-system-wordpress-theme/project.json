@@ -20,6 +20,7 @@
         "test-integration": {},
         "test-screenshot": {},
         "test-screenshot-generate": {},
+        "lint-template-parts": {},
         "wp-env-start": {},
         "wp-env-clean": {},
         "wp-env-stop": {}
