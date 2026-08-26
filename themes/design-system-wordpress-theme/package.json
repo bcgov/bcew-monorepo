@@ -22,9 +22,6 @@
         "email": "govwordpress@gov.bc.ca"
     },
     "main": "src/index.js",
-    "scripts": {
-        "wp-env": "wp-env"
-    },
     "dependencies": {
         "@bcgov/bc-sans": "catalog:",
         "@bcgov/design-tokens": "catalog:",
