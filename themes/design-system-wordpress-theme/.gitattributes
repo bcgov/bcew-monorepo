@@ -9,7 +9,7 @@ package-lock.json	export-ignore
 package.json	    export-ignore
 README.md	        export-ignore
 scripts           export-ignore
-documentation     export-ignore
-Tests             export-ignore
+docs              export-ignore
+tests             export-ignore
 checklist.md      export-ignore
 scan-wp-patterns.php export-ignore
