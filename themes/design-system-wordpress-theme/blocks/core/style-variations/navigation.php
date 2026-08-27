@@ -8,7 +8,7 @@ function design_system_register_navigation_block_styles() {
     $block_name       = 'core/navigation';
     $style_properties = array(
         'name'         => 'navigation-separator',
-        'label'        => __( 'Separator' ),
+        'label'        => __( 'Separator', 'design-system-wordpress-theme' ),
         'isDefault'    => false,
         'categories'   => [ 'footer' ],
         'style_handle' => 'design-system-styles',
