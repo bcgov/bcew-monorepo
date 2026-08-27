@@ -56,7 +56,7 @@ npx nx run design-system-wordpress-theme:test-screenshot
 
 ### Updating Screenshots
 
-The visual-regression workflow runs the update script and commits changes automatically on pull requests, so it's not necessary to commit any updates made locally to the screenshots, but it can still be useful for local development to see what effects your changes will have.
+The pull-request workflow compares against committed screenshot baselines and does not update them. After running the generation target locally, review and commit any intended snapshot changes.
 
 ```bash
 npx nx run design-system-wordpress-theme:wp-env-start
