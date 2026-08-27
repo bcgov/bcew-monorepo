@@ -34,7 +34,7 @@ To run a single test file:
 
 ```bash
 npx nx run design-system-wordpress-theme:wp-env-start
-npx playwright test themes/design-system-wordpress-theme/tests/e2e/copyright-shortcode.spec.ts
+(cd themes/design-system-wordpress-theme && npx playwright test tests/e2e/copyright-shortcode.spec.ts)
 ```
 
 To step through each test in headed mode for debugging:
