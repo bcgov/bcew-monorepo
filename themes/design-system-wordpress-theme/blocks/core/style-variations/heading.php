@@ -8,7 +8,7 @@ function design_system_register_heading_block_styles() {
     $block_name       = 'core/heading';
     $style_properties = array(
         'name'         => 'heading-callout',
-        'label'        => __( 'Design System Callout' ),
+        'label'        => __( 'Design System Callout', 'design-system-wordpress-theme' ),
         'isDefault'    => false,
         'style_handle' => 'design-system-styles',
     );
