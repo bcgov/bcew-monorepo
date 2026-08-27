@@ -23,7 +23,7 @@
     },
     "implicitDependencies": [
         "packages/phpunit-config/",
-        "themes/design-system-wordpress-theme"
+        "design-system-wordpress-theme"
     ],
     "tags": ["type:wp-theme"]
 }
