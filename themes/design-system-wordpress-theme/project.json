@@ -18,6 +18,7 @@
         "test-e2e": {},
         "test-e2e-docker": {},
         "test-integration": {},
+        "test-unit-js": {},
         "test-screenshot": {},
         "test-screenshot-generate": {},
         "lint-template-parts": {},

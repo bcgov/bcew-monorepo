@@ -38,6 +38,14 @@
                 "command": "docker compose ps --status running --services | grep -qx playwright || docker compose up -d playwright"
             }
         },
+        "test-unit-js": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "wp-scripts test-unit-js",
+                "cwd": "{projectRoot}"
+            },
+            "cache": true
+        },
         "test-integration": {
             "executor": "nx:run-commands",
             "options": {
