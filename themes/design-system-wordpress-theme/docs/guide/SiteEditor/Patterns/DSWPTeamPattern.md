@@ -75,7 +75,7 @@ Each team member section contains:
 3. Expand the new profile to see the group a layer down
 4. Select block styles
 5. Select background
-6. This step is dependant if the previous profile has a background or not.  If the previous profile has a background color select clear in the color picker else select "light gray".
+6. This step depends on whether the previous profile has a background. If it has a background color, select clear in the color picker; otherwise, select "light gray".
 
 ![Adding a Card](../../../images/patterns/dswp-team-pattern/f.gif)
 

@@ -42,7 +42,6 @@
                     <!-- wp:heading {"level":5,"style":{"spacing":{"margin":{"top":"0","bottom":"0","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}}} -->
                     <h5
                         class="wp-block-heading"
-                        id="neque-porro-quisquam"
                         style="margin-top: 0; margin-right: var(--wp--preset--spacing--40); margin-bottom: 0; margin-left: var(--wp--preset--spacing--40)"
                     >
                         Neque porro quisquam</h5
@@ -92,7 +91,6 @@
                     <!-- wp:heading {"level":5,"style":{"spacing":{"margin":{"top":"0","bottom":"0","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}}} -->
                     <h5
                         class="wp-block-heading"
-                        id="neque-porro-quisquam"
                         style="margin-top: 0; margin-right: var(--wp--preset--spacing--40); margin-bottom: 0; margin-left: var(--wp--preset--spacing--40)"
                     >
                         Neque porro quisquam</h5

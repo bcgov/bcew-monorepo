@@ -48,7 +48,7 @@ The pattern supports both desktop and mobile layouts:
 1. Click to edit button text
 2. Start Typing new content
 3. Select the button again
-4. Selet "Link" icon
+4. Select the "Link" icon
 5. Edit the link for the button
 
 ![Modifying the Button](../../../images/patterns/dswp-horizontal-card-large-image-right/f.gif)

@@ -11,6 +11,6 @@
 
 <!-- wp:image {"height":"56px","scale":"cover","sizeSlug":"full","linkDestination":"none"} -->
 <figure class="wp-block-image size-full is-resized"><img
-        src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/bcid_h_rgb_pos.png' ); ?>" alt=""
+        src="<?php echo esc_url( get_template_directory_uri() . '/assets/images/bcid_h_rgb_pos.png' ); ?>" alt="Government of British Columbia"
         style="object-fit:cover;height:56px" /></figure>
 <!-- /wp:image -->

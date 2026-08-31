@@ -22,7 +22,6 @@
             ><!-- wp:heading {"className":"is-style-default","style":{"spacing":{"margin":{"top":"0","bottom":"var:preset|spacing|60"}},"elements":{"link":{"color":{"text":"var:preset|color|font-dark"}}}},"textColor":"font-dark"} -->
             <h2
                 class="wp-block-heading is-style-default has-font-dark-color has-text-color has-link-color"
-                id="strong-neque-porro-quisquamsed-strong"
                 style="margin-top: 0; margin-bottom: var(--wp--preset--spacing--60)"
                 ><strong>Neque porro quisquamSed</strong></h2
             >
@@ -33,7 +32,6 @@
                 ><!-- wp:heading {"level":5,"className":"is-style-default","style":{"spacing":{"margin":{"top":"0","bottom":"0"}},"elements":{"link":{"color":{"text":"var:preset|color|font-dark"}}}},"textColor":"font-dark"} -->
                 <h5
                     class="wp-block-heading is-style-default has-font-dark-color has-text-color has-link-color"
-                    id="neque-porro-quisquamsed"
                     style="margin-top: 0; margin-bottom: 0"
                     >Neque porro quisquamSed</h5
                 >

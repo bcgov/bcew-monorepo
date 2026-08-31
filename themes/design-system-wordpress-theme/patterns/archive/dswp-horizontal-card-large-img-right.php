@@ -23,7 +23,6 @@
             ><!-- wp:heading {"level":3,"className":"is-style-default","style":{"spacing":{"margin":{"top":"0","bottom":"0"}}}} -->
             <h3
                 class="wp-block-heading is-style-default"
-                id="neque-porro-quisquam"
                 style="margin-top: 0; margin-bottom: 0"
                 >Neque porro quisquam</h3
             >
