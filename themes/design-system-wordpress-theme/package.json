@@ -1,0 +1,37 @@
+{
+    "name": "design-system-wordpress-theme",
+    "version": "1.16.0",
+    "description": "Design System WordPress Theme",
+    "author": "govwordpress@gov.bc.ca",
+    "license": "GPL-2.0-or-later",
+    "keywords": [
+        "WordPress",
+        "Block Theme",
+        "BCGov",
+        "DesignSystem",
+        "Gutenberg"
+    ],
+    "homepage": "https://github.com/bcgov/bcew-monorepo/tree/main/themes/design-system-wordpress-theme",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/bcgov/bcew-monorepo.git",
+        "directory": "themes/design-system-wordpress-theme"
+    },
+    "bugs": {
+        "url": "https://github.com/bcgov/bcew-monorepo/issues",
+        "email": "govwordpress@gov.bc.ca"
+    },
+    "main": "src/index.js",
+    "dependencies": {
+        "@bcgov/bc-sans": "catalog:",
+        "@bcgov/design-tokens": "catalog:",
+        "@wordpress/icons": "catalog:"
+    },
+    "devDependencies": {
+        "@bcew-monorepo/e2e": "workspace:*",
+        "@playwright/test": "catalog:",
+        "@wordpress/base-styles": "catalog:",
+        "@wordpress/e2e-test-utils-playwright": "catalog:",
+        "@wordpress/scripts": "catalog:"
+    }
+}

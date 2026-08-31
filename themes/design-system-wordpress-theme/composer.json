@@ -1,0 +1,32 @@
+{
+    "name": "bcgov-theme/design-system-wordpress-theme",
+    "description": "Design System WordPress Theme",
+    "type": "wordpress-theme",
+    "license": "Apache-2.0",
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../../packages/phpunit-config",
+            "options": {
+                "symlink": false
+            }
+        }
+    ],
+    "require-dev": {
+        "bcew-monorepo/phpunit-config": "@dev",
+        "yoast/phpunit-polyfills": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Bcgov\\Theme\\DesignSystem\\": [
+                "src",
+                "inc"
+            ]
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    }
+}

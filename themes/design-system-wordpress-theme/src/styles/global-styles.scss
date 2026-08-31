@@ -1,0 +1,38 @@
+@media (max-width: $break-medium) {
+	// Left aligns container on mobile.
+	.dswp-align-right-desktop-left-mobile {
+		justify-content: flex-start !important;
+	}
+
+	.dswp-flex-wrap-reverse {
+		flex-wrap: wrap-reverse !important;
+	}
+
+}
+
+// Left aligns container in desktop.
+.dswp-align-right-desktop-left-mobile {
+	justify-content: flex-end;
+}
+
+// Allows the container to grow to the full size of the largest container in the flex box.
+.dswp-flex-grow-even-container {
+	display: flex;
+	flex: 1;
+}
+
+
+.dswp-box-shadow-on-hover {
+	transition: box-shadow 0.3s ease-in;
+
+	&:hover {
+		transition: box-shadow 0.5s ease-out;
+		box-shadow:
+			0 1.2px 3.6px 0 rgba(0, 0, 0, 0.1),
+			0 6.4px 14.4px 0 rgba(0, 0, 0, 0.13);
+	}
+}
+
+.dswp-align-self-center {
+	align-self: center !important;
+}

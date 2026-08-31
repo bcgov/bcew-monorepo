@@ -38,10 +38,18 @@
                 "command": "docker compose ps --status running --services | grep -qx playwright || docker compose up -d playwright"
             }
         },
+        "test-unit-js": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "wp-scripts test-unit-js",
+                "cwd": "{projectRoot}"
+            },
+            "cache": true
+        },
         "test-integration": {
             "executor": "nx:run-commands",
             "options": {
-                "command": "wp-env run tests-cli --env-cwd=wp-content/{projectRoot} vendor/bin/phpunit ./ -c vendor/bcew-monorepo/phpunit-config/phpunit.integration.xml",
+                "command": "wp-env run tests-cli --env-cwd=wp-content/{projectRoot} vendor/bin/phpunit -c vendor/bcew-monorepo/phpunit-config/phpunit.integration.xml --testsuite integration",
                 "cwd": "{projectRoot}"
             },
             "dependsOn": ["composer-install", "wp-env-start"]
@@ -59,14 +67,24 @@
             "options": {
                 "command": "docker exec playwright sh -c \"cd {projectRoot} && npx wp-scripts test-playwright\""
             },
-            "dependsOn": ["composer-install", "start-playwright", "build", "wp-env-start"]
+            "dependsOn": [
+                "composer-install",
+                "start-playwright",
+                "build",
+                "wp-env-start"
+            ]
         },
         "test-screenshot": {
             "executor": "nx:run-commands",
             "options": {
                 "command": "docker exec playwright sh -c \"cd {projectRoot} && npx wp-scripts test-playwright --config playwright.regression.config.js --update-snapshots none\""
             },
-            "dependsOn": ["composer-install", "start-playwright", "build", "wp-env-start"]
+            "dependsOn": [
+                "composer-install",
+                "start-playwright",
+                "build",
+                "wp-env-start"
+            ]
         },
         "test-screenshot-generate": {
             "executor": "nx:run-commands",
@@ -74,7 +92,12 @@
                 "command": "docker exec playwright sh -c \"cd {projectRoot} && npx wp-scripts test-playwright --config playwright.regression.config.js --update-snapshots all\""
             },
             "parallelism": false,
-            "dependsOn": ["composer-install", "start-playwright", "build", "wp-env-start"]
+            "dependsOn": [
+                "composer-install",
+                "start-playwright",
+                "build",
+                "wp-env-start"
+            ]
         },
         "wp-env-start": {
             "executor": "nx:run-commands",
@@ -99,6 +122,18 @@
                 "command": "sh -c 's=$(wp-env status --json 2>/dev/null); echo \"$s\" | grep -q uninitialized && exit 0; echo \"$s\" | grep -qF \"\\\"status\\\":\\\"stopped\\\"\" && exit 0; exec wp-env stop'",
                 "cwd": "{projectRoot}"
             }
+        },
+        "lint-template-parts": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "node tools/validate-template-parts.mjs {projectRoot}"
+            },
+            "inputs": [
+                "{projectRoot}/parts/**/*.html",
+                "{projectRoot}/templates/**/*.html",
+                "{workspaceRoot}/tools/validate-template-parts.mjs"
+            ],
+            "cache": true
         }
     },
     "namedInputs": {
@@ -119,5 +154,13 @@
         }
     },
     "parallel": 3,
-    "analytics": true
+    "analytics": true,
+    "plugins": [
+        {
+            "plugin": "@nx/playwright/plugin",
+            "options": {
+                "targetName": "e2e"
+            }
+        }
+    ]
 }
