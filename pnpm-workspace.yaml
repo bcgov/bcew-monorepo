@@ -17,6 +17,7 @@ catalog:
   '@types/jest': ^30.0.0
   '@types/node': 20.19.9
   '@wordpress/api-fetch': wp-6.7
+  '@wordpress/base-styles': wp-6.7
   '@wordpress/block-editor': wp-6.7
   '@wordpress/blocks': wp-6.7
   '@wordpress/components': wp-6.7

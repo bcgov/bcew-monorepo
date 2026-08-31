@@ -3,7 +3,7 @@
     "phpVersion": "7.4",
     "themes": [
         ".",
-        "bcgov/design-system-wordpress-theme"
+        "../../themes/design-system-wordpress-theme"
     ],
     "config": {
         "WP_AUTO_UPDATE_CORE": false
@@ -11,6 +11,6 @@
     "port": 9004,
     "testsPort": 9005,
     "lifecycleScripts": {
-        "afterStart": "wp-env run tests-cli wp theme activate bcew-ticorp"
+        "afterStart": "wp-env run cli wp theme activate bcew-ticorp && wp-env run tests-cli wp theme activate bcew-ticorp"
     }
 }

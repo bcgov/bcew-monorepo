@@ -39,4 +39,6 @@ plugins/bcew-chefs-embed:
     - changed-files:
         - any-glob-to-any-file: 'plugins/bcew-chefs-embed/**'
 
-        
+themes/design-system-wordpress-theme:
+    - changed-files:
+        - any-glob-to-any-file: 'themes/design-system-wordpress-theme/**'

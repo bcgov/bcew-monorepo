@@ -68,6 +68,9 @@ jobs:
 
             - name: Run package.json lint
               run: pnpm run lint-pkg-json
+
+            - name: Run template parts lint
+              run: pnpm run lint-template-parts
     
     test-integration:
         name: Test integration
@@ -120,6 +123,37 @@ jobs:
                   plugins/*/coverage.xml
                   themes/*/coverage.xml
                 if-no-files-found: warn
+
+    test-unit-js:
+        name: Test unit (JS, affected)
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v7
+              with:
+                  fetch-depth: 0
+                  ref: ${{ github.head_ref }}
+
+            - name: Setup Node.js 24
+              uses: actions/setup-node@v6.4.0
+              with:
+                  node-version: 24
+
+            - name: Install pnpm
+              uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+              with:
+                  version: 10
+                  run_install: true
+                  cache: true
+
+            - name: Run affected JS unit tests
+              if: github.event_name == 'pull_request'
+              run: pnpm nx affected --base="origin/${{ github.base_ref }}" -t test-unit-js
+
+            - name: Run JS unit tests
+              if: github.event_name == 'push'
+              run: pnpm nx run-many -t test-unit-js
 
     test-e2e:
         name: Test e2e (affected)

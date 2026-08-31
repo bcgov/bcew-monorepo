@@ -8,6 +8,6 @@
     "port": 9008,
     "testsPort": 9009,
     "lifecycleScripts": {
-        "afterStart": "wp-env run tests-cli wp theme activate bcew-theme-2"
+        "afterStart": "wp-env run cli wp theme activate bcew-theme-2 && wp-env run tests-cli wp theme activate bcew-theme-2"
     }
 }
