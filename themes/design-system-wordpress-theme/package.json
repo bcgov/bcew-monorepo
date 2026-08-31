@@ -3,7 +3,7 @@
     "version": "1.16.0",
     "description": "Design System WordPress Theme",
     "author": "govwordpress@gov.bc.ca",
-    "license": "Apache-2.0",
+    "license": "GPL-2.0-or-later",
     "keywords": [
         "WordPress",
         "Block Theme",
