@@ -16,6 +16,7 @@ The latest version of this documentation is published to GitHub Pages:
 | Understand why and how the monorepo is structured | [Architecture](./architecture.md) |
 | Know what a valid package looks like | [Project standards](./project-standards.md) |
 | Import a legacy repo, cut over / archive it, or add a new project | [Contributing workflow](./contributing-workflow.md) |
+| Rename a plugin or theme already in the monorepo | [Renaming plugins and themes](./renaming-projects.md) |
 | See lint, test, and build conventions | [Shared tooling](./shared-tooling.md) |
 | Understand PR and tag CI | [CI/CD](./ci-cd.md) |
 | Releases, Composer, mirrors | [Release and deployment](./release-and-deployment.md) |
