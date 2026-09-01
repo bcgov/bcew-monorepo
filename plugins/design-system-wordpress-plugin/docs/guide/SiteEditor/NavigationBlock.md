@@ -9,7 +9,7 @@ Find it in:
 
 After inserting the block, select a WordPress Menu in the block settings.
 
-![Add the Navigation Block](../../.vuepress/public/images/ADD_NAVIGATION_BLOCK.gif)
+![Add the Navigation Block](../../images/ADD_NAVIGATION_BLOCK.gif)
 
 ---
 
@@ -28,7 +28,7 @@ After inserting the block, select a WordPress Menu in the block settings.
     - Mobile: optional full-screen overlay with a toggle
     - Overlay behavior is controlled by Overlay Mode and the Mobile Breakpoint
 
-![Mobile navigation overlay](../../.vuepress/public/images/MOBILE_OVERLAY_NAV_MENU.gif)
+![Mobile navigation overlay](../../images/MOBILE_OVERLAY_NAV_MENU.gif)
 
 ---
 
@@ -49,7 +49,7 @@ After inserting the block, select a WordPress Menu in the block settings.
     - Show on Mobile: Visible at widths < Mobile Breakpoint
     - Note: If both are disabled, the menu still renders as a safety fallback to avoid hiding site navigation entirely. To truly hide it, use theme visibility controls or CSS.
 
-![Navigation Block Settings](../../.vuepress/public/images/NAV_BLOCK_SETTINGS.png)
+![Navigation Block Settings](../../images/NAV_BLOCK_SETTINGS.png)
 
 ---
 
@@ -81,7 +81,7 @@ Accessibility: Behavior mirrors the core Navigation block for keyboard and scree
    - Below the breakpoint: confirm mobile toggle, overlay, and tap-to-open submenus
 5. Confirm the current page is highlighted in the menu.
 
-![Navigation Block HOWTO](../../.vuepress/public/images/SHOW_NAVIGATION_BLOCK.gif)
+![Navigation Block HOWTO](../../images/SHOW_NAVIGATION_BLOCK.gif)
 
 ---
 

@@ -8,7 +8,7 @@ The tool lives in:
 
 Click Save Settings to apply changes.
 
-![CSP Howto](../../.vuepress/public/images/CSP_HOWTO.gif)
+![CSP Howto](../../images/CSP_HOWTO.gif)
 
 ---
 
@@ -130,7 +130,7 @@ Example additions:
 
 Tip: If something still doesn’t load, verify the exact hostname in the violation message and add that host (or a wildcard like *.example.com) to the correct directive.
 
-![CSP Frame Source](../../.vuepress/public/images/CSP_FRAME_SRC.gif)
+![CSP Frame Source](../../images/CSP_FRAME_SRC.gif)
 
 ---
 

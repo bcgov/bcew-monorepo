@@ -11,7 +11,7 @@ The tool lives in:
 
 Click Save Settings to apply changes, and see a preview below the Banner Preview label.
 
-![Notification Banner HOWTO](../../.vuepress/public/images/NOTIFICATION_BANNER_HOWTO.gif)
+![Notification Banner HOWTO](../../images/NOTIFICATION_BANNER_HOWTO.gif)
 
 ---
 
@@ -62,4 +62,4 @@ Click Save Settings to apply changes, and see a preview below the Banner Preview
 3. Navigate to your homepage and hard-refresh your browser
 4. Verify the text and background color of the banner are correct.
 
-![Show Notification Banner](../../.vuepress/public/images/SHOW_NOTIFICATION_BANNER.gif)
+![Show Notification Banner](../../images/SHOW_NOTIFICATION_BANNER.gif)

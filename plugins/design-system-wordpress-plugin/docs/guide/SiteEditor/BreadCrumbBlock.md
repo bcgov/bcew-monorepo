@@ -19,19 +19,19 @@ Place the block near the top of Page templates or a Header/Content template part
 
 ### Using Breadcrumbs to navigate
 
-![Using Breadcrumbs](../../.vuepress/public/images/BREADCRUMB_USAGE_DEMO.gif)
+![Using Breadcrumbs](../../images/BREADCRUMB_USAGE_DEMO.gif)
 
 ## Block Settings (Inspector)
 
 - Divider Type: `dividerType`; accepts `/` or `>` and chooses the visual separator between breadcrumb items.
 - Current Page as Link: `currentAsLink`; boolean value. If enabled, the final breadcrumb item is rendered as a link; otherwise plain text.
 
-![Breadcrumb Block Settings](../../.vuepress/public/images/BREADCRUMB_BLOCK_SETTINGS.png)
+![Breadcrumb Block Settings](../../images/BREADCRUMB_BLOCK_SETTINGS.png)
 
 ## Editing Experience
 
 In the Site Editor (or Page editor if allowed), the block shows a static example (Grandparent / Parent / Child) so you can preview divider style changes. Real hierarchy only appears on the front end.
-![Add a Breadcrumb Block](../../.vuepress/public/images/ADD_BREADCRUMB_BLOCK.gif)
+![Add a Breadcrumb Block](../../images/ADD_BREADCRUMB_BLOCK.gif)
 
 ## Front-End Rendering
 
@@ -62,7 +62,7 @@ Create three Pages:
 - Child (set Parent to Parent)
 View Child page with the block placed in the Page template.
 
-![Page Hierarchy](../../.vuepress/public/images/PAGE_HIERARCHY.png)
+![Page Hierarchy](../../images/PAGE_HIERARCHY.png)
 
 ## Styling & Customization (custom CSS)
 

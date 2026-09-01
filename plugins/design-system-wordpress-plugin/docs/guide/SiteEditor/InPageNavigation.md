@@ -2,14 +2,14 @@
 
 Provides an automatic table of contents for Pages by collecting all H2 headings and presenting numbered jump links.
 
-![In-Page Navigation example](../../.vuepress/public/images/IN_PAGE_VIEW.png)
+![In-Page Navigation example](../../images/IN_PAGE_VIEW.png)
 
 ## When It Appears
 
 - Only on Page post type.
 - Only if at least one H2 exists.
 - Enabled per page via a toggle in the editor sidebar.
-![In-page Navigation HOWTO](../../.vuepress/public/images/IN_PAGE_NAV_ENABLE.gif)
+![In-page Navigation HOWTO](../../images/IN_PAGE_NAV_ENABLE.gif)
 
 ## How It Works
 
@@ -27,13 +27,13 @@ Provides an automatic table of contents for Pages by collecting all H2 headings 
 - Toggle “Enable in-page navigation” on.
 - Update the Page
 
-![In-page Navigation HOWTO](../../.vuepress/public/images/IN_PAGE_NAVIGATION_DEMO.gif)
+![In-page Navigation HOWTO](../../images/IN_PAGE_NAVIGATION_DEMO.gif)
 
 ## Responsive Behavior
 
 - Desktop (>768px): Expanded list always visible.
 - Mobile (≤768px): **(See demo below)** Sticky bar; toggle button collapses/expands; current section emphasized; background lightens after scroll.
-![In-page Navigation mobile view](../../.vuepress/public/images/NAV_MOBILE_VIEW.gif)
+![In-page Navigation mobile view](../../images/NAV_MOBILE_VIEW.gif)
 
 ## ID Generation Example
 
