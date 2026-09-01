@@ -501,14 +501,8 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 		// Get plugin root directory.
 		$plugin_root = dirname( __DIR__, 3 );
 
-		// Include the render template.
-		// Try build path first (production), then src path (development).
-		$render_path = $plugin_root . '/Blocks/build/BreadCrumb/render.php';
-
-		if ( ! file_exists( $render_path ) ) {
-			// Try src path if build doesn't exist.
-			$render_path = $plugin_root . '/Blocks/src/BreadCrumb/render.php';
-		}
+		// Use the monorepo source layout.
+		$render_path = $plugin_root . '/src/BreadCrumb/render.php';
 
 		if ( file_exists( $render_path ) ) {
 			// The render template expects $attributes to be in scope.

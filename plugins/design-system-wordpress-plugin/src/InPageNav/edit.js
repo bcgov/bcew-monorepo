@@ -22,38 +22,38 @@ import { registerPlugin } from '@wordpress/plugins';
  * Renders a toggle control in the editor sidebar for enabling/disabling
  * in-page navigation on the current page settings panel.
  *
- * @return {JSX.Element} Settings panel with toggle control
+ * @return {Element} Settings panel with toggle control
  */
 const InPageNavPanel = () => {
-	// Get current in-page navigation state from post meta
-	const { showInPageNav } = useSelect( ( select ) => ( {
-		showInPageNav:
-			select( 'core/editor' ).getEditedPostAttribute( 'meta' )
-				?.show_inpage_nav,
-	} ) );
+    // Get current in-page navigation state from post meta
+    const { showInPageNav } = useSelect( ( select ) => ( {
+        showInPageNav:
+            select( 'core/editor' ).getEditedPostAttribute( 'meta' )
+                ?.show_inpage_nav,
+    } ) );
 
-	// Get dispatch function for updating post meta
-	const { editPost } = useDispatch( 'core/editor' );
+    // Get dispatch function for updating post meta
+    const { editPost } = useDispatch( 'core/editor' );
 
-	return (
-		<PluginDocumentSettingPanel
-			name="in-page-nav-panel"
-			title="In-page Navigation"
-			opened={ true }
-		>
-			<ToggleControl
-				label="Enable in-page navigation"
-				checked={ showInPageNav }
-				onChange={ ( value ) => {
-					editPost( { meta: { show_inpage_nav: value } } );
-				} }
-			/>
-		</PluginDocumentSettingPanel>
-	);
+    return (
+        <PluginDocumentSettingPanel
+            name="in-page-nav-panel"
+            title="In-page Navigation"
+            opened={ true }
+        >
+            <ToggleControl
+                label="Enable in-page navigation"
+                checked={ showInPageNav }
+                onChange={ ( value ) => {
+                    editPost( { meta: { show_inpage_nav: value } } );
+                } }
+            />
+        </PluginDocumentSettingPanel>
+    );
 };
 
 // Register the plugin with WordPress
 registerPlugin( 'dswp-in-page-nav-panel', {
-	render: InPageNavPanel,
-	icon: 'list-view',
+    render: InPageNavPanel,
+    icon: 'list-view',
 } );

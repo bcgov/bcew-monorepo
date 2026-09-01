@@ -11,7 +11,7 @@ The tool lives in:
 
 Click Save Settings to apply changes, and see a preview below the Banner Preview label.
 
-![Notification Banner HOWTO](/images/NOTIFICATION_BANNER_HOWTO.gif)
+![Notification Banner HOWTO](../../.vuepress/public/images/NOTIFICATION_BANNER_HOWTO.gif)
 
 ---
 
@@ -19,16 +19,16 @@ Click Save Settings to apply changes, and see a preview below the Banner Preview
 
 - Enable/Disable the banner using the radio buttons.
 - The Banner Content textbox can accept plain text or HTML Markup, such as:
-  - `<strong>`<strong>strong (bold)</strong>`</strong>`
-  - <em>`<em>emphasis (italics)</em>`</em>
-  - `<u>`<u>underline (use with caution; can confuse links)</u>`</u>`
-  - `<s>`<s>Strikethrough</s>`</s>`
-  - `<mark>`<mark>Highlighted text</mark>`</mark>`
-  - `<pre>`<pre>preformatted text (preserves spaces and line breaks)</pre>`</pre>`
-  - other specialized text markup: `<abbr>`, `<code>`, `<kbd>`, `<var>`, `<sup>`, and `<sub>`
-  - list item markup: `<ul>`, `<ol>`, `<li>`, `<dl>`, `<dt>`, `<dd>`
-  - quotations and citations: `<blockquote>`, `<q>`, `<cite>`
-  - headings: `<H1>` - `<H6>`
+    - `<strong>`<strong>strong (bold)</strong>`</strong>`
+    - <em>`<em>emphasis (italics)</em>`</em>
+    - `<u>`<u>underline (use with caution; can confuse links)</u>`</u>`
+    - `<s>`<s>Strikethrough</s>`</s>`
+    - `<mark>`<mark>Highlighted text</mark>`</mark>`
+    - `<pre>`<pre>preformatted text (preserves spaces and line breaks)</pre>`</pre>`
+    - other specialized text markup: `<abbr>`, `<code>`, `<kbd>`, `<var>`, `<sup>`, and `<sub>`
+    - list item markup: `<ul>`, `<ol>`, `<li>`, `<dl>`, `<dt>`, `<dd>`
+    - quotations and citations: `<blockquote>`, `<q>`, `<cite>`
+    - headings: `<H1>` - `<H6>`
 
 - Choose the background banner color using the color-coded background status colors:
    <span style="background-color:#f8bb47; color:black; padding: 3px">Warning</span>,
@@ -42,16 +42,16 @@ Click Save Settings to apply changes, and see a preview below the Banner Preview
 ## Common recipes
 
 - Test Site Banner
-  - text: `This is the Dev/Test Environment. The content you are viewing is not final and subject to change.`
-  - background color: <span style="background-color:#ce3e39; color:white; padding: 3px">Danger</span>
+    - text: `This is the Dev/Test Environment. The content you are viewing is not final and subject to change.`
+    - background color: <span style="background-color:#ce3e39; color:white; padding: 3px">Danger</span>
 
 - Site under maintenance
-  - text: `This site is under maintenance. Please check back periodically for udpates`
-  - background color: <span style="background-color:#f8bb47; color: black; padding: 3px">Warning</span>
+    - text: `This site is under maintenance. Please check back periodically for udpates`
+    - background color: <span style="background-color:#f8bb47; color: black; padding: 3px">Warning</span>
 
 - Informational Banner
-  - text: `Here are instructions for filling in this form...`
-  - background color: <span style="background-color:#053662; color: white; padding: 3px">Info</span>
+    - text: `Here are instructions for filling in this form...`
+    - background color: <span style="background-color:#053662; color: white; padding: 3px">Info</span>
 
 ---
 
@@ -62,4 +62,4 @@ Click Save Settings to apply changes, and see a preview below the Banner Preview
 3. Navigate to your homepage and hard-refresh your browser
 4. Verify the text and background color of the banner are correct.
 
-![Show Notification Banner](/images/SHOW_NOTIFICATION_BANNER.gif)
+![Show Notification Banner](../../.vuepress/public/images/SHOW_NOTIFICATION_BANNER.gif)

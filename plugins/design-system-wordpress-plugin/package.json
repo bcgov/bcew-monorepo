@@ -30,13 +30,19 @@
         "@wordpress/components": "catalog:",
         "@wordpress/core-data": "catalog:",
         "@wordpress/data": "catalog:",
+        "@wordpress/editor": "catalog:",
         "@wordpress/element": "catalog:",
-        "@wordpress/i18n": "catalog:"
+        "@wordpress/i18n": "catalog:",
+        "@wordpress/plugins": "catalog:"
     },
     "devDependencies": {
         "@bcew-monorepo/e2e": "workspace:*",
         "@playwright/test": "catalog:",
         "@wordpress/e2e-test-utils-playwright": "catalog:",
         "@wordpress/scripts": "catalog:"
+    },
+    "scripts": {
+        "build": "wp-scripts build --output-path=dist --blocks-manifest=",
+        "lint": "wp-scripts lint-js src/**/*.js && npx stylelint \"src/**/*.scss\" --config ../../stylelint.config.js && wp-scripts lint-pkg-json"
     }
 }

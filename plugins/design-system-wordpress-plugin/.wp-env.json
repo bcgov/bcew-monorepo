@@ -7,6 +7,6 @@
     "port": 9016,
     "testsPort": 9017,
     "lifecycleScripts": {
-        "afterStart": "wp-env run cli bash -c 'wp theme activate design-system-wordpress-theme && wp plugin activate design-system-wordpress-plugin' && wp-env run tests-cli bash -c 'wp theme activate design-system-wordpress-theme && wp plugin activate design-system-wordpress-plugin'"
+        "afterStart": "wp-env run cli bash -c 'wp theme activate design-system-wordpress-theme && wp plugin activate design-system-wordpress-plugin' && wp-env run tests-cli bash -c 'wp theme activate twentytwentyfive && wp plugin activate design-system-wordpress-plugin'"
     }
 }

@@ -53,19 +53,17 @@ add_action(
 );
 
 /**
- * The function design_system_register_blocks registers block types from metadata in block.json files
- * found in subdirectories of the Blocks/build folder.
+ * Registers block metadata and assets from the generated dist directory.
  */
 function design_system_register_blocks() {
-    // Define the path to the build directory.
-    $build_dir = plugin_dir_path( __FILE__ ) . 'Blocks/build/';
+    $build_dir = plugin_dir_path( __FILE__ ) . 'dist/';
 
-    // Use glob to find all block.json files in the subdirectories of the build folder.
-    $block_files = glob( $build_dir . '*/block.json' );
-    // Loop through each block.json file.
-    foreach ( $block_files as $block_file ) {
-        // Register the block type from the metadata in block.json.
-        register_block_type_from_metadata( $block_file );
+    if ( function_exists( 'wp_register_block_types_from_metadata_collection' ) ) {
+        wp_register_block_types_from_metadata_collection( $build_dir, $build_dir . 'blocks-manifest.php' );
+    } else {
+        foreach ( glob( $build_dir . '*/block.json' ) as $block_file ) {
+            register_block_type_from_metadata( $block_file );
+        }
     }
 }
 // Hook the function into the 'init' action.

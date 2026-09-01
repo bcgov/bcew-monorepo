@@ -6,15 +6,17 @@ import { Editor } from '@wordpress/e2e-test-utils-playwright';
  * be closed before we can interact with the editor.
  *
  * @todo Set the "enablePatternModal" preference instead of closing it manually.
- * @param editor
+ * @param {Editor} editor - The WordPress editor instance used to interact with the page.
  */
-export async function closeChoosePatternModal( editor: Editor ) {
-	const choosePatternModal =
-		await editor.page.getByLabel( 'Choose a pattern' );
-	const choosePatternModalIsVisible = await choosePatternModal.isVisible();
-	if ( choosePatternModalIsVisible ) {
-		await choosePatternModal
-			.getByRole( 'button', { name: 'Close' } )
-			.click();
-	}
-}
+export const closeChoosePatternModal = async (
+    editor: Editor
+): Promise< void > => {
+    const choosePatternModal =
+        await editor.page.getByLabel( 'Choose a pattern' );
+    const choosePatternModalIsVisible = await choosePatternModal.isVisible();
+    if ( choosePatternModalIsVisible ) {
+        await choosePatternModal
+            .getByRole( 'button', { name: 'Close' } )
+            .click();
+    }
+};

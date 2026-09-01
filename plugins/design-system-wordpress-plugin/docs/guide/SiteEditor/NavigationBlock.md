@@ -9,47 +9,47 @@ Find it in:
 
 After inserting the block, select a WordPress Menu in the block settings.
 
-![Add the Navigation Block](/images/ADD_NAVIGATION_BLOCK.gif)
+![Add the Navigation Block](../../.vuepress/public/images/ADD_NAVIGATION_BLOCK.gif)
 
 ---
 
 ## How it works
 
 - Uses your existing WordPress Menus
-  - Create or edit menus in WordPress Admin → Appearance → Menus
-  - In the block settings, choose which Menu to display
+    - Create or edit menus in WordPress Admin → Appearance → Menus
+    - In the block settings, choose which Menu to display
 - Enhanced styling for:
-  - Top-level items
-  - Submenus (nested)
-  - Editor preview
-  - Mobile menu toggle (hamburger)
+    - Top-level items
+    - Submenus (nested)
+    - Editor preview
+    - Mobile menu toggle (hamburger)
 - Responsive behavior:
-  - Desktop: inline menu
-  - Mobile: optional full-screen overlay with a toggle
-  - Overlay behavior is controlled by Overlay Mode and the Mobile Breakpoint
+    - Desktop: inline menu
+    - Mobile: optional full-screen overlay with a toggle
+    - Overlay behavior is controlled by Overlay Mode and the Mobile Breakpoint
 
-![Mobile navigation overlay](/images/MOBILE_OVERLAY_NAV_MENU.gif)
+![Mobile navigation overlay](../../.vuepress/public/images/MOBILE_OVERLAY_NAV_MENU.gif)
 
 ---
 
 ## Key settings
 
 - Overlay Mode
-  - Always Overlay: Always show as an overlay with a toggle
-  - Mobile Overlay: Switch to overlay below the Mobile Breakpoint
-  - Never Overlay: Always show as a standard inline menu
+    - Always Overlay: Always show as an overlay with a toggle
+    - Mobile Overlay: Switch to overlay below the Mobile Breakpoint
+    - Never Overlay: Always show as a standard inline menu
 
 - Mobile Breakpoint
-  - Width at which Mobile Overlay activates (for Mobile Overlay mode)
-  - Default: 768px
-  - Adjustable in the block settings
+    - Width at which Mobile Overlay activates (for Mobile Overlay mode)
+    - Default: 768px
+    - Adjustable in the block settings
 
 - Visibility
-  - Show on Desktop: Visible at widths ≥ Mobile Breakpoint
-  - Show on Mobile: Visible at widths < Mobile Breakpoint
-  - Note: If both are disabled, the menu still renders as a safety fallback to avoid hiding site navigation entirely. To truly hide it, use theme visibility controls or CSS.
+    - Show on Desktop: Visible at widths ≥ Mobile Breakpoint
+    - Show on Mobile: Visible at widths < Mobile Breakpoint
+    - Note: If both are disabled, the menu still renders as a safety fallback to avoid hiding site navigation entirely. To truly hide it, use theme visibility controls or CSS.
 
-![Navigation Block Settings](/images/NAV_BLOCK_SETTINGS.png)
+![Navigation Block Settings](../../.vuepress/public/images/NAV_BLOCK_SETTINGS.png)
 
 ---
 
@@ -81,17 +81,17 @@ Accessibility: Behavior mirrors the core Navigation block for keyboard and scree
    - Below the breakpoint: confirm mobile toggle, overlay, and tap-to-open submenus
 5. Confirm the current page is highlighted in the menu.
 
-![Navigation Block HOWTO](/images/SHOW_NAVIGATION_BLOCK.gif)
+![Navigation Block HOWTO](../../.vuepress/public/images/SHOW_NAVIGATION_BLOCK.gif)
 
 ---
 
 ## Troubleshooting
 
 - No menu appears:
-  - Ensure a Menu is selected in the block settings
-  - Verify the selected Menu has items in Appearance → Menus
+    - Ensure a Menu is selected in the block settings
+    - Verify the selected Menu has items in Appearance → Menus
 - Overlay toggle not visible on mobile:
-  - Set Overlay Mode to Mobile Overlay or Always Overlay
-  - Ensure Show on Mobile is enabled and breakpoint is appropriate
+    - Set Overlay Mode to Mobile Overlay or Always Overlay
+    - Ensure Show on Mobile is enabled and breakpoint is appropriate
 - Can’t hide the menu entirely:
-  - Both visibility toggles off still render the block as a safety fallback; use theme visibility controls or CSS to hide if needed
+    - Both visibility toggles off still render the block as a safety fallback; use theme visibility controls or CSS to hide if needed

@@ -8,7 +8,7 @@ The tool lives in:
 
 Click Save Settings to apply changes.
 
-![CSP Howto](/images/CSP_HOWTO.gif)
+![CSP Howto](../../.vuepress/public/images/CSP_HOWTO.gif)
 
 ---
 
@@ -17,9 +17,9 @@ Click Save Settings to apply changes.
 - Each field accepts a space‑separated allowlist of sources (no commas).
 - If a field is left empty, the plugin uses its built‑in defaults (shown as helper text under each label).
 - You can add:
-  - Keywords: `'self'` `'none'` `'unsafe-inline'` `'unsafe-eval'` `data:` `blob:` `https:`
-  - Hosts: `example.com` `sub.example.com`
-  - Wildcards: `*.example.com`
+    - Keywords: `'self'` `'none'` `'unsafe-inline'` `'unsafe-eval'` `data:` `blob:` `https:`
+    - Hosts: `example.com` `sub.example.com`
+    - Wildcards: `*.example.com`
 - Use the least‑privilege set you can. Prefer HTTPS. Avoid `'unsafe-inline'` and `'unsafe-eval'` when possible.
 
 Tip: To revert a directive to defaults, clear the field and Save Settings. To block a type entirely, enter `'none'`.
@@ -102,21 +102,21 @@ Example additions:
 ## Common recipes
 
 - Google Fonts
-  - style-src: `fonts.googleapis.com`
-  - font-src: `fonts.gstatic.com data`:
+    - style-src: `fonts.googleapis.com`
+    - font-src: `fonts.gstatic.com data`:
 
 - YouTube/Vimeo embeds
-  - frame-src: `*.youtube.com youtu.be *.vimeo.com`
-  - img-src: `i.ytimg.com` (for thumbnails)
+    - frame-src: `*.youtube.com youtu.be *.vimeo.com`
+    - img-src: `i.ytimg.com` (for thumbnails)
 
 - Mapbox
-  - script-src: `api.mapbox.com`
-  - style-src: `api.mapbox.com`
-  - img-src: `api.mapbox.com`
-  - connect-src: `events.mapbox.com`
+    - script-src: `api.mapbox.com`
+    - style-src: `api.mapbox.com`
+    - img-src: `api.mapbox.com`
+    - connect-src: `events.mapbox.com`
 
 - Generic CDN
-  - Add the CDN host to the specific directive you need (script-src, style-src, img-src, etc.), e.g., `cdn.example.com`
+    - Add the CDN host to the specific directive you need (script-src, style-src, img-src, etc.), e.g., `cdn.example.com`
 
 ---
 
@@ -130,17 +130,17 @@ Example additions:
 
 Tip: If something still doesn’t load, verify the exact hostname in the violation message and add that host (or a wildcard like *.example.com) to the correct directive.
 
-![CSP Frame Source](/images/CSP_FRAME_SRC.gif)
+![CSP Frame Source](../../.vuepress/public/images/CSP_FRAME_SRC.gif)
 
 ---
 
 ## FAQ
 
 - How do I reset to defaults?
-  - Clear the field and click Save Settings.
+    - Clear the field and click Save Settings.
 
 - Can I disable a resource type completely?
-  - Enter 'none' in that directive and save.
+    - Enter 'none' in that directive and save.
 
 - Do I need commas?
-  - No. Use spaces between entries.
+    - No. Use spaces between entries.
