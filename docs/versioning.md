@@ -10,7 +10,7 @@ Release tags must match the workflow filter in `tag.yml` (`**/v*`) and encode bo
 
 **Rules:**
 
-- `<nx-project-name>` must be the **exact** Nx project name (`npx nx show projects`). Example: `bcew-blocks`.
+- `<nx-project-name>` must be the **exact** Nx project name (`npx nx show projects`). Example: `bcew-blocks`. If you rename the project, later tags use the **new** name; do not retag history. See [Renaming a plugin or theme](./renaming-projects.md).
 - `<semver>` is prefixed with `v` in the tag. Examples: `v1.0.0`, `v1.1.0-a1` (Composer-compatible prerelease segments are allowed when `tag.yml` and Composer both accept them).
 - Invalid examples:
     - Wrong project slug not in Nx graph
