@@ -30,6 +30,7 @@ test-results/
 
 # Build files
 dist/
+plugins/design-system-wordpress-plugin/dist/
 build/
 docs/.vitepress/cache/
 docs/.vitepress/dist/
