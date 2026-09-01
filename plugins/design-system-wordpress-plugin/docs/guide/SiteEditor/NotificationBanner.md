@@ -46,7 +46,7 @@ Click Save Settings to apply changes, and see a preview below the Banner Preview
     - background color: <span style="background-color:#ce3e39; color:white; padding: 3px">Danger</span>
 
 - Site under maintenance
-    - text: `This site is under maintenance. Please check back periodically for udpates`
+    - text: `This site is under maintenance. Please check back periodically for updates`
     - background color: <span style="background-color:#f8bb47; color: black; padding: 3px">Warning</span>
 
 - Informational Banner

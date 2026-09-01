@@ -280,7 +280,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
             // Close submenus if click is outside and we're in desktop mode
             if ( ! isClickInside ) {
                 if (
-                    isMobileView &&
+                    elements.menuContainer.classList.contains( 'dswp-is-mobile' ) &&
                     elements.menuContainer.classList.contains( 'is-menu-open' )
                 ) {
                     // Mobile mode - close everything

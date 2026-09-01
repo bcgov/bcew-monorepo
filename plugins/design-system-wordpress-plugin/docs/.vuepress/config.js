@@ -16,7 +16,7 @@ export default defineUserConfig({
         editLink: false,
         lastUpdated: false,
         repo: 'bcgov/design-system-wordpress-plugin',
-        repoLabel: 'Github',
+        repoLabel: 'GitHub',
         sidebarDepth: 2,
         navbar: [
             {

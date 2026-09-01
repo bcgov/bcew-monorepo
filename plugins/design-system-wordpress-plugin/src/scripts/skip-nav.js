@@ -17,6 +17,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
                 // Check if the button is visible (not display: none)
                 const style = window.getComputedStyle( mainNav );
                 if ( style.display !== 'none' ) {
+                    mainNav.focus();
                     mainNav.click(); // Click the button if it's visible
                 } else {
                     // Find the first link with the specified class
