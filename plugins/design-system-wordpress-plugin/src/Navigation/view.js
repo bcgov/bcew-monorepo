@@ -273,16 +273,15 @@ document.addEventListener( 'DOMContentLoaded', () => {
         // Close menu when clicking outside
         document.addEventListener( 'click', ( event ) => {
             const isClickInside = nav.contains( event.target );
+            const isMenuOpen =
+                elements.menuContainer.classList.contains( 'is-menu-open' );
             const isMobileView =
                 window.innerWidth <=
                 ( parseInt( nav.dataset.dswpMobileBreakpoint ) || 768 );
 
             // Close submenus if click is outside and we're in desktop mode
             if ( ! isClickInside ) {
-                if (
-                    elements.menuContainer.classList.contains( 'dswp-is-mobile' ) &&
-                    elements.menuContainer.classList.contains( 'is-menu-open' )
-                ) {
+                if ( isMobileView && isMenuOpen ) {
                     // Mobile mode - close everything
                     elements.menuContainer.classList.remove( 'is-menu-open' );
                     elements.menuContainer.style.display = 'none';
