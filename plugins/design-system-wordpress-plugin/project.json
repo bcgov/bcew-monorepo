@@ -27,6 +27,7 @@
         "test-e2e": {},
         "test-e2e-docker": {},
         "test-integration": {
+            "dependsOn": ["composer-install", "build", "wp-env-start"],
             "options": {
                 "command": "wp-env run tests-cli --env-cwd=wp-content/plugins/design-system-wordpress-plugin composer test"
             }
