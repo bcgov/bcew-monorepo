@@ -43,6 +43,6 @@ plugins/design-system-wordpress-plugin:
     - changed-files:
         - any-glob-to-any-file: 'plugins/design-system-wordpress-plugin/**'
 
-themes/design-system-wordpress-theme:
+themes/bcew-theme:
     - changed-files:
-        - any-glob-to-any-file: 'themes/design-system-wordpress-theme/**'
+        - any-glob-to-any-file: 'themes/bcew-theme/**'

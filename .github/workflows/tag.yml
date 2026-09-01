@@ -9,6 +9,7 @@ on:
         options:
           - bcew-blocks
           - bcew-belleville-terminal
+          - bcew-theme
           - bcew-theme-2
           - bcew-ticorp
           - bcew-document-repository

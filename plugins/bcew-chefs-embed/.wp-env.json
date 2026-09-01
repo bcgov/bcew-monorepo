@@ -2,7 +2,7 @@
 	"core": "WordPress/WordPress#6.7.2",
 	"phpVersion": "7.4",
 	"plugins": ["."],
-	"themes": ["../../themes/design-system-wordpress-theme"],
+	"themes": ["../../themes/bcew-theme"],
 	"config": { "WP_AUTO_UPDATE_CORE": false },
 	"port": 9012,
 	"testsPort": 9013,

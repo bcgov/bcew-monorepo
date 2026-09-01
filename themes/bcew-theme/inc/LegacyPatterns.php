@@ -2,7 +2,7 @@
 /**
  * Register archived legacy patterns only when explicitly enabled.
  *
- * @package Design_System_WordPress_Theme
+ * @package BCEW_Theme
  */
 
 namespace Bcgov\Theme\DesignSystem;
@@ -13,7 +13,7 @@ namespace Bcgov\Theme\DesignSystem;
  * Archived patterns live in `patterns/archive/` so they don't appear by default.
  * They are only registered when enabled via the `dswp_legacy_pattern_allow` filter.
  *
- * @package Design_System_WordPress_Theme
+ * @package BCEW_Theme
  */
 class LegacyPatterns {
 
@@ -46,7 +46,7 @@ class LegacyPatterns {
             \register_block_pattern_category(
                 'dswp-archive',
                 array(
-                    'label' => \__( 'Archive', 'design-system-wordpress-theme' ),
+                    'label' => \__( 'Archive', 'bcew-theme' ),
                 )
             );
         }

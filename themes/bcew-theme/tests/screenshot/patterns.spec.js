@@ -1,6 +1,6 @@
 import { createPatternTests } from '@bcew-monorepo/e2e';
 
-createPatternTests( 'design-system-wordpress-theme', [
+createPatternTests( 'bcew-theme', [
     'bc-gov-logo-dark',
     'bc-gov-logo-supported-light',
     'dswp-bullet-list',
