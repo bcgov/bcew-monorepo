@@ -37,3 +37,5 @@ Example (adjust package name and version):
   }
 }
 ```
+
+Renaming a project's Composer `"name"` publishes a **new** package. Downstream `require` lines must change; old names do not redirect. See [Renaming a plugin or theme](./renaming-projects.md).

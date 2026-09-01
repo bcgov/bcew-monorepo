@@ -203,6 +203,7 @@ const monorepoGuideItems = [
   { text: 'Architecture', link: '/architecture' },
   { text: 'Project standards', link: '/project-standards' },
   { text: 'Contributing & migration', link: '/contributing-workflow' },
+  { text: 'Renaming plugins and themes', link: '/renaming-projects' },
   { text: 'Shared tooling', link: '/shared-tooling' },
   { text: 'CI/CD', link: '/ci-cd' },
   { text: 'Release & deployment', link: '/release-and-deployment' },
