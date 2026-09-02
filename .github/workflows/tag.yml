@@ -13,6 +13,7 @@ on:
           - bcew-ticorp
           - bcew-document-repository
           - bcew-chefs-embed
+          - design-system-wordpress-plugin
       version:
         description: 'Version to release (for example: 1.2.3)'
         required: true

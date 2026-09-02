@@ -100,7 +100,7 @@ function buildSidebarForDir(dirPath: string, urlPrefix: string): SidebarItem[] {
   for (const entry of entries) {
     if (entry.isFile() && entry.name.endsWith('.md')) {
       const slug = entry.name.replace(/\.md$/, '');
-      if (slug === 'index' || slug === 'overview') {
+      if (slug === 'index' || slug === 'overview' || slug === 'README') {
         continue;
       }
       items.push({
@@ -170,13 +170,23 @@ function packageDocsSection(
       `/content/${dirName}/${name}`
     );
 
+    const pluginNestedItems = [...nestedItems];
+    const hasDevelopersSection = name === 'design-system-wordpress-plugin' && !pluginNestedItems.some((item) => item.text === 'Developers');
+    if (hasDevelopersSection) {
+      pluginNestedItems.push({
+        text: 'Developers',
+        collapsed: true,
+        items: []
+      });
+    }
+
     return [
-      nestedItems.length > 0
+      nestedItems.length > 0 || hasDevelopersSection
         ? {
             text: displayName,
             link: `/content/${dirName}/${name}/`,
             collapsed: false,
-            items: nestedItems
+            items: pluginNestedItems
           }
         : { text: displayName, link: `/content/${dirName}/${name}/` }
     ];

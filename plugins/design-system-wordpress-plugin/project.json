@@ -1,0 +1,32 @@
+{
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "name": "design-system-wordpress-plugin",
+    "root": "plugins/design-system-wordpress-plugin",
+    "sourceRoot": "plugins/design-system-wordpress-plugin/src",
+    "projectType": "application",
+    "generators": {
+        "bcew-monorepo:plugin": {
+            "name": "Design System WordPress Plugin",
+            "slug": "design-system-wordpress-plugin"
+        }
+    },
+    "targets": {
+        "composer-install": {},
+        "build": {},
+        "start": {},
+        "start-playwright": {},
+        "test-e2e": {},
+        "test-e2e-docker": {},
+        "test-integration": {
+            "dependsOn": ["composer-install", "build", "wp-env-start"],
+            "options": {
+                "command": "wp-env run tests-cli --env-cwd=wp-content/plugins/design-system-wordpress-plugin composer test"
+            }
+        },
+        "wp-env-start": {},
+        "wp-env-clean": {},
+        "wp-env-stop": {}
+    },
+    "implicitDependencies": ["packages/phpunit-config/"],
+    "tags": ["type:wp-plugin"]
+}

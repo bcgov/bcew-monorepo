@@ -1,0 +1,44 @@
+{
+    "name": "design-system-wordpress-plugin",
+    "version": "1.0.0",
+    "description": "Design System WordPress Plugin",
+    "author": "govwordpress@gov.bc.ca",
+    "license": "GPL-2.0-or-later",
+    "keywords": [
+        "WordPress",
+        "block",
+        "Block Plugin",
+        "BCGov",
+        "Gutenberg",
+        "plugin"
+    ],
+    "homepage": "https://github.com/bcgov/bcew-monorepo/tree/main/plugins/design-system-wordpress-plugin",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/bcgov/bcew-monorepo.git",
+        "directory": "plugins/design-system-wordpress-plugin"
+    },
+    "bugs": {
+        "url": "https://github.com/bcgov/bcew-monorepo/issues",
+        "email": "govwordpress@gov.bc.ca"
+    },
+    "main": "src/index.js",
+    "dependencies": {
+        "@wordpress/api-fetch": "catalog:",
+        "@wordpress/block-editor": "catalog:",
+        "@wordpress/blocks": "catalog:",
+        "@wordpress/components": "catalog:",
+        "@wordpress/core-data": "catalog:",
+        "@wordpress/data": "catalog:",
+        "@wordpress/editor": "catalog:",
+        "@wordpress/element": "catalog:",
+        "@wordpress/i18n": "catalog:",
+        "@wordpress/plugins": "catalog:"
+    },
+    "devDependencies": {
+        "@bcew-monorepo/e2e": "workspace:*",
+        "@playwright/test": "catalog:",
+        "@wordpress/e2e-test-utils-playwright": "catalog:",
+        "@wordpress/scripts": "catalog:"
+    }
+}
