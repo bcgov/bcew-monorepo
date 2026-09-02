@@ -12,16 +12,7 @@
     },
     "targets": {
         "composer-install": {},
-        "build": {
-            "options": {
-                "command": "wp-scripts build --output-path=dist --blocks-manifest="
-            }
-        },
-        "lint": {
-            "options": {
-                "command": "wp-scripts lint-js src/**/*.js && npx stylelint \"src/**/*.scss\" --config ../../stylelint.config.js && wp-scripts lint-pkg-json"
-            }
-        },
+        "build": {},
         "start": {},
         "start-playwright": {},
         "test-e2e": {},
