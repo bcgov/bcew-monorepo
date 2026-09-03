@@ -100,6 +100,12 @@ export const renderPattern = async ( editor: any, patternSlug: string ) => {
     await expect( preview ).toHaveScreenshot();
 };
 
+/*
+ * Skip style-book examples whose preview depends on live site data or
+ * does not render a stable example. Latest Posts is in this list because
+ * a populated install shows the Hello world title, while an empty install
+ * shows the "No posts found" placeholder — the same block, two heights.
+ */
 const EXCLUDED_STYLEBOOK_BLOCKS = new Set( [
     'avatar',
     'column',
@@ -123,6 +129,7 @@ const EXCLUDED_STYLEBOOK_BLOCKS = new Set( [
     'video',
     'calendar',
     'latest-comments',
+    'latest-posts',
     'archives',
 ] );
 
