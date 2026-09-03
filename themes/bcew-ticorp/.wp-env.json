@@ -3,7 +3,7 @@
     "phpVersion": "7.4",
     "themes": [
         ".",
-        "../../themes/design-system-wordpress-theme"
+        "../../themes/bcew-theme"
     ],
     "config": {
         "WP_AUTO_UPDATE_CORE": false
