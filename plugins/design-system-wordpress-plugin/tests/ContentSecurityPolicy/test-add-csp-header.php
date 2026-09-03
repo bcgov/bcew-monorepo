@@ -140,6 +140,41 @@ class ContentSecurityPolicyHeaderTest extends \WP_UnitTestCase {
     }
 
     /**
+     * Test: CSP is not applied in wp-admin.
+     */
+    public function test_csp_skipped_in_admin() {
+        set_current_screen( 'dashboard' );
+
+        try {
+            $headers = $this->csp->add_csp_header( [] );
+
+            $this->assertArrayNotHasKey( 'Content-Security-Policy', $headers );
+            $this->assertArrayNotHasKey( 'Strict-Transport-Security', $headers );
+        } finally {
+            set_current_screen( 'front' );
+        }
+    }
+
+    /**
+     * Test: CSP is not applied on the login screen.
+     */
+    public function test_csp_skipped_on_login_page() {
+        global $pagenow;
+
+        $previous_pagenow = $pagenow ?? null;
+        $pagenow          = 'wp-login.php';
+
+        try {
+            $headers = $this->csp->add_csp_header( [] );
+
+            $this->assertArrayNotHasKey( 'Content-Security-Policy', $headers );
+            $this->assertArrayNotHasKey( 'Strict-Transport-Security', $headers );
+        } finally {
+            $pagenow = $previous_pagenow;
+        }
+    }
+
+    /**
      * Tear down the test fixture.
      *
      * @return void

@@ -50,6 +50,39 @@ const requestRestAsCurrentUser = async (
     } );
 };
 
+/*
+ * Sign in through the request API, not the HTML login form.
+ * The default Playwright session is already an administrator, and posting
+ * wp-login.php in the browser can hang on HTTP under CSP
+ * upgrade-insecure-requests. Sharing cookies via page.request avoids that.
+ */
+const loginAsUser = async (
+    page: Page,
+    username: string,
+    password: string
+): Promise< void > => {
+    await page.context().clearCookies();
+
+    /*
+     * WordPress sets a test cookie on GET wp-login.php and rejects sign-on
+     * if it is missing. Fetch the page first, then POST credentials.
+     */
+    await page.request.get( '/wp-login.php' );
+    await page.request.post( '/wp-login.php', {
+        form: {
+            log: username,
+            pwd: password,
+            rememberme: 'forever',
+            redirect_to: '/wp-admin/',
+            testcookie: '1',
+        },
+        failOnStatusCode: false,
+    } );
+
+    await page.goto( '/wp-admin/', { waitUntil: 'domcontentloaded' } );
+    await expect( page ).toHaveURL( /wp-admin/ );
+};
+
 /**
  * Find submenu container for a given menu item link
  * Uses XPath to find the parent submenu element
@@ -141,7 +174,11 @@ test.describe( 'Navigation', () => {
         } );
     } );
 
-    test.beforeEach( async ( { admin, editor } ) => {
+    test.beforeEach( async ( { admin, editor }, testInfo ) => {
+        if ( testInfo.titlePath.includes( 'Editor role' ) ) {
+            return;
+        }
+
         await admin.createNewPost( {
             postType: 'post',
             title: 'Test Page',
@@ -1116,7 +1153,6 @@ test.describe( 'Navigation', () => {
 
     test.describe( 'Role-Based Permissions', () => {
         let editorUserId: number;
-        let editorPageId: number;
         let editorUsername: string;
 
         test.beforeAll( async ( { requestUtils: utils } ) => {
@@ -1129,18 +1165,6 @@ test.describe( 'Navigation', () => {
                 roles: [ 'editor' ],
             } );
             editorUserId = editorUser.id;
-
-            // Create a page that the editor can edit (editors can edit pages, just not create them)
-            // Make sure the page is published so editor can access it
-            const page = await utils.rest( {
-                method: 'POST',
-                path: '/wp/v2/pages',
-                data: {
-                    title: 'Editor Test Page',
-                    status: 'publish',
-                },
-            } );
-            editorPageId = page.id;
         } );
 
         test( 'Admin can insert Navigation block and select menu', async ( {
@@ -1189,17 +1213,11 @@ test.describe( 'Navigation', () => {
             expect( canAddItems ).toBeGreaterThan( 0 );
         } );
 
-        test( 'Editor cannot edit navigation menu content (restricted)', async ( {
-            page,
-        } ) => {
-            // Login as editor user using the page context
-            await page.goto( '/wp-login.php' );
-            await page.fill( '#user_login', editorUsername );
-            await page.fill( '#user_pass', 'password' );
-            await page.click( '#wp-submit' );
-            await page.waitForURL( /wp-admin/ );
-            // Wait for admin dashboard to load
-            await page.waitForLoadState( 'domcontentloaded' );
+        test.describe( 'Editor role', () => {
+            test( 'Editor cannot edit navigation menu content (restricted)', async ( {
+                page,
+            } ) => {
+            await loginAsUser( page, editorUsername, 'password' );
 
             // Try to create a navigation menu via REST API as editor
             // Use fetch directly since RequestUtils.rest() doesn't support different auth
@@ -1225,20 +1243,10 @@ test.describe( 'Navigation', () => {
             expect( [ 401, 403, 404 ] ).toContain( status );
         } );
 
-        test( 'Editor can view but not modify navigation block settings', async ( {
-            page,
-        } ) => {
-            // Login as editor user
-            await page.goto( '/wp-login.php' );
-            await page.fill( '#user_login', editorUsername );
-            await page.fill( '#user_pass', 'password' );
-            // Wait for redirect after submit; use explicit timeout to avoid eating full test timeout on CI
-            await Promise.all( [
-                page.waitForURL( /wp-admin/, { timeout: 30000 } ),
-                page.click( '#wp-submit' ),
-            ] );
-            // Wait for admin dashboard to load
-            await page.waitForLoadState( 'domcontentloaded' );
+            test( 'Editor can view but not modify navigation block settings', async ( {
+                page,
+            } ) => {
+            await loginAsUser( page, editorUsername, 'password' );
 
             // Try to modify an existing navigation menu via REST API as editor
             // WordPress REST API uses POST with _method=PATCH or PATCH method
@@ -1260,26 +1268,15 @@ test.describe( 'Navigation', () => {
             expect( [ 401, 403, 404, 405 ] ).toContain( status );
         } );
 
-        test( 'Editor can insert Navigation block but cannot edit menu content', async ( {
-            page,
-        } ) => {
-            // Login as editor user
-            await page.goto( '/wp-login.php' );
-            await page.fill( '#user_login', editorUsername );
-            await page.fill( '#user_pass', 'password' );
-            await page.click( '#wp-submit' );
-            await page.waitForURL( /wp-admin/ );
-            await page.waitForLoadState( 'domcontentloaded' );
+            test( 'Editor can insert Navigation block but cannot edit menu content', async ( {
+                page,
+            } ) => {
+            await loginAsUser( page, editorUsername, 'password' );
 
-            // Navigate to edit the existing page (editors can edit pages, just not create them)
-            // Use domcontentloaded instead of networkidle to avoid timeout issues
-            await page.goto(
-                `/wp-admin/post.php?post=${ editorPageId }&action=edit`,
-                {
-                    waitUntil: 'domcontentloaded',
-                    timeout: TIMEOUTS.SLOW,
-                }
-            );
+            await page.goto( '/wp-admin/post-new.php?post_type=page', {
+                waitUntil: 'domcontentloaded',
+                timeout: TIMEOUTS.SLOW,
+            } );
 
             // Wait for page to load and check if we were redirected
             await page.waitForLoadState( 'domcontentloaded' );
@@ -1287,9 +1284,12 @@ test.describe( 'Navigation', () => {
             // Check if we were redirected (e.g., permission denied)
             const currentUrl = page.url();
 
-            // If redirected away from editor, the editor might not have permission
+            const isEditorScreen =
+                currentUrl.includes( 'post-new.php' ) ||
+                currentUrl.includes( 'post.php' );
+
             if (
-                ! currentUrl.includes( 'post.php' ) ||
+                ! isEditorScreen ||
                 currentUrl.includes( 'wp-admin/edit.php' )
             ) {
                 // Editor might not have permission - verify this is expected
@@ -1298,6 +1298,8 @@ test.describe( 'Navigation', () => {
                 expect( currentUrl ).toMatch( /wp-admin/ );
                 return;
             }
+
+            await closeChoosePatternModal( { page } as Editor );
 
             // Check for error messages first (might appear before editor loads)
             const errorMessage = page
@@ -1311,7 +1313,7 @@ test.describe( 'Navigation', () => {
                 // Editor doesn't have permission - this is expected
                 // Just verify we're not on the editor page
                 expect( page.url() ).not.toMatch(
-                    /post\.php\?post=.*&action=edit/
+                    /post(-new)?\.php/
                 );
                 return;
             }
@@ -1324,7 +1326,7 @@ test.describe( 'Navigation', () => {
             } catch {
                 // Editor didn't load - check again for errors or redirect
                 const finalUrl = page.url();
-                if ( ! finalUrl.includes( 'post.php' ) ) {
+                if ( ! finalUrl.includes( 'post-new.php' ) && ! finalUrl.includes( 'post.php' ) ) {
                     // Redirected away - editor doesn't have permission
                     return;
                 }
@@ -1458,17 +1460,10 @@ test.describe( 'Navigation', () => {
                 // Navigation block might be hidden from editors entirely
                 expect( canInsertBlock ).toBe( false );
             }
+            } );
         } );
 
         test.afterAll( async ( { requestUtils: utils } ) => {
-            // Clean up: delete the editor user and test page
-            if ( editorPageId ) {
-                await utils.rest( {
-                    method: 'DELETE',
-                    path: `/wp/v2/pages/${ editorPageId }`,
-                    data: { force: true },
-                } );
-            }
             if ( editorUserId ) {
                 await utils.rest( {
                     method: 'DELETE',
