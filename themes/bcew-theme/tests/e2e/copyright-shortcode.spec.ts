@@ -30,7 +30,7 @@ test( 'copyright template part renders current year on frontend', async ( {
     await editor.page
         .getByRole( 'textbox', { name: 'Type text or HTML' } )
         .fill(
-            '<!-- wp:template-part {"slug":"copyright","theme":"design-system-wordpress-theme"} /-->'
+            '<!-- wp:template-part {"slug":"copyright","theme":"bcew-theme"} /-->'
         );
     await editor.page
         .getByRole( 'button', { name: 'Exit code editor' } )

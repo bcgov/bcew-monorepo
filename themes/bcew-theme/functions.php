@@ -2,7 +2,7 @@
 /**
  * Design System Plugin dependency: auto-activate on theme switch, allow admins to disable, show notice when inactive.
  *
- * @package Design_System_WordPress_Theme
+ * @package Bcew_Theme
  */
 
 use Bcgov\Theme\DesignSystem\LegacyPatterns;
@@ -12,12 +12,12 @@ use Bcgov\Theme\DesignSystem\LegacyPatterns;
  *
  * @return string Plugin basename path.
  */
-function design_system_wordpress_theme_required_plugin() {
+function bcew_theme_required_plugin() {
     return 'design-system-wordpress-plugin/design-system-wordpress-plugin.php';
 }
 
-add_action( 'after_switch_theme', 'design_system_theme_activate_plugin_on_switch', 10, 2 );
-add_action( 'after_setup_theme', 'design_system_theme_register_plugin_required_notices', 5 );
+add_action( 'after_switch_theme', 'bcew_theme_activate_plugin_on_switch', 10, 2 );
+add_action( 'after_setup_theme', 'bcew_theme_register_plugin_required_notices', 5 );
 
 /**
  * Composer autoload.
@@ -48,12 +48,12 @@ add_filter( 'dswp_legacy_pattern_allow', '__return_true', 100 );
 /**
  * Auto-activate plugin when this theme is switched to; admins can disable it later.
  */
-function design_system_theme_activate_plugin_on_switch() {
+function bcew_theme_activate_plugin_on_switch() {
     $new_theme = wp_get_theme( get_stylesheet() );
-    if ( 'design-system-wordpress-theme' !== $new_theme->get_template() ) {
+    if ( 'bcew-theme' !== $new_theme->get_template() ) {
         return;
     }
-    $plugin = design_system_wordpress_theme_required_plugin();
+    $plugin = bcew_theme_required_plugin();
     $path   = WP_PLUGIN_DIR . '/' . $plugin;
     if ( ! file_exists( $path ) ) {
         return;
@@ -65,20 +65,20 @@ function design_system_theme_activate_plugin_on_switch() {
 }
 
 /** Register admin notice when plugin is inactive. */
-function design_system_theme_register_plugin_required_notices() {
+function bcew_theme_register_plugin_required_notices() {
     require_once ABSPATH . 'wp-admin/includes/plugin.php';
-    if ( is_plugin_active( design_system_wordpress_theme_required_plugin() ) ) {
+    if ( is_plugin_active( bcew_theme_required_plugin() ) ) {
         return;
     }
-    add_action( 'admin_notices', 'design_system_theme_plugin_required_notice' );
+    add_action( 'admin_notices', 'bcew_theme_plugin_required_notice' );
 }
 
 /** Outputs the "plugin required" notice in the admin. */
-function design_system_theme_plugin_required_notice() {
-    $msg = __( 'This theme will not work correctly without the Design System Plugin. Please enable it.', 'design-system-wordpress-theme' );
-    echo '<div class="notice notice-warning is-dismissible"><p><strong>' . esc_html__( 'Design System Theme', 'design-system-wordpress-theme' ) . ':</strong> ' . esc_html( $msg );
+function bcew_theme_plugin_required_notice() {
+    $msg = __( 'This theme will not work correctly without the Design System Plugin. Please enable it.', 'bcew-theme' );
+    echo '<div class="notice notice-warning is-dismissible"><p><strong>' . esc_html__( 'BC Extended Web Theme', 'bcew-theme' ) . ':</strong> ' . esc_html( $msg );
     if ( current_user_can( 'activate_plugins' ) ) {
-        echo ' <a href="' . esc_url( admin_url( 'plugins.php' ) ) . '">' . esc_html__( 'Go to Plugins', 'design-system-wordpress-theme' ) . '</a>';
+        echo ' <a href="' . esc_url( admin_url( 'plugins.php' ) ) . '">' . esc_html__( 'Go to Plugins', 'bcew-theme' ) . '</a>';
     }
     echo '</p></div>';
 }
@@ -86,41 +86,41 @@ function design_system_theme_plugin_required_notice() {
 /**
  * Enqueue the design system CSS stylesheet.
  *
- * Uses the shared `design_system_get_asset_data()` helper to resolve the stylesheet
- * version, enabling consistent cache-busting behavior with `design_system_enqueue_global_js_scripts()`.
+ * Uses the shared `bcew_theme_get_asset_data()` helper to resolve the stylesheet
+ * version, enabling consistent cache-busting behavior with `bcew_theme_enqueue_global_js_scripts()`.
  *
  * @since 1.3.0
  *
  * @return void
  */
-function design_system_public_enqueue_global_styles() {
-    // design_system_get_asset_data() reads build metadata; falls back to filemtime() if missing.
-    $asset = design_system_get_asset_data( get_template_directory() . '/dist/index.asset.php', get_template_directory() . '/dist/index.css' );
-    wp_enqueue_style( 'design-system-styles', get_template_directory_uri() . '/dist/index.css', array(), $asset['version'] );
+function bcew_theme_public_enqueue_global_styles() {
+    // bcew_theme_get_asset_data() reads build metadata; falls back to filemtime() if missing.
+    $asset = bcew_theme_get_asset_data( get_template_directory() . '/dist/index.asset.php', get_template_directory() . '/dist/index.css' );
+    wp_enqueue_style( 'bcew-theme-styles', get_template_directory_uri() . '/dist/index.css', array(), $asset['version'] );
 }
 
-add_action( 'enqueue_block_assets', 'design_system_public_enqueue_global_styles' );
-add_action( 'admin_enqueue_scripts', 'design_system_public_enqueue_global_styles' );
+add_action( 'enqueue_block_assets', 'bcew_theme_public_enqueue_global_styles' );
+add_action( 'admin_enqueue_scripts', 'bcew_theme_public_enqueue_global_styles' );
 
 
 /**
  * Register and enqueue the theme's compiled JavaScript bundle.
  *
  * Orchestrates asset metadata resolution and WordPress script registration/enqueueing.
- * Delegates asset resolution to `design_system_get_asset_data()` for separation of concerns
+ * Delegates asset resolution to `bcew_theme_get_asset_data()` for separation of concerns
  * and testability.
  *
  * @since 1.3.0
  *
  * @return void
  */
-function design_system_enqueue_global_js_scripts() {
-    // design_system_get_asset_data() reads build metadata; falls back to filemtime() if missing.
-    $asset = design_system_get_asset_data( get_template_directory() . '/dist/index.asset.php', get_template_directory() . '/dist/index.js' );
+function bcew_theme_enqueue_global_js_scripts() {
+    // bcew_theme_get_asset_data() reads build metadata; falls back to filemtime() if missing.
+    $asset = bcew_theme_get_asset_data( get_template_directory() . '/dist/index.asset.php', get_template_directory() . '/dist/index.js' );
 
     // Enqueue the compiled script directly. WordPress will register the handle and avoid duplicate enqueues.
     wp_enqueue_script(
-        'design-system-scripts',
+        'bcew-theme-scripts',
         get_template_directory_uri() . '/dist/index.js',
         $asset['dependencies'],
         $asset['version'],
@@ -128,26 +128,26 @@ function design_system_enqueue_global_js_scripts() {
     );
 }
 
-add_action( 'enqueue_block_editor_assets', 'design_system_enqueue_global_js_scripts' );
-add_action( 'wp_enqueue_scripts', 'design_system_enqueue_global_js_scripts' );
+add_action( 'enqueue_block_editor_assets', 'bcew_theme_enqueue_global_js_scripts' );
+add_action( 'wp_enqueue_scripts', 'bcew_theme_enqueue_global_js_scripts' );
 
 /**
  * Returns the current year for the [current_year] shortcode.
  *
  * @return string Current year in the site timezone.
  */
-function design_system_current_year_shortcode() {
+function bcew_theme_current_year_shortcode() {
     return esc_html( wp_date( 'Y' ) );
 }
 
 /**
  * Registers shortcodes used by this theme.
  */
-function design_system_register_shortcodes() {
-    add_shortcode( 'current_year', 'design_system_current_year_shortcode' );
+function bcew_theme_register_shortcodes() {
+    add_shortcode( 'current_year', 'bcew_theme_current_year_shortcode' );
 }
 
-add_action( 'init', 'design_system_register_shortcodes' );
+add_action( 'init', 'bcew_theme_register_shortcodes' );
 
 /**
  * Retrieve asset metadata (dependencies and version) for built assets.
@@ -160,7 +160,7 @@ add_action( 'init', 'design_system_register_shortcodes' );
  * @param string $fallback_file  Path to the script/stylesheet file for fallback versioning.
  * @return array Associative array with 'dependencies' and 'version' keys.
  */
-function design_system_get_asset_data( $asset_file, $fallback_file ) {
+function bcew_theme_get_asset_data( $asset_file, $fallback_file ) {
     $asset_data = file_exists( $asset_file ) ? include $asset_file : array();
 
     return array(
@@ -174,7 +174,7 @@ function design_system_get_asset_data( $asset_file, $fallback_file ) {
  *
  * @param string $dir_path The path of the directory to include files from.
  */
-function design_system_include_block_style_variations( $dir_path ) {
+function bcew_theme_include_block_style_variations( $dir_path ) {
     // Define the block style variation files.
     $block_style_variation_files = [ 'navigation', 'heading' ];
 
@@ -188,58 +188,58 @@ function design_system_include_block_style_variations( $dir_path ) {
 
     // Recursively include from subdirectories.
     foreach ( glob( $dir_path . '/*', GLOB_ONLYDIR ) as $dir ) {
-        design_system_include_block_style_variations( $dir );
+        bcew_theme_include_block_style_variations( $dir );
     }
 }
 
 // Set the directory path and include block style variations.
 $dir_path = get_template_directory() . '/blocks/core/style-variations';
-design_system_include_block_style_variations( $dir_path );
+bcew_theme_include_block_style_variations( $dir_path );
 
 /**
  * Registers the post title block styles (e.g. Underline).
  *
  * @since 1.3.0
  */
-function design_system_register_post_title_block_styles() {
+function bcew_theme_register_post_title_block_styles() {
     $block_name       = 'core/post-title';
     $style_properties = array(
         'name'         => 'underline-title',
         'label'        => __( 'Underline' ),
         'isDefault'    => false,
-        'style_handle' => 'design-system-styles',
+        'style_handle' => 'bcew-theme-styles',
     );
     register_block_style( $block_name, $style_properties );
 }
-add_action( 'init', 'design_system_register_post_title_block_styles' );
+add_action( 'init', 'bcew_theme_register_post_title_block_styles' );
 
 /**
  * Restrict access to the locking UI to Administrators.
  *
  * @param array $settings Default editor settings.
  */
-function design_system_restrict_locking_unlocking_blocks( $settings ) {
+function bcew_theme_restrict_locking_unlocking_blocks( $settings ) {
     $settings['canLockBlocks'] = current_user_can( 'activate_plugins' );
     return $settings;
 }
-add_filter( 'block_editor_settings_all', 'design_system_restrict_locking_unlocking_blocks', 10, 2 );
+add_filter( 'block_editor_settings_all', 'bcew_theme_restrict_locking_unlocking_blocks', 10, 2 );
 
 
 /**
  * Disables the default patterns from WordPress.
  */
-function design_system_disable_default_block_patterns() {
+function bcew_theme_disable_default_block_patterns() {
     remove_theme_support( 'core-block-patterns' );
 }
-add_action( 'init', 'design_system_disable_default_block_patterns' );
+add_action( 'init', 'bcew_theme_disable_default_block_patterns' );
 
 
 /**
- * Combines any child theme's color palette with the Design System Theme Color palette.
+ * Combines any child theme's color palette with the BC Extended Web Theme Color palette.
  *
  * @param object $theme_json The theme.json schema.
  */
-function design_system_combine_parent_child_theme_json( $theme_json ) {
+function bcew_theme_combine_parent_child_theme_json( $theme_json ) {
     $theme_json_data = $theme_json->get_data();
 
     // If the theme_json_data is from the design system theme, this is not a child theme so exit without change.
@@ -247,7 +247,7 @@ function design_system_combine_parent_child_theme_json( $theme_json ) {
         return $theme_json;
     }
     // Get the parent theme.
-    $theme = wp_get_theme( 'design-system-wordpress-theme' );
+    $theme = wp_get_theme( 'bcew-theme' );
 
     // Get the path to the theme.json file using the theme's stylesheet.
     $theme_json_path = $theme->get_theme_root() . '/' . $theme->get_stylesheet() . '/theme.json';
@@ -301,7 +301,7 @@ function design_system_combine_parent_child_theme_json( $theme_json ) {
     // Update the theme JSON with the new data.
     return $theme_json->update_with( $new_data );
 }
-add_filter( 'wp_theme_json_data_theme', 'design_system_combine_parent_child_theme_json' );
+add_filter( 'wp_theme_json_data_theme', 'bcew_theme_combine_parent_child_theme_json' );
 
 /**
  * Enable appearance tools for super admins only.
@@ -310,7 +310,7 @@ add_filter( 'wp_theme_json_data_theme', 'design_system_combine_parent_child_them
  *
  * @return WP_Theme_JSON_Data
  */
-function design_system_enable_appearance_tools_for_super_admins( $theme_json ) {
+function bcew_theme_enable_appearance_tools_for_super_admins( $theme_json ) {
     if ( ! is_super_admin() ) {
         return $theme_json;
     }
@@ -324,7 +324,7 @@ function design_system_enable_appearance_tools_for_super_admins( $theme_json ) {
         )
     );
 }
-add_filter( 'wp_theme_json_data_theme', 'design_system_enable_appearance_tools_for_super_admins', 20 );
+add_filter( 'wp_theme_json_data_theme', 'bcew_theme_enable_appearance_tools_for_super_admins', 20 );
 
 /**
  * TEMP: Re-enable block background color in the editor.
@@ -335,7 +335,7 @@ add_filter( 'wp_theme_json_data_theme', 'design_system_enable_appearance_tools_f
  *
  * @return WP_Theme_JSON_Data
  */
-function design_system_temp_enable_block_background_color( $theme_json ) {
+function bcew_theme_temp_enable_block_background_color( $theme_json ) {
     return $theme_json->update_with(
         array(
             'version'  => 3,
@@ -347,13 +347,13 @@ function design_system_temp_enable_block_background_color( $theme_json ) {
         )
     );
 }
-add_filter( 'wp_theme_json_data_theme', 'design_system_temp_enable_block_background_color', 25 );
+add_filter( 'wp_theme_json_data_theme', 'bcew_theme_temp_enable_block_background_color', 25 );
 
 /**
  * Add excerpt support to pages.
  */
 add_post_type_support( 'page', 'excerpt' );
-add_filter( 'get_block_type_variations', 'design_system_hero_cover_variation', 10, 2 );
+add_filter( 'get_block_type_variations', 'bcew_theme_hero_cover_variation', 10, 2 );
 
 /**
  * Adds a custom variation for the core/cover block.
@@ -364,7 +364,7 @@ add_filter( 'get_block_type_variations', 'design_system_hero_cover_variation', 1
  * @param WP_Block_Type $block_type Block type being filtered.
  * @return array Modified block variations.
  */
-function design_system_hero_cover_variation( $variations, $block_type ) {
+function bcew_theme_hero_cover_variation( $variations, $block_type ) {
     // Only modify variations for the cover block.
     if ( 'core/cover' !== $block_type->name ) {
         return $variations;
@@ -373,8 +373,8 @@ function design_system_hero_cover_variation( $variations, $block_type ) {
     // Add a custom variation.
     $variations[] = [
         'name'        => 'hero-image',
-        'title'       => __( 'Hero Image', 'design-system-wordpress-theme' ),
-        'description' => __( 'For best results, use a 16:9 (HD) image, e.g. 1920x1080.', 'design-system-wordpress-theme' ),
+        'title'       => __( 'Hero Image', 'bcew-theme' ),
+        'description' => __( 'For best results, use a 16:9 (HD) image, e.g. 1920x1080.', 'bcew-theme' ),
         'isActive'    => [ 'minHeight' ],
         'scope'       => [ 'inserter' ],
         'isDefault'   => false,
@@ -517,13 +517,13 @@ function design_system_hero_cover_variation( $variations, $block_type ) {
  *
  * @return void
  */
-function design_system_register_link_button_block_style() {
+function bcew_theme_register_link_button_block_style() {
     // Use the Link button style from the DSWP theme.
     register_block_style(
         'core/button',
         [
             'name'         => 'link',
-            'label'        => __( 'Link', 'design-system-wordpress-theme' ),
+            'label'        => __( 'Link', 'bcew-theme' ),
             'inline_style' => '.wp-block-button.is-style-link > * {
                 background: none;
                 border: none;
@@ -537,4 +537,4 @@ function design_system_register_link_button_block_style() {
     );
 }
 
-add_action( 'init', 'design_system_register_link_button_block_style' );
+add_action( 'init', 'bcew_theme_register_link_button_block_style' );

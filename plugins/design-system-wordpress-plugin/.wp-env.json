@@ -2,11 +2,11 @@
     "core": "WordPress/WordPress#6.7.2",
     "phpVersion": "7.4",
     "plugins": ["."],
-    "themes": ["../../themes/design-system-wordpress-theme"],
+    "themes": ["../../themes/bcew-theme"],
     "config": { "WP_AUTO_UPDATE_CORE": false },
     "port": 9016,
     "testsPort": 9017,
     "lifecycleScripts": {
-        "afterStart": "wp-env run cli bash -c 'wp theme activate design-system-wordpress-theme && wp plugin activate design-system-wordpress-plugin' && wp-env run tests-cli bash -c 'wp theme activate twentytwentyfive && wp plugin activate design-system-wordpress-plugin'"
+        "afterStart": "wp-env run cli bash -c 'wp theme activate bcew-theme && wp plugin activate design-system-wordpress-plugin' && wp-env run tests-cli bash -c 'wp theme activate twentytwentyfive && wp plugin activate design-system-wordpress-plugin'"
     }
 }
