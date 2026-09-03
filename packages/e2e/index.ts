@@ -101,10 +101,11 @@ export const renderPattern = async ( editor: any, patternSlug: string ) => {
 };
 
 /*
- * Skip style-book examples whose preview depends on live site data or
- * does not render a stable example. Latest Posts is in this list because
- * a populated install shows the Hello world title, while an empty install
- * shows the "No posts found" placeholder — the same block, two heights.
+ * Skip style-book examples whose preview is live site data, not a static
+ * example. A fresh wp-env has Hello world / Sample Page / Uncategorized;
+ * an empty or REST-failing install shows placeholders instead. Screenshot
+ * tests stop at the first mismatch, so leaving these in causes a new
+ * failure on every CI run.
  */
 const EXCLUDED_STYLEBOOK_BLOCKS = new Set( [
     'avatar',
@@ -131,6 +132,13 @@ const EXCLUDED_STYLEBOOK_BLOCKS = new Set( [
     'latest-comments',
     'latest-posts',
     'archives',
+    'categories',
+    'page-list',
+    'navigation',
+    'navigation-link',
+    'home-link',
+    'loginout',
+    'post-terms',
 ] );
 
 const STYLEBOOK_EXAMPLE_SELECTOR =
