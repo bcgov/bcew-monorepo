@@ -1217,249 +1217,256 @@ test.describe( 'Navigation', () => {
             test( 'Editor cannot edit navigation menu content (restricted)', async ( {
                 page,
             } ) => {
-            await loginAsUser( page, editorUsername, 'password' );
+                await loginAsUser( page, editorUsername, 'password' );
 
-            // Try to create a navigation menu via REST API as editor
-            // Use fetch directly since RequestUtils.rest() doesn't support different auth
-            const response = await requestRestAsCurrentUser(
-                page,
-                '/wp/v2/navigation',
-                'POST',
-                {
-                    title: 'Editor Modified Menu',
-                    content:
-                        '<!-- wp:navigation-link {"label":"Test","url":"/test/"} /-->',
-                    status: 'publish',
-                }
-            );
+                // Try to create a navigation menu via REST API as editor
+                // Use fetch directly since RequestUtils.rest() doesn't support different auth
+                const response = await requestRestAsCurrentUser(
+                    page,
+                    '/wp/v2/navigation',
+                    'POST',
+                    {
+                        title: 'Editor Modified Menu',
+                        content:
+                            '<!-- wp:navigation-link {"label":"Test","url":"/test/"} /-->',
+                        status: 'publish',
+                    }
+                );
 
-            // Editor should NOT be able to create navigation menus
-            // Navigation menus require 'edit_theme_options' capability which editors don't have
-            const status = response.status();
-            expect( status ).toBeGreaterThanOrEqual( 400 );
+                // Editor should NOT be able to create navigation menus
+                // Navigation menus require 'edit_theme_options' capability which editors don't have
+                const status = response.status();
+                expect( status ).toBeGreaterThanOrEqual( 400 );
 
-            // Could be 403 (Forbidden), 404 (Not Found - endpoint hidden), or 401 (Unauthorized)
-            // All indicate permission/access issues
-            expect( [ 401, 403, 404 ] ).toContain( status );
-        } );
+                // Could be 403 (Forbidden), 404 (Not Found - endpoint hidden), or 401 (Unauthorized)
+                // All indicate permission/access issues
+                expect( [ 401, 403, 404 ] ).toContain( status );
+            } );
 
             test( 'Editor can view but not modify navigation block settings', async ( {
                 page,
             } ) => {
-            await loginAsUser( page, editorUsername, 'password' );
+                await loginAsUser( page, editorUsername, 'password' );
 
-            // Try to modify an existing navigation menu via REST API as editor
-            // WordPress REST API uses POST with _method=PATCH or PATCH method
-            const response = await requestRestAsCurrentUser(
-                page,
-                `/wp/v2/navigation/${ simpleMenuId }`,
-                'PATCH',
-                {
-                    title: 'Editor Modified Menu Title',
-                }
-            );
+                // Try to modify an existing navigation menu via REST API as editor
+                // WordPress REST API uses POST with _method=PATCH or PATCH method
+                const response = await requestRestAsCurrentUser(
+                    page,
+                    `/wp/v2/navigation/${ simpleMenuId }`,
+                    'PATCH',
+                    {
+                        title: 'Editor Modified Menu Title',
+                    }
+                );
 
-            // Editor should NOT be able to modify navigation menus
-            const status = response.status();
-            expect( status ).toBeGreaterThanOrEqual( 400 );
+                // Editor should NOT be able to modify navigation menus
+                const status = response.status();
+                expect( status ).toBeGreaterThanOrEqual( 400 );
 
-            // Could be 403 (Forbidden), 404 (Not Found), 405 (Method Not Allowed), or 401 (Unauthorized)
-            // All indicate permission/access issues - the key is that editor cannot modify
-            expect( [ 401, 403, 404, 405 ] ).toContain( status );
-        } );
+                // Could be 403 (Forbidden), 404 (Not Found), 405 (Method Not Allowed), or 401 (Unauthorized)
+                // All indicate permission/access issues - the key is that editor cannot modify
+                expect( [ 401, 403, 404, 405 ] ).toContain( status );
+            } );
 
             test( 'Editor can insert Navigation block but cannot edit menu content', async ( {
                 page,
             } ) => {
-            await loginAsUser( page, editorUsername, 'password' );
+                await loginAsUser( page, editorUsername, 'password' );
 
-            await page.goto( '/wp-admin/post-new.php?post_type=page', {
-                waitUntil: 'domcontentloaded',
-                timeout: TIMEOUTS.SLOW,
-            } );
-
-            // Wait for page to load and check if we were redirected
-            await page.waitForLoadState( 'domcontentloaded' );
-
-            // Check if we were redirected (e.g., permission denied)
-            const currentUrl = page.url();
-
-            const isEditorScreen =
-                currentUrl.includes( 'post-new.php' ) ||
-                currentUrl.includes( 'post.php' );
-
-            if (
-                ! isEditorScreen ||
-                currentUrl.includes( 'wp-admin/edit.php' )
-            ) {
-                // Editor might not have permission - verify this is expected
-                // Editors can edit pages they have access to, but might be redirected if they don't
-                // This is a valid test result - editor cannot access the page
-                expect( currentUrl ).toMatch( /wp-admin/ );
-                return;
-            }
-
-            await closeChoosePatternModal( { page } as Editor );
-
-            // Check for error messages first (might appear before editor loads)
-            const errorMessage = page
-                .locator( '.notice-error, .error' )
-                .first();
-            const hasError = await errorMessage
-                .isVisible()
-                .catch( () => false );
-
-            if ( hasError ) {
-                // Editor doesn't have permission - this is expected
-                // Just verify we're not on the editor page
-                expect( page.url() ).not.toMatch(
-                    /post(-new)?\.php/
-                );
-                return;
-            }
-
-            // Wait for Gutenberg editor to be ready
-            try {
-                await page.waitForSelector( '.block-editor-writing-flow', {
+                await page.goto( '/wp-admin/post-new.php?post_type=page', {
+                    waitUntil: 'domcontentloaded',
                     timeout: TIMEOUTS.SLOW,
                 } );
-            } catch {
-                // Editor didn't load - check again for errors or redirect
-                const finalUrl = page.url();
-                if ( ! finalUrl.includes( 'post-new.php' ) && ! finalUrl.includes( 'post.php' ) ) {
-                    // Redirected away - editor doesn't have permission
+
+                // Wait for page to load and check if we were redirected
+                await page.waitForLoadState( 'domcontentloaded' );
+
+                // Check if we were redirected (e.g., permission denied)
+                const currentUrl = page.url();
+
+                const isEditorScreen =
+                    currentUrl.includes( 'post-new.php' ) ||
+                    currentUrl.includes( 'post.php' );
+
+                if (
+                    ! isEditorScreen ||
+                    currentUrl.includes( 'wp-admin/edit.php' )
+                ) {
+                    // Editor might not have permission - verify this is expected
+                    // Editors can edit pages they have access to, but might be redirected if they don't
+                    // This is a valid test result - editor cannot access the page
+                    expect( currentUrl ).toMatch( /wp-admin/ );
                     return;
                 }
-                const finalError = page
+
+                await closeChoosePatternModal( { page } as Editor );
+
+                // Check for error messages first (might appear before editor loads)
+                const errorMessage = page
                     .locator( '.notice-error, .error' )
                     .first();
-                const hasFinalError = await finalError
+                const hasError = await errorMessage
                     .isVisible()
                     .catch( () => false );
-                if ( hasFinalError ) {
-                    // Editor doesn't have permission
+
+                if ( hasError ) {
+                    // Editor doesn't have permission - this is expected
+                    // Just verify we're not on the editor page
+                    expect( page.url() ).not.toMatch( /post(-new)?\.php/ );
                     return;
                 }
-                // If we get here, editor might just be slow - skip this test gracefully
-                // This can happen if the editor user doesn't have edit permissions
-                return;
-            }
 
-            // Close welcome guide if present
-            const welcomeGuide = page.getByLabel( 'Welcome' );
-            if ( await welcomeGuide.isVisible().catch( () => false ) ) {
-                await page.getByRole( 'button', { name: 'Close' } ).click();
-                await welcomeGuide.waitFor( { state: 'hidden' } );
-            }
-
-            // Wait for editor to be interactive, then use keyboard shortcut to open inserter
-            // This is more reliable than clicking the button
-            const editorArea = page
-                .locator(
-                    '.block-editor-writing-flow, .editor-post-text-editor, .block-editor-block-list__layout'
-                )
-                .first();
-            await editorArea.waitFor( {
-                state: 'attached',
-                timeout: TIMEOUTS.SLOW,
-            } );
-
-            // Click in the editor area to ensure focus
-            await editorArea.click( { timeout: TIMEOUTS.SLOW } ).catch( () => {
-                // If clicking fails, try focusing the body
-                return page.locator( 'body' ).click();
-            } );
-
-            // Use keyboard shortcut to open block inserter (slash)
-            await page.keyboard.press( '/' );
-
-            // Wait for inserter to open
-            const inserter = page.locator(
-                '.block-editor-inserter__menu, .block-editor-block-patterns-list'
-            );
-            await inserter.waitFor( { state: 'attached' } ).catch( () => {
-                // Inserter might open differently, that's okay
-            } );
-
-            // Search for Navigation block
-            const searchInput = page.getByPlaceholder(
-                /Search|Search for a block/i
-            );
-            if ( await searchInput.isVisible().catch( () => false ) ) {
-                await searchInput.fill( 'Navigation' );
-                // Wait for search results to appear
-                await page
-                    .waitForSelector( '[role="option"]', { timeout: 3000 } )
-                    .catch( () => {
-                        // Results might load differently
+                // Wait for Gutenberg editor to be ready
+                try {
+                    await page.waitForSelector( '.block-editor-writing-flow', {
+                        timeout: TIMEOUTS.SLOW,
                     } );
-            }
+                } catch {
+                    // Editor didn't load - check again for errors or redirect
+                    const finalUrl = page.url();
+                    if (
+                        ! finalUrl.includes( 'post-new.php' ) &&
+                        ! finalUrl.includes( 'post.php' )
+                    ) {
+                        // Redirected away - editor doesn't have permission
+                        return;
+                    }
+                    const finalError = page
+                        .locator( '.notice-error, .error' )
+                        .first();
+                    const hasFinalError = await finalError
+                        .isVisible()
+                        .catch( () => false );
+                    if ( hasFinalError ) {
+                        // Editor doesn't have permission
+                        return;
+                    }
+                    // If we get here, editor might just be slow - skip this test gracefully
+                    // This can happen if the editor user doesn't have edit permissions
+                    return;
+                }
 
-            // Try to find and insert the Navigation block
-            const navBlock = page
-                .getByRole( 'option', { name: /Navigation/i } )
-                .first();
-            const canInsertBlock = await navBlock
-                .isVisible( { timeout: 3000 } )
-                .catch( () => false );
+                // Close welcome guide if present
+                const welcomeGuide = page.getByLabel( 'Welcome' );
+                if ( await welcomeGuide.isVisible().catch( () => false ) ) {
+                    await page.getByRole( 'button', { name: 'Close' } ).click();
+                    await welcomeGuide.waitFor( { state: 'hidden' } );
+                }
 
-            if ( canInsertBlock ) {
-                // Editor CAN insert the block
-                await navBlock.click();
-                // Wait for block to be inserted
-                await page
+                // Wait for editor to be interactive, then use keyboard shortcut to open inserter
+                // This is more reliable than clicking the button
+                const editorArea = page
                     .locator(
-                        '[data-type="design-system-wordpress-plugin/navigation"]'
-                    )
-                    .waitFor( { state: 'attached' } );
-
-                // Check if editor can see the menu selector
-                const settingsButton = page
-                    .getByRole( 'button', { name: /Settings|Block Settings/i } )
-                    .first();
-                await settingsButton.click();
-                // Wait for settings sidebar to open
-                await page
-                    .locator( '.interface-complementary-area' )
-                    .waitFor( { state: 'visible' } );
-
-                // Try to find the "Select Menu" dropdown
-                const menuSelect = page.getByLabel( /Select Menu/i ).first();
-                const canSelectMenu = await menuSelect
-                    .isVisible( { timeout: 2000 } )
-                    .catch( () => false );
-
-                // Editor should be able to SELECT a menu (view existing menus)
-                // but WordPress may restrict which menus they can see
-                expect( canSelectMenu ).toBe( true );
-
-                // Try to click on the navigation block to edit inner blocks
-                const navigationBlock = page
-                    .locator(
-                        '[data-type="design-system-wordpress-plugin/navigation"]'
+                        '.block-editor-writing-flow, .editor-post-text-editor, .block-editor-block-list__layout'
                     )
                     .first();
-                await navigationBlock.click();
-                // Wait for block to be selected
-                await navigationBlock.waitFor( { state: 'attached' } );
+                await editorArea.waitFor( {
+                    state: 'attached',
+                    timeout: TIMEOUTS.SLOW,
+                } );
 
-                // Check if editor can see block appender (ability to add links)
-                const blockAppender = navigationBlock.locator(
-                    '.block-list-appender'
+                // Click in the editor area to ensure focus
+                await editorArea
+                    .click( { timeout: TIMEOUTS.SLOW } )
+                    .catch( () => {
+                        // If clicking fails, try focusing the body
+                        return page.locator( 'body' ).click();
+                    } );
+
+                // Use keyboard shortcut to open block inserter (slash)
+                await page.keyboard.press( '/' );
+
+                // Wait for inserter to open
+                const inserter = page.locator(
+                    '.block-editor-inserter__menu, .block-editor-block-patterns-list'
                 );
-                const canAddLinks = await blockAppender
-                    .isVisible()
+                await inserter.waitFor( { state: 'attached' } ).catch( () => {
+                    // Inserter might open differently, that's okay
+                } );
+
+                // Search for Navigation block
+                const searchInput = page.getByPlaceholder(
+                    /Search|Search for a block/i
+                );
+                if ( await searchInput.isVisible().catch( () => false ) ) {
+                    await searchInput.fill( 'Navigation' );
+                    // Wait for search results to appear
+                    await page
+                        .waitForSelector( '[role="option"]', { timeout: 3000 } )
+                        .catch( () => {
+                            // Results might load differently
+                        } );
+                }
+
+                // Try to find and insert the Navigation block
+                const navBlock = page
+                    .getByRole( 'option', { name: /Navigation/i } )
+                    .first();
+                const canInsertBlock = await navBlock
+                    .isVisible( { timeout: 3000 } )
                     .catch( () => false );
 
-                // Editor should NOT be able to add links (requires edit_theme_options)
-                // The block appender might not be visible, or clicking it might fail
-                // This verifies that editors cannot edit menu content
-                expect( canAddLinks ).toBe( false );
-            } else {
-                // If editor cannot even see the block, that's also a valid restriction
-                // Navigation block might be hidden from editors entirely
-                expect( canInsertBlock ).toBe( false );
-            }
+                if ( canInsertBlock ) {
+                    // Editor CAN insert the block
+                    await navBlock.click();
+                    // Wait for block to be inserted
+                    await page
+                        .locator(
+                            '[data-type="design-system-wordpress-plugin/navigation"]'
+                        )
+                        .waitFor( { state: 'attached' } );
+
+                    // Check if editor can see the menu selector
+                    const settingsButton = page
+                        .getByRole( 'button', {
+                            name: /Settings|Block Settings/i,
+                        } )
+                        .first();
+                    await settingsButton.click();
+                    // Wait for settings sidebar to open
+                    await page
+                        .locator( '.interface-complementary-area' )
+                        .waitFor( { state: 'visible' } );
+
+                    // Try to find the "Select Menu" dropdown
+                    const menuSelect = page
+                        .getByLabel( /Select Menu/i )
+                        .first();
+                    const canSelectMenu = await menuSelect
+                        .isVisible( { timeout: 2000 } )
+                        .catch( () => false );
+
+                    // Editor should be able to SELECT a menu (view existing menus)
+                    // but WordPress may restrict which menus they can see
+                    expect( canSelectMenu ).toBe( true );
+
+                    // Try to click on the navigation block to edit inner blocks
+                    const navigationBlock = page
+                        .locator(
+                            '[data-type="design-system-wordpress-plugin/navigation"]'
+                        )
+                        .first();
+                    await navigationBlock.click();
+                    // Wait for block to be selected
+                    await navigationBlock.waitFor( { state: 'attached' } );
+
+                    // Check if editor can see block appender (ability to add links)
+                    const blockAppender = navigationBlock.locator(
+                        '.block-list-appender'
+                    );
+                    const canAddLinks = await blockAppender
+                        .isVisible()
+                        .catch( () => false );
+
+                    // Editor should NOT be able to add links (requires edit_theme_options)
+                    // The block appender might not be visible, or clicking it might fail
+                    // This verifies that editors cannot edit menu content
+                    expect( canAddLinks ).toBe( false );
+                } else {
+                    // If editor cannot even see the block, that's also a valid restriction
+                    // Navigation block might be hidden from editors entirely
+                    expect( canInsertBlock ).toBe( false );
+                }
             } );
         } );
 
