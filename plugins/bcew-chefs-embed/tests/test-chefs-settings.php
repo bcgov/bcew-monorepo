@@ -126,6 +126,93 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Handle save extracts a form ID from a CHEFS URL before storing it.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_extracts_form_id_from_url() {
+		$form_url = 'https://submit.digital.gov.bc.ca/app/form/manage?f=' . $this->form_id;
+
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Tests simulate a POST request and set a valid nonce below.
+		$_POST['form_id']     = $form_url;
+		$_POST['api_key']     = $this->api_key;
+		$_POST['_wpnonce']    = wp_create_nonce( 'bcew_chefs_save' );
+		$_REQUEST['_wpnonce'] = $_POST['_wpnonce'];
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+
+		$this->capture_settings_redirect(
+			function () {
+				( new \Bcgov\BcewChefsEmbed\Settings() )->handle_save();
+			}
+		);
+
+		$this->assertIsArray( CredentialsManager::get_by_form_id( $this->form_id ) );
+		$this->assertNull( CredentialsManager::get_by_form_id( $form_url ) );
+	}
+
+	/**
+	 * Handle save extracts a form ID from a URL with a fragment.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_extracts_form_id_before_url_fragment() {
+		$form_url = 'https://submit.digital.gov.bc.ca/app/form/manage?f=' . $this->form_id . '#section';
+
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Tests simulate a POST request and set a valid nonce below.
+		$_POST['form_id']     = $form_url;
+		$_POST['api_key']     = $this->api_key;
+		$_POST['_wpnonce']    = wp_create_nonce( 'bcew_chefs_save' );
+		$_REQUEST['_wpnonce'] = $_POST['_wpnonce'];
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+
+		$this->capture_settings_redirect(
+			function () {
+				( new \Bcgov\BcewChefsEmbed\Settings() )->handle_save();
+			}
+		);
+
+		$this->assertIsArray( CredentialsManager::get_by_form_id( $this->form_id ) );
+	}
+
+	/**
+	 * Handle save preserves a non-URL string containing an f query-like fragment.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_preserves_non_url_form_id() {
+		$form_id    = 'not-a-url?f=' . $this->form_id;
+		$reflection = new \ReflectionMethod( \Bcgov\BcewChefsEmbed\Settings::class, 'extract_form_id' );
+		$reflection->setAccessible( true );
+
+		$this->assertSame(
+			$form_id,
+			$reflection->invoke( new \Bcgov\BcewChefsEmbed\Settings(), $form_id )
+		);
+	}
+
+	/**
+	 * Handle save preserves a direct form ID after trimming whitespace.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_preserves_direct_form_id() {
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Test simulates a POST request and sets a valid nonce below.
+		$_POST['form_id']     = ' ' . $this->form_id . ' ';
+		$_POST['api_key']     = $this->api_key;
+		$_POST['_wpnonce']    = wp_create_nonce( 'bcew_chefs_save' );
+		$_REQUEST['_wpnonce'] = $_POST['_wpnonce'];
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+
+		$this->capture_settings_redirect(
+			function () {
+				( new \Bcgov\BcewChefsEmbed\Settings() )->handle_save();
+			}
+		);
+
+		$this->assertIsArray( CredentialsManager::get_by_form_id( $this->form_id ) );
+	}
+
+	/**
 	 * Duplicate Form ID updates the existing row instead of creating a new one (primary key constraint).
 	 *
 	 * Acceptance: Saving the same Form ID again should not work, and cause it to fail (checking primary key rule) Database only
