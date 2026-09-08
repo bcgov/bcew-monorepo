@@ -1,6 +1,6 @@
 {
 	"core": "WordPress/WordPress#6.7.2",
-	"phpVersion": "7.4",
+	"phpVersion": "8.4",
 	"plugins": ["."],
 	"themes": ["../../themes/design-system-wordpress-theme"],
 	"config": { "WP_AUTO_UPDATE_CORE": false },
