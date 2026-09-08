@@ -328,11 +328,39 @@ class Settings {
 		$form_id = sanitize_text_field( wp_unslash( $_POST['form_id'] ?? '' ) );
 		$api_key = sanitize_text_field( wp_unslash( $_POST['api_key'] ?? '' ) );
 
+		$form_id       = $this->extract_form_id( $form_id );
 		$saved_form_id = CredentialsManager::save( $form_id, $api_key );
 		$redirect_arg  = false === $saved_form_id ? 'chefs_error' : 'chefs_saved';
 
 		wp_safe_redirect( add_query_arg( $redirect_arg, '1', self::get_page_url() ) );
 		exit;
+	}
+
+	/**
+	 * Extract a form ID from a CHEFS form URL.
+	 *
+	 * @param string $form_id_or_url Form ID or URL containing a form ID.
+	 * @return string
+	 */
+	protected function extract_form_id( string $form_id_or_url ) {
+		// Remove whitespace commonly introduced when copying a form ID or URL.
+		$form_id_or_url = trim( $form_id_or_url );
+
+		// Direct form IDs are already usable; only parse valid URLs for an f parameter.
+		if ( ! filter_var( $form_id_or_url, FILTER_VALIDATE_URL ) ) {
+			return $form_id_or_url;
+		}
+
+		// Extract the CHEFS form ID from the URL query string.
+		wp_parse_str( (string) wp_parse_url( $form_id_or_url, PHP_URL_QUERY ), $query_args );
+		$form_id = $query_args['f'] ?? '';
+
+		// Preserve the original URL unless f contains a valid CHEFS form ID.
+		if ( ! is_string( $form_id ) || ! preg_match( '/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i', $form_id ) ) {
+			return $form_id_or_url;
+		}
+
+		return $form_id;
 	}
 
 	/**

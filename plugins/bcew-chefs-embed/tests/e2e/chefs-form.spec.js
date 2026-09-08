@@ -3,6 +3,11 @@ const { test, expect } = require( '@wordpress/e2e-test-utils-playwright' );
 const BLOCK_NAME = 'bcew-chefs-embed/chefs-form';
 const PLUGIN_BASENAME = 'bcew-chefs-embed/bcew-chefs-embed';
 const SETTINGS_PAGE_QUERY = 'page=bcew-chefs-embed-settings';
+// Match both WordPress REST URL formats. The old /wp-json-only matcher missed
+// index.php?rest_route requests, causing 502/authentication errors and leaving
+// the CHEFS viewer unattached; this keeps the mocked response format-independent.
+const EMBED_CONFIG_ROUTE = '**/*embed-config**';
+
 const ensurePluginIsActive = async ( requestUtils ) => {
     const plugins = await requestUtils.rest( {
         path: '/wp/v2/plugins',
@@ -213,6 +218,16 @@ test.describe( 'CHEFS Form block', () => {
         const formId = '33333333-3333-4333-8333-333333333333';
 
         await addSavedForm( admin, page, formId, 'persisted-api-key' );
+        // This test checks block persistence, not preview rendering. Return a
+        // valid response with no config so the preview stops before a live CHEFS
+        // request, which would fail with the fake API key used by the fixture.
+        await page.route( EMBED_CONFIG_ROUTE, ( route ) =>
+            route.fulfill( {
+                status: 200,
+                contentType: 'application/json',
+                body: '{}',
+            } )
+        );
 
         await admin.createNewPost();
         await editor.insertBlock( { name: BLOCK_NAME } );
@@ -244,6 +259,15 @@ test.describe( 'CHEFS Form block', () => {
         const formId = '44444444-4444-4444-8444-444444444444';
 
         await addSavedForm( admin, page, formId, 'removed-api-key' );
+        // This test checks that removing a saved form clears the block value.
+        // Keep preview loading local with an intentionally incomplete payload.
+        await page.route( EMBED_CONFIG_ROUTE, ( route ) =>
+            route.fulfill( {
+                status: 200,
+                contentType: 'application/json',
+                body: '{}',
+            } )
+        );
 
         await admin.createNewPost();
         await editor.insertBlock( { name: BLOCK_NAME } );
@@ -329,19 +353,16 @@ test.describe( 'CHEFS Form block', () => {
 
         await addSavedForm( admin, page, formId, 'preview-test-api-key' );
 
-        await page.route(
-            '**/wp-json/bcew-chefs-embed/v1/embed-config**',
-            async ( route ) => {
-                await route.fulfill( {
-                    status: 200,
-                    contentType: 'application/json',
-                    body: JSON.stringify( {
-                        token: 'preview-token',
-                        baseUrl: mockBaseUrl,
-                    } ),
-                } );
-            }
-        );
+        await page.route( EMBED_CONFIG_ROUTE, async ( route ) => {
+            await route.fulfill( {
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify( {
+                    token: 'preview-token',
+                    baseUrl: mockBaseUrl,
+                } ),
+            } );
+        } );
 
         await page.route(
             `${ mockBaseUrl }/embed/chefs-form-viewer.min.js`,
@@ -393,20 +414,17 @@ test.describe( 'CHEFS Form block', () => {
 
         await addSavedForm( admin, page, formId, 'preview-error-api-key' );
 
-        await page.route(
-            '**/wp-json/bcew-chefs-embed/v1/embed-config**',
-            async ( route ) => {
-                await route.fulfill( {
-                    status: 404,
-                    contentType: 'application/json',
-                    body: JSON.stringify( {
-                        code: 'chefs_form_not_configured',
-                        message:
-                            'Unable to decrypt the configured CHEFS credentials.',
-                    } ),
-                } );
-            }
-        );
+        await page.route( EMBED_CONFIG_ROUTE, async ( route ) => {
+            await route.fulfill( {
+                status: 404,
+                contentType: 'application/json',
+                body: JSON.stringify( {
+                    code: 'chefs_form_not_configured',
+                    message:
+                        'Unable to decrypt the configured CHEFS credentials.',
+                } ),
+            } );
+        } );
 
         await admin.createNewPost();
         await editor.insertBlock( { name: BLOCK_NAME } );
@@ -433,19 +451,16 @@ test.describe( 'CHEFS Form block', () => {
 
         await addSavedForm( admin, page, formId, 'frontend-test-api-key' );
 
-        await page.route(
-            '**/wp-json/bcew-chefs-embed/v1/embed-config**',
-            async ( route ) => {
-                await route.fulfill( {
-                    status: 200,
-                    contentType: 'application/json',
-                    body: JSON.stringify( {
-                        token: mockToken,
-                        baseUrl: mockBaseUrl,
-                    } ),
-                } );
-            }
-        );
+        await page.route( EMBED_CONFIG_ROUTE, async ( route ) => {
+            await route.fulfill( {
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify( {
+                    token: mockToken,
+                    baseUrl: mockBaseUrl,
+                } ),
+            } );
+        } );
 
         await page.route(
             `${ mockBaseUrl }/embed/chefs-form-viewer.min.js`,
@@ -517,19 +532,16 @@ test.describe( 'CHEFS Form block', () => {
 
         await addSavedForm( admin, page, formId, 'frontend-success-api-key' );
 
-        await page.route(
-            '**/wp-json/bcew-chefs-embed/v1/embed-config**',
-            async ( route ) => {
-                await route.fulfill( {
-                    status: 200,
-                    contentType: 'application/json',
-                    body: JSON.stringify( {
-                        token: mockToken,
-                        baseUrl: mockBaseUrl,
-                    } ),
-                } );
-            }
-        );
+        await page.route( EMBED_CONFIG_ROUTE, async ( route ) => {
+            await route.fulfill( {
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify( {
+                    token: mockToken,
+                    baseUrl: mockBaseUrl,
+                } ),
+            } );
+        } );
 
         await page.route(
             `${ mockBaseUrl }/embed/chefs-form-viewer.min.js`,
@@ -606,19 +618,16 @@ test.describe( 'CHEFS Form block', () => {
 
         await addSavedForm( admin, page, formId, 'frontend-error-handler-key' );
 
-        await page.route(
-            '**/wp-json/bcew-chefs-embed/v1/embed-config**',
-            async ( route ) => {
-                await route.fulfill( {
-                    status: 200,
-                    contentType: 'application/json',
-                    body: JSON.stringify( {
-                        token: mockToken,
-                        baseUrl: mockBaseUrl,
-                    } ),
-                } );
-            }
-        );
+        await page.route( EMBED_CONFIG_ROUTE, async ( route ) => {
+            await route.fulfill( {
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify( {
+                    token: mockToken,
+                    baseUrl: mockBaseUrl,
+                } ),
+            } );
+        } );
 
         await page.route(
             `${ mockBaseUrl }/embed/chefs-form-viewer.min.js`,
@@ -820,20 +829,17 @@ test.describe( 'CHEFS Form block', () => {
 
         await addSavedForm( admin, page, formId, 'frontend-custom-api-key' );
 
-        await page.route(
-            '**/wp-json/bcew-chefs-embed/v1/embed-config**',
-            async ( route ) => {
-                await route.fulfill( {
-                    status: 200,
-                    contentType: 'application/json',
-                    body: JSON.stringify( {
-                        token: mockToken,
-                        baseUrl: mockBaseUrl,
-                        confirmation: customMessage,
-                    } ),
-                } );
-            }
-        );
+        await page.route( EMBED_CONFIG_ROUTE, async ( route ) => {
+            await route.fulfill( {
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify( {
+                    token: mockToken,
+                    baseUrl: mockBaseUrl,
+                    confirmation: customMessage,
+                } ),
+            } );
+        } );
 
         await page.route(
             `${ mockBaseUrl }/embed/chefs-form-viewer.min.js`,
@@ -901,19 +907,16 @@ test.describe( 'CHEFS Form block', () => {
 
         await addSavedForm( admin, page, formId, 'frontend-error-api-key' );
 
-        await page.route(
-            '**/wp-json/bcew-chefs-embed/v1/embed-config**',
-            async ( route ) => {
-                await route.fulfill( {
-                    status: 404,
-                    contentType: 'application/json',
-                    body: JSON.stringify( {
-                        code: 'chefs_form_not_configured',
-                        message: 'Unable to load the CHEFS form configuration.',
-                    } ),
-                } );
-            }
-        );
+        await page.route( EMBED_CONFIG_ROUTE, async ( route ) => {
+            await route.fulfill( {
+                status: 404,
+                contentType: 'application/json',
+                body: JSON.stringify( {
+                    code: 'chefs_form_not_configured',
+                    message: 'Unable to load the CHEFS form configuration.',
+                } ),
+            } );
+        } );
 
         await admin.createNewPost();
         await editor.insertBlock( { name: BLOCK_NAME } );
