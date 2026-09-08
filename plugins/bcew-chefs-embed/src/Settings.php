@@ -171,8 +171,13 @@ class Settings {
 
 				<table class="form-table">
 					<tr>
-						<th><label for="form_id"><?php esc_html_e( 'Form ID', 'bcew-chefs-embed' ); ?></label></th>
-						<td><input type="text" class="regular-text code" id="form_id" name="form_id" required autocomplete="off" placeholder="xxxxxxxx-xxxx-4xxx-xxxx-xxxxxxxxxxxx" /></td>
+						<th><label for="form_id"><?php esc_html_e( 'Form ID / URL', 'bcew-chefs-embed' ); ?></label></th>
+						<td>
+							<input type="text" class="regular-text code" id="form_id" name="form_id" required autocomplete="off" aria-describedby="form-id-description" placeholder="<?php esc_attr_e( 'CHEFS Form URL or Form ID', 'bcew-chefs-embed' ); ?>" />
+							<p id="form-id-description" class="description" style="max-width: 78ch; line-height: 1.5;">
+								<?php esc_html_e( 'Example url ', 'bcew-chefs-embed' ); ?><code>https://submit.digital.gov.bc.ca/app/form/submit?f=43cfb894-a0cf-4bef-8026-7c8001e3cdf5</code><?php esc_html_e( ' or form ID ', 'bcew-chefs-embed' ); ?><code>43cfb894-a0cf-4bef-8026-7c8001e3cdf5</code>
+							</p>
+						</td>
 					</tr>
 					<tr>
 						<th><label for="api_key"><?php esc_html_e( 'API Key', 'bcew-chefs-embed' ); ?></label></th>
