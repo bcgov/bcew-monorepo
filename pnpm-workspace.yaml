@@ -41,7 +41,7 @@ catalog:
   '@wordpress/icons': wp-6.7
   '@wordpress/plugins': wp-6.7
   '@wordpress/scripts': ^31.8.0
-  '@wordpress/stylelint-config': ^23.0.1
+  '@wordpress/stylelint-config': wp-6.7
   'chokidar-cli': ^3.0.0
   'concurrently': ^10.0.5
   'eslint-plugin-playwright': ^2.11.0
