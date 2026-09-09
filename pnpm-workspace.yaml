@@ -56,5 +56,7 @@ catalog:
 minimumReleaseAge: 1440
 overrides:
   markdownlint-cli: 0.49.0
+# Todo: Remove this when the @wordpress/env package is updated to a version that includes the patch.
+# Patch taken from https://github.com/WordPress/gutenberg/pull/82478
 patchedDependencies:
   '@wordpress/env@11.14.0': patches/@wordpress__env@11.14.0.patch
