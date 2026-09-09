@@ -271,7 +271,10 @@ class Settings {
 												__( 'Remove form', 'bcew-chefs-embed' ),
 												'delete small',
 												'submit',
-												false
+												false,
+												array(
+													'onclick' => 'return confirm( ' . wp_json_encode( __( 'Remove this form? The Form ID and API key will be deleted, and the form will no longer be available in the block picker. This cannot be undone.', 'bcew-chefs-embed' ) ) . ' );',
+												)
 											);
 											?>
 										</form>

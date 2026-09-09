@@ -325,6 +325,11 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 			$html,
 			'Remove form must include a nonce for bcew_chefs_delete.'
 		);
+		$this->assertStringContainsString(
+			'Remove this form?',
+			$html,
+			'Remove form must ask before submitting.'
+		);
 	}
 
 	/**
