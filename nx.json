@@ -7,8 +7,7 @@
             "options": {
                 "command": "composer install",
                 "cwd": "{projectRoot}"
-            },
-            "parallelism": false
+            }
         },
         "build": {
             "executor": "nx:run-commands",
@@ -106,8 +105,7 @@
                 "cwd": "{projectRoot}",
                 "xdebug": "coverage"
             },
-            "dependsOn": ["composer-install"],
-            "parallelism": false
+            "dependsOn": ["composer-install"]
         },
         "wp-env-clean": {
             "executor": "nx:run-commands",

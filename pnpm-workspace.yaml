@@ -7,12 +7,12 @@ catalog:
   '@bcgov/bc-sans': ^2.1.0
   '@bcgov/design-tokens': ^4.0.0
   '@fortawesome/fontawesome-free': 7.2.0
-  '@nx/devkit': ^23.0.2
-  '@nx/plugin': ^23.0.2
+  '@nx/devkit': ^23.2.0
+  '@nx/plugin': ^23.2.0
   '@playwright/test': 1.61.1
   '@swc-node/register': ~1.11.1
   '@swc/cli': ~0.8.1
-  '@swc/core': ~1.15.43
+  '@swc/core': ~1.15.47
   '@swc/helpers': ~0.5.23
   '@types/jest': ^30.0.0
   '@types/node': 20.19.9
@@ -20,24 +20,25 @@ catalog:
   '@wordpress/base-styles': wp-6.7
   '@wordpress/block-editor': wp-6.7
   '@wordpress/blocks': wp-6.7
+  '@wordpress/browserslist-config': wp-6.7
   '@wordpress/components': wp-6.7
   '@wordpress/core-data': wp-6.7
   '@wordpress/data': wp-6.7
   '@wordpress/e2e-test-utils-playwright': wp-6.7
   '@wordpress/editor': wp-6.7
   '@wordpress/element': wp-6.7
-  '@wordpress/env': ^11.12.0
+  '@wordpress/env': 11.14.1-next.v.202609031004.0
   '@wordpress/i18n': wp-6.7
   '@wordpress/icons': wp-6.7
   '@wordpress/plugins': wp-6.7
-  '@wordpress/scripts': ^31.7.0
-  '@wordpress/stylelint-config': wp-6.7
+  '@wordpress/scripts': ^31.8.0
+  '@wordpress/stylelint-config': ^23.42.0
   'chokidar-cli': ^3.0.0
-  'concurrently': ^10.0.3
-  'eslint-plugin-playwright': ^2.10.5
+  'concurrently': ^10.0.5
+  'eslint-plugin-playwright': ^2.11.0
   'eslint-plugin-prefer-arrow': ^1.2.3
   'js-beautify': ^2.0.3
-  'nx': ^23.0.2
+  'nx': ^23.2.0
   'prettier': ~3.6.2
   'react': 18.3.1
   'tslib': ^2.8.1

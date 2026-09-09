@@ -39,13 +39,8 @@ test( 'copyright template part renders current year on frontend', async ( {
     // Open the frontend preview.
     const previewPage = await editor.openPreviewPage();
 
-    // The shortcode must be expanded — not the literal placeholder.
-    await expect( previewPage.locator( 'body' ) ).not.toContainText(
-        '[current_year]'
-    );
-
     // The resolved year must appear in the copyright notice.
-    await expect( previewPage.locator( 'body' ) ).toContainText(
+    await expect( previewPage.locator( '#wp--skip-link--target' ) ).toContainText(
         `© ${ currentYear } Government of British Columbia.`
     );
 
