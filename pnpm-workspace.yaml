@@ -27,7 +27,7 @@ catalog:
   '@wordpress/e2e-test-utils-playwright': wp-6.7
   '@wordpress/editor': wp-6.7
   '@wordpress/element': wp-6.7
-  '@wordpress/env': 11.14.1-next.v.202609031004.0
+  '@wordpress/env': 11.14.0
   '@wordpress/i18n': wp-6.7
   '@wordpress/icons': wp-6.7
   '@wordpress/plugins': wp-6.7
@@ -57,3 +57,6 @@ allowBuilds:
   'unrs-resolver': false
 overrides:
   markdownlint-cli: 0.49.0
+# Remove this and the corresponding patches/ file when this issue is resolved in @wordpress/env.
+patchedDependencies:
+  '@wordpress/env@11.14.0': patches/@wordpress__env@11.14.0.patch
