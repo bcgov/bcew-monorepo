@@ -170,22 +170,14 @@ class ContentSecurityPolicy {
 
     /**
      * Adds the Content Security Policy header to the response.
-     *
-     * Skipped in wp-admin and on the login screen so WordPress core scripts
-     * can load. The login form is not `is_admin()`, and CSP's
-     * upgrade-insecure-requests directive can stall the POST on HTTP sites
-     * (local and CI).
+     * Skipped in the admin so core scripts/styles (e.g. wp) load correctly.
      *
      * @param array $headers Existing headers.
      * @return array Modified headers with CSP.
      */
     public function add_csp_header( $headers ) {
-        global $pagenow;
-
-        $is_login_page = ( isset( $pagenow ) && 'wp-login.php' === $pagenow )
-            || ( function_exists( 'is_login' ) && is_login() );
-
-        if ( is_admin() || $is_login_page ) {
+        // Do not apply CSP or HSTS in admin; it breaks script/style loading and causes "wp is not defined" etc.
+        if ( is_admin() ) {
             return $headers;
         }
 
