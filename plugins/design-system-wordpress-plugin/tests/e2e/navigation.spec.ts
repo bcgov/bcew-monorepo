@@ -1193,7 +1193,9 @@ test.describe( 'Navigation', () => {
             page,
         } ) => {
             // Login as editor user using the page context
-            await page.goto( '/wp-login.php' );
+            await page.goto( '/wp-login.php', {
+                waitUntil: 'domcontentloaded',
+            } );
             await page.fill( '#user_login', editorUsername );
             await page.fill( '#user_pass', 'password' );
             await page.click( '#wp-submit' );
@@ -1229,7 +1231,9 @@ test.describe( 'Navigation', () => {
             page,
         } ) => {
             // Login as editor user
-            await page.goto( '/wp-login.php' );
+            await page.goto( '/wp-login.php', {
+                waitUntil: 'domcontentloaded',
+            } );
             await page.fill( '#user_login', editorUsername );
             await page.fill( '#user_pass', 'password' );
             // Wait for redirect after submit; use explicit timeout to avoid eating full test timeout on CI
@@ -1264,7 +1268,9 @@ test.describe( 'Navigation', () => {
             page,
         } ) => {
             // Login as editor user
-            await page.goto( '/wp-login.php' );
+            await page.goto( '/wp-login.php', {
+                waitUntil: 'domcontentloaded',
+            } );
             await page.fill( '#user_login', editorUsername );
             await page.fill( '#user_pass', 'password' );
             await page.click( '#wp-submit' );
