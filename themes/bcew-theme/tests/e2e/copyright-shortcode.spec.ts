@@ -20,21 +20,20 @@ test( 'copyright template part renders current year on frontend', async ( {
     // preview it on the frontend without needing the full footer layout.
     await admin.createNewPost();
 
-    // Insert the copyright template part block via the code editor.
-    await editor.page
-        .getByRole( 'button', { name: 'Options', exact: true } )
-        .click();
-    await editor.page
-        .getByRole( 'menuitemradio', { name: /Code editor/ } )
-        .click();
-    await editor.page
-        .getByRole( 'textbox', { name: 'Type text or HTML' } )
-        .fill(
-            '<!-- wp:template-part {"slug":"copyright","theme":"design-system-wordpress-theme"} /-->'
-        );
-    await editor.page
-        .getByRole( 'button', { name: 'Exit code editor' } )
-        .click();
+    /*
+     * createNewPost() sets welcomeGuide to false, but on a fresh site the
+     * "Welcome to the block editor" dialog can still be open while
+     * preferences load. Close it so Preview clicks hit the editor, not the overlay.
+     */
+    const welcomeGuide = editor.page.getByLabel( 'Welcome' );
+    if ( await welcomeGuide.isVisible().catch( () => false ) ) {
+        await editor.page.getByRole( 'button', { name: 'Close' } ).click();
+        await welcomeGuide.waitFor( { state: 'hidden' } );
+    }
+
+    await editor.setContent(
+        '<!-- wp:template-part {"slug":"copyright","theme":"bcew-theme"} /-->'
+    );
 
     // Open the frontend preview.
     const previewPage = await editor.openPreviewPage();

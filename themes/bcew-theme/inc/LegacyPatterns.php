@@ -46,7 +46,7 @@ class LegacyPatterns {
             \register_block_pattern_category(
                 'dswp-archive',
                 array(
-                    'label' => \__( 'Archive', 'design-system-wordpress-theme' ),
+                    'label' => \__( 'Archive', 'bcew-theme' ),
                 )
             );
         }

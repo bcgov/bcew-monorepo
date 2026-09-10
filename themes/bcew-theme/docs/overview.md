@@ -1,10 +1,10 @@
-# BC Government Design System WordPress Theme
+# BC Extended Web Theme
 
 A WordPress theme built with the BC Government Design System, providing a comprehensive set of pre-built patterns and components for rapid site development.
 
 ## Overview
 
-The Design System WordPress Theme is a powerful tool that allows you to:
+The BC Extended Web Theme is a powerful tool that allows you to:
 
 - Build complete websites using drag-and-drop patterns
 - Maintain BC Government design consistency
@@ -19,7 +19,7 @@ This WordPress theme is specifically built for BC Government websites hosted on 
 
 1. Access your WordPress site's dashboard
 2. Go to Appearance → Themes 
-3. Find "Design System Theme"
+3. Find "BC Extended Web Theme"
 4. Click "Activate"
 
 ::: note
