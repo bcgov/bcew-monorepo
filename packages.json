@@ -426,6 +426,38 @@
                     "reference": "bcew-chefs-embed/v1.0.0-alpha.1"
                 }
             }
+        },
+        "bcgov-theme/bcew-theme": {
+            "1.17.0-alpha.1": {
+                "name": "bcgov-theme/bcew-theme",
+                "description": "BC Extended Web Theme",
+                "type": "wordpress-theme",
+                "license": "Apache-2.0",
+                "autoload": {
+                    "psr-4": {
+                        "Bcgov\\Theme\\DesignSystem\\": [
+                            "src",
+                            "inc"
+                        ]
+                    }
+                },
+                "config": {
+                    "allow-plugins": {
+                        "dealerdirect/phpcodesniffer-composer-installer": true
+                    }
+                },
+                "version": "1.17.0-alpha.1",
+                "dist": {
+                    "url": "https://github.com/bcgov/bcew-monorepo/releases/download/bcew-theme/v1.17.0-alpha.1/bcew-theme-1.17.0-alpha.1.zip",
+                    "type": "zip",
+                    "reference": "bcew-theme/v1.17.0-alpha.1"
+                },
+                "source": {
+                    "type": "git",
+                    "url": "https://github.com/bcgov/bcew-monorepo.git",
+                    "reference": "bcew-theme/v1.17.0-alpha.1"
+                }
+            }
         }
     }
 }
