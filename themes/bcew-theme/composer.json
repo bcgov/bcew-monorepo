@@ -1,6 +1,6 @@
 {
-    "name": "bcgov-theme/design-system-wordpress-theme",
-    "description": "Design System WordPress Theme",
+    "name": "bcgov-theme/bcew-theme",
+    "description": "BC Extended Web Theme",
     "type": "wordpress-theme",
     "license": "Apache-2.0",
     "repositories": [
