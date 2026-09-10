@@ -338,14 +338,12 @@ test.describe( 'CHEFS Form block', () => {
             baseUrl: 'https://chefs-preview.test/app',
         } );
 
-        await admin.createNewPost();
-        await editor.insertBlock( { name: BLOCK_NAME } );
-        await ensureBlockSettingsVisible( editor, page );
-
-        await selectSavedFormId( page, formId );
-
-        const postId = await editor.publishPost();
-        expect( postId ).not.toBeNull();
+        const postId = await selectFormAndPublish(
+            admin,
+            editor,
+            page,
+            formId
+        );
 
         await page.goto( `/wp-admin/post.php?post=${ postId }&action=edit` );
         await expect(
@@ -372,14 +370,12 @@ test.describe( 'CHEFS Form block', () => {
             baseUrl: 'https://chefs-preview.test/app',
         } );
 
-        await admin.createNewPost();
-        await editor.insertBlock( { name: BLOCK_NAME } );
-        await ensureBlockSettingsVisible( editor, page );
-
-        await selectSavedFormId( page, formId );
-
-        const postId = await editor.publishPost();
-        expect( postId ).not.toBeNull();
+        const postId = await selectFormAndPublish(
+            admin,
+            editor,
+            page,
+            formId
+        );
 
         await clearSavedForms( admin, page );
         await page.goto( `/wp-admin/post.php?post=${ postId }&action=edit` );
