@@ -235,20 +235,47 @@ test.describe( 'CHEFS Form block', () => {
 
         await addSavedForm( admin, page, formId, 'persisted-api-key' );
 
+        await page.route(
+            /bcew-chefs-embed\/v1\/embed-config/,
+            async ( route ) => {
+                await route.fulfill( {
+                    status: 200,
+                    contentType: 'application/json',
+                    body: JSON.stringify( {
+                        token: 'persisted-preview-token',
+                        baseUrl: 'https://chefs-preview.test/app',
+                    } ),
+                } );
+            }
+        );
+
+        await page.route(
+            'https://chefs-preview.test/app/embed/chefs-form-viewer.min.js',
+            async ( route ) => {
+                await route.fulfill( {
+                    status: 200,
+                    contentType: 'application/javascript',
+                    body: `
+						class ChefsFormViewerStub extends HTMLElement {
+							connectedCallback() {
+								this.style.display = 'block';
+								this.style.minHeight = '40px';
+							}
+							load() {
+								return Promise.resolve();
+							}
+						}
+						if ( ! customElements.get( 'chefs-form-viewer' ) ) {
+							customElements.define( 'chefs-form-viewer', ChefsFormViewerStub );
+						}
+					`,
+                } );
+            }
+        );
+
         await admin.createNewPost();
         await editor.insertBlock( { name: BLOCK_NAME } );
         await ensureBlockSettingsVisible( editor, page );
-
-        await page.route( /embed-config/, async ( route ) => {
-            await route.fulfill( {
-                status: 200,
-                contentType: 'application/json',
-                body: JSON.stringify( {
-                    token: 'persisted-preview-token',
-                    baseUrl: 'https://chefs-preview.test/app',
-                } ),
-            } );
-        } );
 
         await selectSavedFormId( page, formId );
 
@@ -275,20 +302,47 @@ test.describe( 'CHEFS Form block', () => {
 
         await addSavedForm( admin, page, formId, 'removed-api-key' );
 
+        await page.route(
+            /bcew-chefs-embed\/v1\/embed-config/,
+            async ( route ) => {
+                await route.fulfill( {
+                    status: 200,
+                    contentType: 'application/json',
+                    body: JSON.stringify( {
+                        token: 'removed-preview-token',
+                        baseUrl: 'https://chefs-preview.test/app',
+                    } ),
+                } );
+            }
+        );
+
+        await page.route(
+            'https://chefs-preview.test/app/embed/chefs-form-viewer.min.js',
+            async ( route ) => {
+                await route.fulfill( {
+                    status: 200,
+                    contentType: 'application/javascript',
+                    body: `
+						class ChefsFormViewerStub extends HTMLElement {
+							connectedCallback() {
+								this.style.display = 'block';
+								this.style.minHeight = '40px';
+							}
+							load() {
+								return Promise.resolve();
+							}
+						}
+						if ( ! customElements.get( 'chefs-form-viewer' ) ) {
+							customElements.define( 'chefs-form-viewer', ChefsFormViewerStub );
+						}
+					`,
+                } );
+            }
+        );
+
         await admin.createNewPost();
         await editor.insertBlock( { name: BLOCK_NAME } );
         await ensureBlockSettingsVisible( editor, page );
-
-        await page.route( /embed-config/, async ( route ) => {
-            await route.fulfill( {
-                status: 200,
-                contentType: 'application/json',
-                body: JSON.stringify( {
-                    token: 'removed-preview-token',
-                    baseUrl: 'https://chefs-preview.test/app',
-                } ),
-            } );
-        } );
 
         await selectSavedFormId( page, formId );
 
