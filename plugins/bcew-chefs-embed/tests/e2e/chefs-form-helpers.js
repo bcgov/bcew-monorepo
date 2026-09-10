@@ -1,14 +1,7 @@
 const { expect } = require( '@wordpress/e2e-test-utils-playwright' );
-const fs = require( 'fs' );
-const os = require( 'os' );
-const path = require( 'path' );
 
 const BLOCK_NAME = 'bcew-chefs-embed/chefs-form';
 const SETTINGS_PAGE_QUERY = 'page=bcew-chefs-embed-settings';
-const STATEFUL_TEST_LOCK = path.join(
-    os.tmpdir(),
-    'bcew-chefs-embed-stateful-e2e.lock'
-);
 
 const CHEFS_FORM_VIEWER_STUB = `
 	class ChefsFormViewerStub extends HTMLElement {
@@ -184,27 +177,6 @@ const setup = async ( { admin, page } ) => {
     await clearSavedForms( admin, page );
 };
 
-const acquireStatefulTestLock = async () => {
-    while ( true ) {
-        try {
-            await fs.promises.mkdir( STATEFUL_TEST_LOCK );
-            return;
-        } catch ( error ) {
-            if ( 'EEXIST' !== error.code ) {
-                throw error;
-            }
-            await new Promise( ( resolve ) => setTimeout( resolve, 100 ) );
-        }
-    }
-};
-
-const releaseStatefulTestLock = async () => {
-    await fs.promises.rm( STATEFUL_TEST_LOCK, {
-        recursive: true,
-        force: true,
-    } );
-};
-
 module.exports = {
     BLOCK_NAME,
     addSavedForm,
@@ -212,8 +184,6 @@ module.exports = {
     ensureBlockSettingsVisible,
     mockChefsFormRoutes,
     publishFormAndVisit,
-    acquireStatefulTestLock,
-    releaseStatefulTestLock,
     selectFormAndPublish,
     selectSavedFormId,
     setup,

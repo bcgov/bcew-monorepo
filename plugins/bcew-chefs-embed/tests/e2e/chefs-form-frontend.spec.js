@@ -1,19 +1,15 @@
 const { test, expect } = require( '@wordpress/e2e-test-utils-playwright' );
 const {
+    BLOCK_NAME,
     addSavedForm,
-    acquireStatefulTestLock,
+    ensureBlockSettingsVisible,
+    mockChefsFormRoutes,
     publishFormAndVisit,
-    releaseStatefulTestLock,
-    selectFormAndPublish,
-    setup,
+    selectSavedFormId,
 } = require( './chefs-form-helpers' );
 
 test.describe( 'CHEFS Form frontend', () => {
-    test.beforeAll( acquireStatefulTestLock );
-    test.afterAll( releaseStatefulTestLock );
-    test.beforeEach( setup );
-
-    test( 'published page markup includes Form ID only and loads the CHEFS viewer', async ( {
+    test( 'published page markup includes Form ID only and shows generic success after submit', async ( {
         admin,
         editor,
         page,
@@ -41,26 +37,6 @@ test.describe( 'CHEFS Form frontend', () => {
         await expect( viewer ).toHaveAttribute( 'auth-token', mockToken );
         await expect( viewer ).toHaveAttribute( 'base-url', mockBaseUrl );
         await expect( viewer ).not.toHaveAttribute( 'read-only' );
-        await expect( viewer ).toHaveAttribute(
-            'auto-reload-on-submit',
-            'false'
-        );
-    } );
-
-    test( 'published page shows generic success message after submit', async ( {
-        admin,
-        editor,
-        page,
-    } ) => {
-        const formId = 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee';
-        await publishFormAndVisit( admin, editor, page, {
-            formId,
-            apiKey: 'frontend-success-api-key',
-            token: 'frontend-success-token',
-            baseUrl: 'https://chefs-frontend.test/app',
-        } );
-        const viewer = page.locator( 'chefs-form-viewer' );
-        await expect( viewer ).toBeAttached();
         await expect( viewer ).toHaveAttribute(
             'auto-reload-on-submit',
             'false'
@@ -184,6 +160,42 @@ test.describe( 'CHEFS Form frontend', () => {
         await expect( page.locator( 'chefs-form-viewer' ) ).toHaveCount( 0 );
     } );
 
+    test( 'saved CHEFS URL appears as its extracted Form ID in the editor and frontend', async ( {
+        admin,
+        editor,
+        page,
+    } ) => {
+        const formId = '99999999-9999-4999-8999-999999999999';
+        const formUrl = `https://submit.digital.gov.bc.ca/app/form/submit?f=${ formId }`;
+        const mockBaseUrl = 'https://chefs-frontend.test/app';
+        await addSavedForm( admin, page, formUrl, 'frontend-url-api-key' );
+        await mockChefsFormRoutes( page, {
+            token: 'frontend-url-token',
+            baseUrl: mockBaseUrl,
+        } );
+        await admin.createNewPost();
+        await editor.insertBlock( { name: BLOCK_NAME } );
+        await ensureBlockSettingsVisible( editor, page );
+        const formSelect = page.getByLabel( 'Form ID' ).first();
+        await expect(
+            formSelect.getByRole( 'option', { name: formId } )
+        ).toBeAttached();
+        await expect(
+            formSelect.getByRole( 'option', { name: formUrl } )
+        ).toHaveCount( 0 );
+        await selectSavedFormId( page, formId );
+        const postId = await editor.publishPost();
+        expect( postId ).not.toBeNull();
+        await page.context().clearCookies();
+        await page.goto( `/?p=${ postId }` );
+        const block = page.locator( '.bcew-chefs-form' ).first();
+        await expect( block ).toHaveAttribute( 'data-form-id', formId );
+        await expect( block ).not.toHaveAttribute( 'data-form-id', formUrl );
+        const viewer = page.locator( 'chefs-form-viewer' );
+        await expect( viewer ).toHaveAttribute( 'form-id', formId );
+        await expect( viewer ).toHaveAttribute( 'base-url', mockBaseUrl );
+    } );
+
     test( 'published page shows an error when embed-config fails', async ( {
         admin,
         editor,
@@ -204,12 +216,12 @@ test.describe( 'CHEFS Form frontend', () => {
                 } );
             }
         );
-        const postId = await selectFormAndPublish(
-            admin,
-            editor,
-            page,
-            formId
-        );
+        await admin.createNewPost();
+        await editor.insertBlock( { name: BLOCK_NAME } );
+        await ensureBlockSettingsVisible( editor, page );
+        await selectSavedFormId( page, formId );
+        const postId = await editor.publishPost();
+        expect( postId ).not.toBeNull();
         await page.context().clearCookies();
         await page.goto( `/?p=${ postId }` );
         await expect(

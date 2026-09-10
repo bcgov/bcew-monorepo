@@ -1,20 +1,12 @@
 const { test, expect } = require( '@wordpress/e2e-test-utils-playwright' );
-const {
-    acquireStatefulTestLock,
-    addSavedForm,
-    releaseStatefulTestLock,
-    setup,
-} = require( './chefs-form-helpers' );
+const { addSavedForm, setup } = require( './chefs-form-helpers' );
 
 test.describe( 'CHEFS Form settings', () => {
-    test.beforeAll( acquireStatefulTestLock );
-    test.afterAll( releaseStatefulTestLock );
-    test.beforeEach( setup );
-
     test( 'settings page can save, show, and delete a confirmation message', async ( {
         admin,
         page,
     } ) => {
+        await setup( { admin, page } );
         const formId = 'bbbbbbbb-cccc-4ddd-8eee-ffffffffffff';
         await addSavedForm( admin, page, formId, 'confirmation-api-key' );
         await expect(

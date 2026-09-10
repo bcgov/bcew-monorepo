@@ -753,7 +753,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 			'The Form ID field should show a useful placeholder.'
 		);
 		$this->assertStringContainsString(
-			'Example url <code>https://submit.digital.gov.bc.ca/app/form/submit?f=43cfb894-a0cf-4bef-8026-7c8001e3cdf5</code> or form ID <code>43cfb894-a0cf-4bef-8026-7c8001e3cdf5</code>',
+			'Example URL <code>https://submit.digital.gov.bc.ca/app/form/submit?f=43cfb894-a0cf-4bef-8026-7c8001e3cdf5</code> or form ID <code>43cfb894-a0cf-4bef-8026-7c8001e3cdf5</code>',
 			$html,
 			'The Form ID field should include the acceptance-criteria example with highlighted values.'
 		);
