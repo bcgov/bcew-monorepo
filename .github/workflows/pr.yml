@@ -103,8 +103,6 @@ jobs:
 
             - name: Run affected PHP integration tests
               if: github.event_name == 'pull_request'
-              env:
-                NX_DEFAULT_OUTPUT_STYLE: static
               run: pnpm nx affected --base="origin/${{ github.base_ref }}" -t test-integration
 
             - name: Run PHP integration tests
