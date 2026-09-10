@@ -3,6 +3,26 @@ const { test, expect } = require( '@wordpress/e2e-test-utils-playwright' );
 const BLOCK_NAME = 'bcew-chefs-embed/chefs-form';
 const PLUGIN_BASENAME = 'bcew-chefs-embed/bcew-chefs-embed';
 const SETTINGS_PAGE_QUERY = 'page=bcew-chefs-embed-settings';
+
+/**
+ * Stub implementation of the CHEFS form viewer custom element.
+ * Provides minimal layout and a no-op load() method for testing.
+ */
+const CHEFS_FORM_VIEWER_STUB = `
+	class ChefsFormViewerStub extends HTMLElement {
+		connectedCallback() {
+			this.style.display = 'block';
+			this.style.minHeight = '40px';
+		}
+		load() {
+			return Promise.resolve();
+		}
+	}
+	if ( ! customElements.get( 'chefs-form-viewer' ) ) {
+		customElements.define( 'chefs-form-viewer', ChefsFormViewerStub );
+	}
+`;
+
 const ensurePluginIsActive = async ( requestUtils ) => {
     const plugins = await requestUtils.rest( {
         path: '/wp/v2/plugins',
@@ -255,20 +275,7 @@ test.describe( 'CHEFS Form block', () => {
                 await route.fulfill( {
                     status: 200,
                     contentType: 'application/javascript',
-                    body: `
-						class ChefsFormViewerStub extends HTMLElement {
-							connectedCallback() {
-								this.style.display = 'block';
-								this.style.minHeight = '40px';
-							}
-							load() {
-								return Promise.resolve();
-							}
-						}
-						if ( ! customElements.get( 'chefs-form-viewer' ) ) {
-							customElements.define( 'chefs-form-viewer', ChefsFormViewerStub );
-						}
-					`,
+                    body: CHEFS_FORM_VIEWER_STUB,
                 } );
             }
         );
@@ -322,20 +329,7 @@ test.describe( 'CHEFS Form block', () => {
                 await route.fulfill( {
                     status: 200,
                     contentType: 'application/javascript',
-                    body: `
-						class ChefsFormViewerStub extends HTMLElement {
-							connectedCallback() {
-								this.style.display = 'block';
-								this.style.minHeight = '40px';
-							}
-							load() {
-								return Promise.resolve();
-							}
-						}
-						if ( ! customElements.get( 'chefs-form-viewer' ) ) {
-							customElements.define( 'chefs-form-viewer', ChefsFormViewerStub );
-						}
-					`,
+                    body: CHEFS_FORM_VIEWER_STUB,
                 } );
             }
         );
@@ -439,20 +433,7 @@ test.describe( 'CHEFS Form block', () => {
                 await route.fulfill( {
                     status: 200,
                     contentType: 'application/javascript',
-                    body: `
-						class ChefsFormViewerStub extends HTMLElement {
-							connectedCallback() {
-								this.style.display = 'block';
-								this.style.minHeight = '40px';
-							}
-							load() {
-								return Promise.resolve();
-							}
-						}
-						if ( ! customElements.get( 'chefs-form-viewer' ) ) {
-							customElements.define( 'chefs-form-viewer', ChefsFormViewerStub );
-						}
-					`,
+                    body: CHEFS_FORM_VIEWER_STUB,
                 } );
             }
         );
@@ -538,20 +519,7 @@ test.describe( 'CHEFS Form block', () => {
                 await route.fulfill( {
                     status: 200,
                     contentType: 'application/javascript',
-                    body: `
-						class ChefsFormViewerStub extends HTMLElement {
-							connectedCallback() {
-								this.style.display = 'block';
-								this.style.minHeight = '40px';
-							}
-							load() {
-								return Promise.resolve();
-							}
-						}
-						if ( ! customElements.get( 'chefs-form-viewer' ) ) {
-							customElements.define( 'chefs-form-viewer', ChefsFormViewerStub );
-						}
-					`,
+                    body: CHEFS_FORM_VIEWER_STUB,
                 } );
             }
         );
@@ -622,18 +590,7 @@ test.describe( 'CHEFS Form block', () => {
                 await route.fulfill( {
                     status: 200,
                     contentType: 'application/javascript',
-                    body: [
-                        'class ChefsFormViewerStub extends HTMLElement {',
-                        '  connectedCallback() {',
-                        "    this.style.display = 'block';",
-                        "    this.style.minHeight = '40px';",
-                        '  }',
-                        '  load() { return Promise.resolve(); }',
-                        '}',
-                        "if ( ! customElements.get( 'chefs-form-viewer' ) ) {",
-                        "  customElements.define( 'chefs-form-viewer', ChefsFormViewerStub );",
-                        '}',
-                    ].join( '\n' ),
+                    body: CHEFS_FORM_VIEWER_STUB,
                 } );
             }
         );
@@ -711,18 +668,7 @@ test.describe( 'CHEFS Form block', () => {
                 await route.fulfill( {
                     status: 200,
                     contentType: 'application/javascript',
-                    body: [
-                        'class ChefsFormViewerStub extends HTMLElement {',
-                        '  connectedCallback() {',
-                        "    this.style.display = 'block';",
-                        "    this.style.minHeight = '40px';",
-                        '  }',
-                        '  load() { return Promise.resolve(); }',
-                        '}',
-                        "if ( ! customElements.get( 'chefs-form-viewer' ) ) {",
-                        "  customElements.define( 'chefs-form-viewer', ChefsFormViewerStub );",
-                        '}',
-                    ].join( '\n' ),
+                    body: CHEFS_FORM_VIEWER_STUB,
                 } );
             }
         );
@@ -926,18 +872,7 @@ test.describe( 'CHEFS Form block', () => {
                 await route.fulfill( {
                     status: 200,
                     contentType: 'application/javascript',
-                    body: [
-                        'class ChefsFormViewerStub extends HTMLElement {',
-                        '  connectedCallback() {',
-                        "    this.style.display = 'block';",
-                        "    this.style.minHeight = '40px';",
-                        '  }',
-                        '  load() { return Promise.resolve(); }',
-                        '}',
-                        "if ( ! customElements.get( 'chefs-form-viewer' ) ) {",
-                        "  customElements.define( 'chefs-form-viewer', ChefsFormViewerStub );",
-                        '}',
-                    ].join( '\n' ),
+                    body: CHEFS_FORM_VIEWER_STUB,
                 } );
             }
         );
