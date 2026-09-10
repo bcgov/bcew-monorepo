@@ -239,6 +239,17 @@ test.describe( 'CHEFS Form block', () => {
         await editor.insertBlock( { name: BLOCK_NAME } );
         await ensureBlockSettingsVisible( editor, page );
 
+        await page.route( /embed-config/, async ( route ) => {
+            await route.fulfill( {
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify( {
+                    token: 'persisted-preview-token',
+                    baseUrl: 'https://chefs-preview.test/app',
+                } ),
+            } );
+        } );
+
         await selectSavedFormId( page, formId );
 
         const postId = await editor.publishPost();
@@ -267,6 +278,17 @@ test.describe( 'CHEFS Form block', () => {
         await admin.createNewPost();
         await editor.insertBlock( { name: BLOCK_NAME } );
         await ensureBlockSettingsVisible( editor, page );
+
+        await page.route( /embed-config/, async ( route ) => {
+            await route.fulfill( {
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify( {
+                    token: 'removed-preview-token',
+                    baseUrl: 'https://chefs-preview.test/app',
+                } ),
+            } );
+        } );
 
         await selectSavedFormId( page, formId );
 
