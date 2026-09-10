@@ -126,6 +126,60 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Handle save extracts a form ID from a CHEFS URL before storing it.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_extracts_form_id_from_url() {
+		$form_url = 'https://submit.digital.gov.bc.ca/app/form/manage?f=' . $this->form_id;
+
+		$this->save_settings( $form_url );
+
+		$this->assertIsArray( CredentialsManager::get_by_form_id( $this->form_id ) );
+		$this->assertNull( CredentialsManager::get_by_form_id( $form_url ) );
+	}
+
+	/**
+	 * Handle save extracts a form ID from a URL with a fragment.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_extracts_form_id_before_url_fragment() {
+		$form_url = 'https://submit.digital.gov.bc.ca/app/form/manage?f=' . $this->form_id . '#section';
+
+		$this->save_settings( $form_url );
+
+		$this->assertIsArray( CredentialsManager::get_by_form_id( $this->form_id ) );
+	}
+
+	/**
+	 * Handle save preserves a non-URL string containing an f query-like fragment.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_preserves_non_url_form_id() {
+		$form_id    = 'not-a-url?f=' . $this->form_id;
+		$reflection = new \ReflectionMethod( \Bcgov\BcewChefsEmbed\Settings::class, 'extract_form_id' );
+		$reflection->setAccessible( true );
+
+		$this->assertSame(
+			$form_id,
+			$reflection->invoke( new \Bcgov\BcewChefsEmbed\Settings(), $form_id )
+		);
+	}
+
+	/**
+	 * Handle save preserves a direct form ID after trimming whitespace.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_preserves_direct_form_id() {
+		$this->save_settings( ' ' . $this->form_id . ' ' );
+
+		$this->assertIsArray( CredentialsManager::get_by_form_id( $this->form_id ) );
+	}
+
+	/**
 	 * Duplicate Form ID updates the existing row instead of creating a new one (primary key constraint).
 	 *
 	 * Acceptance: Saving the same Form ID again should not work, and cause it to fail (checking primary key rule) Database only
@@ -425,13 +479,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
 		OptionsManager::save( $this->form_id, 'Thanks for applying.' );
 
-		$_GET['edit_confirmation'] = $this->form_id;
-
-		ob_start();
-		( new \Bcgov\BcewChefsEmbed\Settings() )->render_page();
-		$html = ob_get_clean();
-
-		unset( $_GET['edit_confirmation'] );
+		$html = $this->render_page_with_get( 'edit_confirmation', $this->form_id );
 
 		$this->assertStringContainsString(
 			'name="action" value="bcew_chefs_save_confirmation"',
@@ -517,23 +565,11 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	public function test_handle_save_confirmation_stores_message_and_redirects() {
 		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
 
-		$nonce                 = wp_create_nonce( 'bcew_chefs_save_confirmation' );
-		$_POST['form_id']      = $this->form_id;
-		$_POST['confirmation'] = "Thanks for applying.\nPlease keep your reference number.";
-		$_POST['_wpnonce']     = $nonce;
-		$_REQUEST['_wpnonce']  = $nonce;
-
-		$location = $this->capture_settings_redirect(
-			static function () {
-				( new \Bcgov\BcewChefsEmbed\Settings() )->handle_save_confirmation();
-			}
-		);
+		$message  = "Thanks for applying.\nPlease keep your reference number.";
+		$location = $this->save_confirmation( $this->form_id, $message );
 
 		$this->assertStringContainsString( 'chefs_confirmation_saved=1', $location );
-		$this->assertSame(
-			"Thanks for applying.\nPlease keep your reference number.",
-			OptionsManager::get_confirmation( $this->form_id )
-		);
+		$this->assertSame( $message, OptionsManager::get_confirmation( $this->form_id ) );
 	}
 
 	/**
@@ -545,17 +581,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
 		OptionsManager::save( $this->form_id, 'Keep me' );
 
-		$nonce                 = wp_create_nonce( 'bcew_chefs_save_confirmation' );
-		$_POST['form_id']      = $this->form_id;
-		$_POST['confirmation'] = '   ';
-		$_POST['_wpnonce']     = $nonce;
-		$_REQUEST['_wpnonce']  = $nonce;
-
-		$location = $this->capture_settings_redirect(
-			static function () {
-				( new \Bcgov\BcewChefsEmbed\Settings() )->handle_save_confirmation();
-			}
-		);
+		$location = $this->save_confirmation( $this->form_id, '   ' );
 
 		$this->assertStringContainsString( 'chefs_confirmation_error=1', $location );
 		$this->assertSame( 'Keep me', OptionsManager::get_confirmation( $this->form_id ) );
@@ -570,10 +596,12 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
 		OptionsManager::save( $this->form_id, 'Thanks for applying.' );
 
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Tests simulate a POST request and set a valid nonce below.
 		$nonce                = wp_create_nonce( 'bcew_chefs_delete_confirmation' );
 		$_POST['form_id']     = $this->form_id;
 		$_POST['_wpnonce']    = $nonce;
 		$_REQUEST['_wpnonce'] = $nonce;
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 
 		$location = $this->capture_settings_redirect(
 			static function () {
@@ -597,13 +625,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		CredentialsManager::save( $other_form_id, $this->api_key, $this->admin_user_id );
 		OptionsManager::save( $this->form_id, 'Thanks for applying.' );
 
-		$_GET['edit_confirmation'] = $this->form_id;
-
-		ob_start();
-		( new \Bcgov\BcewChefsEmbed\Settings() )->render_page();
-		$html = ob_get_clean();
-
-		unset( $_GET['edit_confirmation'] );
+		$html = $this->render_page_with_get( 'edit_confirmation', $this->form_id );
 
 		$this->assertSame( 1, substr_count( $html, 'Save confirmation' ) );
 		$this->assertSame( 1, substr_count( $html, 'Edit confirmation' ) );
@@ -620,31 +642,16 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_settings_page_renders_confirmation_notices() {
-		$_GET['chefs_confirmation_saved'] = '1';
-		ob_start();
-		( new \Bcgov\BcewChefsEmbed\Settings() )->render_page();
-		$saved_html = ob_get_clean();
-		unset( $_GET['chefs_confirmation_saved'] );
-
+		$saved_html = $this->render_page_with_get( 'chefs_confirmation_saved', '1' );
 		$this->assertStringContainsString( 'Confirmation message saved.', $saved_html );
 
-		$_GET['chefs_confirmation_cleared'] = '1';
-		ob_start();
-		( new \Bcgov\BcewChefsEmbed\Settings() )->render_page();
-		$cleared_html = ob_get_clean();
-		unset( $_GET['chefs_confirmation_cleared'] );
-
+		$cleared_html = $this->render_page_with_get( 'chefs_confirmation_cleared', '1' );
 		$this->assertStringContainsString(
 			'Custom confirmation deleted. The generic success message will be used.',
 			$cleared_html
 		);
 
-		$_GET['chefs_confirmation_error'] = '1';
-		ob_start();
-		( new \Bcgov\BcewChefsEmbed\Settings() )->render_page();
-		$error_html = ob_get_clean();
-		unset( $_GET['chefs_confirmation_error'] );
-
+		$error_html = $this->render_page_with_get( 'chefs_confirmation_error', '1' );
 		$this->assertStringContainsString( 'Unable to save the confirmation message.', $error_html );
 	}
 
@@ -808,6 +815,27 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Submit settings and capture the redirect.
+	 *
+	 * @param string $form_id_or_url Form ID or URL submitted to the settings handler.
+	 * @return string Redirect URL.
+	 */
+	private function save_settings( $form_id_or_url ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Tests simulate a POST request and set a valid nonce below.
+		$_POST['form_id']     = $form_id_or_url;
+		$_POST['api_key']     = $this->api_key;
+		$_POST['_wpnonce']    = wp_create_nonce( 'bcew_chefs_save' );
+		$_REQUEST['_wpnonce'] = $_POST['_wpnonce'];
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+
+		return $this->capture_settings_redirect(
+			function () {
+				( new \Bcgov\BcewChefsEmbed\Settings() )->handle_save();
+			}
+		);
+	}
+
+	/**
 	 * Run a settings handler and capture the redirect location.
 	 *
 	 * @param callable $callback Handler to invoke.
@@ -830,5 +858,49 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		} finally {
 			remove_all_filters( 'wp_redirect' );
 		}
+	}
+
+	/**
+	 * Save a confirmation message and capture the redirect.
+	 *
+	 * @param string $form_id Form ID for the confirmation.
+	 * @param string $confirmation_text Confirmation message to save.
+	 * @return string Redirect URL.
+	 */
+	private function save_confirmation( $form_id, $confirmation_text ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Tests simulate a POST request and set a valid nonce below.
+		$nonce                 = wp_create_nonce( 'bcew_chefs_save_confirmation' );
+		$_POST['form_id']      = $form_id;
+		$_POST['confirmation'] = $confirmation_text;
+		$_POST['_wpnonce']     = $nonce;
+		$_REQUEST['_wpnonce']  = $nonce;
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+
+		return $this->capture_settings_redirect(
+			static function () {
+				( new \Bcgov\BcewChefsEmbed\Settings() )->handle_save_confirmation();
+			}
+		);
+	}
+
+	/**
+	 * Render the settings page with a GET query parameter.
+	 *
+	 * @param string $key Query parameter key.
+	 * @param string $value Query parameter value.
+	 * @return string Rendered HTML from render_page().
+	 */
+	private function render_page_with_get( $key, $value ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only flag for testing.
+		$_GET[ $key ] = $value;
+
+		ob_start();
+		( new \Bcgov\BcewChefsEmbed\Settings() )->render_page();
+		$html = ob_get_clean();
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only flag for testing.
+		unset( $_GET[ $key ] );
+
+		return $html;
 	}
 }
