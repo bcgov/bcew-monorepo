@@ -74,8 +74,9 @@ const clearSavedForms = async ( admin, page ) => {
     } );
 
     while ( ( await removeButton.count() ) > 0 ) {
+        const remainingForms = ( await removeButton.count() ) - 1;
         await removeButton.first().click();
-        await page.waitForLoadState( 'networkidle' );
+        await expect( removeButton ).toHaveCount( remainingForms );
     }
 };
 
@@ -135,6 +136,83 @@ const selectSavedFormId = async ( page, formId ) => {
  */
 const becomeAnonymousVisitor = async ( page ) => {
     await page.context().clearCookies();
+};
+
+/**
+ * Mock the embed-config and viewer script routes for CHEFS form preview/frontend tests.
+ *
+ * @param {import('@playwright/test').Page} page                  Playwright page.
+ * @param {Object}                          config                Configuration object.
+ * @param {string}                          config.token          Auth token for the viewer.
+ * @param {string}                          config.baseUrl        Base URL for CHEFS (e.g. 'https://chefs.test/app').
+ * @param {string}                          [config.confirmation] Optional custom confirmation message.
+ */
+const mockChefsFormRoutes = async (
+    page,
+    { token, baseUrl, confirmation }
+) => {
+    const configBody = { token, baseUrl };
+    if ( confirmation ) {
+        configBody.confirmation = confirmation;
+    }
+
+    await page.route( /bcew-chefs-embed\/v1\/embed-config/, async ( route ) => {
+        await route.fulfill( {
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify( configBody ),
+        } );
+    } );
+
+    await page.route(
+        `${ baseUrl }/embed/chefs-form-viewer.min.js`,
+        async ( route ) => {
+            await route.fulfill( {
+                status: 200,
+                contentType: 'application/javascript',
+                body: CHEFS_FORM_VIEWER_STUB,
+            } );
+        }
+    );
+};
+
+const selectFormAndPublish = async ( admin, editor, page, formId ) => {
+    await admin.createNewPost();
+    await editor.insertBlock( { name: BLOCK_NAME } );
+    await ensureBlockSettingsVisible( editor, page );
+    await selectSavedFormId( page, formId );
+
+    const postId = await editor.publishPost();
+    expect( postId ).not.toBeNull();
+
+    return postId;
+};
+
+const visitPublishedForm = async ( page, postId ) => {
+    await becomeAnonymousVisitor( page );
+
+    const response = await page.goto( `/?p=${ postId }` );
+    expect( response ).not.toBeNull();
+
+    return response;
+};
+
+const publishFormAndVisit = async (
+    admin,
+    editor,
+    page,
+    { formId, apiKey, token, baseUrl, confirmation }
+) => {
+    await addSavedForm( admin, page, formId, apiKey );
+    await mockChefsFormRoutes( page, {
+        token,
+        baseUrl,
+        confirmation,
+    } );
+
+    const postId = await selectFormAndPublish( admin, editor, page, formId );
+
+    return visitPublishedForm( page, postId );
 };
 
 const ensureBlockSettingsVisible = async ( editor, page ) => {
@@ -255,30 +333,10 @@ test.describe( 'CHEFS Form block', () => {
 
         await addSavedForm( admin, page, formId, 'persisted-api-key' );
 
-        await page.route(
-            /bcew-chefs-embed\/v1\/embed-config/,
-            async ( route ) => {
-                await route.fulfill( {
-                    status: 200,
-                    contentType: 'application/json',
-                    body: JSON.stringify( {
-                        token: 'persisted-preview-token',
-                        baseUrl: 'https://chefs-preview.test/app',
-                    } ),
-                } );
-            }
-        );
-
-        await page.route(
-            'https://chefs-preview.test/app/embed/chefs-form-viewer.min.js',
-            async ( route ) => {
-                await route.fulfill( {
-                    status: 200,
-                    contentType: 'application/javascript',
-                    body: CHEFS_FORM_VIEWER_STUB,
-                } );
-            }
-        );
+        await mockChefsFormRoutes( page, {
+            token: 'persisted-preview-token',
+            baseUrl: 'https://chefs-preview.test/app',
+        } );
 
         await admin.createNewPost();
         await editor.insertBlock( { name: BLOCK_NAME } );
@@ -309,30 +367,10 @@ test.describe( 'CHEFS Form block', () => {
 
         await addSavedForm( admin, page, formId, 'removed-api-key' );
 
-        await page.route(
-            /bcew-chefs-embed\/v1\/embed-config/,
-            async ( route ) => {
-                await route.fulfill( {
-                    status: 200,
-                    contentType: 'application/json',
-                    body: JSON.stringify( {
-                        token: 'removed-preview-token',
-                        baseUrl: 'https://chefs-preview.test/app',
-                    } ),
-                } );
-            }
-        );
-
-        await page.route(
-            'https://chefs-preview.test/app/embed/chefs-form-viewer.min.js',
-            async ( route ) => {
-                await route.fulfill( {
-                    status: 200,
-                    contentType: 'application/javascript',
-                    body: CHEFS_FORM_VIEWER_STUB,
-                } );
-            }
-        );
+        await mockChefsFormRoutes( page, {
+            token: 'removed-preview-token',
+            baseUrl: 'https://chefs-preview.test/app',
+        } );
 
         await admin.createNewPost();
         await editor.insertBlock( { name: BLOCK_NAME } );
@@ -416,27 +454,10 @@ test.describe( 'CHEFS Form block', () => {
 
         await addSavedForm( admin, page, formId, 'preview-test-api-key' );
 
-        await page.route( /embed-config/, async ( route ) => {
-            await route.fulfill( {
-                status: 200,
-                contentType: 'application/json',
-                body: JSON.stringify( {
-                    token: 'preview-token',
-                    baseUrl: mockBaseUrl,
-                } ),
-            } );
+        await mockChefsFormRoutes( page, {
+            token: 'preview-token',
+            baseUrl: mockBaseUrl,
         } );
-
-        await page.route(
-            `${ mockBaseUrl }/embed/chefs-form-viewer.min.js`,
-            async ( route ) => {
-                await route.fulfill( {
-                    status: 200,
-                    contentType: 'application/javascript',
-                    body: CHEFS_FORM_VIEWER_STUB,
-                } );
-            }
-        );
 
         await admin.createNewPost();
         await editor.insertBlock( { name: BLOCK_NAME } );
@@ -497,45 +518,12 @@ test.describe( 'CHEFS Form block', () => {
         const mockBaseUrl = 'https://chefs-frontend.test/app';
         const mockToken = 'frontend-token-secret';
 
-        await addSavedForm( admin, page, formId, 'frontend-test-api-key' );
-
-        await page.route(
-            /bcew-chefs-embed\/v1\/embed-config/,
-            async ( route ) => {
-                await route.fulfill( {
-                    status: 200,
-                    contentType: 'application/json',
-                    body: JSON.stringify( {
-                        token: mockToken,
-                        baseUrl: mockBaseUrl,
-                    } ),
-                } );
-            }
-        );
-
-        await page.route(
-            `${ mockBaseUrl }/embed/chefs-form-viewer.min.js`,
-            async ( route ) => {
-                await route.fulfill( {
-                    status: 200,
-                    contentType: 'application/javascript',
-                    body: CHEFS_FORM_VIEWER_STUB,
-                } );
-            }
-        );
-
-        await admin.createNewPost();
-        await editor.insertBlock( { name: BLOCK_NAME } );
-        await ensureBlockSettingsVisible( editor, page );
-        await selectSavedFormId( page, formId );
-
-        const postId = await editor.publishPost();
-        expect( postId ).not.toBeNull();
-
-        await becomeAnonymousVisitor( page );
-
-        const response = await page.goto( `/?p=${ postId }` );
-        expect( response ).not.toBeNull();
+        const response = await publishFormAndVisit( admin, editor, page, {
+            formId,
+            apiKey: 'frontend-test-api-key',
+            token: mockToken,
+            baseUrl: mockBaseUrl,
+        } );
         const serverHtml = await response.text();
 
         expect( serverHtml ).toContain( `data-form-id="${ formId }"` );
@@ -568,45 +556,12 @@ test.describe( 'CHEFS Form block', () => {
         const mockBaseUrl = 'https://chefs-frontend.test/app';
         const mockToken = 'frontend-success-token';
 
-        await addSavedForm( admin, page, formId, 'frontend-success-api-key' );
-
-        await page.route(
-            /bcew-chefs-embed\/v1\/embed-config/,
-            async ( route ) => {
-                await route.fulfill( {
-                    status: 200,
-                    contentType: 'application/json',
-                    body: JSON.stringify( {
-                        token: mockToken,
-                        baseUrl: mockBaseUrl,
-                    } ),
-                } );
-            }
-        );
-
-        await page.route(
-            `${ mockBaseUrl }/embed/chefs-form-viewer.min.js`,
-            async ( route ) => {
-                await route.fulfill( {
-                    status: 200,
-                    contentType: 'application/javascript',
-                    body: CHEFS_FORM_VIEWER_STUB,
-                } );
-            }
-        );
-
-        await admin.createNewPost();
-        await editor.insertBlock( { name: BLOCK_NAME } );
-        await ensureBlockSettingsVisible( editor, page );
-        await selectSavedFormId( page, formId );
-
-        const postId = await editor.publishPost();
-        expect( postId ).not.toBeNull();
-
-        await becomeAnonymousVisitor( page );
-
-        const response = await page.goto( `/?p=${ postId }` );
-        expect( response ).not.toBeNull();
+        await publishFormAndVisit( admin, editor, page, {
+            formId,
+            apiKey: 'frontend-success-api-key',
+            token: mockToken,
+            baseUrl: mockBaseUrl,
+        } );
 
         const viewer = page.locator( 'chefs-form-viewer' );
         await expect( viewer ).toBeAttached();
@@ -646,45 +601,12 @@ test.describe( 'CHEFS Form block', () => {
         const mockBaseUrl = 'https://chefs-frontend.test/app';
         const mockToken = 'frontend-error-handler-token';
 
-        await addSavedForm( admin, page, formId, 'frontend-error-handler-key' );
-
-        await page.route(
-            /bcew-chefs-embed\/v1\/embed-config/,
-            async ( route ) => {
-                await route.fulfill( {
-                    status: 200,
-                    contentType: 'application/json',
-                    body: JSON.stringify( {
-                        token: mockToken,
-                        baseUrl: mockBaseUrl,
-                    } ),
-                } );
-            }
-        );
-
-        await page.route(
-            `${ mockBaseUrl }/embed/chefs-form-viewer.min.js`,
-            async ( route ) => {
-                await route.fulfill( {
-                    status: 200,
-                    contentType: 'application/javascript',
-                    body: CHEFS_FORM_VIEWER_STUB,
-                } );
-            }
-        );
-
-        await admin.createNewPost();
-        await editor.insertBlock( { name: BLOCK_NAME } );
-        await ensureBlockSettingsVisible( editor, page );
-        await selectSavedFormId( page, formId );
-
-        const postId = await editor.publishPost();
-        expect( postId ).not.toBeNull();
-
-        await becomeAnonymousVisitor( page );
-
-        const response = await page.goto( `/?p=${ postId }` );
-        expect( response ).not.toBeNull();
+        await publishFormAndVisit( admin, editor, page, {
+            formId,
+            apiKey: 'frontend-error-handler-key',
+            token: mockToken,
+            baseUrl: mockBaseUrl,
+        } );
 
         const viewer = page.locator( 'chefs-form-viewer' );
         await expect( viewer ).toBeAttached();
@@ -750,11 +672,7 @@ test.describe( 'CHEFS Form block', () => {
     test( 'settings page can save, show, and delete a confirmation message', async ( {
         admin,
         page,
-        requestUtils,
     } ) => {
-        await ensurePluginIsActive( requestUtils );
-        await clearSavedForms( admin, page );
-
         const formId = 'bbbbbbbb-cccc-4ddd-8eee-ffffffffffff';
         await addSavedForm( admin, page, formId, 'confirmation-api-key' );
 
@@ -849,46 +767,13 @@ test.describe( 'CHEFS Form block', () => {
         const mockToken = 'frontend-custom-success-token';
         const customMessage = 'Thanks for applying to this program.';
 
-        await addSavedForm( admin, page, formId, 'frontend-custom-api-key' );
-
-        await page.route(
-            /bcew-chefs-embed\/v1\/embed-config/,
-            async ( route ) => {
-                await route.fulfill( {
-                    status: 200,
-                    contentType: 'application/json',
-                    body: JSON.stringify( {
-                        token: mockToken,
-                        baseUrl: mockBaseUrl,
-                        confirmation: customMessage,
-                    } ),
-                } );
-            }
-        );
-
-        await page.route(
-            `${ mockBaseUrl }/embed/chefs-form-viewer.min.js`,
-            async ( route ) => {
-                await route.fulfill( {
-                    status: 200,
-                    contentType: 'application/javascript',
-                    body: CHEFS_FORM_VIEWER_STUB,
-                } );
-            }
-        );
-
-        await admin.createNewPost();
-        await editor.insertBlock( { name: BLOCK_NAME } );
-        await ensureBlockSettingsVisible( editor, page );
-        await selectSavedFormId( page, formId );
-
-        const postId = await editor.publishPost();
-        expect( postId ).not.toBeNull();
-
-        await becomeAnonymousVisitor( page );
-
-        const response = await page.goto( `/?p=${ postId }` );
-        expect( response ).not.toBeNull();
+        await publishFormAndVisit( admin, editor, page, {
+            formId,
+            apiKey: 'frontend-custom-api-key',
+            token: mockToken,
+            baseUrl: mockBaseUrl,
+            confirmation: customMessage,
+        } );
 
         const viewer = page.locator( 'chefs-form-viewer' );
         await expect( viewer ).toBeAttached();
@@ -935,16 +820,14 @@ test.describe( 'CHEFS Form block', () => {
             }
         );
 
-        await admin.createNewPost();
-        await editor.insertBlock( { name: BLOCK_NAME } );
-        await ensureBlockSettingsVisible( editor, page );
-        await selectSavedFormId( page, formId );
+        const postId = await selectFormAndPublish(
+            admin,
+            editor,
+            page,
+            formId
+        );
 
-        const postId = await editor.publishPost();
-        expect( postId ).not.toBeNull();
-
-        await becomeAnonymousVisitor( page );
-        await page.goto( `/?p=${ postId }` );
+        await visitPublishedForm( page, postId );
 
         await expect(
             page.getByRole( 'alert' ).filter( {
