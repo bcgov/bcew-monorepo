@@ -353,14 +353,7 @@ class Settings {
 
 		// Extract the CHEFS form ID from the URL query string.
 		wp_parse_str( (string) wp_parse_url( $form_id_or_url, PHP_URL_QUERY ), $query_args );
-		$form_id = $query_args['f'] ?? '';
-
-		// Preserve the original URL unless f contains a valid CHEFS form ID.
-		if ( ! is_string( $form_id ) || ! preg_match( '/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i', $form_id ) ) {
-			return $form_id_or_url;
-		}
-
-		return $form_id;
+		return $query_args['f'] ?? '';
 	}
 
 	/**
