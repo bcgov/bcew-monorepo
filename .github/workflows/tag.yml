@@ -14,7 +14,7 @@ on:
           - bcew-document-repository
           - bcew-chefs-embed
           - bcew-theme
-          - design-system-wordpress-plugin
+          - bcew-plugin
       version:
         description: 'Version to release (for example: 1.2.3)'
         required: true

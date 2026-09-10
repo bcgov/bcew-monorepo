@@ -4,12 +4,12 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e6198649dfce8612f7567c9e137abd28",
+    "content-hash": "8beec967fd051f6c20754007aa600905",
     "packages": [],
     "packages-dev": [
         {
             "name": "bcew-monorepo/phpunit-config",
-            "version": "dev-feature/dswp-590_migrate-dswp-plugin",
+            "version": "dev-feature/dswp-1188-rename-dswp-plugin",
             "dist": {
                 "type": "path",
                 "url": "../../packages/phpunit-config",

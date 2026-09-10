@@ -18,6 +18,7 @@ const repoRoot = resolve(__dirname, '..', '..');
 
 const packageDisplayNames: Record<string, string> = {
   'bcew-theme': 'BC Extended Web Theme',
+  'bcew-plugin': 'BC Extended Web Plugin',
   'bcew-belleville-terminal': 'BCEW Belleville Terminal',
   'bcew-blocks': 'BCEW Blocks',
   'bcew-chefs-embed': 'BCEW CHEFS Embed',
@@ -171,7 +172,7 @@ function packageDocsSection(
     );
 
     const pluginNestedItems = [...nestedItems];
-    const hasDevelopersSection = name === 'design-system-wordpress-plugin' && !pluginNestedItems.some((item) => item.text === 'Developers');
+    const hasDevelopersSection = name === 'bcew-plugin' && !pluginNestedItems.some((item) => item.text === 'Developers');
     if (hasDevelopersSection) {
       pluginNestedItems.push({
         text: 'Developers',

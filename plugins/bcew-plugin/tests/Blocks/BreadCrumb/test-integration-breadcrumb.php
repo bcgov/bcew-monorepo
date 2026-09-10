@@ -28,7 +28,7 @@ class BreadCrumbTest extends \WP_UnitTestCase {
 
 		// Register the breadcrumb block.
 		$plugin_root = dirname( __DIR__, 3 );
-		require_once $plugin_root . '/design-system-wordpress-plugin.php';
+		require_once $plugin_root . '/bcew-plugin.php';
 	}
 
 

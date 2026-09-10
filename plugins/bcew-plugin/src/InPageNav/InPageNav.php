@@ -29,7 +29,7 @@ class InPageNav {
     public function __construct() {
         // Get plugin version from main plugin file.
 
-        $plugin_dir  = plugin_dir_path( dirname( __DIR__ ) ) . 'design-system-wordpress-plugin.php';
+        $plugin_dir  = plugin_dir_path( dirname( __DIR__ ) ) . 'bcew-plugin.php';
         $plugin_data = get_file_data(
             $plugin_dir,
             [
