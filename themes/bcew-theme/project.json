@@ -1,13 +1,13 @@
 {
     "$schema": "../../node_modules/nx/schemas/project-schema.json",
-    "name": "design-system-wordpress-theme",
-    "root": "themes/design-system-wordpress-theme",
-    "sourceRoot": "themes/design-system-wordpress-theme/src",
+    "name": "bcew-theme",
+    "root": "themes/bcew-theme",
+    "sourceRoot": "themes/bcew-theme/src",
     "projectType": "application",
     "generators": {
         "bcew-monorepo:theme": {
-            "name": "Design System WordPress Theme",
-            "slug": "design-system-wordpress-theme"
+            "name": "BC Extended Web Theme",
+            "slug": "bcew-theme"
         }
     },
     "targets": {

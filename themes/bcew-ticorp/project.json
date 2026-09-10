@@ -23,7 +23,7 @@
     },
     "implicitDependencies": [
         "packages/phpunit-config/",
-        "design-system-wordpress-theme"
+        "bcew-theme"
     ],
     "tags": ["type:wp-theme"]
 }

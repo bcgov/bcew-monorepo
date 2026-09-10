@@ -1,6 +1,6 @@
-# Design System WordPress Theme
+# BC Extended Web Theme
 
-`design-system-wordpress-theme` is the core block theme providing styles, templates, and block pattern variations for British Columbia government sites.
+`bcew-theme` is the core block theme providing styles, templates, and block pattern variations for British Columbia government sites.
 
 ## Overview
 
@@ -15,18 +15,18 @@ This theme provides:
 You can run WordPress locally for this theme using `wp-env`:
 
 ```bash
-npx nx run design-system-wordpress-theme:wp-env-start
-npx nx run design-system-wordpress-theme:start
+npx nx run bcew-theme:wp-env-start
+npx nx run bcew-theme:start
 ```
 
 or using Nx commands:
 
 ```bash
 # Build theme assets
-npx nx run design-system-wordpress-theme:build
+npx nx run bcew-theme:build
 
 # Stop environment
-npx nx run design-system-wordpress-theme:wp-env-stop
+npx nx run bcew-theme:wp-env-stop
 ```
 
 ## Where to learn more
