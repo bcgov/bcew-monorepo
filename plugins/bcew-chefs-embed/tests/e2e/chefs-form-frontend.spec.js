@@ -2,6 +2,7 @@ const { test, expect } = require( '@wordpress/e2e-test-utils-playwright' );
 const {
     BLOCK_NAME,
     addSavedForm,
+    clearSavedForms,
     ensureBlockSettingsVisible,
     mockChefsFormRoutes,
     publishFormAndVisit,
@@ -9,6 +10,10 @@ const {
 } = require( './chefs-form-helpers' );
 
 test.describe( 'CHEFS Form frontend', () => {
+    test.beforeEach( async ( { admin, page } ) => {
+        await clearSavedForms( admin, page );
+    } );
+
     test( 'published page markup includes Form ID only and shows generic success after submit', async ( {
         admin,
         editor,

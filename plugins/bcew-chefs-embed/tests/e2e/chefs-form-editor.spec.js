@@ -11,6 +11,10 @@ const {
 } = require( './chefs-form-helpers' );
 
 test.describe( 'CHEFS Form editor', () => {
+    test.beforeEach( async ( { admin, page } ) => {
+        await clearSavedForms( admin, page );
+    } );
+
     test( 'can be inserted from the block editor with a formId attribute', async ( {
         admin,
         editor,

@@ -34,12 +34,14 @@ const clearSavedForms = async ( admin, page ) => {
         return;
     }
     await expect( settingsHeading ).toBeVisible();
+
     const removeButton = page.getByRole( 'button', {
         name: 'Remove form',
         exact: true,
     } );
     while ( ( await removeButton.count() ) > 0 ) {
         const remainingForms = ( await removeButton.count() ) - 1;
+        page.once( 'dialog', ( dialog ) => dialog.accept() );
         await removeButton.first().click();
         await expect( removeButton ).toHaveCount( remainingForms );
     }
