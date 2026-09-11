@@ -5,17 +5,17 @@ import { searchPlugin } from '@vuepress/plugin-search';
 import { viteBundler } from '@vuepress/bundler-vite';
 
 export default defineUserConfig({
-    base: '/design-system-wordpress-plugin/',
+    base: '/bcew-plugin/',
     lang: 'en-US',
-    title: 'Design System WordPress Plugin',
-    description: 'Developer Documentation for Design System WordPress Plugin',
+    title: 'BC Extended Web Plugin',
+    description: 'Developer Documentation for BC Extended Web Plugin',
     bundler: viteBundler({}),
     theme: defaultTheme({
         logo: '/images/BCID_H_rgb_pos.png',
         logoDark: '/images/BCID_H_rgb_rev.png',
         editLink: false,
         lastUpdated: false,
-        repo: 'bcgov/design-system-wordpress-plugin',
+        repo: 'bcgov/bcew-monorepo',
         repoLabel: 'GitHub',
         sidebarDepth: 2,
         navbar: [

@@ -1,17 +1,17 @@
 <?php
 /**
- * Plugin Name: Design System Plugin
- * Plugin URI: https://github.com/bcgov/design-system-wordpress-plugin
+ * Plugin Name: BC Extended Web Plugin
+ * Plugin URI: https://github.com/bcgov/bcew-monorepo/tree/main/plugins/bcew-plugin
  * Author: govwordpress@gov.bc.ca
  * Author URI: https://apps.itsm.gov.bc.ca/jira/browse/ENG-138
- * Description: WordPress Design System plugin is a plugin that adds custom functionality to your WordPress site.
+ * Description: BC Extended Web Plugin adds custom functionality for BC government sites.
  * Requires at least: 6.4.4
  * Tested up to: 6.5
  * Requires PHP: 7.4
  * Version: 2.18.0
  * License: Apache License Version 2.0
  * License URI: LICENSE
- * Text Domain: design-system-wordpress-plugin
+ * Text Domain: bcew-plugin
  * Tags:
  *
  * @package DesignSystemPlugin
@@ -55,7 +55,7 @@ add_action(
 /**
  * Registers block metadata and assets from the generated dist directory.
  */
-function design_system_register_blocks() {
+function bcew_plugin_register_blocks() {
     $build_dir = plugin_dir_path( __FILE__ ) . 'dist/';
 
     if ( function_exists( 'wp_register_block_types_from_metadata_collection' ) ) {
@@ -67,7 +67,7 @@ function design_system_register_blocks() {
     }
 }
 // Hook the function into the 'init' action.
-add_action( 'init', 'design_system_register_blocks' );
+add_action( 'init', 'bcew_plugin_register_blocks' );
 
 
 

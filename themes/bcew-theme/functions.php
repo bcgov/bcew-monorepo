@@ -1,6 +1,6 @@
 <?php
 /**
- * Design System Plugin dependency: auto-activate on theme switch, allow admins to disable, show notice when inactive.
+ * BC Extended Web Plugin dependency: auto-activate on theme switch, allow admins to disable, show notice when inactive.
  *
  * @package Bcew_Theme
  */
@@ -13,7 +13,7 @@ use Bcgov\Theme\DesignSystem\LegacyPatterns;
  * @return string Plugin basename path.
  */
 function bcew_theme_required_plugin() {
-    return 'design-system-wordpress-plugin/design-system-wordpress-plugin.php';
+    return 'bcew-plugin/bcew-plugin.php';
 }
 
 add_action( 'after_switch_theme', 'bcew_theme_activate_plugin_on_switch', 10, 2 );
@@ -75,7 +75,7 @@ function bcew_theme_register_plugin_required_notices() {
 
 /** Outputs the "plugin required" notice in the admin. */
 function bcew_theme_plugin_required_notice() {
-    $msg = __( 'This theme will not work correctly without the Design System Plugin. Please enable it.', 'bcew-theme' );
+    $msg = __( 'This theme will not work correctly without the BC Extended Web Plugin. Please enable it.', 'bcew-theme' );
     echo '<div class="notice notice-warning is-dismissible"><p><strong>' . esc_html__( 'BC Extended Web Theme', 'bcew-theme' ) . ':</strong> ' . esc_html( $msg );
     if ( current_user_can( 'activate_plugins' ) ) {
         echo ' <a href="' . esc_url( admin_url( 'plugins.php' ) ) . '">' . esc_html__( 'Go to Plugins', 'bcew-theme' ) . '</a>';

@@ -1,6 +1,6 @@
 {
-    "name": "bcgov-plugin/design-system-wordpress-plugin",
-    "description": "Design System WordPress Plugin",
+    "name": "bcgov-plugin/bcew-plugin",
+    "description": "BC Extended Web Plugin",
     "type": "wordpress-plugin",
     "license": "Apache-2.0",
     "repositories": [
