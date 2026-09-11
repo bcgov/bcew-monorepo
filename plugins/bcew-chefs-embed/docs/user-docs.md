@@ -59,13 +59,19 @@ Note: API keys are hidden for security reasons.
 
 ### Remove a form
 
-Click **Remove form** next to the form you want to remove.
+Click **Remove form** next to the form you want to remove. A confirmation dialog
+asks you to confirm this cannot be undone. Choose **Cancel** to keep the form,
+or **OK** to remove it.
 
-After you remove a form:
+After you confirm removal:
 
 - The saved Form ID and API key are removed.
 - The form is removed from block selection options.
 - The custom confirmation for that form is also removed.
+
+Note: Removing a form here does not delete the form in CHEFS. Any WordPress
+page embedding it will show an error until the form is saved again or the
+block is removed.
 
 ### Update a Form ID or API key
 
@@ -79,6 +85,9 @@ To update credentials, delete the existing form and add it again with the new va
 - If no custom confirmation is set, a generic success message is used.
 - Deleting a form removes its custom confirmation.
 - Re-adding a form starts without a custom confirmation.
+- Clicking **Remove custom confirmation** asks for confirmation. Choose
+  **Cancel** to keep the custom message, or **OK** to remove it and use the
+  generic success message again.
 
 ## Add a CHEFS form block to a page or post
 
