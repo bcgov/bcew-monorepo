@@ -63,6 +63,21 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Init registers the admin-post handlers and plugin action-link filter.
+	 *
+	 * @return void
+	 */
+	public function test_init_registers_settings_hooks() {
+		$settings = new \Bcgov\BcewChefsEmbed\Settings();
+		$settings->init();
+
+		$this->assertSame( 10, has_action( 'admin_post_bcew_chefs_save', array( $settings, 'handle_save' ) ) );
+		$this->assertSame( 10, has_action( 'admin_post_bcew_chefs_delete', array( $settings, 'handle_delete' ) ) );
+		$this->assertSame( 10, has_action( 'admin_post_bcew_chefs_save_confirmation', array( $settings, 'handle_save_confirmation' ) ) );
+		$this->assertSame( 10, has_action( 'admin_post_bcew_chefs_delete_confirmation', array( $settings, 'handle_delete_confirmation' ) ) );
+	}
+
+	/**
 	 * Credentials can be saved to the database.
 	 *
 	 * Acceptance: Save stores Form ID and API key in the credentials table
@@ -697,6 +712,47 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Settings page renders each credential validation error safely.
+	 *
+	 * @return void
+	 */
+	public function test_settings_page_renders_credential_error_notices() {
+		$messages = array(
+			'missing_credentials' => 'Enter a Form ID/URL and API key.',
+			'form_not_found'      => 'CHEFS could not find that Form ID.',
+			'invalid_credentials' => 'could not be verified together',
+			'request_failed'      => 'Unable to contact CHEFS.',
+			'invalid_response'    => 'unexpected response',
+			'unknown_error'       => 'Unable to save credentials.',
+		);
+
+		foreach ( $messages as $error_code => $message ) {
+			$html = $this->render_page_with_get( 'chefs_error', $error_code );
+			$this->assertStringContainsString( $message, $html, "Expected notice for {$error_code}." );
+		}
+	}
+
+	/**
+	 * Settings page renders the confirmation editor when requested.
+	 *
+	 * @return void
+	 */
+	public function test_settings_page_renders_confirmation_edit_mode() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only edit-mode flag for testing.
+		$_GET['edit_confirmation'] = $this->form_id;
+		ob_start();
+		( new \Bcgov\BcewChefsEmbed\Settings() )->render_page();
+		$html = ob_get_clean();
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Clear test query parameter.
+		unset( $_GET['edit_confirmation'] );
+
+		$this->assertStringContainsString( 'name="confirmation"', $html );
+		$this->assertStringContainsString( 'name="action" value="bcew_chefs_save_confirmation"', $html );
+	}
+
+	/**
 	 * Handle delete rejects users without manage_options.
 	 *
 	 * Acceptance: Only users with manage_options can remove forms.
@@ -717,6 +773,28 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		$this->expectException( \WPDieException::class );
 
 		( new \Bcgov\BcewChefsEmbed\Settings() )->handle_delete();
+	}
+
+	/**
+	 * Handle delete removes the row and redirects with a success flag.
+	 *
+	 * @return void
+	 */
+	public function test_handle_delete_removes_form_and_redirects() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+		$nonce                = wp_create_nonce( 'bcew_chefs_delete' );
+		$_POST['form_id']     = $this->form_id;
+		$_POST['_wpnonce']    = $nonce;
+		$_REQUEST['_wpnonce'] = $nonce;
+
+		$redirect = $this->capture_settings_redirect(
+			function () {
+				( new \Bcgov\BcewChefsEmbed\Settings() )->handle_delete();
+			}
+		);
+
+		$this->assertStringContainsString( 'chefs_deleted=1', $redirect );
+		$this->assertNull( CredentialsManager::get_by_form_id( $this->form_id ) );
 	}
 
 	/**

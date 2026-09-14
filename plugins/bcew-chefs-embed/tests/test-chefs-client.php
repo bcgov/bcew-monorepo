@@ -15,12 +15,22 @@ use Bcgov\BcewChefsEmbed\ChefsClient;
 class ChefsClientTest extends \WP_UnitTestCase {
 
 	/**
+	 * HTTP callbacks registered by the current test.
+	 *
+	 * @var array<int, callable>
+	 */
+	private $http_callbacks = array();
+
+	/**
 	 * Remove HTTP stubs after each test.
 	 *
 	 * @return void
 	 */
 	public function tear_down() {
-		remove_all_filters( 'pre_http_request' );
+		foreach ( $this->http_callbacks as $callback ) {
+			remove_filter( 'pre_http_request', $callback, 10 );
+		}
+		$this->http_callbacks = array();
 		parent::tear_down();
 	}
 
@@ -34,17 +44,14 @@ class ChefsClientTest extends \WP_UnitTestCase {
 		$api_key  = 'key-456';
 		$requests = array();
 
-		add_filter(
-			'pre_http_request',
+		$this->add_http_callback(
 			static function ( $pre, $args, $url ) use ( &$requests ) {
 				$requests = array( $args, $url );
 				return array(
 					'body'     => '{"token":"token-789"}',
 					'response' => array( 'code' => 200 ),
 				);
-			},
-			10,
-			3
+			}
 		);
 
 		$result = ( new ChefsClient() )->authenticate( $form_id, $api_key );
@@ -123,8 +130,7 @@ class ChefsClientTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_transport_failure_is_classified() {
-		add_filter(
-			'pre_http_request',
+		$this->add_http_callback(
 			static function () {
 				return new \WP_Error( 'http_request_failed', 'Connection failed' );
 			}
@@ -187,8 +193,7 @@ class ChefsClientTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	private function stub_response( $status, array $body ) {
-		add_filter(
-			'pre_http_request',
+		$this->add_http_callback(
 			static function () use ( $status, $body ) {
 				return array(
 					'body'     => wp_json_encode( $body ),
@@ -196,5 +201,16 @@ class ChefsClientTest extends \WP_UnitTestCase {
 				);
 			}
 		);
+	}
+
+	/**
+	 * Register and track a test HTTP callback for exact teardown removal.
+	 *
+	 * @param callable $callback HTTP callback.
+	 * @return void
+	 */
+	private function add_http_callback( callable $callback ) {
+		$this->http_callbacks[] = $callback;
+		add_filter( 'pre_http_request', $callback, 10, 3 );
 	}
 }
