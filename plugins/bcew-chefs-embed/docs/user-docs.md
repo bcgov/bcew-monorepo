@@ -41,6 +41,11 @@ Open WordPress Admin and go to CHEFS Forms.
 2. Enter the API Key for that form.
 3. Click **Save**.
 
+CHEFS validates the Form ID and API key before WordPress saves them. If the
+credentials are invalid, the form is not added or updated. You may see an
+error when the Form ID cannot be found, the API key is invalid, or CHEFS is
+temporarily unavailable.
+
 After you save:
 
 - The form is added to the Configured Forms list.
@@ -75,9 +80,11 @@ block is removed.
 
 ### Update a Form ID or API key
 
-There is no in-place update for Form ID or API key.
+To update credentials, enter the same Form ID with the new API key and click
+**Save**. CHEFS validates the replacement credentials before WordPress updates
+the saved form.
 
-To update credentials, delete the existing form and add it again with the new values.
+If validation fails, the existing saved Form ID and API key remain unchanged.
 
 ## Manage confirmation messages
 

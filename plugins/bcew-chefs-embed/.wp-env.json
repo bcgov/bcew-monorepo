@@ -3,10 +3,12 @@
 	"phpVersion": "7.4",
 	"plugins": ["."],
 	"themes": ["../../themes/bcew-theme"],
-	"config": { "WP_AUTO_UPDATE_CORE": false },
+	"config": {
+		"WP_AUTO_UPDATE_CORE": false
+	},
 	"port": 9012,
 	"testsPort": 9013,
 	"lifecycleScripts": {
-		"afterStart": "wp-env run cli bash -c 'wp theme activate twentytwentyfive && wp plugin activate bcew-chefs-embed' && wp-env run tests-cli bash -c 'wp theme activate twentytwentyfive && wp plugin activate bcew-chefs-embed'"
+		"afterStart": "sh tools/setup-bcew-chefs-embed-wp-env.sh"
 	}
 }

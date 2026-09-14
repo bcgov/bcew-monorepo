@@ -140,6 +140,42 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Invalid credentials do not create a new saved form.
+	 *
+	 * @return void
+	 */
+	public function test_invalid_credentials_do_not_create_a_row() {
+		$this->save_settings_with_response(
+			$this->form_id,
+			array( 'detail' => 'Forbidden' ),
+			403
+		);
+
+		$this->assertNull( CredentialsManager::get_by_form_id( $this->form_id ) );
+	}
+
+	/**
+	 * Invalid replacement credentials preserve the existing row.
+	 *
+	 * @return void
+	 */
+	public function test_invalid_replacement_preserves_existing_credentials() {
+		$original_key = 'original-api-key';
+		CredentialsManager::save( $this->form_id, $original_key, $this->admin_user_id );
+
+		$this->save_settings_with_response(
+			$this->form_id,
+			array( 'detail' => 'Forbidden' ),
+			403,
+			'new-invalid-key'
+		);
+
+		$row = CredentialsManager::get_by_form_id( $this->form_id );
+		$this->assertIsArray( $row );
+		$this->assertSame( $original_key, $row['api_key'] );
+	}
+
+	/**
 	 * Handle save extracts a form ID from a URL with a fragment.
 	 *
 	 * @return void
@@ -841,18 +877,52 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	 * @return string Redirect URL.
 	 */
 	private function save_settings( $form_id_or_url ) {
+		return $this->save_settings_with_response(
+			$form_id_or_url,
+			array( 'token' => 'test-token' ),
+			200,
+			$this->api_key
+		);
+	}
+
+	/**
+	 * Submit settings with a mocked CHEFS response and capture the redirect.
+	 *
+	 * @param string $form_id_or_url Form ID or URL submitted to the settings handler.
+	 * @param array  $body           Mocked CHEFS response body.
+	 * @param int    $status         Mocked HTTP status code.
+	 * @param string $api_key        API key submitted with the form.
+	 * @return string Redirect URL.
+	 */
+	private function save_settings_with_response( $form_id_or_url, array $body, $status, $api_key = 'test-api-key-12345' ) {
+		$chefs_stub = static function () use ( $body, $status ) {
+			return array(
+				'headers'  => array( 'content-type' => 'application/json' ),
+				'body'     => wp_json_encode( $body ),
+				'response' => array(
+					'code'    => $status,
+					'message' => 'OK',
+				),
+			);
+		};
+		add_filter( 'pre_http_request', $chefs_stub, 10, 3 );
+
 		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Tests simulate a POST request and set a valid nonce below.
 		$_POST['form_id']     = $form_id_or_url;
-		$_POST['api_key']     = $this->api_key;
+		$_POST['api_key']     = $api_key;
 		$_POST['_wpnonce']    = wp_create_nonce( 'bcew_chefs_save' );
 		$_REQUEST['_wpnonce'] = $_POST['_wpnonce'];
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 
-		return $this->capture_settings_redirect(
-			function () {
-				( new \Bcgov\BcewChefsEmbed\Settings() )->handle_save();
-			}
-		);
+		try {
+			return $this->capture_settings_redirect(
+				function () {
+					( new \Bcgov\BcewChefsEmbed\Settings() )->handle_save();
+				}
+			);
+		} finally {
+			remove_filter( 'pre_http_request', $chefs_stub, 10 );
+		}
 	}
 
 	/**

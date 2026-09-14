@@ -1,7 +1,26 @@
 const { test, expect } = require( '@wordpress/e2e-test-utils-playwright' );
-const { addSavedForm, setup } = require( './chefs-form-helpers' );
+const {
+    addSavedForm,
+    clearSavedForms,
+    setup,
+} = require( './chefs-form-helpers' );
 
 test.describe( 'CHEFS Form settings', () => {
+    test( 'valid credentials are saved and shown in configured forms', async ( {
+        admin,
+        page,
+    } ) => {
+        await setup( { admin, page } );
+        const formId = '11111111-1111-4111-8111-111111111111';
+
+        await addSavedForm( admin, page, formId, 'api-key-one' );
+
+        await expect( page.getByText( formId, { exact: true } ) ).toBeVisible();
+        await expect(
+            page.getByRole( 'button', { name: 'Remove form', exact: true } )
+        ).toHaveCount( 1 );
+    } );
+
     test( 'settings page can save, show, and delete a confirmation message', async ( {
         admin,
         page,
@@ -66,5 +85,31 @@ test.describe( 'CHEFS Form settings', () => {
         await expect(
             page.getByRole( 'link', { name: 'Edit confirmation' } )
         ).toBeVisible();
+    } );
+
+    test( 'invalid credentials show an error and do not replace a saved form', async ( {
+        admin,
+        page,
+    } ) => {
+        await setup( { admin, page } );
+        const formId = 'cccccccc-dddd-4eee-8fff-000000000000';
+        await addSavedForm( admin, page, formId, 'original-api-key' );
+
+        await admin.visitAdminPage(
+            'admin.php',
+            'page=bcew-chefs-embed-settings'
+        );
+        await page.getByLabel( 'Form ID' ).first().fill( formId );
+        await page.getByLabel( 'API Key' ).first().fill( 'invalid-test-key' );
+        await page.getByRole( 'button', { name: 'Save', exact: true } ).click();
+
+        await expect( page.locator( '.notice-error' ) ).toContainText(
+            'could not be verified together'
+        );
+        await expect(
+            page.getByRole( 'button', { name: 'Remove form', exact: true } )
+        ).toHaveCount( 1 );
+
+        await clearSavedForms( admin, page );
     } );
 } );
