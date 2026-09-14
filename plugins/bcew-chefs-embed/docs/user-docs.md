@@ -78,13 +78,18 @@ Note: Removing a form here does not delete the form in CHEFS. Any WordPress
 page embedding it will show an error until the form is saved again or the
 block is removed.
 
-### Update a Form ID or API key
+### Update an API key or change a Form ID
 
-To update credentials, enter the same Form ID with the new API key and click
+To update an API key, enter the same Form ID with the new API key and click
 **Save**. CHEFS validates the replacement credentials before WordPress updates
 the saved form.
 
 If validation fails, the existing saved Form ID and API key remain unchanged.
+
+To change the Form ID, first remove the old form from the Configured Forms list,
+then add the new Form ID and its API key as a new form. Saving a different Form
+ID creates an additional configured form; it does not replace the existing row,
+so the old Form ID remains available in the block picker until you remove it.
 
 ## Manage confirmation messages
 

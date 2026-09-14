@@ -71,10 +71,15 @@ class EmbedConfigController {
 		$authentication = ( new ChefsClient() )->authenticate( $credentials['form_id'], $credentials['api_key'] );
 
 		if ( ! $authentication['success'] ) {
+			$error_code    = 'request_failed' === $authentication['code'] ? 'chefs_auth_request_failed' : 'chefs_authentication_failed';
+			$error_message = 'request_failed' === $authentication['code']
+				? __( 'Unable to contact CHEFS. Try again later.', 'bcew-chefs-embed' )
+				: __( 'The configured CHEFS credentials could not be verified.', 'bcew-chefs-embed' );
+
 			// Do not expose API keys or detailed upstream authentication errors publicly.
 			return new \WP_Error(
-				'chefs_auth_request_failed',
-				\__( 'Unable to contact CHEFS.', 'bcew-chefs-embed' ),
+				$error_code,
+				$error_message,
 				array(
 					'status' => \WP_Http::BAD_GATEWAY,
 				)
