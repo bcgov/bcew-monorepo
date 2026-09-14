@@ -33,6 +33,25 @@ The test environment uses port `9013` and is used by the Playwright targets. It 
 
 The `wp-env` lifecycle script activates the plugin after the environment starts. Build the assets again after changing block JavaScript, styles, or metadata.
 
+### CHEFS authentication mock
+
+The package-local `wp-env` configuration enables `BCEW_CHEFS_E2E_MOCK` only for
+the Playwright test WordPress container on port `9013`. This installs a
+server-side `pre_http_request` filter for the CHEFS authentication endpoint, so
+automated tests do not call the live CHEFS service.
+
+The mock accepts only the explicit Form ID and API key pairs used by the E2E
+fixtures. An unknown Form ID returns a `404` `Bad formId` response, and a known
+Form ID with a different API key returns a `403` response. This is important
+for manual testing: arbitrary credentials must fail during the settings save,
+rather than being saved and failing later with an invalid gateway token in the
+block editor.
+
+The development WordPress site on port `9012` does not enable the mock, so
+developers can manually test real Form ID and API key combinations against
+CHEFS. The mock is also not enabled in production. Do not add real API keys to
+the fixture allowlist or commit them anywhere in the repository.
+
 ### Stop or reset WordPress
 
 ```shell
@@ -142,7 +161,7 @@ Use `test-screenshot-generate` when updating approved screenshot baselines. The 
 ### Manual smoke test
 
 1. Start the environment with `npx nx run bcew-chefs-embed:wp-env-start`.
-2. Open `http://localhost:9012` and confirm WordPress loads.
+2. Open the development site at `http://localhost:9012` and confirm WordPress loads. Use port `9012` for manual tests with real CHEFS credentials because this site connects to the real CHEFS authentication endpoint. Do not use the Playwright test site on port `9013`, where CHEFS authentication is mocked.
 3. Open the CHEFS settings page as an administrator and save a Form ID and API key.
 4. Create a post and insert the CHEFS Form block.
 5. Confirm the saved Form ID appears in the block sidebar.
@@ -151,7 +170,7 @@ Use `test-screenshot-generate` when updating approved screenshot baselines. The 
 8. Confirm the form loads through `embed-config`.
 9. Verify that the CHEFS API key is not present in the page source, frontend code, or REST response. The REST response may contain the short-lived token used to load the form.
 
-The local WordPress environment can be started without live CHEFS credentials, but loading and submitting a real form requires valid credentials and access to the CHEFS service.
+The local WordPress environment can be started without live CHEFS credentials, but loading and submitting a real form on port `9012` requires valid credentials and access to the CHEFS service.
 
 ## Related documentation
 

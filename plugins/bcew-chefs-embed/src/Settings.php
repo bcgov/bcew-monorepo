@@ -21,7 +21,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  * UI lives here; database work stays in CredentialsManager and OptionsManager.
  */
 class Settings {
-
 	/**
 	 * Query-string page slug for admin.php?page=...
 	 */
@@ -149,7 +148,8 @@ class Settings {
 				<div class="notice notice-success"><p><?php esc_html_e( 'Saved.', 'bcew-chefs-embed' ); ?></p></div>
 			<?php // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only redirect status flag. ?>
 			<?php elseif ( isset( $_GET['chefs_error'] ) ) : ?>
-				<div class="notice notice-error"><p><?php esc_html_e( 'Unable to save credentials.', 'bcew-chefs-embed' ); ?></p></div>
+			<?php // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only redirect status flag. ?>
+				<div class="notice notice-error"><p><?php echo esc_html( self::get_error_message( sanitize_key( wp_unslash( $_GET['chefs_error'] ) ) ) ); ?></p></div>
 			<?php // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only redirect status flag. ?>
 			<?php elseif ( isset( $_GET['chefs_deleted'] ) ) : ?>
 				<div class="notice notice-success"><p><?php esc_html_e( 'Removed.', 'bcew-chefs-embed' ); ?></p></div>
@@ -343,12 +343,42 @@ class Settings {
 		$form_id = sanitize_text_field( wp_unslash( $_POST['form_id'] ?? '' ) );
 		$api_key = sanitize_text_field( wp_unslash( $_POST['api_key'] ?? '' ) );
 
-		$form_id       = $this->extract_form_id( $form_id );
+		$form_id = $this->extract_form_id( $form_id );
+		if ( '' === $form_id || '' === $api_key ) {
+			wp_safe_redirect( add_query_arg( 'chefs_error', 'missing_credentials', self::get_page_url() ) );
+			exit;
+		}
+
+		$validation = ( new ChefsClient() )->authenticate( $form_id, $api_key );
+
+		if ( ! $validation['success'] ) {
+			wp_safe_redirect( add_query_arg( 'chefs_error', $validation['code'], self::get_page_url() ) );
+			exit;
+		}
+
 		$saved_form_id = CredentialsManager::save( $form_id, $api_key );
 		$redirect_arg  = false === $saved_form_id ? 'chefs_error' : 'chefs_saved';
 
 		wp_safe_redirect( add_query_arg( $redirect_arg, '1', self::get_page_url() ) );
 		exit;
+	}
+
+	/**
+	 * Get a safe admin message for a validation error code.
+	 *
+	 * @param string $error_code Validation error code.
+	 * @return string
+	 */
+	private static function get_error_message( string $error_code ) {
+		$messages = array(
+			'missing_credentials' => __( 'Enter a Form ID/URL and API key.', 'bcew-chefs-embed' ),
+			'form_not_found'      => __( 'CHEFS could not find that Form ID. Check the URL or Form ID and try again.', 'bcew-chefs-embed' ),
+			'invalid_credentials' => __( 'The Form ID and API key could not be verified together. Make sure the API key belongs to this Form ID and try again.', 'bcew-chefs-embed' ),
+			'request_failed'      => __( 'Unable to contact CHEFS. Try again later.', 'bcew-chefs-embed' ),
+			'invalid_response'    => __( 'CHEFS returned an unexpected response. Check the Form ID and API key.', 'bcew-chefs-embed' ),
+		);
+
+		return $messages[ $error_code ] ?? __( 'Unable to save credentials.', 'bcew-chefs-embed' );
 	}
 
 	/**
