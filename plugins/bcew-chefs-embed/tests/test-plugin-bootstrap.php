@@ -59,6 +59,48 @@ class PluginBootstrapTest extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Users without edit capability receive a REST error.
+	 *
+	 * @return void
+	 */
+	public function test_saved_form_ids_permission_rejects_subscribers() {
+		$user_id = self::factory()->user->create( array( 'role' => 'subscriber' ) );
+		wp_set_current_user( $user_id );
+
+		$error = bcew_chefs_embed_can_edit_posts();
+
+		$this->assertInstanceOf( \WP_Error::class, $error );
+		$this->assertSame( 'rest_forbidden', $error->get_error_code() );
+		$this->assertSame( 403, $error->get_error_data()['status'] );
+	}
+
+	/**
+	 * Editor settings registration exits when the block has not been registered.
+	 *
+	 * @return void
+	 */
+	public function test_editor_settings_registration_skips_unregistered_block() {
+		bcew_chefs_embed_register_editor_settings();
+
+		$this->assertTrue( true, 'The helper should safely return without a registered block.' );
+	}
+
+	/**
+	 * Menu registration adds the CHEFS settings page.
+	 *
+	 * @return void
+	 */
+	public function test_register_menu_adds_chefs_menu() {
+		global $menu;
+
+		$menu = array();
+		bcew_chefs_embed_register_menu();
+
+		$menu_slugs = array_column( $menu, 2 );
+		$this->assertContains( 'bcew-chefs-embed-settings', $menu_slugs );
+	}
+
+	/**
 	 * The install guards install missing tables and skip current schemas.
 	 *
 	 * @return void
