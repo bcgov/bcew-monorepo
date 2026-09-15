@@ -1,3 +1,16 @@
+# Release a WordPress plugin or theme from this monorepo.
+#
+# Run this workflow by hand (Actions → Tag WordPress Plugin or Theme). Pick
+# the project and tick Alpha when the release should be an alpha. The version
+# is not typed in: a script reads existing {project}/v* tags and applies the
+# house rules (alphas count up on the same X.Y.Z; a real release is that
+# X.Y.Z if it is missing; after a real release the next series is the next
+# minor). Nx Release then stamps files, commits, tags, creates the GitHub
+# Release, zips the project, and updates packages.json for Composer.
+#
+# Do not pass --specifier= or --git-commit to nx release. The version is a
+# positional argument. Commit, tag, and push come from nx.json.
+
 name: Release Subproject and Update packages.json
 on:
   workflow_dispatch:
@@ -20,6 +33,7 @@ on:
         type: boolean
         default: false
 
+# Share the lock with tag-delete.yml so packages.json is not written by two jobs at once.
 concurrency:
   group: composer-repo-update
   cancel-in-progress: false
@@ -32,6 +46,7 @@ jobs:
       id-token: write
     runs-on: ubuntu-latest
     steps:
+      # App token can push tags and commit on protected branches. GITHUB_TOKEN cannot.
       - name: Generate GitHub App Token
         id: app-token
         uses: actions/create-github-app-token@v3.2.0
@@ -39,6 +54,7 @@ jobs:
           client-id: ${{ vars.GH_APP_CLIENT_ID }}
           private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
 
+      # fetch-depth: 0 is required so next-release-version-cli.mjs sees every {project}/v* tag.
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
@@ -59,6 +75,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --ignore-scripts
 
+      # Nx commits as this identity. Matches the usual github-actions bot.
       - name: Configure git identity
         run: |
           git config user.name "github-actions[bot]"
@@ -75,13 +92,16 @@ jobs:
         run: |
           set -euo pipefail
           VERSION="$(node .github/scripts/next-release-version-cli.mjs "${NAME}" "${ALPHA}")"
+          # specifier is positional: `nx release 1.1.0-alpha.1`, not --specifier=.
           ARGS=(release "${VERSION}" --projects="${NAME}" --yes)
+          # No tags yet: tell Nx to use package.json as the current version.
           if ! git tag --list "${NAME}/v*" | grep -q .; then
             ARGS+=(--first-release)
           fi
           echo "npx nx ${ARGS[*]}"
           npx nx "${ARGS[@]}"
 
+      # publish-wordpress-release.sh writes public/packages.json. Skip deploy when that file was not created.
       - name: Deploy packages.json to GH Pages
         if: ${{ hashFiles('public/packages.json') != '' }}
         uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4.1.0

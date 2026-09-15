@@ -1,3 +1,12 @@
+/**
+ * Tests for wordpress-headers.ts.
+ *
+ * These cover the three files a release might touch: a theme style.css, a
+ * plugin bootstrap that is not named {project}.php, and composer.json which
+ * must stay unchanged. Alphas must appear in the WordPress header the same
+ * way they appear on the git tag.
+ */
+
 import { applyWordpressHeaderVersion } from './wordpress-headers';
 
 describe( 'applyWordpressHeaderVersion', () => {

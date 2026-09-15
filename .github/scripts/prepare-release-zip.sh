@@ -1,4 +1,14 @@
 #!/usr/bin/env bash
+#
+# Build the zip that gets attached to a GitHub Release.
+#
+# Copies the project at HEAD (so the zip matches git), adds dist/ from the
+# build that just ran, stamps the WordPress Version header as a safety net,
+# and writes {project}-{version}.zip. Called from publish-wordpress-release.sh.
+#
+# Arguments: project path (plugins/bcew-blocks), Nx project name, version.
+# ASSET_NAME must already be set in the environment.
+
 set -euo pipefail
 
 PROJECT_PATH="${1:?project path required}"
@@ -14,18 +24,20 @@ cd "${REPO_ROOT}"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 
+# Pack the committed tree, not the working copy. Untracked local files stay out of the release zip.
 (
   cd "${PROJECT_PATH}"
   git archive HEAD . | tar -x -C "${TMP}"
 )
 
+# dist/ is gitignored. Copy it from the workspace after the build step so the zip includes compiled assets.
 if [[ -d "${PROJECT_PATH}/dist" ]]; then
   cp -R "${PROJECT_PATH}/dist" "${TMP}/dist"
 fi
 
 # Stamp Version in the zip as a safety net. Git already has the header after
 # Nx Release, including prereleases. This still covers plugin files that are
-# not named after the Nx project.
+# not named after the Nx project, and old tags that skipped the header.
 if [[ -n "${VERSION}" ]]; then
   set_wordpress_version() {
     local file="$1"
@@ -38,6 +50,7 @@ if [[ -n "${VERSION}" ]]; then
     set_wordpress_version "${TMP}/style.css" "s/^Version:[[:space:]]*.*/Version:      ${VERSION}/"
     echo "Set theme version to ${VERSION} in release style.css"
   else
+    # Prefer {project}.php, then the first PHP file that has a Plugin Name header.
     plugin_file=""
     if [[ -f "${TMP}/${PROJECT_NAME}.php" ]]; then
       plugin_file="${TMP}/${PROJECT_NAME}.php"

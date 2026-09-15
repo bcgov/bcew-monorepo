@@ -1,3 +1,20 @@
+/**
+ * Custom Nx Release version actions for WordPress plugins and themes.
+ *
+ * Nx Release uses a "version actions" class to read and write version
+ * numbers. The default class is built for npm packages. This one is wired
+ * from nx.json (release.version.versionActions) and does three things:
+ *
+ * 1. Read the fallback version from package.json when git tags cannot.
+ * 2. Write the new version to package.json (zip name, GitHub Release tag).
+ * 3. Write the same version to the WordPress Version header so wp-admin
+ *    matches the tag, including alphas.
+ *
+ * It does not write composer.json. Composer versions come from git tags
+ * and packages.json. It also does not rewrite dependency ranges between
+ * plugins and themes; each project versions independently.
+ */
+
 import { readJson, updateJson, type Tree } from '@nx/devkit';
 import { join } from 'node:path';
 import { VersionActions } from 'nx/release';
@@ -22,6 +39,10 @@ export default class WordPressVersionActions extends VersionActions {
         currentVersion: string;
         manifestPath: string;
     } | null > {
+        /*
+         * nx.json prefers git tags. This path is the fallback for a first
+         * release (--first-release) when no {project}/v* tag exists yet.
+         */
         const manifestPath = join(
             this.projectGraphNode.data.root,
             'package.json'
@@ -45,6 +66,10 @@ export default class WordPressVersionActions extends VersionActions {
         _tree: Tree,
         _currentVersionResolverMetadata: NxReleaseVersionConfiguration[ 'currentVersionResolverMetadata' ]
     ): Promise< { currentVersion: string | null; logText: string } | null > {
+        /*
+         * We do not publish to npm, so there is no registry version to read.
+         * Returning null tells Nx to use git tags or package.json instead.
+         */
         return null;
     }
 
@@ -61,6 +86,10 @@ export default class WordPressVersionActions extends VersionActions {
         currentVersion: string | null;
         dependencyCollection: string | null;
     } > {
+        /*
+         * Independent plugins and themes do not bump each other. An empty
+         * result stops Nx from rewriting workspace dependency ranges.
+         */
         return { currentVersion: null, dependencyCollection: null };
     }
 
@@ -78,6 +107,11 @@ export default class WordPressVersionActions extends VersionActions {
         const logMessages: string[] = [];
         const projectRoot = this.projectGraphNode.data.root;
 
+        /*
+         * package.json "version" is what the zip script and GitHub Release
+         * tag use. Nx already decided newVersion (from our Action's
+         * specifier). We only write it.
+         */
         for ( const manifestToUpdate of this.manifestsToUpdate ) {
             updateJson( tree, manifestToUpdate.manifestPath, ( json ) => {
                 json.version = newVersion;
@@ -122,6 +156,11 @@ export default class WordPressVersionActions extends VersionActions {
         projectRoot: string,
         newVersion: string
     ): string[] {
+        /*
+         * Themes: style.css in the project root. If that file has Theme Name
+         * and Version, stamp it and stop. A plugin should not also have this
+         * file as its identity.
+         */
         const styleCss = join( projectRoot, 'style.css' );
         if ( tree.exists( styleCss ) ) {
             const contents = tree.read( styleCss, 'utf-8' ) ?? '';
@@ -134,6 +173,11 @@ export default class WordPressVersionActions extends VersionActions {
             }
         }
 
+        /*
+         * Plugins: look at every PHP file in the project root for Plugin
+         * Name. bcew-blocks is bcgov-wordpress-blocks.php, not
+         * bcew-blocks.php, so the filename is not enough.
+         */
         const phpFiles = tree
             .children( projectRoot )
             .filter( ( name ) => name.endsWith( '.php' ) );
