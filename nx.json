@@ -154,15 +154,6 @@
     "release": {
         "projects": ["plugins/*", "themes/*"],
         "projectsRelationship": "independent",
-        "versionPlans": {
-            "ignorePatternsForPlanCheck": [
-                "**/tests/**",
-                "**/docs/**",
-                "**/*.md",
-                "**/playwright*.js",
-                "**/*.spec.js"
-            ]
-        },
         "releaseTag": {
             "pattern": "{projectName}/v{version}"
         },
