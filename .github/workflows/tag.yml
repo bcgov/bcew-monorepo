@@ -15,13 +15,18 @@ on:
           - bcew-chefs-embed
           - bcew-theme
           - bcew-plugin
-      preid:
-        description: 'Prerelease id (alpha, beta, rc). Leave empty for a real release.'
-        required: false
-        type: string
-        default: ''
-      specifier:
-        description: 'Optional exact version (1.2.3-alpha.1) or bump (patch, minor, major, prepatch). Leave empty to use version plans from the PR.'
+      kind:
+        description: 'What kind of release?'
+        required: true
+        type: choice
+        options:
+          - Real release
+          - Alpha
+          - Beta
+          - RC
+          - Custom version
+      custom_version:
+        description: 'Only if you chose Custom version. Example: 1.2.3-alpha.1. Leave blank otherwise.'
         required: false
         type: string
         default: ''
@@ -81,20 +86,42 @@ jobs:
           REPOSITORY: ${{ github.repository }}
           PACKAGES_JSON_URL: https://${{ github.repository_owner }}.github.io/bcew-monorepo/packages.json
           NAME: ${{ inputs.name }}
-          PREID: ${{ inputs.preid }}
-          SPECIFIER: ${{ inputs.specifier }}
+          KIND: ${{ inputs.kind }}
+          CUSTOM_VERSION: ${{ inputs.custom_version }}
           FIRST_RELEASE: ${{ inputs.first_release }}
         run: |
           set -euo pipefail
           ARGS=(release --projects="${NAME}" --yes --git-commit --git-tag --git-push)
-          if [[ -n "${SPECIFIER}" ]]; then
-            ARGS+=(--specifier="${SPECIFIER}")
-          elif [[ -n "${PREID}" ]]; then
-            ARGS+=(--specifier=prerelease)
-          fi
-          if [[ -n "${PREID}" ]]; then
-            ARGS+=(--preid="${PREID}")
-          fi
+
+          case "${KIND}" in
+            "Real release")
+              if [[ -n "${CUSTOM_VERSION}" ]]; then
+                echo "You picked Real release. Leave Custom version blank, or pick Custom version."
+                exit 1
+              fi
+              ;;
+            Alpha)
+              ARGS+=(--specifier=prerelease --preid=alpha)
+              ;;
+            Beta)
+              ARGS+=(--specifier=prerelease --preid=beta)
+              ;;
+            RC)
+              ARGS+=(--specifier=prerelease --preid=rc)
+              ;;
+            "Custom version")
+              if [[ -z "${CUSTOM_VERSION}" ]]; then
+                echo "You picked Custom version. Fill in Custom version (for example 1.2.3-alpha.1)."
+                exit 1
+              fi
+              ARGS+=(--specifier="${CUSTOM_VERSION}")
+              ;;
+            *)
+              echo "Unknown kind: ${KIND}"
+              exit 1
+              ;;
+          esac
+
           if [[ "${FIRST_RELEASE}" == "true" ]]; then
             ARGS+=(--first-release)
           fi
