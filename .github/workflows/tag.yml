@@ -75,7 +75,7 @@ jobs:
         run: |
           set -euo pipefail
           VERSION="$(node .github/scripts/next-release-version-cli.mjs "${NAME}" "${ALPHA}")"
-          ARGS=(release "${VERSION}" --projects="${NAME}" --yes --git-commit --git-tag --git-push)
+          ARGS=(release "${VERSION}" --projects="${NAME}" --yes)
           if ! git tag --list "${NAME}/v*" | grep -q .; then
             ARGS+=(--first-release)
           fi
