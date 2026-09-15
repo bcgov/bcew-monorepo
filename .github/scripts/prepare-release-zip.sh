@@ -23,7 +23,10 @@ if [[ -d "${PROJECT_PATH}/dist" ]]; then
   cp -R "${PROJECT_PATH}/dist" "${TMP}/dist"
 fi
 
-if [[ "${VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+# Stamp Version in the zip as a safety net. Git already has the header after
+# Nx Release, including prereleases. This still covers plugin files that are
+# not named after the Nx project.
+if [[ -n "${VERSION}" ]]; then
   set_wordpress_version() {
     local file="$1"
     local pattern="$2"
@@ -34,14 +37,27 @@ if [[ "${VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   if [[ -f "${TMP}/style.css" ]]; then
     set_wordpress_version "${TMP}/style.css" "s/^Version:[[:space:]]*.*/Version:      ${VERSION}/"
     echo "Set theme version to ${VERSION} in release style.css"
-  elif [[ -f "${TMP}/${PROJECT_NAME}.php" ]]; then
-    set_wordpress_version "${TMP}/${PROJECT_NAME}.php" "s/^\([[:space:]]*\*[[:space:]]*Version:\)[[:space:]]*.*/\\1           ${VERSION}/"
-    echo "Set plugin version to ${VERSION} in release ${PROJECT_NAME}.php"
   else
-    echo "No style.css or ${PROJECT_NAME}.php in release tree — skipping version update."
+    plugin_file=""
+    if [[ -f "${TMP}/${PROJECT_NAME}.php" ]]; then
+      plugin_file="${TMP}/${PROJECT_NAME}.php"
+    else
+      for candidate in "${TMP}"/*.php; do
+        [[ -f "${candidate}" ]] || continue
+        if grep -q "Plugin Name:" "${candidate}"; then
+          plugin_file="${candidate}"
+          break
+        fi
+      done
+    fi
+
+    if [[ -n "${plugin_file}" ]]; then
+      set_wordpress_version "${plugin_file}" "s/^\([[:space:]]*\*[[:space:]]*Version:\)[[:space:]]*.*/\\1           ${VERSION}/"
+      echo "Set plugin version to ${VERSION} in release $(basename "${plugin_file}")"
+    else
+      echo "No style.css or plugin bootstrap in release tree — skipping version update."
+    fi
   fi
-else
-  echo "Version '${VERSION}' is not X.Y.Z — skipping WordPress version update in release artifact."
 fi
 
 rm -f "${OUTPUT_ZIP}"
