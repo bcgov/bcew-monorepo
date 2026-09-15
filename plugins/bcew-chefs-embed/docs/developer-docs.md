@@ -79,9 +79,9 @@ The API key and runtime token are never block attributes.
 
 ### Editor flow
 
-1. `src/chefs-form/edit.js` requests the saved Form IDs from the `form-ids` REST route.
-2. The Form IDs are displayed in the block sidebar.
-3. Selecting a Form ID updates the persisted `formId` attribute.
+1. `src/chefs-form/edit.js` requests the saved forms from the `form-ids` REST route.
+2. The stored CHEFS titles are displayed in the block sidebar.
+3. Selecting a title updates the persisted `formId` attribute with the UUID.
 4. If the selected Form ID is deleted by an administrator, the editor clears the stale selection.
 5. The editor preview uses the runtime configuration endpoint and CHEFS viewer used by the published block.
 
@@ -106,15 +106,18 @@ If the configuration request or viewer script fails before the form loads, the b
 
 The plugin registers routes under `/wp-json/bcew-chefs-embed/v1`.
 
-### Get saved Form IDs
+### Get saved forms
 
 ```text
 GET /wp-json/bcew-chefs-embed/v1/form-ids
 ```
 
-The block editor uses this route to populate its Form ID selector. It requires the current user to have the `edit_posts` capability and returns only saved Form IDs. Unauthorized requests receive a `403` response.
+The block editor uses this route to populate its form-title selector. It requires
+the current user to have the `edit_posts` capability and returns saved form
+titles plus their IDs. Unauthorized requests receive a `403` response.
 
-The route is registered in `bcew-chefs-embed.php` and handled by `bcew_chefs_embed_get_saved_form_ids()`.
+The route is registered in `bcew-chefs-embed.php` and handled by
+`bcew_chefs_embed_get_saved_forms()`.
 
 ### Get embed configuration
 

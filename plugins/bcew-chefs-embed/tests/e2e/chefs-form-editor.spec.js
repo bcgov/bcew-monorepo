@@ -2,12 +2,16 @@ const { test, expect } = require( '@wordpress/e2e-test-utils-playwright' );
 const {
     BLOCK_NAME,
     addSavedForm,
+    assertBlockVisible,
     clearSavedForms,
     ensureBlockSettingsVisible,
+    getChefsBlock,
+    getFormOptionLabels,
+    getFormOptionValues,
+    getFormSelect,
     mockChefsFormRoutes,
     selectFormAndPublish,
     selectSavedFormId,
-    setup,
 } = require( './chefs-form-helpers' );
 
 test.describe( 'CHEFS Form editor', () => {
@@ -21,13 +25,8 @@ test.describe( 'CHEFS Form editor', () => {
     } ) => {
         await admin.createNewPost();
         await editor.insertBlock( { name: BLOCK_NAME } );
-        await expect(
-            editor.canvas.locator( `[data-type="${ BLOCK_NAME }"]` )
-        ).toBeVisible();
-        const blocks = await editor.getBlocks();
-        const chefsBlock = blocks.find(
-            ( block ) => block.name === BLOCK_NAME
-        );
+        await assertBlockVisible( editor );
+        const chefsBlock = await getChefsBlock( editor );
         expect( chefsBlock ).toBeDefined();
         expect( chefsBlock.attributes.formId ).toBeDefined();
     } );
@@ -49,15 +48,16 @@ test.describe( 'CHEFS Form editor', () => {
         await admin.createNewPost();
         await editor.insertBlock( { name: BLOCK_NAME } );
         await ensureBlockSettingsVisible( editor, page );
-        const formSelect = page.getByLabel( 'Form ID' ).first();
+        const formSelect = await getFormSelect( page );
         await expect( formSelect ).toBeVisible();
-        const optionValues = await formSelect
-            .locator( 'option' )
-            .evaluateAll( ( options ) =>
-                options.map( ( option ) => option.value )
-            );
+        const optionValues = await getFormOptionValues( page );
         expect( optionValues ).toEqual(
             expect.arrayContaining( [ '', formIdOne, formIdTwo ] )
+        );
+        // Verify form titles are displayed in dropdown options
+        const optionLabels = await getFormOptionLabels( page );
+        expect( optionLabels ).toEqual(
+            expect.arrayContaining( [ 'E2E test form' ] )
         );
         await selectSavedFormId( page, formIdOne );
         const viewer = editor.canvas.locator( 'chefs-form-viewer' );
@@ -86,27 +86,20 @@ test.describe( 'CHEFS Form editor', () => {
             formId
         );
         await page.goto( `/wp-admin/post.php?post=${ postId }&action=edit` );
-        await expect(
-            editor.canvas.locator( `[data-type="${ BLOCK_NAME }"]` ).first()
-        ).toBeVisible();
+        await assertBlockVisible( editor );
         await ensureBlockSettingsVisible( editor, page );
-        await expect( page.getByLabel( 'Form ID' ).first() ).toHaveValue(
+        await expect( page.getByLabel( 'Form name' ).first() ).toHaveValue(
             formId
         );
         await clearSavedForms( admin, page );
         await page.goto( `/wp-admin/post.php?post=${ postId }&action=edit` );
-        await expect(
-            editor.canvas.locator( `[data-type="${ BLOCK_NAME }"]` ).first()
-        ).toBeVisible();
+        await assertBlockVisible( editor );
         await expect(
             editor.canvas.getByText(
                 'Select a CHEFS form in the block settings.'
             )
         ).toBeVisible();
-        const blocks = await editor.getBlocks();
-        const chefsBlock = blocks.find(
-            ( block ) => block.name === BLOCK_NAME
-        );
+        const chefsBlock = await getChefsBlock( editor );
         expect( chefsBlock.attributes.formId ).toBe( '' );
     } );
 
@@ -115,7 +108,7 @@ test.describe( 'CHEFS Form editor', () => {
         editor,
         page,
     } ) => {
-        await setup( { admin, page } );
+        await clearSavedForms( admin, page );
         await admin.createNewPost();
         await editor.insertBlock( { name: BLOCK_NAME } );
         await expect(

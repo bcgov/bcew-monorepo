@@ -13,6 +13,7 @@ namespace Bcgov\BcewChefsEmbed;
  * Table schema (`{prefix}bcew_chefs_options`):
  * - id (primary, auto-increment)
  * - chefs_credentials_id (CHEFS form ID)
+ * - form_name (CHEFS form title)
  * - confirmation (string)
  */
 class OptionsManager {
@@ -23,7 +24,7 @@ class OptionsManager {
 	 *
 	 * Bump when table_definition() changes so existing installs re-run dbDelta.
 	 */
-	const DB_VERSION = '1';
+	const DB_VERSION = '2';
 
 	/**
 	 * Option key storing the installed schema version.
@@ -48,6 +49,28 @@ class OptionsManager {
 	 * @return string|null Confirmation text, or null when not found.
 	 */
 	public static function get_confirmation( $chefs_credentials_id ) {
+		return self::get_option_value( 'confirmation', $chefs_credentials_id );
+	}
+
+	/**
+	 * Look up the stored CHEFS form title.
+	 *
+	 * @param string $chefs_credentials_id CHEFS form ID.
+	 * @return string|null Form title, or null when not found.
+	 */
+	public static function get_form_name( $chefs_credentials_id ) {
+		return self::get_option_value( 'form_name', $chefs_credentials_id, true );
+	}
+
+	/**
+	 * Retrieve an option value by column name.
+	 *
+	 * @param string  $column                Column name to select.
+	 * @param string  $chefs_credentials_id  CHEFS form ID.
+	 * @param boolean $trim_empty           Whether to return null for empty strings.
+	 * @return string|null Column value, or null when not found or empty (if $trim_empty).
+	 */
+	private static function get_option_value( $column, $chefs_credentials_id, $trim_empty = false ) {
 		global $wpdb;
 
 		$chefs_credentials_id = self::sanitize_credentials_id( $chefs_credentials_id );
@@ -57,16 +80,51 @@ class OptionsManager {
 
 		$table = self::table_name();
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared -- table name cannot be parameterized.
-		$confirmation = $wpdb->get_var(
+		$value = $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT confirmation FROM `{$table}` WHERE chefs_credentials_id = %s ORDER BY id DESC LIMIT 1",
+				'SELECT %i FROM %i WHERE chefs_credentials_id = %s ORDER BY id DESC LIMIT 1',
+				$column,
+				$table,
 				$chefs_credentials_id
 			)
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared
 
-		return is_string( $confirmation ) ? $confirmation : null;
+		if ( ! is_string( $value ) ) {
+			return null;
+		}
+
+		return $trim_empty && '' === trim( $value ) ? null : $value;
+	}
+
+	/**
+	 * Save a CHEFS form title.
+	 *
+	 * @param string $form_id CHEFS form ID.
+	 * @param string $form_name CHEFS form title.
+	 * @return string|false Form ID on success, false on failure.
+	 */
+	public static function save_form_name( $form_id, $form_name ) {
+		global $wpdb;
+
+		$form_id   = self::sanitize_credentials_id( $form_id );
+		$form_name = trim( sanitize_text_field( (string) $form_name ) );
+
+		if ( '' === $form_id || '' === $form_name ) {
+			return false;
+		}
+
+		$table  = self::table_name();
+		$result = $wpdb->replace(
+			$table,
+			array(
+				'chefs_credentials_id' => $form_id,
+				'form_name'            => $form_name,
+				'confirmation'         => '',
+			),
+			array( '%s', '%s', '%s' )
+		);
+
+		return false === $result ? false : $form_id;
 	}
 
 	/**
@@ -99,14 +157,13 @@ class OptionsManager {
 		/*
 		 * Check whether this form already has a confirmation message.
 		 */
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared -- table name cannot be parameterized.
 		$existing = (bool) $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT 1 FROM `{$table}` WHERE chefs_credentials_id = %s LIMIT 1",
+				'SELECT 1 FROM %i WHERE chefs_credentials_id = %s LIMIT 1',
+				$table,
 				$form_id
 			)
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared
 
 		/*
 		 * Update the existing message, or insert a new one if none exists yet.
@@ -188,6 +245,7 @@ class OptionsManager {
 		return '
 			id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			chefs_credentials_id varchar(36) NOT NULL,
+			form_name varchar(255) NOT NULL DEFAULT \'\',
 			confirmation longtext NOT NULL,
 			PRIMARY KEY  (id),
 			KEY chefs_credentials_id (chefs_credentials_id)

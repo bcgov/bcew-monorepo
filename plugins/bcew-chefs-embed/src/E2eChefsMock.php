@@ -37,8 +37,11 @@ class E2eChefsMock {
     public static function pre_http_request( $pre, $args, $url ) {
         $response = $pre;
 
-        // Only mock CHEFS credential validation; leave unrelated requests untouched.
-        if ( false !== strpos( $url, 'submit.digital.gov.bc.ca/app/gateway/v1/auth/token/forms/' ) ) {
+        // Only mock CHEFS auth and form endpoints; leave unrelated requests untouched.
+        $is_auth_request = false !== strpos( $url, 'submit.digital.gov.bc.ca/app/gateway/v1/auth/token/forms/' );
+        $is_form_request = false !== strpos( $url, 'submit.digital.gov.bc.ca/app/api/v1/forms/' );
+
+        if ( $is_auth_request || $is_form_request ) {
             // Read the same Basic Auth header that ChefsClient sends to CHEFS.
             $authorization = $args['headers']['Authorization'] ?? '';
             // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- Decode the Basic Auth fixture header used by the local E2E mock.
@@ -58,24 +61,42 @@ class E2eChefsMock {
                 'cccccccc-dddd-4eee-8fff-111111111111' => 'frontend-error-handler-key',
             );
 
-            if ( ! isset( $valid_credentials[ $form_id ] ) ) {
+            // Check form and API key validity.
+            $form_exists   = isset( $valid_credentials[ $form_id ] );
+            $api_key_valid = $form_exists && in_array( $api_key, (array) $valid_credentials[ $form_id ], true );
+
+            // Keep logic flat and clear (not nested) so tests fail obviously at the right condition.
+            // Auth requests need three outcomes: form not found (404), bad key (403), valid (200).
+            // Form requests return metadata for the block editor and settings UI.
+            // Simple code means fewer bugs in the mock itself, and easier to add new test scenarios.
+            if ( ! $form_exists ) {
                 // Match CHEFS when the submitted Form ID does not exist.
                 $response = self::response( 'Bad formId', 404, 'Not Found' );
+            } elseif ( ! $api_key_valid ) {
+                // Match CHEFS when the Form ID exists but the API key is wrong.
+                $response = self::response( 'Forbidden', 403, 'Forbidden' );
+            } elseif ( $is_form_request ) {
+                $response = array(
+                    'body'     => wp_json_encode(
+                        array(
+                            'title'    => 'E2E test form',
+                            'versions' => array( array( 'id' => 'e2e-test-version' ) ),
+                        )
+                    ),
+                    'response' => array(
+                        'code'    => 200,
+                        'message' => 'OK',
+                    ),
+                );
             } else {
-                $valid_api_keys = (array) $valid_credentials[ $form_id ];
-                if ( ! in_array( $api_key, $valid_api_keys, true ) ) {
-                    // Match CHEFS when the Form ID exists but the API key is wrong.
-                    $response = self::response( 'Forbidden', 403, 'Forbidden' );
-                } else {
-                    // A valid fixture returns the short-lived token expected by the client.
-                    $response = array(
-                        'body'     => wp_json_encode( array( 'token' => 'e2e-test-token' ) ),
-                        'response' => array(
-                            'code'    => 200,
-                            'message' => 'OK',
-                        ),
-                    );
-                }
+                // A valid fixture returns the short-lived token expected by the client.
+                $response = array(
+                    'body'     => wp_json_encode( array( 'token' => 'e2e-test-token' ) ),
+                    'response' => array(
+                        'code'    => 200,
+                        'message' => 'OK',
+                    ),
+                );
             }
         }
 

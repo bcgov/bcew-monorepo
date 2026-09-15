@@ -79,6 +79,45 @@ class OptionsTest extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Get schema columns indexed by field name.
+	 *
+	 * @return array Columns keyed by field name.
+	 */
+	private function get_column_schema() {
+		global $wpdb;
+
+		$table   = OptionsManager::table_name();
+		$columns = $wpdb->get_results( "DESCRIBE `{$table}`", ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
+
+		$by_field = array();
+		foreach ( $columns as $column ) {
+			$by_field[ $column['Field'] ] = $column;
+		}
+
+		return $by_field;
+	}
+
+	/**
+	 * Get a single value from the options table by credentials ID.
+	 *
+	 * @param string $column Column name to select.
+	 * @param string $form_id Credentials ID (chefs_credentials_id).
+	 * @return mixed|null Column value or null if not found.
+	 */
+	private function get_table_value( $column, $form_id ) {
+		global $wpdb;
+
+		return $wpdb->get_var(
+			$wpdb->prepare(
+				'SELECT %i FROM %i WHERE chefs_credentials_id = %s',
+				$column,
+				OptionsManager::table_name(),
+				$form_id
+			)
+		);
+	}
+
+	/**
 	 * Custom table is created on plugin activation if it does not already exist.
 	 *
 	 * @return void
@@ -99,24 +138,34 @@ class OptionsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_table_schema_matches_acceptance_criteria() {
-		global $wpdb;
+		$by_field = $this->get_column_schema();
 
-		$table   = OptionsManager::table_name();
-		$columns = $wpdb->get_results( "DESCRIBE `{$table}`", ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
-
-		$this->assertNotEmpty( $columns );
-
-		$by_field = array();
-		foreach ( $columns as $column ) {
-			$by_field[ $column['Field'] ] = $column;
-		}
-
+		$this->assertNotEmpty( $by_field );
 		$this->assertArrayHasKey( 'id', $by_field );
 		$this->assertSame( 'PRI', $by_field['id']['Key'] );
 		$this->assertStringContainsString( 'auto_increment', strtolower( $by_field['id']['Extra'] ) );
 
 		$this->assertArrayHasKey( 'chefs_credentials_id', $by_field );
+		$this->assertArrayHasKey( 'form_name', $by_field );
 		$this->assertArrayHasKey( 'confirmation', $by_field );
+	}
+
+	/**
+	 * Form names can be saved and looked up independently of confirmations.
+	 *
+	 * @return void
+	 */
+	public function test_save_form_name() {
+		$this->assertSame(
+			$this->form_id,
+			OptionsManager::save_form_name( $this->form_id, ' Grant application ' )
+		);
+
+		$this->assertSame(
+			'Grant application',
+			$this->get_table_value( 'form_name', $this->form_id )
+		);
+		$this->assertNull( OptionsManager::get_confirmation( $this->form_id ) );
 	}
 
 	/**

@@ -80,18 +80,28 @@ class CredentialsManager {
 	/**
 	 * List configured forms for the settings page.
 	 *
-	 * Does not select api_key — the settings table only shows form_id + date
-	 * and a Remove button. Keeps secrets off the HTML page.
+	 * Does not select api_key — the settings table shows the form name, ID,
+	 * date, and actions. Keeps secrets off the HTML page.
 	 *
-	 * @return array<int,array{form_id:string,created_at:string}>
+	 * @return array<int,array{form_id:string,form_name:string,created_at:string}>
 	 */
 	public static function list_forms() {
 		global $wpdb;
 
-		$table = self::table_name();
+		$table         = self::table_name();
+		$options_table = OptionsManager::table_name();
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- no user input; table name cannot be parameterized.
-		return $wpdb->get_results( 'SELECT form_id, created_at FROM `' . $table . '` ORDER BY created_at DESC', ARRAY_A );
+		return $wpdb->get_results(
+			$wpdb->prepare(
+				'SELECT cred.form_id, IFNULL( opts.form_name, \'\' ) AS form_name, cred.created_at
+				FROM %i cred
+				LEFT JOIN %i opts ON opts.chefs_credentials_id = cred.form_id
+				ORDER BY cred.created_at DESC',
+				$table,
+				$options_table
+			),
+			ARRAY_A
+		);
 	}
 
 	/**
@@ -113,15 +123,14 @@ class CredentialsManager {
 
 		$table = self::table_name();
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared -- table name cannot be parameterized.
 		$row = $wpdb->get_row(
 			$wpdb->prepare(
-				"SELECT form_id, api_key, created_at, user_id FROM `{$table}` WHERE form_id = %s",
+				'SELECT form_id, api_key, created_at, user_id FROM %i WHERE form_id = %s',
+				$table,
 				$form_id
 			),
 			ARRAY_A
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared
 
 		if ( ! is_array( $row ) ) {
 			return null;
@@ -151,9 +160,7 @@ class CredentialsManager {
 
 		$table = self::table_name();
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared -- table name cannot be parameterized.
-		$form_ids = $wpdb->get_col( "SELECT form_id FROM `{$table}` ORDER BY created_at DESC" );
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared
+		$form_ids = $wpdb->get_col( $wpdb->prepare( 'SELECT form_id FROM %i ORDER BY created_at DESC', $table ) );
 
 		if ( ! is_array( $form_ids ) ) {
 			return array();
@@ -199,37 +206,16 @@ class CredentialsManager {
 		$user_id = absint( $user_id );
 		$table   = self::table_name();
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared -- table name cannot be parameterized.
-		$existing = (bool) $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT 1 FROM `{$table}` WHERE form_id = %s LIMIT 1",
-				$form_id
-			)
+		// Use REPLACE to insert or update atomically.
+		$result = $wpdb->replace(
+			$table,
+			array(
+				'form_id' => $form_id,
+				'api_key' => $api_key_encrypted,
+				'user_id' => $user_id,
+			),
+			array( '%s', '%s', '%d' )
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared
-
-		if ( $existing ) {
-			$result = $wpdb->update(
-				$table,
-				array(
-					'api_key' => $api_key_encrypted,
-					'user_id' => $user_id,
-				),
-				array( 'form_id' => $form_id ),
-				array( '%s', '%d' ),
-				array( '%s' )
-			);
-		} else {
-			$result = $wpdb->insert(
-				$table,
-				array(
-					'form_id' => $form_id,
-					'api_key' => $api_key_encrypted,
-					'user_id' => $user_id,
-				),
-				array( '%s', '%s', '%d' )
-			);
-		}
 
 		return false === $result ? false : $form_id;
 	}
