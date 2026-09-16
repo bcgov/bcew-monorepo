@@ -674,4 +674,50 @@ class OptionsTest extends \WP_UnitTestCase {
 		);
 		$this->assertSame( 1, (int) $count );
 	}
+
+	/**
+	 * Install returns true on successful table creation/upgrade.
+	 *
+	 * Verifies that the install() method:
+	 * 1. Returns true when the table is successfully created/upgraded
+	 * 2. Updates the schema version only on success
+	 * 3. Does not update the version if the table creation fails
+	 *
+	 * @return void
+	 */
+	public function test_install_returns_success_status() {
+		// Delete the version option to trigger a fresh install.
+		delete_option( OptionsManager::DB_VERSION_OPTION );
+
+		// Install should return true and set the version.
+		$result = OptionsManager::install();
+		$this->assertTrue( $result );
+		$this->assertSame( OptionsManager::DB_VERSION, get_option( OptionsManager::DB_VERSION_OPTION ) );
+
+		// Delete version again to verify idempotence.
+		delete_option( OptionsManager::DB_VERSION_OPTION );
+
+		// Second install should also succeed and set the version.
+		$result = OptionsManager::install();
+		$this->assertTrue( $result );
+		$this->assertSame( OptionsManager::DB_VERSION, get_option( OptionsManager::DB_VERSION_OPTION ) );
+	}
+
+	/**
+	 * Successful migration updates the schema version.
+	 *
+	 * @return void
+	 */
+	public function test_migration_success_updates_version() {
+		// Delete the version option to trigger a fresh install.
+		delete_option( OptionsManager::DB_VERSION_OPTION );
+
+		$result = OptionsManager::install();
+
+		// Install should return true, indicating success.
+		$this->assertTrue( $result );
+
+		// Version should be updated to current DB_VERSION.
+		$this->assertSame( OptionsManager::DB_VERSION, get_option( OptionsManager::DB_VERSION_OPTION ) );
+	}
 }

@@ -32,17 +32,28 @@ trait InstallsSiteTable {
 	/**
 	 * Create or upgrade the table and record the schema version.
 	 *
-	 * @return void
+	 * Only records the new schema version if the table is successfully created
+	 * or upgraded. A failed migration will not update the version, allowing
+	 * retries on future plugin loads.
+	 *
+	 * @return bool True on successful install/upgrade, false on failure.
 	 */
 	public static function install() {
-		static::create_table();
+		if ( ! static::create_table() ) {
+			return false;
+		}
+
 		update_option( static::DB_VERSION_OPTION, static::DB_VERSION, true );
+		return true;
 	}
 
 	/**
 	 * Create or update the table via dbDelta.
 	 *
-	 * @return void
+	 * Runs optional pre-migration hook, executes dbDelta, and verifies the result.
+	 * Returns false if the table does not exist after migration (indicating failure).
+	 *
+	 * @return bool True if table exists after migration, false otherwise.
 	 */
 	private static function create_table() {
 		global $wpdb;
@@ -62,6 +73,16 @@ trait InstallsSiteTable {
 		) {$charset};";
 
 		dbDelta( $sql );
+
+		// Verify the table was created/upgraded successfully.
+		$table_exists = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $table ) ) ) === $table;
+
+		if ( ! $table_exists ) {
+			error_log( 'CHEFS table installation failed: table does not exist after dbDelta.' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions -- Log critical migration failure.
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
