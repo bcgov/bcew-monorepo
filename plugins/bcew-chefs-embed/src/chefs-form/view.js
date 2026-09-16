@@ -61,9 +61,12 @@ const fetchEmbedConfig = async ( formId ) => {
     const payload = await response.json().catch( () => ( {} ) );
 
     if ( ! response.ok ) {
-        throw new Error(
-            payload?.message || 'Unable to load the CHEFS form configuration.'
+        const error = new Error(
+            payload?.message || 'Request is missing content or is malformed'
         );
+        error.status = response.status;
+        error.statusText = response.statusText;
+        throw error;
     }
 
     if ( ! payload?.token || ! payload?.baseUrl ) {
@@ -71,30 +74,6 @@ const fetchEmbedConfig = async ( formId ) => {
     }
 
     return payload;
-};
-
-/**
- * Show an error message inside the block mount point.
- *
- * Used when the form never loaded (embed-config or script failure). There is
- * no form to keep on the page, so the mount is replaced.
- *
- * @param {HTMLElement} mount   Mount element.
- * @param {string}      message Error text.
- */
-const showError = ( mount, message ) => {
-    /*
-     * The form never appeared, so empty the mount and show one alert.
-     * This is not the CHEFS submit-error banner; that path keeps the form.
-     */
-    mount.replaceChildren();
-    mount.removeAttribute( 'aria-busy' );
-
-    const error = document.createElement( 'p' );
-    error.className = 'bcew-chefs-form__error';
-    error.setAttribute( 'role', 'alert' );
-    error.textContent = message;
-    mount.appendChild( error );
 };
 
 /*
@@ -327,10 +306,16 @@ const mountChefsForm = async ( root ) => {
         }
     } catch ( error ) {
         /*
-         * Embed-config or the viewer script failed. There is no form to keep,
-         * so replace the mount with a single error paragraph.
+         * Embed-config or the viewer script failed. Keep the mount in place
+         * and show the normalized error above it.
          */
-        showError( mount, error?.message || 'Unable to load the CHEFS form.' );
+        showChefsError( root, {
+            title: error?.statusText || 'Bad Request',
+            status: String( error?.status || 400 ),
+            detail:
+                error?.message ||
+                'Request is missing content or is malformed',
+        } );
     }
 };
 
