@@ -286,75 +286,132 @@ class OptionsManager {
 				continue;
 			}
 
-			$rows = $wpdb->get_results(
-				$wpdb->prepare(
-					'SELECT id, chefs_credentials_id, form_name, confirmation FROM %i ORDER BY id DESC',
-					$table
-				),
-				ARRAY_A
-			);
-
-			$seen_form_ids = array();
-			$conflicts     = array();
-
-			foreach ( $rows as $row ) {
-				$form_id = $row['chefs_credentials_id'];
-				if ( ! isset( $seen_form_ids[ $form_id ] ) ) {
-					$seen_form_ids[ $form_id ] = (int) $row['id'];
-					continue;
-				}
-
-				$keeper_id = $seen_form_ids[ $form_id ];
-				$keeper    = $wpdb->get_row(
-					$wpdb->prepare(
-						'SELECT form_name, confirmation FROM %i WHERE id = %d',
-						$table,
-						$keeper_id
-					),
-					ARRAY_A
-				);
-
-				if ( ! $keeper ) {
-					$wpdb->delete( $table, array( 'id' => (int) $row['id'] ), array( '%d' ) );
-					continue;
-				}
-
-				$updates = array();
-
-				// Preserve non-empty form_name; log conflict if both are non-empty and differ.
-				if ( '' !== $row['form_name'] ) {
-					if ( '' !== $keeper['form_name'] && $keeper['form_name'] !== $row['form_name'] ) {
-						$conflicts[] = "form_id={$form_id}: form_name conflict (keeping '{$keeper['form_name']}', discarding '{$row['form_name']}')";
-					} elseif ( '' === $keeper['form_name'] ) {
-						$updates['form_name'] = $row['form_name'];
-					}
-				}
-
-				// Preserve non-empty confirmation; log conflict if both are non-empty and differ.
-				if ( '' !== $row['confirmation'] ) {
-					if ( '' !== $keeper['confirmation'] && $keeper['confirmation'] !== $row['confirmation'] ) {
-						$conflicts[] = "form_id={$form_id}: confirmation conflict (keeping first, discarding '{$row['confirmation']}')";
-					} elseif ( '' === $keeper['confirmation'] ) {
-						$updates['confirmation'] = $row['confirmation'];
-					}
-				}
-
-				if ( $updates ) {
-					$wpdb->update( $table, $updates, array( 'id' => $keeper_id ) );
-				}
-
-				$wpdb->delete( $table, array( 'id' => (int) $row['id'] ), array( '%d' ) );
-			}
-
-			// Log any conflicts for visibility.
-			if ( ! empty( $conflicts ) ) {
-				error_log( 'CHEFS Options table migration conflicts: ' . implode( '; ', $conflicts ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions -- Logging migration conflicts for admin visibility.
-			}
+			static::consolidate_duplicate_options_rows();
 
 			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table and index names are generated internally.
 			$wpdb->query( "ALTER TABLE `{$table}` DROP INDEX `chefs_credentials_id`" );
 			break;
 		}
+	}
+
+	/**
+	 * Consolidate duplicate form ID rows into keeper rows.
+	 *
+	 * Processes all rows, keeping the newest (highest id) for each form ID
+	 * and merging non-empty fields from older rows. Logs conflicts.
+	 *
+	 * @return void
+	 */
+	private static function consolidate_duplicate_options_rows() {
+		global $wpdb;
+
+		$table = self::table_name();
+		$rows  = $wpdb->get_results(
+			$wpdb->prepare(
+				'SELECT id, chefs_credentials_id, form_name, confirmation FROM %i ORDER BY id DESC',
+				$table
+			),
+			ARRAY_A
+		);
+
+		$seen_form_ids = array();
+		$conflicts     = array();
+
+		foreach ( $rows as $row ) {
+			$form_id = $row['chefs_credentials_id'];
+			if ( ! isset( $seen_form_ids[ $form_id ] ) ) {
+				$seen_form_ids[ $form_id ] = (int) $row['id'];
+				continue;
+			}
+
+			$keeper_id     = $seen_form_ids[ $form_id ];
+			$row_conflicts = static::merge_duplicate_row( $keeper_id, $row );
+			$conflicts     = array_merge( $conflicts, $row_conflicts );
+
+			$wpdb->delete( $table, array( 'id' => (int) $row['id'] ), array( '%d' ) );
+		}
+
+		if ( ! empty( $conflicts ) ) {
+			error_log( 'CHEFS Options table migration conflicts: ' . implode( '; ', $conflicts ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions -- Logging migration conflicts for admin visibility.
+		}
+	}
+
+	/**
+	 * Merge a duplicate row into its keeper row.
+	 *
+	 * Compares form_name and confirmation fields; updates keeper with
+	 * non-empty values from the duplicate. Returns array of conflict messages.
+	 *
+	 * @param int   $keeper_id Keeper row ID.
+	 * @param array $row       Duplicate row data.
+	 * @return array Array of conflict strings (empty if no conflicts).
+	 */
+	private static function merge_duplicate_row( $keeper_id, array $row ) {
+		global $wpdb;
+
+		$table  = self::table_name();
+		$keeper = $wpdb->get_row(
+			$wpdb->prepare(
+				'SELECT form_name, confirmation FROM %i WHERE id = %d',
+				$table,
+				$keeper_id
+			),
+			ARRAY_A
+		);
+
+		if ( ! $keeper ) {
+			return array();
+		}
+
+		$updates   = array();
+		$conflicts = array();
+
+		// Merge form_name.
+		$form_id             = $row['chefs_credentials_id'];
+		$form_name_conflicts = static::merge_field( 'form_name', $keeper['form_name'], $row['form_name'], $updates );
+		if ( $form_name_conflicts ) {
+			$conflicts[] = "form_id={$form_id}: form_name conflict (keeping '{$keeper['form_name']}', discarding '{$row['form_name']}')";
+		}
+
+		// Merge confirmation.
+		$confirmation_conflicts = static::merge_field( 'confirmation', $keeper['confirmation'], $row['confirmation'], $updates );
+		if ( $confirmation_conflicts ) {
+			$conflicts[] = "form_id={$form_id}: confirmation conflict (keeping first, discarding '{$row['confirmation']}')";
+		}
+
+		if ( $updates ) {
+			$wpdb->update( $table, $updates, array( 'id' => $keeper_id ) );
+		}
+
+		return $conflicts;
+	}
+
+	/**
+	 * Merge a field value from duplicate row into keeper.
+	 *
+	 * If both keeper and duplicate have non-empty values, returns true (conflict).
+	 * If only duplicate has non-empty value, adds to updates array.
+	 *
+	 * @param string $field       Field name.
+	 * @param string $keeper_val  Keeper field value.
+	 * @param string $dup_val     Duplicate field value.
+	 * @param array  $updates     Updates array (passed by reference).
+	 * @return bool True if conflict (both non-empty and different), false otherwise.
+	 */
+	private static function merge_field( $field, $keeper_val, $dup_val, &$updates ) {
+		if ( '' === $dup_val ) {
+			return false;
+		}
+
+		if ( '' !== $keeper_val && $keeper_val !== $dup_val ) {
+			return true; // Conflict: both non-empty and different.
+		}
+
+		if ( '' === $keeper_val ) {
+			$updates[ $field ] = $dup_val;
+		}
+
+		return false;
 	}
 
 	/**
