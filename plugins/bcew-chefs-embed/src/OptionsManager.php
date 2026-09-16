@@ -264,6 +264,12 @@ class OptionsManager {
 	/**
 	 * Prepare the existing options table for the unique form ID index.
 	 *
+	 * Consolidates duplicate form ID rows, prioritizing:
+	 * 1. Non-empty form_name or confirmation (preserves data)
+	 * 2. Newest row by id (recency)
+	 *
+	 * Logs conflicts to error_log if duplicate rows have conflicting non-empty values.
+	 *
 	 * @return void
 	 */
 	protected static function before_table_install() {
@@ -289,6 +295,8 @@ class OptionsManager {
 			);
 
 			$seen_form_ids = array();
+			$conflicts     = array();
+
 			foreach ( $rows as $row ) {
 				$form_id = $row['chefs_credentials_id'];
 				if ( ! isset( $seen_form_ids[ $form_id ] ) ) {
@@ -305,18 +313,42 @@ class OptionsManager {
 					),
 					ARRAY_A
 				);
-				$updates   = array();
-				if ( $keeper && '' === $keeper['form_name'] && '' !== $row['form_name'] ) {
-					$updates['form_name'] = $row['form_name'];
+
+				if ( ! $keeper ) {
+					$wpdb->delete( $table, array( 'id' => (int) $row['id'] ), array( '%d' ) );
+					continue;
 				}
-				if ( $keeper && '' === $keeper['confirmation'] && '' !== $row['confirmation'] ) {
-					$updates['confirmation'] = $row['confirmation'];
+
+				$updates = array();
+
+				// Preserve non-empty form_name; log conflict if both are non-empty and differ.
+				if ( '' !== $row['form_name'] ) {
+					if ( '' !== $keeper['form_name'] && $keeper['form_name'] !== $row['form_name'] ) {
+						$conflicts[] = "form_id={$form_id}: form_name conflict (keeping '{$keeper['form_name']}', discarding '{$row['form_name']}')";
+					} elseif ( '' === $keeper['form_name'] ) {
+						$updates['form_name'] = $row['form_name'];
+					}
 				}
+
+				// Preserve non-empty confirmation; log conflict if both are non-empty and differ.
+				if ( '' !== $row['confirmation'] ) {
+					if ( '' !== $keeper['confirmation'] && $keeper['confirmation'] !== $row['confirmation'] ) {
+						$conflicts[] = "form_id={$form_id}: confirmation conflict (keeping first, discarding '{$row['confirmation']}')";
+					} elseif ( '' === $keeper['confirmation'] ) {
+						$updates['confirmation'] = $row['confirmation'];
+					}
+				}
+
 				if ( $updates ) {
 					$wpdb->update( $table, $updates, array( 'id' => $keeper_id ) );
 				}
 
 				$wpdb->delete( $table, array( 'id' => (int) $row['id'] ), array( '%d' ) );
+			}
+
+			// Log any conflicts for visibility.
+			if ( ! empty( $conflicts ) ) {
+				error_log( 'CHEFS Options table migration conflicts: ' . implode( '; ', $conflicts ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions -- Logging migration conflicts for admin visibility.
 			}
 
 			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table and index names are generated internally.

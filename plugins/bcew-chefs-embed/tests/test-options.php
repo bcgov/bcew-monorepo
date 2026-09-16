@@ -482,4 +482,196 @@ class OptionsTest extends \WP_UnitTestCase {
 			restore_current_blog();
 		}
 	}
+
+	/**
+	 * Migration merges empty form_name from older duplicates into keeper row.
+	 *
+	 * @return void
+	 */
+	public function test_migration_consolidates_duplicate_rows_with_empty_form_name() {
+		global $wpdb;
+
+		$table = OptionsManager::table_name();
+
+		// Simulate pre-migration schema: drop unique index to allow duplicates.
+		$wpdb->query( "ALTER TABLE `{$table}` DROP INDEX `chefs_credentials_id`" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
+		$wpdb->query( "ALTER TABLE `{$table}` ADD KEY `chefs_credentials_id` (`chefs_credentials_id`)" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
+
+		// Insert duplicate rows: older has form_name, newer is empty.
+		$wpdb->insert(
+			$table,
+			array(
+				'chefs_credentials_id' => $this->form_id,
+				'form_name'            => 'First Entry',
+				'confirmation'         => '',
+			),
+			array( '%s', '%s', '%s' )
+		);
+		$old_row_id = $wpdb->insert_id;
+
+		$wpdb->insert(
+			$table,
+			array(
+				'chefs_credentials_id' => $this->form_id,
+				'form_name'            => '',
+				'confirmation'         => '',
+			),
+			array( '%s', '%s', '%s' )
+		);
+		$new_row_id = $wpdb->insert_id;
+
+		// Trigger migration by re-installing (bumps version, runs migration).
+		delete_option( OptionsManager::DB_VERSION_OPTION );
+		OptionsManager::install();
+
+		$result = $wpdb->get_row(
+			$wpdb->prepare(
+				'SELECT * FROM %i WHERE chefs_credentials_id = %s',
+				$table,
+				$this->form_id
+			),
+			ARRAY_A
+		);
+
+		// Keeper row (newer, higher id) should exist with migrated form_name from older row.
+		$this->assertNotNull( $result );
+		$this->assertSame( 'First Entry', $result['form_name'] );
+
+		// Old row should be deleted.
+		$old_row_count = $wpdb->get_var(
+			$wpdb->prepare(
+				'SELECT COUNT(*) FROM %i WHERE id = %d',
+				$table,
+				$old_row_id
+			)
+		);
+		$this->assertSame( 0, (int) $old_row_count );
+	}
+
+	/**
+	 * Migration merges empty confirmation from older duplicates into keeper row.
+	 *
+	 * @return void
+	 */
+	public function test_migration_consolidates_duplicate_rows_with_empty_confirmation() {
+		global $wpdb;
+
+		$table = OptionsManager::table_name();
+
+		// Simulate pre-migration schema: drop unique index to allow duplicates.
+		$wpdb->query( "ALTER TABLE `{$table}` DROP INDEX `chefs_credentials_id`" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
+		$wpdb->query( "ALTER TABLE `{$table}` ADD KEY `chefs_credentials_id` (`chefs_credentials_id`)" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
+
+		// Insert duplicate rows: older has confirmation, newer is empty.
+		$wpdb->insert(
+			$table,
+			array(
+				'chefs_credentials_id' => $this->form_id,
+				'form_name'            => '',
+				'confirmation'         => 'Old thank you message',
+			),
+			array( '%s', '%s', '%s' )
+		);
+
+		$wpdb->insert(
+			$table,
+			array(
+				'chefs_credentials_id' => $this->form_id,
+				'form_name'            => '',
+				'confirmation'         => '',
+			),
+			array( '%s', '%s', '%s' )
+		);
+
+		// Trigger migration.
+		delete_option( OptionsManager::DB_VERSION_OPTION );
+		OptionsManager::install();
+
+		$result = $wpdb->get_row(
+			$wpdb->prepare(
+				'SELECT * FROM %i WHERE chefs_credentials_id = %s',
+				$table,
+				$this->form_id
+			),
+			ARRAY_A
+		);
+
+		// Keeper row should exist with migrated confirmation from older row.
+		$this->assertNotNull( $result );
+		$this->assertSame( 'Old thank you message', $result['confirmation'] );
+
+		// Only one row should remain.
+		$count = $wpdb->get_var(
+			$wpdb->prepare(
+				'SELECT COUNT(*) FROM %i WHERE chefs_credentials_id = %s',
+				$table,
+				$this->form_id
+			)
+		);
+		$this->assertSame( 1, (int) $count );
+	}
+
+	/**
+	 * Migration logs conflicts when both rows have non-empty but different values.
+	 *
+	 * @return void
+	 */
+	public function test_migration_logs_conflict_when_duplicate_rows_differ() {
+		global $wpdb;
+
+		$table = OptionsManager::table_name();
+
+		// Simulate pre-migration schema: drop unique index to allow duplicates.
+		$wpdb->query( "ALTER TABLE `{$table}` DROP INDEX `chefs_credentials_id`" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
+		$wpdb->query( "ALTER TABLE `{$table}` ADD KEY `chefs_credentials_id` (`chefs_credentials_id`)" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
+
+		// Insert duplicate rows with conflicting non-empty form_name.
+		$wpdb->insert(
+			$table,
+			array(
+				'chefs_credentials_id' => $this->form_id,
+				'form_name'            => 'Original Form Name',
+				'confirmation'         => '',
+			),
+			array( '%s', '%s', '%s' )
+		);
+
+		$wpdb->insert(
+			$table,
+			array(
+				'chefs_credentials_id' => $this->form_id,
+				'form_name'            => 'Updated Form Name',
+				'confirmation'         => '',
+			),
+			array( '%s', '%s', '%s' )
+		);
+
+		// Trigger migration.
+		delete_option( OptionsManager::DB_VERSION_OPTION );
+		OptionsManager::install();
+
+		$result = $wpdb->get_row(
+			$wpdb->prepare(
+				'SELECT * FROM %i WHERE chefs_credentials_id = %s',
+				$table,
+				$this->form_id
+			),
+			ARRAY_A
+		);
+
+		// Keeper row (newest by id) should be retained with its original form_name.
+		// Older row with conflicting form_name is deleted; conflict is logged.
+		$this->assertNotNull( $result );
+		$this->assertSame( 'Updated Form Name', $result['form_name'] );
+
+		// Only one row should remain.
+		$count = $wpdb->get_var(
+			$wpdb->prepare(
+				'SELECT COUNT(*) FROM %i WHERE chefs_credentials_id = %s',
+				$table,
+				$this->form_id
+			)
+		);
+		$this->assertSame( 1, (int) $count );
+	}
 }
