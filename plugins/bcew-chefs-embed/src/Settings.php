@@ -358,12 +358,26 @@ class Settings {
 			exit;
 		}
 
+		$metadata = $this->get_form_metadata( $form_id, $api_key );
+		if ( ! $metadata ) {
+			wp_safe_redirect( add_query_arg( 'chefs_error', 'invalid_response', self::get_page_url() ) );
+			exit;
+		}
+
+		if ( empty( $metadata['versions'] ) ) {
+			wp_safe_redirect( add_query_arg( 'chefs_error', 'no_published_version', self::get_page_url() ) );
+			exit;
+		}
+
+		$form_name = trim( (string) ( $metadata['title'] ?? $metadata['name'] ?? '' ) );
+		if ( '' === $form_name ) {
+			wp_safe_redirect( add_query_arg( 'chefs_error', 'invalid_response', self::get_page_url() ) );
+			exit;
+		}
+
 		$saved_form_id = CredentialsManager::save( $form_id, $api_key );
 		if ( false !== $saved_form_id ) {
-			$form_name = $this->fetch_form_name( $form_id, $api_key );
-			if ( false !== $form_name ) {
-				OptionsManager::save_form_name( $form_id, $form_name );
-			}
+			OptionsManager::save_form_name( $form_id, $form_name );
 		}
 
 		$redirect_arg = false === $saved_form_id ? 'chefs_error' : 'chefs_saved';
@@ -381,7 +395,7 @@ class Settings {
 	 */
 	protected function fetch_form_name( string $form_id, string $api_key ) {
 		$body = $this->get_form_metadata( $form_id, $api_key );
-		if ( ! $body ) {
+		if ( ! $body || empty( $body['versions'] ) ) {
 			return false;
 		}
 
@@ -396,7 +410,7 @@ class Settings {
 	/**
 	 * Call CHEFS form metadata endpoint and validate the response.
 	 *
-	 * Returns null if HTTP fails, status is not 200-299, or versions array is empty (draft-only).
+	 * Returns null if HTTP fails, status is not 200-299, or the response is not valid JSON.
 	 *
 	 * @param string $form_id CHEFS form ID.
 	 * @param string $api_key CHEFS API key.
@@ -425,7 +439,7 @@ class Settings {
 		}
 
 		$body = json_decode( wp_remote_retrieve_body( $response ), true );
-		return is_array( $body ) && ! empty( $body['versions'] ) ? $body : null;
+		return is_array( $body ) ? $body : null;
 	}
 
 	/**
@@ -436,11 +450,12 @@ class Settings {
 	 */
 	private static function get_error_message( string $error_code ) {
 		$messages = array(
-			'missing_credentials' => __( 'Enter a Form ID/URL and API key.', 'bcew-chefs-embed' ),
-			'form_not_found'      => __( 'CHEFS could not find that Form ID. Check the URL or Form ID and try again.', 'bcew-chefs-embed' ),
-			'invalid_credentials' => __( 'The Form ID and API key could not be verified together. Make sure the API key belongs to this Form ID and try again.', 'bcew-chefs-embed' ),
-			'request_failed'      => __( 'Unable to contact CHEFS. Try again later.', 'bcew-chefs-embed' ),
-			'invalid_response'    => __( 'CHEFS returned an unexpected response. Check the Form ID and API key.', 'bcew-chefs-embed' ),
+			'missing_credentials'  => __( 'Enter a Form ID/URL and API key.', 'bcew-chefs-embed' ),
+			'form_not_found'       => __( 'CHEFS could not find that Form ID. Check the URL or Form ID and try again.', 'bcew-chefs-embed' ),
+			'invalid_credentials'  => __( 'The Form ID and API key could not be verified together. Make sure the API key belongs to this Form ID and try again.', 'bcew-chefs-embed' ),
+			'request_failed'       => __( 'Unable to contact CHEFS. Try again later.', 'bcew-chefs-embed' ),
+			'invalid_response'     => __( 'CHEFS returned an unexpected response. Check the Form ID and API key.', 'bcew-chefs-embed' ),
+			'no_published_version' => __( 'This CHEFS form has no published version and cannot be saved.', 'bcew-chefs-embed' ),
 		);
 
 		return $messages[ $error_code ] ?? __( 'Unable to save credentials.', 'bcew-chefs-embed' );

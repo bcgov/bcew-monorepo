@@ -186,12 +186,10 @@ const getChefsBlock = async ( editor ) => {
     return blocks.find( ( block ) => block.name === BLOCK_NAME );
 };
 
-const getFormSelect = async ( page ) => {
-    return page.getByLabel( 'Form name' ).first();
-};
+const getFormSelect = ( page ) => page.getByLabel( 'Form name' ).first();
 
 const getFormOptionValues = async ( page ) => {
-    const formSelect = await getFormSelect( page );
+    const formSelect = getFormSelect( page );
     return formSelect
         .locator( 'option' )
         .evaluateAll( ( options ) =>
@@ -200,7 +198,7 @@ const getFormOptionValues = async ( page ) => {
 };
 
 const getFormOptionLabels = async ( page ) => {
-    const formSelect = await getFormSelect( page );
+    const formSelect = getFormSelect( page );
     return formSelect
         .locator( 'option' )
         .evaluateAll( ( options ) =>

@@ -206,15 +206,18 @@ class CredentialsManager {
 		$user_id = absint( $user_id );
 		$table   = self::table_name();
 
-		// Use REPLACE to insert or update atomically.
-		$result = $wpdb->replace(
-			$table,
-			array(
-				'form_id' => $form_id,
-				'api_key' => $api_key_encrypted,
-				'user_id' => $user_id,
-			),
-			array( '%s', '%s', '%d' )
+		// Upsert without replacing the row, so created_at is preserved on updates.
+		$result = $wpdb->query(
+			$wpdb->prepare(
+				'INSERT INTO %i (form_id, api_key, user_id) VALUES (%s, %s, %d)
+				ON DUPLICATE KEY UPDATE api_key = %s, user_id = %d',
+				$table,
+				$form_id,
+				$api_key_encrypted,
+				$user_id,
+				$api_key_encrypted,
+				$user_id
+			)
 		);
 
 		return false === $result ? false : $form_id;

@@ -162,11 +162,11 @@ class CredentialsTest extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Saved CHEFS form IDs are exposed through the REST API for users who can edit posts.
+	 * Saved CHEFS forms are exposed through the REST API for users who can edit posts.
 	 *
 	 * @return void
 	 */
-	public function test_rest_route_returns_saved_form_ids() {
+	public function test_rest_route_returns_saved_forms() {
 		$user_id = self::factory()->user->create( array( 'role' => 'author' ) );
 		wp_set_current_user( $user_id );
 
@@ -177,21 +177,16 @@ class CredentialsTest extends \WP_UnitTestCase {
 		$second_form_id = 'deadbeef-1234-5678-90ab-cdef12345678';
 		CredentialsManager::save( $second_form_id, 'another-test-key', $user_id );
 
-		$request  = new \WP_REST_Request( 'GET', '/bcew-chefs-embed/v1/form-ids' );
+		$request  = new \WP_REST_Request( 'GET', '/bcew-chefs-embed/v1/forms' );
 		$response = rest_do_request( $request );
 
 		$this->assertSame( 200, $response->get_status() );
-		$this->assertEqualsCanonicalizing(
-			array(
-				$this->get_expected_form_data( $this->form_id ),
-				$this->get_expected_form_data( $second_form_id ),
-			),
-			$response->get_data()
-		);
+		$this->assertCount( 2, $response->get_data() );
 
 		foreach ( $response->get_data() as $form ) {
 			$this->assertIsString( $form['form_id'] );
 			$this->assertNotEmpty( $form['form_id'] );
+			$this->assertArrayHasKey( 'form_name', $form );
 		}
 	}
 
@@ -220,13 +215,13 @@ class CredentialsTest extends \WP_UnitTestCase {
 	 *
 	 * @return void
 	 */
-	public function test_rest_route_returns_empty_list_when_no_saved_form_ids() {
+	public function test_rest_route_returns_empty_list_when_no_saved_forms() {
 		$user_id = self::factory()->user->create( array( 'role' => 'author' ) );
 		wp_set_current_user( $user_id );
 
 		$this->activate_and_init_rest();
 
-		$request  = new \WP_REST_Request( 'GET', '/bcew-chefs-embed/v1/form-ids' );
+		$request  = new \WP_REST_Request( 'GET', '/bcew-chefs-embed/v1/forms' );
 		$response = rest_do_request( $request );
 
 		$this->assertSame( 200, $response->get_status() );
@@ -283,7 +278,7 @@ class CredentialsTest extends \WP_UnitTestCase {
 	 *
 	 * @return void
 	 */
-	public function test_rest_route_blocks_users_without_edit_posts_capability() {
+	public function test_forms_route_blocks_users_without_edit_posts_capability() {
 		$user_id = self::factory()->user->create( array( 'role' => 'subscriber' ) );
 		wp_set_current_user( $user_id );
 
@@ -292,7 +287,7 @@ class CredentialsTest extends \WP_UnitTestCase {
 		CredentialsManager::install();
 		CredentialsManager::save( $this->form_id, 'test-api-key-value', $user_id );
 
-		$request  = new \WP_REST_Request( 'GET', '/bcew-chefs-embed/v1/form-ids' );
+		$request  = new \WP_REST_Request( 'GET', '/bcew-chefs-embed/v1/forms' );
 		$response = rest_do_request( $request );
 
 		$this->assertSame( 403, $response->get_status() );

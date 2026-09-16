@@ -60,7 +60,7 @@ const Edit = ( { attributes, setAttributes } ) => {
 
             try {
                 const response = await apiFetch( {
-                    path: '/bcew-chefs-embed/v1/form-ids',
+                    path: '/bcew-chefs-embed/v1/forms',
                 } );
 
                 if ( ! isMounted ) {

@@ -24,7 +24,7 @@ class OptionsManager {
 	 *
 	 * Bump when table_definition() changes so existing installs re-run dbDelta.
 	 */
-	const DB_VERSION = '3';
+	const DB_VERSION = '4';
 
 	/**
 	 * Option key storing the installed schema version.
@@ -49,7 +49,7 @@ class OptionsManager {
 	 * @return string|null Confirmation text, or null when not found.
 	 */
 	public static function get_confirmation( $chefs_credentials_id ) {
-		return self::get_option_value( 'confirmation', $chefs_credentials_id );
+		return self::get_option_value( 'confirmation', $chefs_credentials_id, true );
 	}
 
 	/**
@@ -259,6 +259,70 @@ class OptionsManager {
 	 */
 	private static function sanitize_credentials_id( $chefs_credentials_id ) {
 		return trim( sanitize_text_field( $chefs_credentials_id ) );
+	}
+
+	/**
+	 * Prepare the existing options table for the unique form ID index.
+	 *
+	 * @return void
+	 */
+	protected static function before_table_install() {
+		global $wpdb;
+
+		$table = self::table_name();
+		if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $table ) ) ) !== $table ) {
+			return;
+		}
+
+		$indexes = $wpdb->get_results( "SHOW INDEX FROM `{$table}`", ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is generated internally.
+		foreach ( $indexes as $index ) {
+			if ( 'chefs_credentials_id' !== $index['Key_name'] || '0' === (string) $index['Non_unique'] ) {
+				continue;
+			}
+
+			$rows = $wpdb->get_results(
+				$wpdb->prepare(
+					'SELECT id, chefs_credentials_id, form_name, confirmation FROM %i ORDER BY id DESC',
+					$table
+				),
+				ARRAY_A
+			);
+
+			$seen_form_ids = array();
+			foreach ( $rows as $row ) {
+				$form_id = $row['chefs_credentials_id'];
+				if ( ! isset( $seen_form_ids[ $form_id ] ) ) {
+					$seen_form_ids[ $form_id ] = (int) $row['id'];
+					continue;
+				}
+
+				$keeper_id = $seen_form_ids[ $form_id ];
+				$keeper    = $wpdb->get_row(
+					$wpdb->prepare(
+						'SELECT form_name, confirmation FROM %i WHERE id = %d',
+						$table,
+						$keeper_id
+					),
+					ARRAY_A
+				);
+				$updates   = array();
+				if ( $keeper && '' === $keeper['form_name'] && '' !== $row['form_name'] ) {
+					$updates['form_name'] = $row['form_name'];
+				}
+				if ( $keeper && '' === $keeper['confirmation'] && '' !== $row['confirmation'] ) {
+					$updates['confirmation'] = $row['confirmation'];
+				}
+				if ( $updates ) {
+					$wpdb->update( $table, $updates, array( 'id' => $keeper_id ) );
+				}
+
+				$wpdb->delete( $table, array( 'id' => (int) $row['id'] ), array( '%d' ) );
+			}
+
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table and index names are generated internally.
+			$wpdb->query( "ALTER TABLE `{$table}` DROP INDEX `chefs_credentials_id`" );
+			break;
+		}
 	}
 
 	/**

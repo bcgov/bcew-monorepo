@@ -52,6 +52,10 @@ trait InstallsSiteTable {
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
+		if ( method_exists( static::class, 'before_table_install' ) ) {
+			static::before_table_install();
+		}
+
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- schema DDL; table name from code.
 		$sql = "CREATE TABLE {$table} (
 			" . static::table_definition() . "

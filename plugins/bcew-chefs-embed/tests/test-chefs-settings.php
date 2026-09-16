@@ -170,6 +170,26 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Draft-only forms are rejected before credentials are persisted.
+	 *
+	 * @return void
+	 */
+	public function test_draft_only_form_is_not_saved() {
+		$redirect = $this->save_settings_with_response(
+			$this->form_id,
+			array(
+				'token'    => 'test-token',
+				'title'    => 'Draft form',
+				'versions' => array(),
+			),
+			200
+		);
+
+		$this->assertStringContainsString( 'chefs_error=no_published_version', $redirect );
+		$this->assertNull( CredentialsManager::get_by_form_id( $this->form_id ) );
+	}
+
+	/**
 	 * Invalid replacement credentials preserve the existing row.
 	 *
 	 * @return void
@@ -244,6 +264,16 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		// Save first time with first_key.
 		CredentialsManager::save( $this->form_id, $first_key, $this->admin_user_id );
 
+		global $wpdb;
+		$table = CredentialsManager::table_name();
+		$wpdb->update(
+			$table,
+			array( 'created_at' => '2000-01-01 00:00:00' ),
+			array( 'form_id' => $this->form_id ),
+			array( '%s' ),
+			array( '%s' )
+		);
+
 		// Save same form_id again with second_key (should update, not insert).
 		CredentialsManager::save( $this->form_id, $second_key, $this->admin_user_id );
 
@@ -252,10 +282,9 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		// Verify the row was updated (contains second_key, not first_key).
 		$this->assertIsArray( $row );
 		$this->assertSame( $second_key, $row['api_key'], 'Duplicate form_id should update api_key.' );
+		$this->assertSame( '2000-01-01 00:00:00', $row['created_at'], 'Updating credentials should preserve created_at.' );
 
 		// Verify only one row exists for this form_id.
-		global $wpdb;
-		$table = CredentialsManager::table_name();
 		$count = (int) $wpdb->get_var(
 			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table name cannot be parameterized.
 			$wpdb->prepare( 'SELECT COUNT(*) FROM `' . $table . '` WHERE form_id = %s', $this->form_id )
@@ -957,7 +986,11 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	private function save_settings( $form_id_or_url ) {
 		return $this->save_settings_with_response(
 			$form_id_or_url,
-			array( 'token' => 'test-token' ),
+			array(
+				'token'    => 'test-token',
+				'title'    => 'Published test form',
+				'versions' => array( array( 'id' => 'version-1' ) ),
+			),
 			200,
 			$this->api_key
 		);

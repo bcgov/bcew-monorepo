@@ -48,7 +48,7 @@ test.describe( 'CHEFS Form editor', () => {
         await admin.createNewPost();
         await editor.insertBlock( { name: BLOCK_NAME } );
         await ensureBlockSettingsVisible( editor, page );
-        const formSelect = await getFormSelect( page );
+        const formSelect = getFormSelect( page );
         await expect( formSelect ).toBeVisible();
         const optionValues = await getFormOptionValues( page );
         expect( optionValues ).toEqual(
