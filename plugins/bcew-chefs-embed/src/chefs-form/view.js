@@ -309,11 +309,11 @@ const mountChefsForm = async ( root ) => {
          * Embed-config or the viewer script failed. Keep the mount in place
          * and show the normalized error above it.
          */
+        mount.querySelector( 'chefs-form-viewer' )?.remove();
         showChefsError( root, {
-            title: error?.statusText || 'Bad Request',
-            status: String( error?.status || 400 ),
-            detail:
-                error?.message || 'Request is missing content or is malformed',
+            title: error?.status ? error.statusText || 'Error' : '',
+            status: error?.status ? String( error.status ) : '',
+            detail: error?.message || 'Unable to load the CHEFS form.',
         } );
     }
 };
