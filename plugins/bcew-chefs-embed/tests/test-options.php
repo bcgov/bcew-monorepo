@@ -727,9 +727,18 @@ class OptionsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_failed_install_does_not_update_schema_version() {
+		global $wpdb;
+
 		delete_option( FailingInstallTable::DB_VERSION_OPTION );
 
-		$this->assertFalse( FailingInstallTable::install() );
+		$previous_suppression = $wpdb->suppress_errors( true );
+
+		try {
+			$this->assertFalse( FailingInstallTable::install() );
+		} finally {
+			$wpdb->suppress_errors( $previous_suppression );
+		}
+
 		$this->assertFalse( get_option( FailingInstallTable::DB_VERSION_OPTION, false ) );
 	}
 }
