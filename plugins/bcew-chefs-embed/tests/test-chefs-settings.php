@@ -1239,8 +1239,8 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	/**
 	 * Submit settings with separate mocked authentication and metadata responses.
 	 *
-	 * @param array|string $metadata_body Mocked metadata response body.
-	 * @param int    $metadata_status Mocked metadata status code.
+	 * @param array|string $metadata_body   Mocked metadata response body.
+	 * @param int          $metadata_status Mocked metadata status code.
 	 * @return string Redirect URL.
 	 */
 	private function save_settings_with_auth_and_metadata( $metadata_body, $metadata_status ) {
@@ -1352,7 +1352,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 					'message' => 'OK',
 				),
 			);
-		$stub         = static function () use ( $http_response, $response ) {
+		$stub          = static function () use ( $http_response, $response ) {
 			return is_wp_error( $response ) ? $response : $http_response;
 		};
 		add_filter( 'pre_http_request', $stub, 9999, 3 );
