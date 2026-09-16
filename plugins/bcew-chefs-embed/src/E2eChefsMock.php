@@ -80,7 +80,12 @@ class E2eChefsMock {
                     'body'     => wp_json_encode(
                         array(
                             'title'    => 'E2E test form',
-                            'versions' => array( array( 'id' => 'e2e-test-version' ) ),
+                            'versions' => array(
+                                array(
+                                    'id'        => 'e2e-test-version',
+                                    'published' => true,
+                                ),
+                            ),
                         )
                     ),
                     'response' => array(

@@ -192,33 +192,38 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Invalid metadata redirects with an invalid-response error.
+	 * Invalid metadata falls back to the Form ID after authentication.
 	 *
 	 * @return void
 	 */
-	public function test_handle_save_rejects_invalid_metadata() {
+	public function test_handle_save_falls_back_when_metadata_is_invalid() {
 		$redirect = $this->save_settings_with_auth_and_metadata(
 			'{invalid-json',
 			200
 		);
 
-		$this->assertStringContainsString( 'chefs_error=invalid_response', $redirect );
+		$this->assertStringContainsString( 'chefs_saved=1', $redirect );
 	}
 
 	/**
-	 * A form without a title or name redirects with an invalid-response error.
+	 * A form without a title or name uses the Form ID as its display name.
 	 *
 	 * @return void
 	 */
-	public function test_handle_save_rejects_form_without_name() {
+	public function test_handle_save_falls_back_when_form_has_no_name() {
 		$redirect = $this->save_settings_with_auth_and_metadata(
 			array(
-				'versions' => array( array( 'id' => 'version-1' ) ),
+				'versions' => array(
+					array(
+						'id'        => 'version-1',
+						'published' => true,
+					),
+				),
 			),
 			200
 		);
 
-		$this->assertStringContainsString( 'chefs_error=invalid_response', $redirect );
+		$this->assertStringContainsString( 'chefs_saved=1', $redirect );
 	}
 
 	/**
@@ -230,7 +235,12 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		$redirect = $this->save_settings_with_auth_and_metadata(
 			array(
 				'title'    => 'Published test form',
-				'versions' => array( array( 'id' => 'version-1' ) ),
+				'versions' => array(
+					array(
+						'id'        => 'version-1',
+						'published' => true,
+					),
+				),
 			),
 			200
 		);
@@ -524,7 +534,12 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 			$this->fetch_form_name_with_response(
 				array(
 					'title'    => ' Published test form ',
-					'versions' => array( array( 'id' => 'version-1' ) ),
+					'versions' => array(
+						array(
+							'id'        => 'version-1',
+							'published' => true,
+						),
+					),
 				)
 			)
 		);
@@ -541,7 +556,12 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 			$this->fetch_form_name_with_response(
 				array(
 					'name'     => ' Named test form ',
-					'versions' => array( array( 'id' => 'version-1' ) ),
+					'versions' => array(
+						array(
+							'id'        => 'version-1',
+							'published' => true,
+						),
+					),
 				)
 			)
 		);
@@ -574,7 +594,12 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 			$this->fetch_form_name_with_response(
 				array(
 					'title'    => '   ',
-					'versions' => array( array( 'id' => 'version-1' ) ),
+					'versions' => array(
+						array(
+							'id'        => 'version-1',
+							'published' => true,
+						),
+					),
 				)
 			)
 		);
@@ -1189,7 +1214,12 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 			array(
 				'token'    => 'test-token',
 				'title'    => 'Published test form',
-				'versions' => array( array( 'id' => 'version-1' ) ),
+				'versions' => array(
+					array(
+						'id'        => 'version-1',
+						'published' => true,
+					),
+				),
 			),
 			200,
 			$this->api_key

@@ -93,7 +93,12 @@ class E2eChefsMockTest extends \WP_UnitTestCase {
 		$this->assertSame(
 			array(
 				'title'    => 'E2E test form',
-				'versions' => array( array( 'id' => 'e2e-test-version' ) ),
+				'versions' => array(
+					array(
+						'id'        => 'e2e-test-version',
+						'published' => true,
+					),
+				),
 			),
 			json_decode( $response['body'], true )
 		);

@@ -63,8 +63,8 @@ trait InstallsSiteTable {
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-		if ( method_exists( static::class, 'before_table_install' ) ) {
-			static::before_table_install();
+		if ( method_exists( static::class, 'before_table_install' ) && false === static::before_table_install() ) {
+			return false;
 		}
 
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- schema DDL; table name from code.
@@ -79,6 +79,11 @@ trait InstallsSiteTable {
 
 		if ( ! $table_exists ) {
 			error_log( 'CHEFS table installation failed: table does not exist after dbDelta.' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions -- Log critical migration failure.
+			return false;
+		}
+
+		if ( method_exists( static::class, 'table_schema_is_ready' ) && ! static::table_schema_is_ready() ) {
+			error_log( 'CHEFS table installation failed: expected schema is not ready.' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions -- Log critical migration failure.
 			return false;
 		}
 

@@ -434,6 +434,19 @@ class OptionsTest extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Clearing a confirmation preserves the stored form name.
+	 *
+	 * @return void
+	 */
+	public function test_clear_confirmation_preserves_form_name() {
+		OptionsManager::save_form_name( $this->form_id, 'Grant application' );
+		OptionsManager::save( $this->form_id, 'Thanks for submitting!' );
+
+		$this->assertTrue( OptionsManager::clear_confirmation( $this->form_id ) );
+		$this->assertSame( 'Grant application', OptionsManager::get_form_name( $this->form_id ) );
+	}
+
+	/**
 	 * Delete returns false when the ID is empty or no row exists.
 	 *
 	 * @return void
@@ -546,6 +559,53 @@ class OptionsTest extends \WP_UnitTestCase {
 			)
 		);
 		$this->assertSame( 0, (int) $old_row_count );
+	}
+
+	/**
+	 * A legacy table gains form_name before duplicate consolidation runs.
+	 *
+	 * @return void
+	 */
+	public function test_migration_adds_form_name_before_consolidating_legacy_rows() {
+		global $wpdb;
+
+		$table = OptionsManager::table_name();
+		$wpdb->query( "ALTER TABLE `{$table}` DROP INDEX `chefs_credentials_id`" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Internal table name.
+		$wpdb->query( "ALTER TABLE `{$table}` DROP COLUMN `form_name`" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Internal table name.
+
+		$wpdb->insert(
+			$table,
+			array(
+				'chefs_credentials_id' => $this->form_id,
+				'confirmation'         => 'Older',
+			),
+			array( '%s', '%s' )
+		);
+		$wpdb->insert(
+			$table,
+			array(
+				'chefs_credentials_id' => $this->form_id,
+				'confirmation'         => 'Newer',
+			),
+			array( '%s', '%s' )
+		);
+		delete_option( OptionsManager::DB_VERSION_OPTION );
+
+		$this->assertTrue( OptionsManager::install() );
+
+		$columns = $wpdb->get_col( "SHOW COLUMNS FROM `{$table}`", 0 ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Internal table name.
+		$this->assertContains( 'form_name', $columns );
+		$this->assertSame( 1, (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE chefs_credentials_id = %s', $table, $this->form_id ) ) );
+
+		$indexes = $wpdb->get_results( "SHOW INDEX FROM `{$table}`", ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Internal table name.
+		$this->assertTrue(
+			(bool) array_filter(
+				$indexes,
+				static function ( $index ) {
+					return 'chefs_credentials_id' === $index['Key_name'] && '0' === (string) $index['Non_unique'];
+				}
+			)
+		);
 	}
 
 	/**

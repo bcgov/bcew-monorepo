@@ -66,6 +66,10 @@ test.describe( 'CHEFS Form editor', () => {
         await expect( viewer ).toHaveAttribute( 'auth-token', 'preview-token' );
         await expect( viewer ).toHaveAttribute( 'base-url', mockBaseUrl );
         await expect( viewer ).toHaveAttribute( 'read-only', '' );
+        await expect( viewer ).toHaveAttribute(
+            'data-formio-js',
+            `${ mockBaseUrl }/webcomponents/v1/assets/formio.js`
+        );
     } );
 
     test( 'persists and clears a selected Form ID when the saved form is removed', async ( {

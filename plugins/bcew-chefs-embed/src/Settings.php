@@ -359,21 +359,13 @@ class Settings {
 		}
 
 		$metadata = $this->get_form_metadata( $form_id, $api_key );
-		if ( ! $metadata ) {
-			wp_safe_redirect( add_query_arg( 'chefs_error', 'invalid_response', self::get_page_url() ) );
-			exit;
-		}
-
-		if ( empty( $metadata['versions'] ) ) {
+		if ( $metadata && ! $this->has_published_version( $metadata ) ) {
 			wp_safe_redirect( add_query_arg( 'chefs_error', 'no_published_version', self::get_page_url() ) );
 			exit;
 		}
 
-		$form_name = trim( (string) ( $metadata['title'] ?? $metadata['name'] ?? '' ) );
-		if ( '' === $form_name ) {
-			wp_safe_redirect( add_query_arg( 'chefs_error', 'invalid_response', self::get_page_url() ) );
-			exit;
-		}
+		$form_name = trim( (string) ( $metadata['title'] ?? $metadata['name'] ?? $form_id ) );
+		$form_name = '' === $form_name ? $form_id : $form_name;
 
 		$saved_form_id = CredentialsManager::save( $form_id, $api_key );
 		if ( false !== $saved_form_id ) {
@@ -395,7 +387,7 @@ class Settings {
 	 */
 	protected function fetch_form_name( string $form_id, string $api_key ) {
 		$body = $this->get_form_metadata( $form_id, $api_key );
-		if ( ! $body || empty( $body['versions'] ) ) {
+		if ( ! $body || ! $this->has_published_version( $body ) ) {
 			return false;
 		}
 
@@ -405,6 +397,22 @@ class Settings {
 		}
 
 		return $form_name;
+	}
+
+	/**
+	 * Determine whether metadata includes a published version.
+	 *
+	 * @param array $body CHEFS form metadata.
+	 * @return bool
+	 */
+	private function has_published_version( array $body ) {
+		foreach ( (array) ( $body['versions'] ?? array() ) as $version ) {
+			if ( ! empty( $version['published'] ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -548,7 +556,7 @@ class Settings {
 
 		$form_id = sanitize_text_field( wp_unslash( $_POST['form_id'] ?? '' ) );
 
-		OptionsManager::delete( $form_id );
+		OptionsManager::clear_confirmation( $form_id );
 
 		wp_safe_redirect( add_query_arg( 'chefs_confirmation_cleared', '1', self::get_page_url() ) );
 		exit;

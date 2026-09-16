@@ -220,7 +220,7 @@ class OptionsManager {
 	}
 
 	/**
-	 * Delete a confirmation message for a form.
+	 * Delete all options for a form.
 	 *
 	 * @param string $form_id CHEFS form ID.
 	 * @return bool True when at least one row was deleted.
@@ -238,6 +238,17 @@ class OptionsManager {
 			return false;
 		}
 
+		$exists = (bool) $wpdb->get_var(
+			$wpdb->prepare(
+				'SELECT 1 FROM %i WHERE chefs_credentials_id = %s LIMIT 1',
+				self::table_name(),
+				$form_id
+			)
+		);
+		if ( ! $exists ) {
+			return false;
+		}
+
 		/*
 		 * Remove the confirmation row for this form. Return true only when
 		 * at least one row was deleted.
@@ -249,6 +260,31 @@ class OptionsManager {
 		);
 
 		return false !== $deleted && $deleted > 0;
+	}
+
+	/**
+	 * Clear a confirmation while preserving the form name.
+	 *
+	 * @param string $form_id CHEFS form ID.
+	 * @return bool True when the options row exists and was updated.
+	 */
+	public static function clear_confirmation( $form_id ) {
+		global $wpdb;
+
+		$form_id = self::sanitize_credentials_id( $form_id );
+		if ( '' === $form_id ) {
+			return false;
+		}
+
+		$updated = $wpdb->update(
+			self::table_name(),
+			array( 'confirmation' => '' ),
+			array( 'chefs_credentials_id' => $form_id ),
+			array( '%s' ),
+			array( '%s' )
+		);
+
+		return false !== $updated;
 	}
 
 	/**
@@ -280,18 +316,49 @@ class OptionsManager {
 			return;
 		}
 
+		$columns = $wpdb->get_col( "SHOW COLUMNS FROM `{$table}`", 0 ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is generated internally.
+		if ( ! in_array( 'form_name', $columns, true ) ) {
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table and column names are generated internally.
+			if ( false === $wpdb->query( "ALTER TABLE `{$table}` ADD COLUMN `form_name` varchar(255) NOT NULL DEFAULT ''" ) ) {
+				return false;
+			}
+		}
+
 		$indexes = $wpdb->get_results( "SHOW INDEX FROM `{$table}`", ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is generated internally.
+		static::consolidate_duplicate_options_rows();
 		foreach ( $indexes as $index ) {
 			if ( 'chefs_credentials_id' !== $index['Key_name'] || '0' === (string) $index['Non_unique'] ) {
 				continue;
 			}
 
-			static::consolidate_duplicate_options_rows();
-
 			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table and index names are generated internally.
 			$wpdb->query( "ALTER TABLE `{$table}` DROP INDEX `chefs_credentials_id`" );
 			break;
 		}
+	}
+
+	/**
+	 * Verify the options columns and unique form ID index after migration.
+	 *
+	 * @return bool
+	 */
+	protected static function table_schema_is_ready() {
+		global $wpdb;
+
+		$table   = self::table_name();
+		$columns = $wpdb->get_col( "SHOW COLUMNS FROM `{$table}`", 0 ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is generated internally.
+		if ( ! in_array( 'form_name', $columns, true ) || ! in_array( 'confirmation', $columns, true ) ) {
+			return false;
+		}
+
+		$indexes = $wpdb->get_results( "SHOW INDEX FROM `{$table}`", ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is generated internally.
+		foreach ( $indexes as $index ) {
+			if ( 'chefs_credentials_id' === $index['Key_name'] && '0' === (string) $index['Non_unique'] ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
