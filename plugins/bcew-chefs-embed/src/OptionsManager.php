@@ -24,7 +24,7 @@ class OptionsManager {
 	 *
 	 * Bump when table_definition() changes so existing installs re-run dbDelta.
 	 */
-	const DB_VERSION = '2';
+	const DB_VERSION = '3';
 
 	/**
 	 * Option key storing the installed schema version.
@@ -113,16 +113,41 @@ class OptionsManager {
 			return false;
 		}
 
-		$table  = self::table_name();
-		$result = $wpdb->replace(
-			$table,
-			array(
-				'chefs_credentials_id' => $form_id,
-				'form_name'            => $form_name,
-				'confirmation'         => '',
-			),
-			array( '%s', '%s', '%s' )
+		$table = self::table_name();
+
+		/*
+		 * Check whether this form already has an options row.
+		 */
+		$existing = (bool) $wpdb->get_var(
+			$wpdb->prepare(
+				'SELECT 1 FROM %i WHERE chefs_credentials_id = %s LIMIT 1',
+				$table,
+				$form_id
+			)
 		);
+
+		/*
+		 * Update only the form_name, preserving the confirmation message.
+		 * If no row exists yet, create one with form_name and an empty confirmation.
+		 */
+		if ( $existing ) {
+			$result = $wpdb->update(
+				$table,
+				array( 'form_name' => $form_name ),
+				array( 'chefs_credentials_id' => $form_id ),
+				array( '%s' ),
+				array( '%s' )
+			);
+		} else {
+			$result = $wpdb->insert(
+				$table,
+				array(
+					'chefs_credentials_id' => $form_id,
+					'form_name'            => $form_name,
+				),
+				array( '%s', '%s' )
+			);
+		}
 
 		return false === $result ? false : $form_id;
 	}
@@ -248,7 +273,7 @@ class OptionsManager {
 			form_name varchar(255) NOT NULL DEFAULT \'\',
 			confirmation longtext NOT NULL,
 			PRIMARY KEY  (id),
-			KEY chefs_credentials_id (chefs_credentials_id)
+			UNIQUE KEY chefs_credentials_id (chefs_credentials_id)
 		';
 	}
 }

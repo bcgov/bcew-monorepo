@@ -23,7 +23,9 @@ import ChefsFormPreview from './components/chefs-form-preview';
 /**
  * Transform API response into block-compatible form object.
  *
- * @param {Object} form API form object with form_id and form_name.
+ * @param {Object}        form           API form object with form_id and form_name.
+ * @param {string|number} form.form_id   API form identifier.
+ * @param {string}        form.form_name API form name.
  * @return {Object} Transformed form with formId and formName.
  */
 const transformForm = ( { form_id: formId, form_name: formName } ) => ( {
@@ -66,7 +68,9 @@ const Edit = ( { attributes, setAttributes } ) => {
                 }
 
                 const forms = Array.isArray( response )
-                    ? response.map( transformForm ).filter( ( form ) => form.formId )
+                    ? response
+                          .map( transformForm )
+                          .filter( ( form ) => form.formId )
                     : [];
 
                 setSavedForms( forms );

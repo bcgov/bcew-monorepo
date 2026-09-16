@@ -71,13 +71,13 @@ class CredentialsTest extends \WP_UnitTestCase {
 	 * Run a callback with an HTTP mock active, then remove the mock.
 	 *
 	 * @param callable $http_callback Mock HTTP handler.
-	 * @param callable $fn Callback to run while mock is active.
+	 * @param callable $callback Callback to run while mock is active.
 	 * @return void
 	 */
-	private function with_http_mock( $http_callback, $fn ) {
+	private function with_http_mock( $http_callback, $callback ) {
 		add_filter( 'pre_http_request', $http_callback, 10, 3 );
 		try {
-			$fn();
+			$callback();
 		} finally {
 			remove_filter( 'pre_http_request', $http_callback );
 		}
@@ -395,20 +395,23 @@ class CredentialsTest extends \WP_UnitTestCase {
 			);
 		};
 
-		$this->with_http_mock( $http_callback, function () {
-			$request = new \WP_REST_Request( 'GET', '/bcew-chefs-embed/v1/embed-config' );
-			$request->set_param( 'formId', $this->form_id );
-			$response = rest_do_request( $request );
+		$this->with_http_mock(
+            $http_callback,
+            function () {
+				$request = new \WP_REST_Request( 'GET', '/bcew-chefs-embed/v1/embed-config' );
+				$request->set_param( 'formId', $this->form_id );
+				$response = rest_do_request( $request );
 
-			$this->assertSame( 200, $response->get_status() );
-			$this->assertSame( 'chefs-token-123', $response->get_data()['token'] );
-			$this->assertSame( 'https://submit.digital.gov.bc.ca/app', $response->get_data()['baseUrl'] );
-			$this->assertArrayHasKey( 'confirmation', $response->get_data() );
-			$this->assertNull( $response->get_data()['confirmation'] );
-			$this->assertArrayNotHasKey( 'apiKey', $response->get_data() );
-			$this->assertArrayNotHasKey( 'api_key', $response->get_data() );
-			$this->assertStringNotContainsString( 'test-api-key-value', wp_json_encode( $response->get_data() ) );
-		} );
+				$this->assertSame( 200, $response->get_status() );
+				$this->assertSame( 'chefs-token-123', $response->get_data()['token'] );
+				$this->assertSame( 'https://submit.digital.gov.bc.ca/app', $response->get_data()['baseUrl'] );
+				$this->assertArrayHasKey( 'confirmation', $response->get_data() );
+				$this->assertNull( $response->get_data()['confirmation'] );
+				$this->assertArrayNotHasKey( 'apiKey', $response->get_data() );
+				$this->assertArrayNotHasKey( 'api_key', $response->get_data() );
+				$this->assertStringNotContainsString( 'test-api-key-value', wp_json_encode( $response->get_data() ) );
+			}
+        );
 	}
 
 	/**
@@ -464,14 +467,17 @@ class CredentialsTest extends \WP_UnitTestCase {
 			);
 		};
 
-		$this->with_http_mock( $http_callback, function () {
-			$request = new \WP_REST_Request( 'GET', '/bcew-chefs-embed/v1/embed-config' );
-			$request->set_param( 'formId', $this->form_id );
-			$response = rest_do_request( $request );
+		$this->with_http_mock(
+            $http_callback,
+            function () {
+				$request = new \WP_REST_Request( 'GET', '/bcew-chefs-embed/v1/embed-config' );
+				$request->set_param( 'formId', $this->form_id );
+				$response = rest_do_request( $request );
 
-			$this->assertSame( 200, $response->get_status() );
-			$this->assertSame( 'Thanks for applying.', $response->get_data()['confirmation'] );
-		} );
+				$this->assertSame( 200, $response->get_status() );
+				$this->assertSame( 'Thanks for applying.', $response->get_data()['confirmation'] );
+			}
+        );
 	}
 
 	/**

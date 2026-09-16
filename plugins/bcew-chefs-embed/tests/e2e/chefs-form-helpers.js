@@ -19,24 +19,24 @@ const CHEFS_FORM_VIEWER_STUB = `
 `;
 
 const assertSettingsPageAccess = async ( page ) => {
-	const settingsHeading = page.getByRole( 'heading', {
-		name: 'CHEFS Settings',
-	} );
-	const unauthorizedMessage = page.getByText(
-		/You do not have sufficient permissions|Unauthorized|Forbidden/i
-	);
-	if ( 0 === ( await settingsHeading.count() ) ) {
-		await expect( unauthorizedMessage ).toHaveCount( 0 );
-		return false;
-	}
-	await expect( settingsHeading ).toBeVisible( { timeout: 10000 } );
-	return true;
+    const settingsHeading = page.getByRole( 'heading', {
+        name: 'CHEFS Settings',
+    } );
+    const unauthorizedMessage = page.getByText(
+        /You do not have sufficient permissions|Unauthorized|Forbidden/i
+    );
+    if ( 0 === ( await settingsHeading.count() ) ) {
+        await expect( unauthorizedMessage ).toHaveCount( 0 );
+        return false;
+    }
+    await expect( settingsHeading ).toBeVisible( { timeout: 10000 } );
+    return true;
 };
 
 const ensureElementExpanded = async ( element ) => {
-	if ( 'false' === ( await element.getAttribute( 'aria-expanded' ) ) ) {
-		await element.click();
-	}
+    if ( 'false' === ( await element.getAttribute( 'aria-expanded' ) ) ) {
+        await element.click();
+    }
 };
 
 const clearSavedForms = async ( admin, page ) => {
@@ -45,8 +45,8 @@ const clearSavedForms = async ( admin, page ) => {
         /\/wp-admin\/admin\.php\?page=bcew-chefs-embed-settings/
     );
     if ( ! ( await assertSettingsPageAccess( page ) ) ) {
-		return;
-	}
+        return;
+    }
 
     const removeButton = page.getByRole( 'button', {
         name: 'Remove form',
@@ -66,12 +66,12 @@ const addSavedForm = async ( admin, page, formId, apiKey ) => {
         /\/wp-admin\/admin\.php\?page=bcew-chefs-embed-settings/
     );
     const canAccess = await assertSettingsPageAccess( page );
-	if ( ! canAccess ) {
-		throw new Error(
-			'CHEFS settings page is not accessible (permission denied). ' +
-				'Verify the test user can manage options and access admin pages.'
-		);
-	}
+    if ( ! canAccess ) {
+        throw new Error(
+            'CHEFS settings page is not accessible (permission denied). ' +
+                'Verify the test user can manage options and access admin pages.'
+        );
+    }
     const formIdField = page.getByLabel( 'Form ID / URL' ).first();
     const apiKeyField = page.getByLabel( 'API Key' ).first();
     await expect( formIdField ).toBeVisible();
@@ -174,119 +174,125 @@ const publishFormAndVisit = async (
 };
 
 const assertBlockVisible = async ( editor ) => {
-	const block = editor.canvas.locator( `[data-type="${ BLOCK_NAME }"]` ).first();
-	await expect( block ).toBeVisible();
-	return block;
+    const block = editor.canvas
+        .locator( `[data-type="${ BLOCK_NAME }"]` )
+        .first();
+    await expect( block ).toBeVisible();
+    return block;
 };
 
 const getChefsBlock = async ( editor ) => {
-	const blocks = await editor.getBlocks();
-	return blocks.find( ( block ) => block.name === BLOCK_NAME );
+    const blocks = await editor.getBlocks();
+    return blocks.find( ( block ) => block.name === BLOCK_NAME );
 };
 
 const getFormSelect = async ( page ) => {
-	return page.getByLabel( 'Form name' ).first();
+    return page.getByLabel( 'Form name' ).first();
 };
 
 const getFormOptionValues = async ( page ) => {
-	const formSelect = await getFormSelect( page );
-	return formSelect.locator( 'option' ).evaluateAll( ( options ) =>
-		options.map( ( option ) => option.value )
-	);
+    const formSelect = await getFormSelect( page );
+    return formSelect
+        .locator( 'option' )
+        .evaluateAll( ( options ) =>
+            options.map( ( option ) => option.value )
+        );
 };
 
 const getFormOptionLabels = async ( page ) => {
-	const formSelect = await getFormSelect( page );
-	return formSelect.locator( 'option' ).evaluateAll( ( options ) =>
-		options.map( ( option ) => option.textContent )
-	);
+    const formSelect = await getFormSelect( page );
+    return formSelect
+        .locator( 'option' )
+        .evaluateAll( ( options ) =>
+            options.map( ( option ) => option.textContent )
+        );
 };
 
 const getFormViewer = async ( page ) => {
-	return page.locator( 'chefs-form-viewer' );
+    return page.locator( 'chefs-form-viewer' );
 };
 
 const getFormBlock = async ( page ) => {
-	return page.locator( '.bcew-chefs-form' ).first();
+    return page.locator( '.bcew-chefs-form' ).first();
 };
 
 const getFormSuccess = async ( page ) => {
-	return page.locator( '.bcew-chefs-form__success' );
+    return page.locator( '.bcew-chefs-form__success' );
 };
 
 const getFormError = async ( page ) => {
-	return page.locator( '.bcew-chefs-form > .bcew-chefs-form__error' );
+    return page.locator( '.bcew-chefs-form > .bcew-chefs-form__error' );
 };
 
 const dispatchFormioEvent = async ( viewer, eventName, detail ) => {
-	await viewer.evaluate(
-		( element, payload ) => {
-			element.dispatchEvent(
-				new CustomEvent( payload.eventName, {
-					bubbles: true,
-					composed: true,
-					detail: payload.detail,
-				} )
-			);
-		},
-		{ eventName, detail }
-	);
+    await viewer.evaluate(
+        ( element, payload ) => {
+            element.dispatchEvent(
+                new CustomEvent( payload.eventName, {
+                    bubbles: true,
+                    composed: true,
+                    detail: payload.detail,
+                } )
+            );
+        },
+        { eventName, detail }
+    );
 };
 
 const getFormIdField = async ( page ) => {
-	return page.getByLabel( 'Form ID' ).first();
+    return page.getByLabel( 'Form ID' ).first();
 };
 
 const getApiKeyField = async ( page ) => {
-	return page.getByLabel( 'API Key' ).first();
+    return page.getByLabel( 'API Key' ).first();
 };
 
 const getConfirmationMessageField = async ( page ) => {
-	return page.getByLabel( 'Confirmation message' );
+    return page.getByLabel( 'Confirmation message' );
 };
 
 const getSaveButton = async ( page ) => {
-	return page.getByRole( 'button', { name: 'Save', exact: true } );
+    return page.getByRole( 'button', { name: 'Save', exact: true } );
 };
 
 const getRemoveFormButton = async ( page ) => {
-	return page.getByRole( 'button', { name: 'Remove form', exact: true } );
+    return page.getByRole( 'button', { name: 'Remove form', exact: true } );
 };
 
 const getSuccessNotice = async ( page ) => {
-	return page.locator( '.notice-success' );
+    return page.locator( '.notice-success' );
 };
 
 const getErrorNotice = async ( page ) => {
-	return page.locator( '.notice-error' );
+    return page.locator( '.notice-error' );
 };
 
 module.exports = {
-	BLOCK_NAME,
-	addSavedForm,
-	assertBlockVisible,
-	assertSettingsPageAccess,
-	clearSavedForms,
-	dispatchFormioEvent,
-	ensureBlockSettingsVisible,
-	ensureElementExpanded,
-	getApiKeyField,
-	getChefsBlock,
-	getConfirmationMessageField,
-	getErrorNotice,
-	getFormBlock,
-	getFormError,
-	getFormIdField,
-	getFormOptionLabels,
-	getFormOptionValues,
-	getFormSelect,
-	getFormSuccess,
-	getFormViewer,
-	getRemoveFormButton,
-	getSaveButton,
-	getSuccessNotice,
-	mockChefsFormRoutes,
-	publishFormAndVisit,
-	selectFormAndPublish,
-	selectSavedFormId,
+    BLOCK_NAME,
+    addSavedForm,
+    assertBlockVisible,
+    assertSettingsPageAccess,
+    clearSavedForms,
+    dispatchFormioEvent,
+    ensureBlockSettingsVisible,
+    ensureElementExpanded,
+    getApiKeyField,
+    getChefsBlock,
+    getConfirmationMessageField,
+    getErrorNotice,
+    getFormBlock,
+    getFormError,
+    getFormIdField,
+    getFormOptionLabels,
+    getFormOptionValues,
+    getFormSelect,
+    getFormSuccess,
+    getFormViewer,
+    getRemoveFormButton,
+    getSaveButton,
+    getSuccessNotice,
+    mockChefsFormRoutes,
+    publishFormAndVisit,
+    selectFormAndPublish,
+    selectSavedFormId,
 };

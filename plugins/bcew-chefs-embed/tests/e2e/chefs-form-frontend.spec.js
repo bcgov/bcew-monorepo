@@ -51,7 +51,9 @@ test.describe( 'CHEFS Form frontend', () => {
             'auto-reload-on-submit',
             'false'
         );
-        await dispatchFormioEvent( viewer, 'formio:submitDone', { submission: {} } );
+        await dispatchFormioEvent( viewer, 'formio:submitDone', {
+            submission: {},
+        } );
         const success = await getFormSuccess( page );
         await expect( success ).toBeVisible();
         await expect( success ).toHaveAttribute( 'role', 'status' );
@@ -100,7 +102,9 @@ test.describe( 'CHEFS Form frontend', () => {
             return banner && mount && banner.nextElementSibling === mount;
         } );
         expect( errorIsAboveForm ).toBe( true );
-        await dispatchFormioEvent( viewer, 'formio:error', { error: 'Submission failed' } );
+        await dispatchFormioEvent( viewer, 'formio:error', {
+            error: 'Submission failed',
+        } );
         await expect( error.getByRole( 'heading', { level: 2 } ) ).toHaveCount(
             0
         );
@@ -124,7 +128,9 @@ test.describe( 'CHEFS Form frontend', () => {
         } );
         const viewer = page.locator( 'chefs-form-viewer' );
         await expect( viewer ).toBeAttached();
-        await dispatchFormioEvent( viewer, 'formio:submitDone', { submission: {} } );
+        await dispatchFormioEvent( viewer, 'formio:submitDone', {
+            submission: {},
+        } );
         const success = await getFormSuccess( page );
         await expect( success ).toBeVisible();
         await expect( success.getByText( customMessage ) ).toBeVisible();
@@ -151,8 +157,12 @@ test.describe( 'CHEFS Form frontend', () => {
         await editor.insertBlock( { name: BLOCK_NAME } );
         await ensureBlockSettingsVisible( editor, page );
         const formSelect = page.getByLabel( 'Form name' ).first();
-        await expect( formSelect.locator( `option[value="${ formId }"]` ) ).toBeAttached();
-        await expect( formSelect.getByRole( 'option', { name: formUrl } ) ).toHaveCount( 0 );
+        await expect(
+            formSelect.locator( `option[value="${ formId }"]` )
+        ).toBeAttached();
+        await expect(
+            formSelect.getByRole( 'option', { name: formUrl } )
+        ).toHaveCount( 0 );
         await selectSavedFormId( page, formId );
         const postId = await editor.publishPost();
         expect( postId ).not.toBeNull();

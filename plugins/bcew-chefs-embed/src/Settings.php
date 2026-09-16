@@ -386,7 +386,11 @@ class Settings {
 		}
 
 		$form_name = trim( (string) ( $body['title'] ?? $body['name'] ?? '' ) );
-		return $form_name ?: false;
+		if ( '' === $form_name ) {
+			return false;
+		}
+
+		return $form_name;
 	}
 
 	/**
