@@ -132,6 +132,13 @@ test.describe( 'CHEFS Form frontend', () => {
             apiKey: 'frontend-error-handler-key',
             token: 'frontend-error-handler-token',
             baseUrl: 'https://chefs-frontend.test/app',
+            loadError: {
+                error: {
+                    title: 'Bad Request',
+                    status: 400,
+                    detail: 'Request is missing content or is malformed',
+                },
+            },
         } );
         const viewer = await getFormViewer( page );
         const error = await getFormError( page );

@@ -66,6 +66,11 @@ const fetchEmbedConfig = async ( formId ) => {
         );
         error.status = response.status;
         error.statusText = response.statusText;
+        error.response = {
+            status: response.status,
+            statusText: response.statusText,
+            data: payload,
+        };
         throw error;
     }
 
@@ -138,6 +143,57 @@ const readChefsError = ( payload ) => {
 };
 
 /**
+ * Normalize a CHEFS error payload from the fetch, the viewer, or a rejected load.
+ *
+ * Supports fetch Errors, direct viewer payloads, and wrapped shapes like
+ * { error: { detail, status, ... } }.
+ *
+ * @param {unknown} payload Error payload.
+ * @return {{title: string, status: string, detail: string}} Error fields.
+ */
+const normalizeChefsError = ( payload ) => {
+    const raw =
+        payload && 'object' === typeof payload && payload.error && 'object' === typeof payload.error && ! Array.isArray( payload.error )
+            ? payload.error
+            : payload;
+
+    const response = raw?.response && 'object' === typeof raw.response
+        ? raw.response
+        : payload?.response && 'object' === typeof payload.response
+            ? payload.response
+            : {};
+
+    const status = asPlainText(
+        response.status ?? raw?.status ?? payload?.status ?? 500
+    );
+
+    const statusText = asPlainText(
+        response.statusText ??
+            raw?.statusText ??
+            payload?.statusText ??
+            ( status && Number.isFinite( Number( status ) )
+                ? status >= 400 && status < 500 ? 'Bad Request' : 'Request failed'
+                : 'Request failed' )
+    );
+
+    const detail = asPlainText(
+        response?.data?.message ??
+            raw?.message ??
+            payload?.message ??
+            response?.data?.detail ??
+            raw?.detail ??
+            payload?.detail ??
+            ( 'string' === typeof raw?.error ? raw.error : '' )
+    ) || 'Unable to load the CHEFS form.';
+
+    return {
+        title: asPlainText( raw?.title ?? payload?.title ?? statusText ),
+        status,
+        detail,
+    };
+};
+
+/**
  * Remove a previous CHEFS error banner (direct child of the block root).
  *
  * @param {HTMLElement} root Block wrapper.
@@ -169,7 +225,9 @@ const showChefsError = ( root, error ) => {
      * "title - status" when those fields exist. Place the banner above the
      * form so the visitor can read it and try again.
      */
-    if ( ! error.title && ! error.status && ! error.detail ) {
+    const normalized = normalizeChefsError( error );
+
+    if ( ! normalized.title && ! normalized.status && ! normalized.detail ) {
         return;
     }
 
@@ -179,7 +237,7 @@ const showChefsError = ( root, error ) => {
     region.className = 'bcew-chefs-form__error';
     region.setAttribute( 'role', 'alert' );
 
-    const headingText = [ error.title, error.status ]
+    const headingText = [ normalized.title, normalized.status ]
         .filter( Boolean )
         .join( ' - ' );
 
@@ -189,9 +247,9 @@ const showChefsError = ( root, error ) => {
         region.append( heading );
     }
 
-    if ( error.detail ) {
+    if ( normalized.detail ) {
         const message = document.createElement( 'p' );
-        message.textContent = error.detail;
+        message.textContent = normalized.detail;
         region.append( message );
     }
 
@@ -301,7 +359,10 @@ const mountChefsForm = async ( root ) => {
         if ( 'function' === typeof viewer.load ) {
             // Wait for any previous viewer load to complete before loading this viewer.
             const loadViewer = pendingViewerLoad.then( () => viewer.load() );
-            pendingViewerLoad = loadViewer.catch( () => {} );
+            pendingViewerLoad = loadViewer.catch( ( error ) => {
+                showChefsError( root, normalizeChefsError( error ) );
+                return undefined;
+            } );
             await loadViewer;
         }
     } catch ( error ) {
@@ -310,11 +371,7 @@ const mountChefsForm = async ( root ) => {
          * and show the normalized error above it.
          */
         mount.querySelector( 'chefs-form-viewer' )?.remove();
-        showChefsError( root, {
-            title: error?.status ? error.statusText || 'Error' : '',
-            status: error?.status ? String( error.status ) : '',
-            detail: error?.message || 'Unable to load the CHEFS form.',
-        } );
+        showChefsError( root, normalizeChefsError( error ) );
     }
 };
 

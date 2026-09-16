@@ -3,7 +3,7 @@ const { expect } = require( '@wordpress/e2e-test-utils-playwright' );
 const BLOCK_NAME = 'bcew-chefs-embed/chefs-form';
 const SETTINGS_PAGE_QUERY = 'page=bcew-chefs-embed-settings';
 
-const getChefsFormViewerStub = ( rejectFirstLoad ) => `
+const getChefsFormViewerStub = ( rejectFirstLoad, loadError ) => `
 	class ChefsFormViewerStub extends HTMLElement {
 		connectedCallback() {
 			this.style.display = 'block';
@@ -24,6 +24,13 @@ const getChefsFormViewerStub = ( rejectFirstLoad ) => `
                 state.active -= 1;
                 if ( ${ rejectFirstLoad } && 1 === state.count ) {
                     return Promise.reject( new Error( 'First viewer load failed' ) );
+                }
+                if ( ${ loadError ? JSON.stringify( loadError ) : 'null' } ) {
+                    this.dispatchEvent( new CustomEvent( 'formio:error', {
+                        bubbles: true,
+                        composed: true,
+                        detail: ${ loadError ? JSON.stringify( loadError ) : 'null' },
+                    } ) );
                 }
                 return undefined;
             } );
@@ -110,7 +117,7 @@ const selectSavedFormId = async ( page, formId ) => {
 
 const mockChefsFormRoutes = async (
     page,
-    { token, baseUrl, confirmation, rejectFirstLoad = false }
+    { token, baseUrl, confirmation, rejectFirstLoad = false, loadError }
 ) => {
     const configBody = { token, baseUrl };
     if ( confirmation ) {
@@ -132,7 +139,7 @@ const mockChefsFormRoutes = async (
             await route.fulfill( {
                 status: 200,
                 contentType: 'application/javascript',
-                body: getChefsFormViewerStub( rejectFirstLoad ),
+                body: getChefsFormViewerStub( rejectFirstLoad, loadError ),
             } );
         }
     );
@@ -178,10 +185,15 @@ const publishFormAndVisit = async (
     admin,
     editor,
     page,
-    { formId, apiKey, token, baseUrl, confirmation }
+    { formId, apiKey, token, baseUrl, confirmation, loadError }
 ) => {
     await addSavedForm( admin, page, formId, apiKey );
-    await mockChefsFormRoutes( page, { token, baseUrl, confirmation } );
+    await mockChefsFormRoutes( page, {
+        token,
+        baseUrl,
+        confirmation,
+        loadError,
+    } );
     const postId = await selectFormAndPublish( admin, editor, page, formId );
     await page.context().clearCookies();
     const response = await page.goto( `/?p=${ postId }` );
