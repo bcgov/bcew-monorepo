@@ -10,6 +10,9 @@
  */
 import ensureChefsFormViewerDefined from './utils/ensure-chefs-form-viewer';
 
+// CHEFS viewers share an asset loader, so initialize them one at a time.
+let pendingViewerLoad = Promise.resolve();
+
 /**
  * Resolve the WordPress REST API root URL.
  *
@@ -296,6 +299,10 @@ const mountChefsForm = async ( root ) => {
         viewer.setAttribute( 'auth-token', config.token );
         viewer.setAttribute( 'base-url', config.baseUrl );
         viewer.setAttribute( 'auto-reload-on-submit', 'false' );
+        // Provide the path to the Form.io JavaScript asset for the web component.
+        viewer.endpoints = {
+            formioJs: `${ config.baseUrl }/webcomponents/v1/assets/formio.js`,
+        };
 
         /*
          * Submit success and CHEFS HTTP errors are separate events. Success
@@ -313,7 +320,10 @@ const mountChefsForm = async ( root ) => {
         mount.removeAttribute( 'aria-busy' );
 
         if ( 'function' === typeof viewer.load ) {
-            await viewer.load();
+            // Wait for any previous viewer load to complete before loading this viewer.
+            const loadViewer = pendingViewerLoad.then( () => viewer.load() );
+            pendingViewerLoad = loadViewer.catch( () => {} );
+            await loadViewer;
         }
     } catch ( error ) {
         /*

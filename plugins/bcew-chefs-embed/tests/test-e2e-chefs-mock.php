@@ -77,6 +77,29 @@ class E2eChefsMockTest extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * A valid form request returns the metadata used by the editor and settings UI.
+	 *
+	 * @return void
+	 */
+	public function test_valid_credentials_return_form_metadata() {
+		$form_id  = '11111111-1111-4111-8111-111111111111';
+		$response = E2eChefsMock::pre_http_request(
+			false,
+			$this->request_args( $form_id, 'api-key-one' ),
+			$this->form_url( $form_id )
+		);
+
+		$this->assertSame( 200, $response['response']['code'] );
+		$this->assertSame(
+			array(
+				'title'    => 'E2E test form',
+				'versions' => array( array( 'id' => 'e2e-test-version' ) ),
+			),
+			json_decode( $response['body'], true )
+		);
+	}
+
+	/**
 	 * Build the CHEFS authentication URL for a test request.
 	 *
 	 * @param string $form_id Form ID.
@@ -84,6 +107,16 @@ class E2eChefsMockTest extends \WP_UnitTestCase {
 	 */
 	private function auth_url( $form_id ) {
 		return 'https://submit.digital.gov.bc.ca/app/gateway/v1/auth/token/forms/' . $form_id;
+	}
+
+	/**
+	 * Build the CHEFS form metadata URL for a test request.
+	 *
+	 * @param string $form_id Form ID.
+	 * @return string
+	 */
+	private function form_url( $form_id ) {
+		return 'https://submit.digital.gov.bc.ca/app/api/v1/forms/' . $form_id;
 	}
 
 	/**

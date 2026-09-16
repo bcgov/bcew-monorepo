@@ -10,6 +10,36 @@ namespace Bcgov\BcewChefsEmbed\Test;
 use Bcgov\BcewChefsEmbed\OptionsManager;
 
 /**
+ * Test-only table consumer that forces dbDelta() to leave the table missing.
+ */
+class FailingInstallTable {
+	use \Bcgov\BcewChefsEmbed\InstallsSiteTable;
+
+	const DB_VERSION         = 'test';
+	const DB_VERSION_OPTION  = 'bcew_test_failing_install_db_version';
+
+	/**
+	 * Return an isolated table name for the failure-path test.
+	 *
+	 * @return string
+	 */
+	public static function table_name() {
+		global $wpdb;
+
+		return $wpdb->prefix . 'bcew_test_failing_install';
+	}
+
+	/**
+	 * Return invalid DDL so dbDelta() cannot create the table.
+	 *
+	 * @return string
+	 */
+	protected static function table_definition() {
+		return 'this is not valid table definition';
+	}
+}
+
+/**
  * Options table acceptance criteria.
  */
 class OptionsTest extends \WP_UnitTestCase {
@@ -719,5 +749,17 @@ class OptionsTest extends \WP_UnitTestCase {
 
 		// Version should be updated to current DB_VERSION.
 		$this->assertSame( OptionsManager::DB_VERSION, get_option( OptionsManager::DB_VERSION_OPTION ) );
+	}
+
+	/**
+	 * A failed dbDelta migration returns false and does not record a version.
+	 *
+	 * @return void
+	 */
+	public function test_failed_install_does_not_update_schema_version() {
+		delete_option( FailingInstallTable::DB_VERSION_OPTION );
+
+		$this->assertFalse( FailingInstallTable::install() );
+		$this->assertFalse( get_option( FailingInstallTable::DB_VERSION_OPTION, false ) );
 	}
 }

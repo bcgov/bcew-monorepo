@@ -160,13 +160,82 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_invalid_credentials_do_not_create_a_row() {
-		$this->save_settings_with_response(
+		$redirect = $this->save_settings_with_response(
 			$this->form_id,
 			array( 'detail' => 'Forbidden' ),
 			403
 		);
 
+		$this->assertStringContainsString( 'chefs_error=invalid_credentials', $redirect );
 		$this->assertNull( CredentialsManager::get_by_form_id( $this->form_id ) );
+	}
+
+	/**
+	 * Saving without credentials redirects with a validation error.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_rejects_missing_credentials() {
+		$nonce                = wp_create_nonce( 'bcew_chefs_save' );
+		$_POST['form_id']     = '';
+		$_POST['api_key']     = '';
+		$_POST['_wpnonce']    = $nonce;
+		$_REQUEST['_wpnonce'] = $nonce;
+
+		$redirect = $this->capture_settings_redirect(
+			static function () {
+				( new \Bcgov\BcewChefsEmbed\Settings() )->handle_save();
+			}
+		);
+
+		$this->assertStringContainsString( 'chefs_error=missing_credentials', $redirect );
+	}
+
+	/**
+	 * Invalid metadata redirects with an invalid-response error.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_rejects_invalid_metadata() {
+		$redirect = $this->save_settings_with_auth_and_metadata(
+			'{invalid-json',
+			200
+		);
+
+		$this->assertStringContainsString( 'chefs_error=invalid_response', $redirect );
+	}
+
+	/**
+	 * A form without a title or name redirects with an invalid-response error.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_rejects_form_without_name() {
+		$redirect = $this->save_settings_with_auth_and_metadata(
+			array(
+				'versions' => array( array( 'id' => 'version-1' ) ),
+			),
+			200
+		);
+
+		$this->assertStringContainsString( 'chefs_error=invalid_response', $redirect );
+	}
+
+	/**
+	 * A valid form redirects with the saved flag.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_redirects_after_saving_valid_form() {
+		$redirect = $this->save_settings_with_auth_and_metadata(
+			array(
+				'title'    => 'Published test form',
+				'versions' => array( array( 'id' => 'version-1' ) ),
+			),
+			200
+		);
+
+		$this->assertStringContainsString( 'chefs_saved=1', $redirect );
 	}
 
 	/**
@@ -403,6 +472,137 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		$this->assertStringContainsString( 'documentation', $html );
 		$this->assertStringContainsString( 'href="' . esc_url( \Bcgov\BcewChefsEmbed\Settings::DOCUMENTATION_URL ) . '"', $html );
 		$this->assertStringNotContainsString( 'target="_blank"', $html );
+	}
+
+	/**
+	 * Settings page renders saved and deleted notices from redirect flags.
+	 *
+	 * @return void
+	 */
+	public function test_settings_page_renders_saved_and_deleted_notices() {
+		$saved_html = $this->render_page_with_get( 'chefs_saved', '1' );
+		$this->assertStringContainsString( 'Saved.', $saved_html );
+
+		$deleted_html = $this->render_page_with_get( 'chefs_deleted', '1' );
+		$this->assertStringContainsString( 'Removed.', $deleted_html );
+	}
+
+	/**
+	 * Settings page rejects users without manage_options.
+	 *
+	 * @return void
+	 */
+	public function test_render_page_requires_manage_options() {
+		$subscriber_id = self::factory()->user->create( array( 'role' => 'subscriber' ) );
+		wp_set_current_user( $subscriber_id );
+
+		$this->expectException( \WPDieException::class );
+		( new \Bcgov\BcewChefsEmbed\Settings() )->render_page();
+	}
+
+	/**
+	 * Handle save rejects users without manage_options.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_requires_manage_options() {
+		$subscriber_id = self::factory()->user->create( array( 'role' => 'subscriber' ) );
+		wp_set_current_user( $subscriber_id );
+
+		$this->expectException( \WPDieException::class );
+		( new \Bcgov\BcewChefsEmbed\Settings() )->handle_save();
+	}
+
+	/**
+	 * Fetching metadata returns the form title.
+	 *
+	 * @return void
+	 */
+	public function test_fetch_form_name_uses_title() {
+		$this->assertSame(
+			'Published test form',
+			$this->fetch_form_name_with_response(
+				array(
+					'title'    => ' Published test form ',
+					'versions' => array( array( 'id' => 'version-1' ) ),
+				)
+			)
+		);
+	}
+
+	/**
+	 * Fetching metadata falls back to the form name when title is absent.
+	 *
+	 * @return void
+	 */
+	public function test_fetch_form_name_falls_back_to_name() {
+		$this->assertSame(
+			'Named test form',
+			$this->fetch_form_name_with_response(
+				array(
+					'name'     => ' Named test form ',
+					'versions' => array( array( 'id' => 'version-1' ) ),
+				)
+			)
+		);
+	}
+
+	/**
+	 * Fetching metadata rejects empty responses and unpublished forms.
+	 *
+	 * @return void
+	 */
+	public function test_fetch_form_name_rejects_missing_published_version() {
+		$this->assertFalse( $this->fetch_form_name_with_response( array() ) );
+		$this->assertFalse(
+			$this->fetch_form_name_with_response(
+				array(
+					'title'    => 'Draft test form',
+					'versions' => array(),
+				)
+			)
+		);
+	}
+
+	/**
+	 * Fetching metadata rejects a response without a usable name.
+	 *
+	 * @return void
+	 */
+	public function test_fetch_form_name_rejects_blank_name() {
+		$this->assertFalse(
+			$this->fetch_form_name_with_response(
+				array(
+					'title'    => '   ',
+					'versions' => array( array( 'id' => 'version-1' ) ),
+				)
+			)
+		);
+	}
+
+	/**
+	 * Fetching metadata rejects a WordPress HTTP error.
+	 *
+	 * @return void
+	 */
+	public function test_fetch_form_name_rejects_wp_error_response() {
+		$this->assertFalse( $this->fetch_form_name_with_response( new \WP_Error( 'http_error' ) ) );
+	}
+
+	/**
+	 * Fetching metadata rejects a non-success HTTP response.
+	 *
+	 * @return void
+	 */
+	public function test_fetch_form_name_rejects_non_success_response() {
+		$this->assertFalse(
+			$this->fetch_form_name_with_response(
+				array(
+					'body'     => wp_json_encode( array( 'title' => 'Unavailable' ) ),
+					'response' => array( 'code' => 503 ),
+				)
+			)
+		);
 	}
 
 	/**
@@ -1037,6 +1237,58 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Submit settings with separate mocked authentication and metadata responses.
+	 *
+	 * @param array|string $metadata_body Mocked metadata response body.
+	 * @param int    $metadata_status Mocked metadata status code.
+	 * @return string Redirect URL.
+	 */
+	private function save_settings_with_auth_and_metadata( $metadata_body, $metadata_status ) {
+		$form_id = $this->form_id;
+		$stub    = static function ( $pre, $args, $url ) use ( $form_id, $metadata_body, $metadata_status ) {
+			if ( false !== strpos( $url, '/gateway/v1/auth/token/forms/' ) ) {
+				return array(
+					'body'     => wp_json_encode( array( 'token' => 'test-token' ) ),
+					'response' => array(
+						'code'    => 200,
+						'message' => 'OK',
+					),
+				);
+			}
+
+			if ( false !== strpos( $url, '/api/v1/forms/' ) ) {
+				return array(
+					'body'     => is_string( $metadata_body ) ? $metadata_body : wp_json_encode( $metadata_body ),
+					'response' => array(
+						'code'    => $metadata_status,
+						'message' => 'OK',
+					),
+				);
+			}
+
+			return $pre;
+		};
+		add_filter( 'pre_http_request', $stub, 10, 3 );
+
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Tests simulate a POST request and set a valid nonce below.
+		$_POST['form_id']     = $form_id;
+		$_POST['api_key']     = $this->api_key;
+		$_POST['_wpnonce']    = wp_create_nonce( 'bcew_chefs_save' );
+		$_REQUEST['_wpnonce'] = $_POST['_wpnonce'];
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+
+		try {
+			return $this->capture_settings_redirect(
+				function () {
+					( new \Bcgov\BcewChefsEmbed\Settings() )->handle_save();
+				}
+			);
+		} finally {
+			remove_filter( 'pre_http_request', $stub, 10 );
+		}
+	}
+
+	/**
 	 * Run a settings handler and capture the redirect location.
 	 *
 	 * @param callable $callback Handler to invoke.
@@ -1082,6 +1334,41 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 				( new \Bcgov\BcewChefsEmbed\Settings() )->handle_save_confirmation();
 			}
 		);
+	}
+
+	/**
+	 * Invoke fetch_form_name() with a mocked metadata response.
+	 *
+	 * @param mixed $response HTTP response or WP_Error.
+	 * @return string|false
+	 */
+	private function fetch_form_name_with_response( $response ) {
+		$http_response = is_array( $response ) && isset( $response['response'] )
+			? $response
+			: array(
+				'body'     => wp_json_encode( $response ),
+				'response' => array(
+					'code'    => 200,
+					'message' => 'OK',
+				),
+			);
+		$stub         = static function () use ( $http_response, $response ) {
+			return is_wp_error( $response ) ? $response : $http_response;
+		};
+		add_filter( 'pre_http_request', $stub, 9999, 3 );
+
+		$reflection = new \ReflectionMethod( \Bcgov\BcewChefsEmbed\Settings::class, 'fetch_form_name' );
+		$reflection->setAccessible( true );
+
+		try {
+			return $reflection->invoke(
+				new \Bcgov\BcewChefsEmbed\Settings(),
+				'11111111-1111-4111-8111-111111111111',
+				'api-key-one'
+			);
+		} finally {
+			remove_filter( 'pre_http_request', $stub, 9999 );
+		}
 	}
 
 	/**
