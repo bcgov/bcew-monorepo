@@ -118,13 +118,7 @@ class OptionsManager {
 		/*
 		 * Check whether this form already has an options row.
 		 */
-		$existing = (bool) $wpdb->get_var(
-			$wpdb->prepare(
-				'SELECT 1 FROM %i WHERE chefs_credentials_id = %s LIMIT 1',
-				$table,
-				$form_id
-			)
-		);
+		$existing = self::form_exists( $table, $form_id );
 
 		/*
 		 * Update only the form_name, preserving the confirmation message.
@@ -182,13 +176,7 @@ class OptionsManager {
 		/*
 		 * Check whether this form already has a confirmation message.
 		 */
-		$existing = (bool) $wpdb->get_var(
-			$wpdb->prepare(
-				'SELECT 1 FROM %i WHERE chefs_credentials_id = %s LIMIT 1',
-				$table,
-				$form_id
-			)
-		);
+		$existing = self::form_exists( $table, $form_id );
 
 		/*
 		 * Update the existing message, or insert a new one if none exists yet.
@@ -238,13 +226,7 @@ class OptionsManager {
 			return false;
 		}
 
-		$exists = (bool) $wpdb->get_var(
-			$wpdb->prepare(
-				'SELECT 1 FROM %i WHERE chefs_credentials_id = %s LIMIT 1',
-				self::table_name(),
-				$form_id
-			)
-		);
+		$exists = self::form_exists( self::table_name(), $form_id );
 		if ( ! $exists ) {
 			return false;
 		}
@@ -298,6 +280,25 @@ class OptionsManager {
 	}
 
 	/**
+	 * Check whether an options row already exists for a form.
+	 *
+	 * @param string $table   Options table name.
+	 * @param string $form_id CHEFS form ID.
+	 * @return bool True when a matching row exists.
+	 */
+	private static function form_exists( $table, $form_id ) {
+		global $wpdb;
+
+		return (bool) $wpdb->get_var(
+			$wpdb->prepare(
+				'SELECT 1 FROM %i WHERE chefs_credentials_id = %s LIMIT 1',
+				$table,
+				$form_id
+			)
+		);
+	}
+
+	/**
 	 * Prepare the existing options table for the unique form ID index.
 	 *
 	 * Consolidates duplicate form ID rows, prioritizing:
@@ -317,11 +318,9 @@ class OptionsManager {
 		}
 
 		$columns = $wpdb->get_col( "SHOW COLUMNS FROM `{$table}`", 0 ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is generated internally.
-		if ( ! in_array( 'form_name', $columns, true ) ) {
-			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table and column names are generated internally.
-			if ( false === $wpdb->query( "ALTER TABLE `{$table}` ADD COLUMN `form_name` varchar(255) NOT NULL DEFAULT ''" ) ) {
-				return false;
-			}
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table and column names are generated internally.
+		if ( ! in_array( 'form_name', $columns, true ) && false === $wpdb->query( "ALTER TABLE `{$table}` ADD COLUMN `form_name` varchar(255) NOT NULL DEFAULT ''" ) ) {
+			return false;
 		}
 
 		$indexes = $wpdb->get_results( "SHOW INDEX FROM `{$table}`", ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is generated internally.

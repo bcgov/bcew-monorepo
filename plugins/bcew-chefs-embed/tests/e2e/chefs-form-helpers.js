@@ -29,7 +29,9 @@ const getChefsFormViewerStub = ( rejectFirstLoad, loadError ) => `
                     this.dispatchEvent( new CustomEvent( 'formio:error', {
                         bubbles: true,
                         composed: true,
-                        detail: ${ loadError ? JSON.stringify( loadError ) : 'null' },
+                        detail: ${
+                            loadError ? JSON.stringify( loadError ) : 'null'
+                        },
                     } ) );
                 }
                 return undefined;

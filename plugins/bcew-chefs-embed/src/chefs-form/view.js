@@ -153,38 +153,51 @@ const readChefsError = ( payload ) => {
  */
 const normalizeChefsError = ( payload ) => {
     const raw =
-        payload && 'object' === typeof payload && payload.error && 'object' === typeof payload.error && ! Array.isArray( payload.error )
+        payload &&
+        'object' === typeof payload &&
+        payload.error &&
+        'object' === typeof payload.error &&
+        ! Array.isArray( payload.error )
             ? payload.error
             : payload;
 
-    const response = raw?.response && 'object' === typeof raw.response
-        ? raw.response
-        : payload?.response && 'object' === typeof payload.response
-            ? payload.response
-            : {};
+    let response = {};
+
+    if ( raw?.response && 'object' === typeof raw.response ) {
+        response = raw.response;
+    } else if ( payload?.response && 'object' === typeof payload.response ) {
+        response = payload.response;
+    }
 
     const status = asPlainText(
         response.status ?? raw?.status ?? payload?.status ?? 500
     );
 
+    let resolvedStatusText = 'Request failed';
+
+    if ( status && Number.isFinite( Number( status ) ) ) {
+        if ( status >= 400 && status < 500 ) {
+            resolvedStatusText = 'Bad Request';
+        }
+    }
+
     const statusText = asPlainText(
         response.statusText ??
             raw?.statusText ??
             payload?.statusText ??
-            ( status && Number.isFinite( Number( status ) )
-                ? status >= 400 && status < 500 ? 'Bad Request' : 'Request failed'
-                : 'Request failed' )
+            resolvedStatusText
     );
 
-    const detail = asPlainText(
-        response?.data?.message ??
-            raw?.message ??
-            payload?.message ??
-            response?.data?.detail ??
-            raw?.detail ??
-            payload?.detail ??
-            ( 'string' === typeof raw?.error ? raw.error : '' )
-    ) || 'Unable to load the CHEFS form.';
+    const detail =
+        asPlainText(
+            response?.data?.message ??
+                raw?.message ??
+                payload?.message ??
+                response?.data?.detail ??
+                raw?.detail ??
+                payload?.detail ??
+                ( 'string' === typeof raw?.error ? raw.error : '' )
+        ) || 'Unable to load the CHEFS form.';
 
     return {
         title: asPlainText( raw?.title ?? payload?.title ?? statusText ),
