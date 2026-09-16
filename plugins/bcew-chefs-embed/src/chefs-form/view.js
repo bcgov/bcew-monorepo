@@ -313,8 +313,7 @@ const mountChefsForm = async ( root ) => {
             title: error?.statusText || 'Bad Request',
             status: String( error?.status || 400 ),
             detail:
-                error?.message ||
-                'Request is missing content or is malformed',
+                error?.message || 'Request is missing content or is malformed',
         } );
     }
 };
