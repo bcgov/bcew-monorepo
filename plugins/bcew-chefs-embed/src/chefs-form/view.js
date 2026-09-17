@@ -339,6 +339,9 @@ const mountChefsForm = async ( root ) => {
         viewer.setAttribute( 'auth-token', config.token );
         viewer.setAttribute( 'base-url', config.baseUrl );
         viewer.setAttribute( 'auto-reload-on-submit', 'false' );
+        viewer.endpoints = {
+            formioJs: `${ config.baseUrl }/webcomponents/v1/assets/formio.js`,
+        };
 
         /*
          * Submit success and CHEFS HTTP errors are separate events. Success
