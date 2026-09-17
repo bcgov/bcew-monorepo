@@ -198,8 +198,8 @@ class OptionsManager {
 				array_merge(
 					array(
 						'chefs_credentials_id' => $form_id,
-						'form_name'           => '',
-						'confirmation'        => '',
+						'form_name'            => '',
+						'confirmation'         => '',
 					),
 					$data
 				),
