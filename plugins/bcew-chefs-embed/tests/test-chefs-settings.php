@@ -249,11 +249,11 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Draft-only forms can be saved without requiring published versions.
+	 * Draft-only forms are rejected before credentials are persisted.
 	 *
 	 * @return void
 	 */
-	public function test_draft_only_form_is_saved() {
+	public function test_draft_only_form_is_not_saved() {
 		$redirect = $this->save_settings_with_response(
 			$this->form_id,
 			array(
@@ -264,8 +264,8 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 			200
 		);
 
-		$this->assertStringContainsString( 'chefs_saved', $redirect );
-		$this->assertNotNull( CredentialsManager::get_by_form_id( $this->form_id ) );
+		$this->assertStringContainsString( 'chefs_error=no_published_version', $redirect );
+		$this->assertNull( CredentialsManager::get_by_form_id( $this->form_id ) );
 	}
 
 	/**
