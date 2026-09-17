@@ -225,7 +225,7 @@ class OptionsManager {
 			array( '%s' )
 		);
 
-		return false !== $updated;
+		return false !== $updated && ( $updated > 0 || self::form_exists( self::table_name(), $form_id ) );
 	}
 
 	/**
