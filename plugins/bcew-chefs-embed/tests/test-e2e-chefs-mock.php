@@ -7,7 +7,7 @@
 
 namespace Bcgov\BcewChefsEmbed\Test;
 
-use Bcgov\BcewChefsEmbed\E2eChefsMock;
+use Bcgov\BcewChefsEmbed\Test\E2eChefsMock;
 
 /**
  * CHEFS E2E mock response handling.

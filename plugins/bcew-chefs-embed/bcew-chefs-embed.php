@@ -23,7 +23,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use Bcgov\BcewChefsEmbed\CredentialsManager;
 use Bcgov\BcewChefsEmbed\EmbedConfigController;
-use Bcgov\BcewChefsEmbed\E2eChefsMock;
 use Bcgov\BcewChefsEmbed\OptionsManager;
 
 /**
@@ -46,10 +45,9 @@ add_action( 'plugins_loaded', 'bcew_chefs_embed_maybe_install_options_table' );
 
 add_action( 'rest_api_init', array( EmbedConfigController::class, 'register_routes' ) );
 
-// E2E tests run against a local wp-env and must not depend on the live CHEFS
-// service. The mock is enabled only by the test environment.
+// Load the E2E test mock if enabled by the test environment.
 if ( defined( 'BCEW_CHEFS_E2E_MOCK' ) && BCEW_CHEFS_E2E_MOCK ) {
-	add_filter( 'pre_http_request', array( E2eChefsMock::class, 'pre_http_request' ), 10, 3 );
+	require_once __DIR__ . '/tests/php/bootstrap-e2e-mock.php';
 }
 
 /**
