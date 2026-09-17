@@ -379,27 +379,6 @@ class Settings {
 	}
 
 	/**
-	 * Fetch the CHEFS form title and validate published versions exist.
-	 *
-	 * @param string $form_id CHEFS form ID.
-	 * @param string $api_key CHEFS API key.
-	 * @return string|false Form title, or false on error or missing published versions.
-	 */
-	protected function fetch_form_name( string $form_id, string $api_key ) {
-		$body = $this->get_form_metadata( $form_id, $api_key );
-		if ( ! $body || ! $this->has_published_version( $body ) ) {
-			return false;
-		}
-
-		$form_name = trim( (string) ( $body['title'] ?? $body['name'] ?? '' ) );
-		if ( '' === $form_name ) {
-			return false;
-		}
-
-		return $form_name;
-	}
-
-	/**
 	 * Determine whether metadata includes a published version.
 	 *
 	 * @param array $body CHEFS form metadata.
