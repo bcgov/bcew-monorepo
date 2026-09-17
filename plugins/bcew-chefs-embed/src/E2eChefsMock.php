@@ -61,28 +61,18 @@ class E2eChefsMock {
             );
         }
 
-        if ( $is_form_request ) {
-            return [
-                'body'     => wp_json_encode(
-                    [
-                        'title'    => 'E2E test form',
-                        'versions' => [
-                            [
-                                'id'        => 'e2e-test-version',
-                                'published' => true,
-                            ],
-                        ],
-                    ]
-                ),
-                'response' => [
-                    'code'    => 200,
-                    'message' => 'OK',
-                ],
-            ];
-        }
-
         return [
-            'body'     => wp_json_encode( [ 'token' => 'e2e-test-token' ] ),
+            'body'     => wp_json_encode(
+                $is_form_request ? [
+                    'title'    => 'E2E test form',
+                    'versions' => [
+                        [
+                            'id'        => 'e2e-test-version',
+                            'published' => true,
+                        ],
+                    ],
+                ] : [ 'token' => 'e2e-test-token' ]
+            ),
             'response' => [
                 'code'    => 200,
                 'message' => 'OK',
