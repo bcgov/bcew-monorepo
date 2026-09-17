@@ -364,8 +364,10 @@ class Settings {
 			exit;
 		}
 
-		$form_name = trim( (string) ( $metadata['title'] ?? $metadata['name'] ?? $form_id ) );
-		$form_name = '' === $form_name ? $form_id : $form_name;
+		$form_name = trim( (string) ( $metadata['title'] ?? $metadata['name'] ?? '' ) );
+		if ( '' === $form_name ) {
+			$form_name = $form_id;
+		}
 
 		$saved_form_id = CredentialsManager::save( $form_id, $api_key );
 		if ( false !== $saved_form_id ) {
@@ -420,8 +422,9 @@ class Settings {
 			return null;
 		}
 
-		$status = wp_remote_retrieve_response_code( $response );
-		if ( $status < 200 || $status >= 300 ) {
+		$status     = wp_remote_retrieve_response_code( $response );
+		$is_success = $status >= 200 && $status < 300;
+		if ( ! $is_success ) {
 			return null;
 		}
 

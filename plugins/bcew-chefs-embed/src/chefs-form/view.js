@@ -102,13 +102,6 @@ const asPlainText = ( value ) => {
  * @return {{title: string, status: string, detail: string}} Error fields.
  */
 const readChefsError = ( payload ) => {
-    /*
-     * CHEFS errors use title, status, and detail. The web component may send
-     * that object, wrap it as { error: { title, status, detail } }, or — most
-     * often — only { error: "detail string" } after it has already pulled
-     * json.detail. Map all three onto the same three fields. Prefer detail,
-     * then message, then a string error field.
-     */
     if ( ! payload || 'object' !== typeof payload ) {
         return { title: '', status: '', detail: asPlainText( payload ) };
     }

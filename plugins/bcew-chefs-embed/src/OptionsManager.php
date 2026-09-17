@@ -115,35 +115,7 @@ class OptionsManager {
 
 		$table = self::table_name();
 
-		/*
-		 * Check whether this form already has an options row.
-		 */
-		$existing = self::form_exists( $table, $form_id );
-
-		/*
-		 * Update only the form_name, preserving the confirmation message.
-		 * If no row exists yet, create one with form_name and an empty confirmation.
-		 */
-		if ( $existing ) {
-			$result = $wpdb->update(
-				$table,
-				array( 'form_name' => $form_name ),
-				array( 'chefs_credentials_id' => $form_id ),
-				array( '%s' ),
-				array( '%s' )
-			);
-		} else {
-			$result = $wpdb->insert(
-				$table,
-				array(
-					'chefs_credentials_id' => $form_id,
-					'form_name'            => $form_name,
-				),
-				array( '%s', '%s' )
-			);
-		}
-
-		return false === $result ? false : $form_id;
+		return self::save_option( $table, $form_id, array( 'form_name' => $form_name ), array( '%s' ) );
 	}
 
 	/**
@@ -173,38 +145,7 @@ class OptionsManager {
 
 		$table = self::table_name();
 
-		/*
-		 * Check whether this form already has a confirmation message.
-		 */
-		$existing = self::form_exists( $table, $form_id );
-
-		/*
-		 * Update the existing message, or insert a new one if none exists yet.
-		 */
-		if ( $existing ) {
-			$result = $wpdb->update(
-				$table,
-				array( 'confirmation' => $message ),
-				array( 'chefs_credentials_id' => $form_id ),
-				array( '%s' ),
-				array( '%s' )
-			);
-		} else {
-			$result = $wpdb->insert(
-				$table,
-				array(
-					'chefs_credentials_id' => $form_id,
-					'confirmation'         => $message,
-				),
-				array( '%s', '%s' )
-			);
-		}
-
-		/*
-		 * Return false only when the database reports an error. An update
-		 * that does not change the text still counts as a successful save.
-		 */
-		return false === $result ? false : $form_id;
+		return self::save_option( $table, $form_id, array( 'confirmation' => $message ), array( '%s' ) );
 	}
 
 	/**
@@ -216,25 +157,12 @@ class OptionsManager {
 	public static function delete( $form_id ) {
 		global $wpdb;
 
-		/*
-		 * Sanitize the form ID the same way save() and get_confirmation() do.
-		 * An empty ID is not a valid lookup, so there is nothing to delete.
-		 */
 		$form_id = self::sanitize_credentials_id( $form_id );
 
 		if ( '' === $form_id ) {
 			return false;
 		}
 
-		$exists = self::form_exists( self::table_name(), $form_id );
-		if ( ! $exists ) {
-			return false;
-		}
-
-		/*
-		 * Remove the confirmation row for this form. Return true only when
-		 * at least one row was deleted.
-		 */
 		$deleted = $wpdb->delete(
 			self::table_name(),
 			array( 'chefs_credentials_id' => $form_id ),
@@ -242,6 +170,37 @@ class OptionsManager {
 		);
 
 		return false !== $deleted && $deleted > 0;
+	}
+
+	/**
+	 * Update an existing option row or insert one when it does not exist.
+	 *
+	 * @param string               $table   Options table name.
+	 * @param string               $form_id CHEFS form ID.
+	 * @param array<string,string> $data    Columns to save.
+	 * @param string[]             $formats  Value formats.
+	 * @return string|false Form ID on success, false on failure.
+	 */
+	private static function save_option( $table, $form_id, $data, $formats ) {
+		global $wpdb;
+
+		if ( self::form_exists( $table, $form_id ) ) {
+			$result = $wpdb->update(
+				$table,
+				$data,
+				array( 'chefs_credentials_id' => $form_id ),
+				$formats,
+				array( '%s' )
+			);
+		} else {
+			$result = $wpdb->insert(
+				$table,
+				array_merge( array( 'chefs_credentials_id' => $form_id ), $data ),
+				array_merge( array( '%s' ), $formats )
+			);
+		}
+
+		return false === $result ? false : $form_id;
 	}
 
 	/**
@@ -309,7 +268,7 @@ class OptionsManager {
 			chefs_credentials_id varchar(36) NOT NULL,
 			form_name varchar(255) NOT NULL DEFAULT \'\',
 			confirmation longtext NOT NULL,
-			PRIMARY KEY  (id),
+			PRIMARY KEY  (id)
 		';
 	}
 }

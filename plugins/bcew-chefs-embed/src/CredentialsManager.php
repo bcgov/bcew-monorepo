@@ -123,14 +123,15 @@ class CredentialsManager {
 
 		$table = self::table_name();
 
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared -- table name cannot be parameterized.
 		$row = $wpdb->get_row(
 			$wpdb->prepare(
-				'SELECT form_id, api_key, created_at, user_id FROM %i WHERE form_id = %s',
-				$table,
+				"SELECT form_id, api_key, created_at, user_id FROM `{$table}` WHERE form_id = %s",
 				$form_id
 			),
 			ARRAY_A
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared
 
 		if ( ! is_array( $row ) ) {
 			return null;
@@ -160,7 +161,9 @@ class CredentialsManager {
 
 		$table = self::table_name();
 
-		$form_ids = $wpdb->get_col( $wpdb->prepare( 'SELECT form_id FROM %i ORDER BY created_at DESC', $table ) );
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared -- table name cannot be parameterized.
+		$form_ids = $wpdb->get_col( "SELECT form_id FROM `{$table}` ORDER BY created_at DESC" );
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared
 
 		if ( ! is_array( $form_ids ) ) {
 			return array();
@@ -206,19 +209,37 @@ class CredentialsManager {
 		$user_id = absint( $user_id );
 		$table   = self::table_name();
 
-		// Upsert without replacing the row, so created_at is preserved on updates.
-		$result = $wpdb->query(
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared -- table name cannot be parameterized.
+		$existing = (bool) $wpdb->get_var(
 			$wpdb->prepare(
-				'INSERT INTO %i (form_id, api_key, user_id) VALUES (%s, %s, %d)
-				ON DUPLICATE KEY UPDATE api_key = %s, user_id = %d',
-				$table,
-				$form_id,
-				$api_key_encrypted,
-				$user_id,
-				$api_key_encrypted,
-				$user_id
+				"SELECT 1 FROM `{$table}` WHERE form_id = %s LIMIT 1",
+				$form_id
 			)
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared
+
+		if ( $existing ) {
+			$result = $wpdb->update(
+				$table,
+				array(
+					'api_key' => $api_key_encrypted,
+					'user_id' => $user_id,
+				),
+				array( 'form_id' => $form_id ),
+				array( '%s', '%d' ),
+				array( '%s' )
+			);
+		} else {
+			$result = $wpdb->insert(
+				$table,
+				array(
+					'form_id' => $form_id,
+					'api_key' => $api_key_encrypted,
+					'user_id' => $user_id,
+				),
+				array( '%s', '%s', '%d' )
+			);
+		}
 
 		return false === $result ? false : $form_id;
 	}
