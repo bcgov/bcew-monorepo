@@ -320,7 +320,7 @@ class OptionsManager {
 		$columns = $wpdb->get_col( "SHOW COLUMNS FROM `{$table}`", 0 ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is generated internally.
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table and column names are generated internally.
 		if ( ! in_array( 'form_name', $columns, true ) && false === $wpdb->query( "ALTER TABLE `{$table}` ADD COLUMN `form_name` varchar(255) NOT NULL DEFAULT ''" ) ) {
-			return false;
+			return;
 		}
 
 		$indexes = $wpdb->get_results( "SHOW INDEX FROM `{$table}`", ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is generated internally.
