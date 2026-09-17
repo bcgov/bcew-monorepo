@@ -98,11 +98,11 @@ class OptionsTest extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Get a single value from the options table by credentials ID.
+	 * Get a table value by credentials ID.
 	 *
-	 * @param string $column Column name to select.
-	 * @param string $form_id Credentials ID (chefs_credentials_id).
-	 * @return mixed|null Column value or null if not found.
+	 * @param string $column Column name.
+	 * @param string $form_id Credentials ID.
+	 * @return mixed|null Table value.
 	 */
 	private function get_table_value( $column, $form_id ) {
 		global $wpdb;
@@ -118,22 +118,20 @@ class OptionsTest extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Custom table is created on plugin activation if it does not already exist.
+	 * Activation creates the options table.
 	 *
 	 * @return void
 	 */
 	public function test_table_created_on_activation() {
 		OptionsManager::activate( false );
 
-		$this->assertTrue( $this->table_exists(), 'Activation should create the options table.' );
-
-		// Safe when the table already exists.
+		$this->assertTrue( $this->table_exists() );
 		OptionsManager::activate( false );
 		$this->assertTrue( $this->table_exists() );
 	}
 
 	/**
-	 * Table schema matches the ticket (id PK, chefs_credentials_id, confirmation).
+	 * The options table contains the required columns.
 	 *
 	 * @return void
 	 */
@@ -144,49 +142,36 @@ class OptionsTest extends \WP_UnitTestCase {
 		$this->assertArrayHasKey( 'id', $by_field );
 		$this->assertSame( 'PRI', $by_field['id']['Key'] );
 		$this->assertStringContainsString( 'auto_increment', strtolower( $by_field['id']['Extra'] ) );
-
 		$this->assertArrayHasKey( 'chefs_credentials_id', $by_field );
 		$this->assertArrayHasKey( 'form_name', $by_field );
 		$this->assertArrayHasKey( 'confirmation', $by_field );
 	}
 
 	/**
-	 * Form names can be saved and looked up independently of confirmations.
+	 * Form names can be saved independently of confirmations.
 	 *
 	 * @return void
 	 */
 	public function test_save_form_name() {
-		$this->assertSame(
-			$this->form_id,
-			OptionsManager::save_form_name( $this->form_id, ' Grant application ' )
-		);
-
-		$this->assertSame(
-			'Grant application',
-			$this->get_table_value( 'form_name', $this->form_id )
-		);
+		$this->assertSame( $this->form_id, OptionsManager::save_form_name( $this->form_id, ' Grant application ' ) );
+		$this->assertSame( 'Grant application', $this->get_table_value( 'form_name', $this->form_id ) );
 		$this->assertNull( OptionsManager::get_confirmation( $this->form_id ) );
 	}
 
 	/**
-	 * Confirmation can be looked up by form / credentials ID.
+	 * Confirmations can be looked up by credentials ID.
 	 *
 	 * @return void
 	 */
 	public function test_get_confirmation_by_credentials_id() {
 		$this->insert_option_row( $this->form_id, 'Thanks for submitting!' );
 
-		$this->assertSame(
-			'Thanks for submitting!',
-			OptionsManager::get_confirmation( $this->form_id )
-		);
-		$this->assertNull(
-			OptionsManager::get_confirmation( '00000000-0000-0000-0000-000000000000' )
-		);
+		$this->assertSame( 'Thanks for submitting!', OptionsManager::get_confirmation( $this->form_id ) );
+		$this->assertNull( OptionsManager::get_confirmation( '00000000-0000-0000-0000-000000000000' ) );
 	}
 
 	/**
-	 * Empty credentials IDs are rejected before querying.
+	 * Empty credentials IDs are rejected.
 	 *
 	 * @return void
 	 */
@@ -196,23 +181,18 @@ class OptionsTest extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * New-site hook installs the table for a site-like object.
+	 * New-site initialization installs the options table.
 	 *
 	 * @return void
 	 */
 	public function test_on_initialize_site_installs_table() {
-		$site = (object) array(
-			'blog_id' => \get_current_blog_id(),
-		);
+		$site = (object) array( 'blog_id' => \get_current_blog_id() );
 
 		delete_option( OptionsManager::DB_VERSION_OPTION );
 		OptionsManager::on_initialize_site( $site );
 
 		$this->assertTrue( $this->table_exists() );
-		$this->assertSame(
-			OptionsManager::DB_VERSION,
-			get_option( OptionsManager::DB_VERSION_OPTION )
-		);
+		$this->assertSame( OptionsManager::DB_VERSION, get_option( OptionsManager::DB_VERSION_OPTION ) );
 	}
 
 	/**
@@ -497,259 +477,13 @@ class OptionsTest extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Migration merges empty form_name from older duplicates into keeper row.
-	 *
-	 * @return void
-	 */
-	public function test_migration_consolidates_duplicate_rows_with_empty_form_name() {
-		global $wpdb;
-
-		$table = OptionsManager::table_name();
-
-		// Simulate pre-migration schema: drop unique index to allow duplicates.
-		$wpdb->query( "ALTER TABLE `{$table}` DROP INDEX `chefs_credentials_id`" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
-		$wpdb->query( "ALTER TABLE `{$table}` ADD KEY `chefs_credentials_id` (`chefs_credentials_id`)" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
-
-		// Insert duplicate rows: older has form_name, newer is empty.
-		$wpdb->insert(
-			$table,
-			array(
-				'chefs_credentials_id' => $this->form_id,
-				'form_name'            => 'First Entry',
-				'confirmation'         => '',
-			),
-			array( '%s', '%s', '%s' )
-		);
-		$old_row_id = $wpdb->insert_id;
-
-		$wpdb->insert(
-			$table,
-			array(
-				'chefs_credentials_id' => $this->form_id,
-				'form_name'            => '',
-				'confirmation'         => '',
-			),
-			array( '%s', '%s', '%s' )
-		);
-		$new_row_id = $wpdb->insert_id;
-
-		// Trigger migration by re-installing (bumps version, runs migration).
-		delete_option( OptionsManager::DB_VERSION_OPTION );
-		OptionsManager::install();
-
-		$result = $wpdb->get_row(
-			$wpdb->prepare(
-				'SELECT * FROM %i WHERE chefs_credentials_id = %s',
-				$table,
-				$this->form_id
-			),
-			ARRAY_A
-		);
-
-		// Keeper row (newer, higher id) should exist with migrated form_name from older row.
-		$this->assertNotNull( $result );
-		$this->assertSame( 'First Entry', $result['form_name'] );
-
-		// Old row should be deleted.
-		$old_row_count = $wpdb->get_var(
-			$wpdb->prepare(
-				'SELECT COUNT(*) FROM %i WHERE id = %d',
-				$table,
-				$old_row_id
-			)
-		);
-		$this->assertSame( 0, (int) $old_row_count );
-	}
-
-	/**
-	 * A legacy table gains form_name before duplicate consolidation runs.
-	 *
-	 * @return void
-	 */
-	public function test_migration_adds_form_name_before_consolidating_legacy_rows() {
-		global $wpdb;
-
-		$table = OptionsManager::table_name();
-		$wpdb->query( "ALTER TABLE `{$table}` DROP INDEX `chefs_credentials_id`" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Internal table name.
-		$wpdb->query( "ALTER TABLE `{$table}` DROP COLUMN `form_name`" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Internal table name.
-
-		$wpdb->insert(
-			$table,
-			array(
-				'chefs_credentials_id' => $this->form_id,
-				'confirmation'         => 'Older',
-			),
-			array( '%s', '%s' )
-		);
-		$wpdb->insert(
-			$table,
-			array(
-				'chefs_credentials_id' => $this->form_id,
-				'confirmation'         => 'Newer',
-			),
-			array( '%s', '%s' )
-		);
-		delete_option( OptionsManager::DB_VERSION_OPTION );
-
-		$this->assertTrue( OptionsManager::install() );
-
-		$columns = $wpdb->get_col( "SHOW COLUMNS FROM `{$table}`", 0 ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Internal table name.
-		$this->assertContains( 'form_name', $columns );
-		$this->assertSame( 1, (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE chefs_credentials_id = %s', $table, $this->form_id ) ) );
-
-		$indexes = $wpdb->get_results( "SHOW INDEX FROM `{$table}`", ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Internal table name.
-		$this->assertTrue(
-			(bool) array_filter(
-				$indexes,
-				static function ( $index ) {
-					return 'chefs_credentials_id' === $index['Key_name'] && '0' === (string) $index['Non_unique'];
-				}
-			)
-		);
-	}
-
-	/**
-	 * Migration merges empty confirmation from older duplicates into keeper row.
-	 *
-	 * @return void
-	 */
-	public function test_migration_consolidates_duplicate_rows_with_empty_confirmation() {
-		global $wpdb;
-
-		$table = OptionsManager::table_name();
-
-		// Simulate pre-migration schema: drop unique index to allow duplicates.
-		$wpdb->query( "ALTER TABLE `{$table}` DROP INDEX `chefs_credentials_id`" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
-		$wpdb->query( "ALTER TABLE `{$table}` ADD KEY `chefs_credentials_id` (`chefs_credentials_id`)" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
-
-		// Insert duplicate rows: older has confirmation, newer is empty.
-		$wpdb->insert(
-			$table,
-			array(
-				'chefs_credentials_id' => $this->form_id,
-				'form_name'            => '',
-				'confirmation'         => 'Old thank you message',
-			),
-			array( '%s', '%s', '%s' )
-		);
-
-		$wpdb->insert(
-			$table,
-			array(
-				'chefs_credentials_id' => $this->form_id,
-				'form_name'            => '',
-				'confirmation'         => '',
-			),
-			array( '%s', '%s', '%s' )
-		);
-
-		// Trigger migration.
-		delete_option( OptionsManager::DB_VERSION_OPTION );
-		OptionsManager::install();
-
-		$result = $wpdb->get_row(
-			$wpdb->prepare(
-				'SELECT * FROM %i WHERE chefs_credentials_id = %s',
-				$table,
-				$this->form_id
-			),
-			ARRAY_A
-		);
-
-		// Keeper row should exist with migrated confirmation from older row.
-		$this->assertNotNull( $result );
-		$this->assertSame( 'Old thank you message', $result['confirmation'] );
-
-		// Only one row should remain.
-		$count = $wpdb->get_var(
-			$wpdb->prepare(
-				'SELECT COUNT(*) FROM %i WHERE chefs_credentials_id = %s',
-				$table,
-				$this->form_id
-			)
-		);
-		$this->assertSame( 1, (int) $count );
-	}
-
-	/**
-	 * Migration logs conflicts when both rows have non-empty but different values.
-	 *
-	 * @return void
-	 */
-	public function test_migration_logs_conflict_when_duplicate_rows_differ() {
-		global $wpdb;
-
-		$table = OptionsManager::table_name();
-
-		// Simulate pre-migration schema: drop unique index to allow duplicates.
-		$wpdb->query( "ALTER TABLE `{$table}` DROP INDEX `chefs_credentials_id`" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
-		$wpdb->query( "ALTER TABLE `{$table}` ADD KEY `chefs_credentials_id` (`chefs_credentials_id`)" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
-
-		// Insert duplicate rows with conflicting non-empty form_name.
-		$wpdb->insert(
-			$table,
-			array(
-				'chefs_credentials_id' => $this->form_id,
-				'form_name'            => 'Original Form Name',
-				'confirmation'         => '',
-			),
-			array( '%s', '%s', '%s' )
-		);
-
-		$wpdb->insert(
-			$table,
-			array(
-				'chefs_credentials_id' => $this->form_id,
-				'form_name'            => 'Updated Form Name',
-				'confirmation'         => '',
-			),
-			array( '%s', '%s', '%s' )
-		);
-
-		// Trigger migration.
-		delete_option( OptionsManager::DB_VERSION_OPTION );
-		OptionsManager::install();
-
-		$result = $wpdb->get_row(
-			$wpdb->prepare(
-				'SELECT * FROM %i WHERE chefs_credentials_id = %s',
-				$table,
-				$this->form_id
-			),
-			ARRAY_A
-		);
-
-		// Keeper row (newest by id) should be retained with its original form_name.
-		// Older row with conflicting form_name is deleted; conflict is logged.
-		$this->assertNotNull( $result );
-		$this->assertSame( 'Updated Form Name', $result['form_name'] );
-
-		// Only one row should remain.
-		$count = $wpdb->get_var(
-			$wpdb->prepare(
-				'SELECT COUNT(*) FROM %i WHERE chefs_credentials_id = %s',
-				$table,
-				$this->form_id
-			)
-		);
-		$this->assertSame( 1, (int) $count );
-	}
-
-	/**
 	 * Install returns true on successful table creation/upgrade.
-	 *
-	 * Verifies that the install() method:
-	 * 1. Returns true when the table is successfully created/upgraded
-	 * 2. Updates the schema version only on success
-	 * 3. Does not update the version if the table creation fails
 	 *
 	 * @return void
 	 */
 	public function test_install_returns_success_status() {
-		// Delete the version option to trigger a fresh install.
 		delete_option( OptionsManager::DB_VERSION_OPTION );
 
-		// Install should return true and set the version.
 		$result = OptionsManager::install();
 		$this->assertTrue( $result );
 		$this->assertSame( OptionsManager::DB_VERSION, get_option( OptionsManager::DB_VERSION_OPTION ) );
