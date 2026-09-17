@@ -195,8 +195,15 @@ class OptionsManager {
 		} else {
 			$result = $wpdb->insert(
 				$table,
-				array_merge( array( 'chefs_credentials_id' => $form_id ), $data ),
-				array_merge( array( '%s' ), $formats )
+				array_merge(
+					array(
+						'chefs_credentials_id' => $form_id,
+						'form_name'           => '',
+						'confirmation'        => '',
+					),
+					$data
+				),
+				array( '%s', '%s', '%s' )
 			);
 		}
 
