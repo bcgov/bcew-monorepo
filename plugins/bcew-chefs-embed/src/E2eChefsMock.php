@@ -5,7 +5,7 @@
  * @package bcew-chefs-embed
  */
 
-namespace Bcgov\BcewChefsEmbed\Test;
+namespace Bcgov\BcewChefsEmbed;
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
