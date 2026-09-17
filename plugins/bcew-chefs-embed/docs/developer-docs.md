@@ -100,29 +100,7 @@ The editor preview is provided by `src/chefs-form/components/chefs-form-preview.
 5. Listens for the viewer's `formio:submitDone` event. When submission succeeds, it removes the viewer and displays the configured confirmation message, or the generic success message when no custom message is configured.
 6. Listens for the viewer's `formio:error` event. When CHEFS reports a submission error, it displays the error above the form and keeps the form available so the visitor can try again.
 
-When a page contains multiple CHEFS Form blocks, the plugin serializes calls to
-the viewer's `load()` method. The CHEFS viewer uses shared runtime assets, so
-loading viewers concurrently can cause an asset-loading race. Each viewer waits
-for the preceding viewer to finish loading; a failed load does not prevent a
-later viewer from loading.
-
 If the configuration request or viewer script fails before the form loads, the block displays a load error in place of the form.
-
-### Multiple forms on one page
-
-The CHEFS technical documentation does not specify a one-form-per-page
-limitation. Multiple CHEFS Form blocks may therefore be used in separate posts
-or on the same page, subject to successful loading of the CHEFS viewer and its
-shared assets.
-
-If multiple viewers fail on one page, compare the browser's requested asset
-URLs with the current CHEFS integration documentation. In particular, the
-documented Form.io asset route is `.../webcomponents/v1/assets/formio.js`.
-The viewer may fail if it requests a different route, such as
-`.../webcomponents/v1/assets/formio-js`, and the server redirects that request
-to the CHEFS application HTML instead of returning JavaScript. Moving forms to
-separate pages can be a temporary diagnostic workaround, but it does not fix a
-broken or outdated viewer asset URL.
 
 ## REST API
 

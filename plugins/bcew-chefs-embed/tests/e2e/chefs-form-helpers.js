@@ -3,28 +3,15 @@ const { expect } = require( '@wordpress/e2e-test-utils-playwright' );
 const BLOCK_NAME = 'bcew-chefs-embed/chefs-form';
 const SETTINGS_PAGE_QUERY = 'page=bcew-chefs-embed-settings';
 
-const getChefsFormViewerStub = ( rejectFirstLoad, loadError ) => `
+const getChefsFormViewerStub = ( loadError ) => `
 	class ChefsFormViewerStub extends HTMLElement {
 		connectedCallback() {
 			this.style.display = 'block';
 			this.style.minHeight = '40px';
 		}
 		load() {
-            const state = window.__chefsViewerLoadState || {
-                active: 0,
-                count: 0,
-                max: 0,
-            };
-            state.active += 1;
-            state.count += 1;
-            state.max = Math.max( state.max, state.active );
-            window.__chefsViewerLoadState = state;
             this.setAttribute( 'data-formio-js', this.endpoints?.formioJs || '' );
             return Promise.resolve().then( () => {
-                state.active -= 1;
-                if ( ${ rejectFirstLoad } && 1 === state.count ) {
-                    return Promise.reject( new Error( 'First viewer load failed' ) );
-                }
                 if ( ${ loadError ? JSON.stringify( loadError ) : 'null' } ) {
                     this.dispatchEvent( new CustomEvent( 'formio:error', {
                         bubbles: true,
@@ -119,7 +106,7 @@ const selectSavedFormId = async ( page, formId ) => {
 
 const mockChefsFormRoutes = async (
     page,
-    { token, baseUrl, confirmation, rejectFirstLoad = false, loadError }
+    { token, baseUrl, confirmation, loadError }
 ) => {
     const configBody = { token, baseUrl };
     if ( confirmation ) {
@@ -141,7 +128,7 @@ const mockChefsFormRoutes = async (
             await route.fulfill( {
                 status: 200,
                 contentType: 'application/javascript',
-                body: getChefsFormViewerStub( rejectFirstLoad, loadError ),
+                body: getChefsFormViewerStub( loadError ),
             } );
         }
     );

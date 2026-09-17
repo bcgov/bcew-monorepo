@@ -19,62 +19,6 @@ test.describe( 'CHEFS Form frontend', () => {
         await clearSavedForms( admin, page );
     } );
 
-    test( 'serializes multiple viewer loads and continues after one fails', async ( {
-        admin,
-        editor,
-        page,
-    } ) => {
-        const formIdOne = '77777777-7777-4777-8777-777777777777';
-        const formIdTwo = '99999999-9999-4999-8999-999999999999';
-        const mockBaseUrl = 'https://chefs-frontend.test/app';
-
-        await addSavedForm( admin, page, formIdOne, 'frontend-test-api-key' );
-        await addSavedForm( admin, page, formIdTwo, 'frontend-url-api-key' );
-        await mockChefsFormRoutes( page, {
-            token: 'multi-form-token',
-            baseUrl: mockBaseUrl,
-            rejectFirstLoad: true,
-        } );
-
-        await admin.createNewPost();
-        await page.evaluate(
-            ( { blockName, firstFormId, secondFormId } ) => {
-                window.wp.data.dispatch( 'core/block-editor' ).insertBlocks( [
-                    window.wp.blocks.createBlock( blockName, {
-                        formId: firstFormId,
-                    } ),
-                    window.wp.blocks.createBlock( blockName, {
-                        formId: secondFormId,
-                    } ),
-                ] );
-            },
-            {
-                blockName: BLOCK_NAME,
-                firstFormId: formIdOne,
-                secondFormId: formIdTwo,
-            }
-        );
-        const postId = await editor.publishPost();
-        expect( postId ).not.toBeNull();
-
-        await page.context().clearCookies();
-        await page.goto( `/?p=${ postId }` );
-        await expect( page.getByRole( 'alert' ) ).toContainText(
-            'First viewer load failed'
-        );
-        await expect( page.locator( 'chefs-form-viewer' ) ).toHaveCount( 1 );
-        await expect( page.locator( 'chefs-form-viewer' ) ).toHaveAttribute(
-            'form-id',
-            new RegExp( `${ formIdOne }|${ formIdTwo }` )
-        );
-
-        const loadState = await page.evaluate(
-            () => window.__chefsViewerLoadState
-        );
-        expect( loadState.count ).toBe( 2 );
-        expect( loadState.max ).toBe( 1 );
-    } );
-
     test( 'published page markup includes Form ID only and shows generic success after submit', async ( {
         admin,
         editor,
