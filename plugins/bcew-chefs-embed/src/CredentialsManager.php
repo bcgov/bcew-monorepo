@@ -80,18 +80,28 @@ class CredentialsManager {
 	/**
 	 * List configured forms for the settings page.
 	 *
-	 * Does not select api_key — the settings table only shows form_id + date
-	 * and a Remove button. Keeps secrets off the HTML page.
+	 * Does not select api_key — the settings table shows the form name, ID,
+	 * date, and actions. Keeps secrets off the HTML page.
 	 *
-	 * @return array<int,array{form_id:string,created_at:string}>
+	 * @return array<int,array{form_id:string,form_name:string,created_at:string}>
 	 */
 	public static function list_forms() {
 		global $wpdb;
 
-		$table = self::table_name();
+		$table         = self::table_name();
+		$options_table = OptionsManager::table_name();
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- no user input; table name cannot be parameterized.
-		return $wpdb->get_results( 'SELECT form_id, created_at FROM `' . $table . '` ORDER BY created_at DESC', ARRAY_A );
+		return $wpdb->get_results(
+			$wpdb->prepare(
+				'SELECT cred.form_id, IFNULL( opts.form_name, \'\' ) AS form_name, cred.created_at
+				FROM %i cred
+				LEFT JOIN %i opts ON opts.chefs_credentials_id = cred.form_id
+				ORDER BY cred.created_at DESC',
+				$table,
+				$options_table
+			),
+			ARRAY_A
+		);
 	}
 
 	/**

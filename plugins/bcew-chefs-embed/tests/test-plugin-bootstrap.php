@@ -33,25 +33,25 @@ class PluginBootstrapTest extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * The saved-form endpoint returns the configured Form IDs.
+	 * The saved-form endpoint returns the configured forms.
 	 *
 	 * @return void
 	 */
-	public function test_saved_form_ids_endpoint_returns_configured_forms() {
+	public function test_saved_forms_endpoint_returns_configured_forms() {
 		CredentialsManager::save( 'bootstrap-form', 'bootstrap-key' );
 
-		$response = bcew_chefs_embed_get_saved_form_ids();
+		$response = bcew_chefs_embed_get_saved_forms();
 
 		$this->assertSame( 200, $response->get_status() );
-		$this->assertSame( array( 'bootstrap-form' ), $response->get_data() );
+		$this->assertSame( 'bootstrap-form', $response->get_data()[0]['form_id'] );
 	}
 
 	/**
-	 * Editors with the required capability can access saved Form IDs.
+	 * Editors with the required capability can access saved forms.
 	 *
 	 * @return void
 	 */
-	public function test_saved_form_ids_permission_allows_editors() {
+	public function test_saved_forms_permission_allows_editors() {
 		$user_id = self::factory()->user->create( array( 'role' => 'editor' ) );
 		wp_set_current_user( $user_id );
 
@@ -63,7 +63,7 @@ class PluginBootstrapTest extends \WP_UnitTestCase {
 	 *
 	 * @return void
 	 */
-	public function test_saved_form_ids_permission_rejects_subscribers() {
+	public function test_saved_forms_permission_rejects_subscribers() {
 		$user_id = self::factory()->user->create( array( 'role' => 'subscriber' ) );
 		wp_set_current_user( $user_id );
 
@@ -130,6 +130,6 @@ class PluginBootstrapTest extends \WP_UnitTestCase {
 
 		$routes = rest_get_server()->get_routes();
 
-		$this->assertArrayHasKey( '/bcew-chefs-embed/v1/form-ids', $routes );
+		$this->assertArrayHasKey( '/bcew-chefs-embed/v1/forms', $routes );
 	}
 }

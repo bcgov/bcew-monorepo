@@ -210,6 +210,7 @@ class Settings {
 					<thead>
 						<tr>
 							<th><?php esc_html_e( 'Form ID', 'bcew-chefs-embed' ); ?></th>
+							<th><?php esc_html_e( 'Form title', 'bcew-chefs-embed' ); ?></th>
 							<th><?php esc_html_e( 'Date', 'bcew-chefs-embed' ); ?></th>
 							<th><?php esc_html_e( 'Confirmation', 'bcew-chefs-embed' ); ?></th>
 							<th><?php esc_html_e( 'Actions', 'bcew-chefs-embed' ); ?></th>
@@ -224,6 +225,7 @@ class Settings {
 						?>
 						<tr>
 							<td><code><?php echo esc_html( $form['form_id'] ); ?></code></td>
+							<td><?php echo esc_html( $form['form_name'] ? $form['form_name'] : $form['form_id'] ); ?></td>
 							<td>
 								<?php
 								$timestamp = strtotime( $form['created_at'] );
@@ -356,11 +358,78 @@ class Settings {
 			exit;
 		}
 
+		$metadata = $this->get_form_metadata( $form_id, $api_key );
+		if ( $metadata && ! $this->has_published_version( $metadata ) ) {
+			wp_safe_redirect( add_query_arg( 'chefs_error', 'no_published_version', self::get_page_url() ) );
+			exit;
+		}
+
+		$form_name = trim( (string) ( $metadata['title'] ?? $metadata['name'] ?? '' ) );
+		if ( '' === $form_name ) {
+			$form_name = $form_id;
+		}
+
 		$saved_form_id = CredentialsManager::save( $form_id, $api_key );
-		$redirect_arg  = false === $saved_form_id ? 'chefs_error' : 'chefs_saved';
+		if ( false !== $saved_form_id ) {
+			OptionsManager::save_form_name( $form_id, $form_name );
+		}
+
+		$redirect_arg = false === $saved_form_id ? 'chefs_error' : 'chefs_saved';
 
 		wp_safe_redirect( add_query_arg( $redirect_arg, '1', self::get_page_url() ) );
 		exit;
+	}
+
+	/**
+	 * Determine whether metadata includes a published version.
+	 *
+	 * @param array $body CHEFS form metadata.
+	 * @return bool
+	 */
+	private function has_published_version( array $body ) {
+		foreach ( (array) ( $body['versions'] ?? array() ) as $version ) {
+			if ( ! empty( $version['published'] ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Call CHEFS form metadata endpoint and validate the response.
+	 *
+	 * Returns null if HTTP fails, status is not 200-299, or the response is not valid JSON.
+	 *
+	 * @param string $form_id CHEFS form ID.
+	 * @param string $api_key CHEFS API key.
+	 * @return array|null Parsed JSON response, or null on error.
+	 */
+	private function get_form_metadata( string $form_id, string $api_key ) {
+		$response = wp_remote_get(
+			'https://submit.digital.gov.bc.ca/app/api/v1/forms/' . rawurlencode( $form_id ),
+			array(
+				'timeout' => 15,
+				'headers' => array(
+					// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Required for HTTP Basic auth.
+					'Authorization' => 'Basic ' . base64_encode( $form_id . ':' . $api_key ),
+					'Accept'        => 'application/json',
+				),
+			)
+		);
+
+		if ( is_wp_error( $response ) ) {
+			return null;
+		}
+
+		$status     = wp_remote_retrieve_response_code( $response );
+		$is_success = $status >= 200 && $status < 300;
+		if ( ! $is_success ) {
+			return null;
+		}
+
+		$body = json_decode( wp_remote_retrieve_body( $response ), true );
+		return is_array( $body ) ? $body : null;
 	}
 
 	/**
@@ -371,11 +440,12 @@ class Settings {
 	 */
 	private static function get_error_message( string $error_code ) {
 		$messages = array(
-			'missing_credentials' => __( 'Enter a Form ID/URL and API key.', 'bcew-chefs-embed' ),
-			'form_not_found'      => __( 'CHEFS could not find that Form ID. Check the URL or Form ID and try again.', 'bcew-chefs-embed' ),
-			'invalid_credentials' => __( 'The Form ID and API key could not be verified together. Make sure the API key belongs to this Form ID and try again.', 'bcew-chefs-embed' ),
-			'request_failed'      => __( 'Unable to contact CHEFS. Try again later.', 'bcew-chefs-embed' ),
-			'invalid_response'    => __( 'CHEFS returned an unexpected response. Check the Form ID and API key.', 'bcew-chefs-embed' ),
+			'missing_credentials'  => __( 'Enter a Form ID/URL and API key.', 'bcew-chefs-embed' ),
+			'form_not_found'       => __( 'CHEFS could not find that Form ID. Check the URL or Form ID and try again.', 'bcew-chefs-embed' ),
+			'invalid_credentials'  => __( 'The Form ID and API key could not be verified together. Make sure the API key belongs to this Form ID and try again.', 'bcew-chefs-embed' ),
+			'request_failed'       => __( 'Unable to contact CHEFS. Try again later.', 'bcew-chefs-embed' ),
+			'invalid_response'     => __( 'CHEFS returned an unexpected response. Check the Form ID and API key.', 'bcew-chefs-embed' ),
+			'no_published_version' => __( 'This CHEFS form has no published version and cannot be saved.', 'bcew-chefs-embed' ),
 		);
 
 		return $messages[ $error_code ] ?? __( 'Unable to save credentials.', 'bcew-chefs-embed' );
@@ -468,7 +538,7 @@ class Settings {
 
 		$form_id = sanitize_text_field( wp_unslash( $_POST['form_id'] ?? '' ) );
 
-		OptionsManager::delete( $form_id );
+		OptionsManager::clear_confirmation( $form_id );
 
 		wp_safe_redirect( add_query_arg( 'chefs_confirmation_cleared', '1', self::get_page_url() ) );
 		exit;

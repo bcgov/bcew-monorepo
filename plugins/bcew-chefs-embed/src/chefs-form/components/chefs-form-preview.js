@@ -73,6 +73,9 @@ const ChefsFormPreview = ( { formId } ) => {
                 viewer.setAttribute( 'auth-token', config.token );
                 viewer.setAttribute( 'base-url', config.baseUrl );
                 viewer.setAttribute( 'read-only', '' );
+                viewer.endpoints = {
+                    formioJs: `${ config.baseUrl }/webcomponents/v1/assets/formio.js`,
+                };
 
                 viewerHostRef.current.replaceChildren( viewer );
 

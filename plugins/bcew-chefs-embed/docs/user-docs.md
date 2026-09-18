@@ -9,6 +9,7 @@ Before configuring a form in WordPress, you will need:
 - access to the CHEFS service
 - a Form ID from your form
 - an API key from your form
+- a published version of the form in CHEFS; draft-only forms cannot be embedded
 
 ## How to get your Form ID and API key for the CHEFS plugin
 
@@ -21,6 +22,10 @@ Log in to the CHEFS service portal at <https://submit.digital.gov.bc.ca/app>.
 3. Copy the Form ID from the URL. For example, in `https://submit.digital.gov.bc.ca/app/form/submit?f=43cfb894-a0cf-4bef-8026-7c8001e3cdf5`, the Form ID is `43cfb894-a0cf-4bef-8026-7c8001e3cdf5`.
 
 You can also copy the Form ID from the `f` value in the URL on the form's **Manage** page.
+
+Make sure the form has been published in CHEFS before adding it to WordPress.
+The WordPress integration requires a published version to load the form; a
+form that only has draft versions cannot be saved or embedded.
 
 ### Get your API key
 
@@ -44,16 +49,21 @@ Open WordPress Admin and go to CHEFS Forms.
 CHEFS validates the Form ID and API key before WordPress saves them. If the
 credentials are invalid, the form is not added or updated. You may see an
 error when the Form ID cannot be found, the API key is invalid, or CHEFS is
-temporarily unavailable.
+temporarily unavailable, or the form has no published version.
 
 After you save:
 
-- The form is added to the Configured Forms list.
-- The Form ID becomes available in the CHEFS Form block options.
+- CHEFS confirms the credentials and the form title is stored in WordPress.
+- The form title is shown in the Configured Forms list, with the Form ID
+  retained for support.
+- The form title becomes available in the CHEFS Form block options.
+
+If CHEFS cannot confirm the credentials, the form is not saved.
 
 The Configured Forms table includes:
 
 - Form ID
+- Form title
 - Date added
 - Confirmation message
 - Actions:
@@ -110,7 +120,8 @@ so the old Form ID remains available in the block picker until you remove it.
 
 ## Block options
 
-- **Form ID:** Selects which saved CHEFS form to embed.
+- **Form name:** Selects which saved CHEFS form to embed.
 - Available values come from the CHEFS Forms options page.
+- The Form ID remains the saved block value so the correct form is embedded.
 - If no forms are saved, the block shows a message and a link to open CHEFS settings.
 - If a selected Form ID is deleted from settings, the block selection is cleared and must be set again.

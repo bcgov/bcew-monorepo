@@ -160,12 +160,111 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_invalid_credentials_do_not_create_a_row() {
-		$this->save_settings_with_response(
+		$redirect = $this->save_settings_with_response(
 			$this->form_id,
 			array( 'detail' => 'Forbidden' ),
 			403
 		);
 
+		$this->assertStringContainsString( 'chefs_error=invalid_credentials', $redirect );
+		$this->assertNull( CredentialsManager::get_by_form_id( $this->form_id ) );
+	}
+
+	/**
+	 * Saving without credentials redirects with a validation error.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_rejects_missing_credentials() {
+		$nonce                = wp_create_nonce( 'bcew_chefs_save' );
+		$_POST['form_id']     = '';
+		$_POST['api_key']     = '';
+		$_POST['_wpnonce']    = $nonce;
+		$_REQUEST['_wpnonce'] = $nonce;
+
+		$redirect = $this->capture_settings_redirect(
+			static function () {
+				( new \Bcgov\BcewChefsEmbed\Settings() )->handle_save();
+			}
+		);
+
+		$this->assertStringContainsString( 'chefs_error=missing_credentials', $redirect );
+	}
+
+	/**
+	 * Invalid metadata falls back to the Form ID after authentication.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_falls_back_when_metadata_is_invalid() {
+		$redirect = $this->save_settings_with_auth_and_metadata(
+			'{invalid-json',
+			200
+		);
+
+		$this->assertStringContainsString( 'chefs_saved=1', $redirect );
+	}
+
+	/**
+	 * A form without a title or name uses the Form ID as its display name.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_falls_back_when_form_has_no_name() {
+		$redirect = $this->save_settings_with_auth_and_metadata(
+			array(
+				'versions' => array(
+					array(
+						'id'        => 'version-1',
+						'published' => true,
+					),
+				),
+			),
+			200
+		);
+
+		$this->assertStringContainsString( 'chefs_saved=1', $redirect );
+	}
+
+	/**
+	 * A valid form redirects with the saved flag.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_redirects_after_saving_valid_form() {
+		$redirect = $this->save_settings_with_auth_and_metadata(
+			array(
+				'title'    => 'Published test form',
+				'versions' => array(
+					array(
+						'id'        => 'version-1',
+						'published' => true,
+					),
+				),
+			),
+			200
+		);
+
+		$this->assertStringContainsString( 'chefs_saved=1', $redirect );
+	}
+
+	/**
+	 * Draft-only forms are rejected before credentials are persisted.
+	 *
+	 * @return void
+	 */
+	public function test_draft_only_form_is_not_saved() {
+		$redirect = $this->save_settings_with_response(
+			$this->form_id,
+			array(
+				'token'    => 'test-token',
+				'title'    => 'Draft form',
+				'versions' => array(),
+			),
+			200
+		);
+
+		$this->assertStringContainsString( 'chefs_error=no_published_version', $redirect );
 		$this->assertNull( CredentialsManager::get_by_form_id( $this->form_id ) );
 	}
 
@@ -244,6 +343,16 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		// Save first time with first_key.
 		CredentialsManager::save( $this->form_id, $first_key, $this->admin_user_id );
 
+		global $wpdb;
+		$table = CredentialsManager::table_name();
+		$wpdb->update(
+			$table,
+			array( 'created_at' => '2000-01-01 00:00:00' ),
+			array( 'form_id' => $this->form_id ),
+			array( '%s' ),
+			array( '%s' )
+		);
+
 		// Save same form_id again with second_key (should update, not insert).
 		CredentialsManager::save( $this->form_id, $second_key, $this->admin_user_id );
 
@@ -252,10 +361,9 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		// Verify the row was updated (contains second_key, not first_key).
 		$this->assertIsArray( $row );
 		$this->assertSame( $second_key, $row['api_key'], 'Duplicate form_id should update api_key.' );
+		$this->assertSame( '2000-01-01 00:00:00', $row['created_at'], 'Updating credentials should preserve created_at.' );
 
 		// Verify only one row exists for this form_id.
-		global $wpdb;
-		$table = CredentialsManager::table_name();
 		$count = (int) $wpdb->get_var(
 			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table name cannot be parameterized.
 			$wpdb->prepare( 'SELECT COUNT(*) FROM `' . $table . '` WHERE form_id = %s', $this->form_id )
@@ -374,6 +482,45 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		$this->assertStringContainsString( 'documentation', $html );
 		$this->assertStringContainsString( 'href="' . esc_url( \Bcgov\BcewChefsEmbed\Settings::DOCUMENTATION_URL ) . '"', $html );
 		$this->assertStringNotContainsString( 'target="_blank"', $html );
+	}
+
+	/**
+	 * Settings page renders saved and deleted notices from redirect flags.
+	 *
+	 * @return void
+	 */
+	public function test_settings_page_renders_saved_and_deleted_notices() {
+		$saved_html = $this->render_page_with_get( 'chefs_saved', '1' );
+		$this->assertStringContainsString( 'Saved.', $saved_html );
+
+		$deleted_html = $this->render_page_with_get( 'chefs_deleted', '1' );
+		$this->assertStringContainsString( 'Removed.', $deleted_html );
+	}
+
+	/**
+	 * Settings page rejects users without manage_options.
+	 *
+	 * @return void
+	 */
+	public function test_render_page_requires_manage_options() {
+		$subscriber_id = self::factory()->user->create( array( 'role' => 'subscriber' ) );
+		wp_set_current_user( $subscriber_id );
+
+		$this->expectException( \WPDieException::class );
+		( new \Bcgov\BcewChefsEmbed\Settings() )->render_page();
+	}
+
+	/**
+	 * Handle save rejects users without manage_options.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_requires_manage_options() {
+		$subscriber_id = self::factory()->user->create( array( 'role' => 'subscriber' ) );
+		wp_set_current_user( $subscriber_id );
+
+		$this->expectException( \WPDieException::class );
+		( new \Bcgov\BcewChefsEmbed\Settings() )->handle_save();
 	}
 
 	/**
@@ -957,7 +1104,16 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	private function save_settings( $form_id_or_url ) {
 		return $this->save_settings_with_response(
 			$form_id_or_url,
-			array( 'token' => 'test-token' ),
+			array(
+				'token'    => 'test-token',
+				'title'    => 'Published test form',
+				'versions' => array(
+					array(
+						'id'        => 'version-1',
+						'published' => true,
+					),
+				),
+			),
 			200,
 			$this->api_key
 		);
@@ -1000,6 +1156,58 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 			);
 		} finally {
 			remove_filter( 'pre_http_request', $chefs_stub, 10 );
+		}
+	}
+
+	/**
+	 * Submit settings with separate mocked authentication and metadata responses.
+	 *
+	 * @param array|string $metadata_body   Mocked metadata response body.
+	 * @param int          $metadata_status Mocked metadata status code.
+	 * @return string Redirect URL.
+	 */
+	private function save_settings_with_auth_and_metadata( $metadata_body, $metadata_status ) {
+		$form_id = $this->form_id;
+		$stub    = static function ( $pre, $args, $url ) use ( $form_id, $metadata_body, $metadata_status ) {
+			if ( false !== strpos( $url, '/gateway/v1/auth/token/forms/' ) ) {
+				return array(
+					'body'     => wp_json_encode( array( 'token' => 'test-token' ) ),
+					'response' => array(
+						'code'    => 200,
+						'message' => 'OK',
+					),
+				);
+			}
+
+			if ( false !== strpos( $url, '/api/v1/forms/' ) ) {
+				return array(
+					'body'     => is_string( $metadata_body ) ? $metadata_body : wp_json_encode( $metadata_body ),
+					'response' => array(
+						'code'    => $metadata_status,
+						'message' => 'OK',
+					),
+				);
+			}
+
+			return $pre;
+		};
+		add_filter( 'pre_http_request', $stub, 10, 3 );
+
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Tests simulate a POST request and set a valid nonce below.
+		$_POST['form_id']     = $form_id;
+		$_POST['api_key']     = $this->api_key;
+		$_POST['_wpnonce']    = wp_create_nonce( 'bcew_chefs_save' );
+		$_REQUEST['_wpnonce'] = $_POST['_wpnonce'];
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+
+		try {
+			return $this->capture_settings_redirect(
+				function () {
+					( new \Bcgov\BcewChefsEmbed\Settings() )->handle_save();
+				}
+			);
+		} finally {
+			remove_filter( 'pre_http_request', $stub, 10 );
 		}
 	}
 

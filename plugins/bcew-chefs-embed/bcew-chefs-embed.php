@@ -199,11 +199,11 @@ function bcew_chefs_embed_register_editor_settings() {
 function bcew_chefs_embed_register_rest_routes() {
 	register_rest_route(
 		'bcew-chefs-embed/v1',
-		'/form-ids',
+		'/forms',
 		[
 			[
 				'methods'             => 'GET',
-				'callback'            => 'bcew_chefs_embed_get_saved_form_ids',
+				'callback'            => 'bcew_chefs_embed_get_saved_forms',
 				'permission_callback' => 'bcew_chefs_embed_can_edit_posts',
 			],
 		]
@@ -213,14 +213,14 @@ function bcew_chefs_embed_register_rest_routes() {
 }
 
 /**
- * Return saved CHEFS form IDs from the credentials table.
+ * Return saved CHEFS forms with display names and IDs.
  *
- * @return WP_REST_Response REST response containing form IDs.
+ * @return WP_REST_Response REST response containing saved forms.
  */
-function bcew_chefs_embed_get_saved_form_ids() {
-	$form_ids = CredentialsManager::get_saved_form_ids();
+function bcew_chefs_embed_get_saved_forms() {
+	$forms = CredentialsManager::list_forms();
 
-	return new WP_REST_Response( $form_ids, 200 );
+	return new WP_REST_Response( $forms, 200 );
 }
 
 /**

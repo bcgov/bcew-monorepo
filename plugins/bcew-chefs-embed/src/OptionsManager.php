@@ -13,6 +13,7 @@ namespace Bcgov\BcewChefsEmbed;
  * Table schema (`{prefix}bcew_chefs_options`):
  * - id (primary, auto-increment)
  * - chefs_credentials_id (CHEFS form ID)
+ * - form_name (CHEFS form title)
  * - confirmation (string)
  */
 class OptionsManager {
@@ -23,7 +24,7 @@ class OptionsManager {
 	 *
 	 * Bump when table_definition() changes so existing installs re-run dbDelta.
 	 */
-	const DB_VERSION = '1';
+	const DB_VERSION = '4';
 
 	/**
 	 * Option key storing the installed schema version.
@@ -48,6 +49,28 @@ class OptionsManager {
 	 * @return string|null Confirmation text, or null when not found.
 	 */
 	public static function get_confirmation( $chefs_credentials_id ) {
+		return self::get_option_value( 'confirmation', $chefs_credentials_id, true );
+	}
+
+	/**
+	 * Look up the stored CHEFS form title.
+	 *
+	 * @param string $chefs_credentials_id CHEFS form ID.
+	 * @return string|null Form title, or null when not found.
+	 */
+	public static function get_form_name( $chefs_credentials_id ) {
+		return self::get_option_value( 'form_name', $chefs_credentials_id, true );
+	}
+
+	/**
+	 * Retrieve an option value by column name.
+	 *
+	 * @param string  $column                Column name to select.
+	 * @param string  $chefs_credentials_id  CHEFS form ID.
+	 * @param boolean $trim_empty           Whether to return null for empty strings.
+	 * @return string|null Column value, or null when not found or empty (if $trim_empty).
+	 */
+	private static function get_option_value( $column, $chefs_credentials_id, $trim_empty = false ) {
 		global $wpdb;
 
 		$chefs_credentials_id = self::sanitize_credentials_id( $chefs_credentials_id );
@@ -57,16 +80,42 @@ class OptionsManager {
 
 		$table = self::table_name();
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared -- table name cannot be parameterized.
-		$confirmation = $wpdb->get_var(
+		$value = $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT confirmation FROM `{$table}` WHERE chefs_credentials_id = %s ORDER BY id DESC LIMIT 1",
+				'SELECT %i FROM %i WHERE chefs_credentials_id = %s ORDER BY id DESC LIMIT 1',
+				$column,
+				$table,
 				$chefs_credentials_id
 			)
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared
 
-		return is_string( $confirmation ) ? $confirmation : null;
+		if ( ! is_string( $value ) ) {
+			return null;
+		}
+
+		return $trim_empty && '' === trim( $value ) ? null : $value;
+	}
+
+	/**
+	 * Save a CHEFS form title.
+	 *
+	 * @param string $form_id CHEFS form ID.
+	 * @param string $form_name CHEFS form title.
+	 * @return string|false Form ID on success, false on failure.
+	 */
+	public static function save_form_name( $form_id, $form_name ) {
+		global $wpdb;
+
+		$form_id   = self::sanitize_credentials_id( $form_id );
+		$form_name = trim( sanitize_text_field( (string) $form_name ) );
+
+		if ( '' === $form_id || '' === $form_name ) {
+			return false;
+		}
+
+		$table = self::table_name();
+
+		return self::save_option( $table, $form_id, array( 'form_name' => $form_name ), array( '%s' ) );
 	}
 
 	/**
@@ -96,49 +145,11 @@ class OptionsManager {
 
 		$table = self::table_name();
 
-		/*
-		 * Check whether this form already has a confirmation message.
-		 */
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared -- table name cannot be parameterized.
-		$existing = (bool) $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT 1 FROM `{$table}` WHERE chefs_credentials_id = %s LIMIT 1",
-				$form_id
-			)
-		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared
-
-		/*
-		 * Update the existing message, or insert a new one if none exists yet.
-		 */
-		if ( $existing ) {
-			$result = $wpdb->update(
-				$table,
-				array( 'confirmation' => $message ),
-				array( 'chefs_credentials_id' => $form_id ),
-				array( '%s' ),
-				array( '%s' )
-			);
-		} else {
-			$result = $wpdb->insert(
-				$table,
-				array(
-					'chefs_credentials_id' => $form_id,
-					'confirmation'         => $message,
-				),
-				array( '%s', '%s' )
-			);
-		}
-
-		/*
-		 * Return false only when the database reports an error. An update
-		 * that does not change the text still counts as a successful save.
-		 */
-		return false === $result ? false : $form_id;
+		return self::save_option( $table, $form_id, array( 'confirmation' => $message ), array( '%s' ) );
 	}
 
 	/**
-	 * Delete a confirmation message for a form.
+	 * Delete all options for a form.
 	 *
 	 * @param string $form_id CHEFS form ID.
 	 * @return bool True when at least one row was deleted.
@@ -146,20 +157,12 @@ class OptionsManager {
 	public static function delete( $form_id ) {
 		global $wpdb;
 
-		/*
-		 * Sanitize the form ID the same way save() and get_confirmation() do.
-		 * An empty ID is not a valid lookup, so there is nothing to delete.
-		 */
 		$form_id = self::sanitize_credentials_id( $form_id );
 
 		if ( '' === $form_id ) {
 			return false;
 		}
 
-		/*
-		 * Remove the confirmation row for this form. Return true only when
-		 * at least one row was deleted.
-		 */
 		$deleted = $wpdb->delete(
 			self::table_name(),
 			array( 'chefs_credentials_id' => $form_id ),
@@ -167,6 +170,69 @@ class OptionsManager {
 		);
 
 		return false !== $deleted && $deleted > 0;
+	}
+
+	/**
+	 * Update an existing option row or insert one when it does not exist.
+	 *
+	 * @param string               $table   Options table name.
+	 * @param string               $form_id CHEFS form ID.
+	 * @param array<string,string> $data    Columns to save.
+	 * @param string[]             $formats  Value formats.
+	 * @return string|false Form ID on success, false on failure.
+	 */
+	private static function save_option( $table, $form_id, $data, $formats ) {
+		global $wpdb;
+
+		if ( self::form_exists( $table, $form_id ) ) {
+			$result = $wpdb->update(
+				$table,
+				$data,
+				array( 'chefs_credentials_id' => $form_id ),
+				$formats,
+				array( '%s' )
+			);
+		} else {
+			$result = $wpdb->insert(
+				$table,
+				array_merge(
+					array(
+						'chefs_credentials_id' => $form_id,
+						'form_name'            => '',
+						'confirmation'         => '',
+					),
+					$data
+				),
+				array( '%s', '%s', '%s' )
+			);
+		}
+
+		return false === $result ? false : $form_id;
+	}
+
+	/**
+	 * Clear a confirmation while preserving the form name.
+	 *
+	 * @param string $form_id CHEFS form ID.
+	 * @return bool True when the options row exists and was updated.
+	 */
+	public static function clear_confirmation( $form_id ) {
+		global $wpdb;
+
+		$form_id = self::sanitize_credentials_id( $form_id );
+		if ( '' === $form_id ) {
+			return false;
+		}
+
+		$updated = $wpdb->update(
+			self::table_name(),
+			array( 'confirmation' => '' ),
+			array( 'chefs_credentials_id' => $form_id ),
+			array( '%s' ),
+			array( '%s' )
+		);
+
+		return false !== $updated && ( $updated > 0 || self::form_exists( self::table_name(), $form_id ) );
 	}
 
 	/**
@@ -180,6 +246,25 @@ class OptionsManager {
 	}
 
 	/**
+	 * Check whether an options row already exists for a form.
+	 *
+	 * @param string $table   Options table name.
+	 * @param string $form_id CHEFS form ID.
+	 * @return bool True when a matching row exists.
+	 */
+	private static function form_exists( $table, $form_id ) {
+		global $wpdb;
+
+		return (bool) $wpdb->get_var(
+			$wpdb->prepare(
+				'SELECT 1 FROM %i WHERE chefs_credentials_id = %s LIMIT 1',
+				$table,
+				$form_id
+			)
+		);
+	}
+
+	/**
 	 * Column and index definitions for the options table.
 	 *
 	 * @return string
@@ -188,9 +273,9 @@ class OptionsManager {
 		return '
 			id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			chefs_credentials_id varchar(36) NOT NULL,
+			form_name varchar(255) NOT NULL DEFAULT \'\',
 			confirmation longtext NOT NULL,
-			PRIMARY KEY  (id),
-			KEY chefs_credentials_id (chefs_credentials_id)
+			PRIMARY KEY  (id)
 		';
 	}
 }
