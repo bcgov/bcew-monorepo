@@ -22,7 +22,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use Bcgov\BcewChefsEmbed\CredentialsManager;
-use Bcgov\BcewChefsEmbed\EmbedConfigController;
 use Bcgov\BcewChefsEmbed\E2eChefsMock;
 use Bcgov\BcewChefsEmbed\OptionsManager;
 
@@ -43,8 +42,6 @@ add_action( 'plugins_loaded', 'bcew_chefs_embed_maybe_install_credentials_table'
 register_activation_hook( __FILE__, array( OptionsManager::class, 'activate' ) );
 add_action( 'wp_initialize_site', array( OptionsManager::class, 'on_initialize_site' ) );
 add_action( 'plugins_loaded', 'bcew_chefs_embed_maybe_install_options_table' );
-
-add_action( 'rest_api_init', array( EmbedConfigController::class, 'register_routes' ) );
 
 // E2E tests run against a local wp-env and must not depend on the live CHEFS
 // service. The mock is enabled only by the test environment.
@@ -208,8 +205,6 @@ function bcew_chefs_embed_register_rest_routes() {
 			],
 		]
 	);
-
-	// The embed-config route is registered by EmbedConfigController::register_routes().
 }
 
 /**
