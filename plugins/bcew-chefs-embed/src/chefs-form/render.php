@@ -14,14 +14,14 @@
  *     $block (WP_Block): The block instance.
  */
 
-$form_id = isset( $attributes['formId'] ) ? sanitize_text_field( (string) $attributes['formId'] ) : '';
+use Bcgov\BcewChefsEmbed\CredentialsManager;
+use Bcgov\BcewChefsEmbed\ChefsClient;
 
-$wrapper_attributes = get_block_wrapper_attributes(
-	array(
-		'class'        => 'bcew-chefs-form',
-		'data-form-id' => $form_id,
-	)
-);
+$form_id = isset( $attributes['formId'] ) ? sanitize_text_field( (string) $attributes['formId'] ) : '';
+$credentials = CredentialsManager::get_by_form_id( $form_id );
+$token = ( new ChefsClient() )->authenticate( $form_id, $credentials['api_key'] )['token'] ?? null;
+
+$wrapper_attributes = get_block_wrapper_attributes();
 ?>
 <div <?php echo $wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() is escaped. ?>>
 	<?php if ( '' === $form_id ) : ?>
@@ -29,6 +29,11 @@ $wrapper_attributes = get_block_wrapper_attributes(
 			<?php esc_html_e( 'No CHEFS form selected.', 'bcew-chefs-embed' ); ?>
 		</p>
 	<?php else : ?>
-		<div class="bcew-chefs-form__mount" aria-busy="true" aria-live="polite"></div>
+        <chefs-form-viewer
+            form-id="<?php echo esc_attr( $form_id ); ?>"
+            auth-token="<?php echo esc_attr( $token ); ?>"
+            base-url="https://submit.digital.gov.bc.ca/app"
+            auto-reload-on-submit="false"
+        ></chefs-form-viewer>
 	<?php endif; ?>
 </div>

@@ -10,74 +10,6 @@
  */
 import ensureChefsFormViewerDefined from './utils/ensure-chefs-form-viewer';
 
-/**
- * Resolve the WordPress REST API root URL.
- *
- * @return {string} Trailing-slash REST root.
- */
-const getRestRoot = () => {
-    /*
-     * WordPress prints a discovery link with the REST API root. Prefer that
-     * so the plugin still works when the site lives in a subdirectory.
-     * If the tag is missing, assume /wp-json/ on this origin.
-     */
-    const discovery = document.querySelector(
-        'link[rel="https://api.w.org/"]'
-    )?.href;
-
-    if ( discovery ) {
-        return discovery.endsWith( '/' ) ? discovery : `${ discovery }/`;
-    }
-
-    return `${ window.location.origin }/wp-json/`;
-};
-
-/**
- * Fetch CHEFS embed configuration for a form ID.
- *
- * @param {string} formId CHEFS form ID.
- * @return {Promise<{token: string, baseUrl: string, confirmation?: string|null}>} Embed config payload.
- */
-const fetchEmbedConfig = async ( formId ) => {
-    const url = `${ getRestRoot() }bcew-chefs-embed/v1/embed-config?formId=${ encodeURIComponent(
-        formId
-    ) }`;
-
-    const response = await fetch( url, {
-        method: 'GET',
-        credentials: 'same-origin',
-        headers: {
-            Accept: 'application/json',
-        },
-    } );
-
-    /*
-     * A failed status or a body without token and base URL means the form
-     * cannot load. Throw so mountChefsForm can show the load-error message.
-     */
-    const payload = await response.json().catch( () => ( {} ) );
-
-    if ( ! response.ok ) {
-        const error = new Error(
-            payload?.message || 'Request is missing content or is malformed'
-        );
-        error.status = response.status;
-        error.statusText = response.statusText;
-        error.response = {
-            status: response.status,
-            statusText: response.statusText,
-            data: payload,
-        };
-        throw error;
-    }
-
-    if ( ! payload?.token || ! payload?.baseUrl ) {
-        throw new Error( 'CHEFS returned an invalid embed configuration.' );
-    }
-
-    return payload;
-};
-
 /*
  * Only strings, numbers, and booleans become visible text. String(null)
  * would show "null", and a leftover object would show "[object Object]".
@@ -318,30 +250,11 @@ const showSuccess = ( mount, customMessage ) => {
  * @return {Promise<void>}
  */
 const mountChefsForm = async ( root ) => {
-    const formId = root.dataset.formId?.trim() || '';
-    const mount = root.querySelector( '.bcew-chefs-form__mount' );
-
-    if ( ! formId || ! mount ) {
-        return;
-    }
+    const viewer = root.querySelector( 'chefs-form-viewer' );
+    const baseUrl = viewer?.getAttribute( 'base-url' ) || '';
 
     try {
-        /*
-         * Fetch a short-lived token and any custom confirmation, then create
-         * the CHEFS web component. We draw success and error ourselves, so
-         * turn off CHEFS auto-reload after submit.
-         */
-        const config = await fetchEmbedConfig( formId );
-        await ensureChefsFormViewerDefined( config.baseUrl );
-
-        const viewer = document.createElement( 'chefs-form-viewer' );
-        viewer.setAttribute( 'form-id', formId );
-        viewer.setAttribute( 'auth-token', config.token );
-        viewer.setAttribute( 'base-url', config.baseUrl );
-        viewer.setAttribute( 'auto-reload-on-submit', 'false' );
-        viewer.endpoints = {
-            formioJs: `${ config.baseUrl }/webcomponents/v1/assets/formio.js`,
-        };
+        await ensureChefsFormViewerDefined( baseUrl );
 
         /*
          * Submit success and CHEFS HTTP errors are separate events. Success
@@ -355,18 +268,11 @@ const mountChefsForm = async ( root ) => {
             showChefsError( root, readChefsError( event?.detail ) );
         } );
 
-        mount.replaceChildren( viewer );
-        mount.removeAttribute( 'aria-busy' );
 
         if ( 'function' === typeof viewer.load ) {
             await viewer.load();
         }
     } catch ( error ) {
-        /*
-         * Embed-config or the viewer script failed. Keep the mount in place
-         * and show the normalized error above it.
-         */
-        mount.querySelector( 'chefs-form-viewer' )?.remove();
         showChefsError( root, normalizeChefsError( error ) );
     }
 };
@@ -377,7 +283,7 @@ const mountChefsForm = async ( root ) => {
  * class on the same element.
  */
 const roots = document.querySelectorAll(
-    '.wp-block-bcew-chefs-embed-chefs-form[data-form-id], .bcew-chefs-form[data-form-id]'
+    '.wp-block-bcew-chefs-embed-chefs-form, .bcew-chefs-form'
 );
 
 roots.forEach( ( root ) => {
