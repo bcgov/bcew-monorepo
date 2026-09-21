@@ -402,6 +402,22 @@ class OptionsTest extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Hostile form IDs and confirmation messages are sanitized before storage.
+	 *
+	 * @return void
+	 */
+	public function test_save_sanitizes_hostile_values() {
+		$hostile_form_id = $this->form_id . '<script>alert(1)</script>';
+		$hostile_message = "<script>alert('hack')</script><b>Thanks</b>";
+
+		$result = OptionsManager::save( $hostile_form_id, $hostile_message );
+
+		$this->assertSame( $this->form_id, $result );
+		$this->assertSame( 'Thanks', OptionsManager::get_confirmation( $result ) );
+		$this->assertStringNotContainsString( '<script>', $this->get_table_value( 'confirmation', $result ) );
+	}
+
+	/**
 	 * Delete removes the confirmation so lookups fall back to generic.
 	 *
 	 * @return void

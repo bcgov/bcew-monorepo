@@ -674,6 +674,24 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Hostile confirmation text is rendered as escaped plain text in the admin UI.
+	 *
+	 * @return void
+	 */
+	public function test_settings_page_escapes_hostile_confirmation_output() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+		OptionsManager::save( $this->form_id, "<script>alert('hack')</script>Thanks" );
+
+		$html = $this->render_page_with_get( 'edit_confirmation', $this->form_id );
+
+		$this->assertStringContainsString( 'Thanks', $html );
+		$this->assertStringNotContainsString( '<script>', $html );
+
+		$html = $this->render_page_with_get( 'chefs_saved', '1' );
+		$this->assertStringNotContainsString( '<script>', $html );
+	}
+
+	/**
 	 * Edit mode shows a textarea and replaces Edit with Save confirmation.
 	 *
 	 * @return void
