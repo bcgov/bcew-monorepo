@@ -91,7 +91,9 @@ const addSavedForm = async ( admin, page, formId, apiKey ) => {
     await formIdField.fill( formId );
     await apiKeyField.fill( apiKey );
     await page.getByRole( 'button', { name: 'Save', exact: true } ).click();
-    await expect( page.locator( '.notice-success' ) ).toContainText( 'Saved.' );
+    await expect(
+        page.locator( '.notice-success' ).filter( { hasText: 'Saved.' } )
+    ).toBeVisible();
 };
 
 const selectSavedFormId = async ( page, formId ) => {
@@ -274,10 +276,6 @@ const getRemoveFormButton = async ( page ) => {
     return page.getByRole( 'button', { name: 'Remove form', exact: true } );
 };
 
-const getSuccessNotice = async ( page ) => {
-    return page.locator( '.notice-success' );
-};
-
 const getErrorNotice = async ( page ) => {
     return page.locator( '.notice-error' );
 };
@@ -305,7 +303,6 @@ module.exports = {
     getFormViewer,
     getRemoveFormButton,
     getSaveButton,
-    getSuccessNotice,
     mockChefsFormRoutes,
     publishFormAndVisit,
     selectFormAndPublish,

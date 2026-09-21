@@ -290,6 +290,46 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Updating the key keeps the form name and confirmation.
+	 *
+	 * @return void
+	 */
+	public function test_updating_api_key_preserves_form_name_and_confirmation() {
+		$original_key       = 'original-api-key';
+		$replacement_key    = 'replacement-api-key';
+		$original_form_name = 'Original saved form name';
+		$confirmation       = 'Thanks for applying.';
+
+		// Set up the existing form.
+		CredentialsManager::save( $this->form_id, $original_key, $this->admin_user_id );
+		OptionsManager::save_form_name( $this->form_id, $original_form_name );
+		OptionsManager::save( $this->form_id, $confirmation );
+
+		// Update the API key.
+		$redirect = $this->save_settings_with_auth_and_metadata(
+			array(
+				'title'    => 'Updated CHEFS title',
+				'versions' => array(
+					array(
+						'id'        => 'version-1',
+						'published' => true,
+					),
+				),
+			),
+			200,
+			$replacement_key
+		);
+
+		// Check that the key changed and the other settings stayed the same.
+		$this->assertStringContainsString( 'chefs_updated=1', $redirect );
+		$row = CredentialsManager::get_by_form_id( $this->form_id );
+		$this->assertIsArray( $row );
+		$this->assertSame( $replacement_key, $row['api_key'] );
+		$this->assertSame( $original_form_name, OptionsManager::get_form_name( $this->form_id ) );
+		$this->assertSame( $confirmation, OptionsManager::get_confirmation( $this->form_id ) );
+	}
+
+	/**
 	 * Handle save extracts a form ID from a URL with a fragment.
 	 *
 	 * @return void
@@ -492,6 +532,9 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	public function test_settings_page_renders_saved_and_deleted_notices() {
 		$saved_html = $this->render_page_with_get( 'chefs_saved', '1' );
 		$this->assertStringContainsString( 'Saved.', $saved_html );
+
+		$updated_html = $this->render_page_with_get( 'chefs_updated', '1' );
+		$this->assertStringContainsString( 'Form updated.', $updated_html );
 
 		$deleted_html = $this->render_page_with_get( 'chefs_deleted', '1' );
 		$this->assertStringContainsString( 'Removed.', $deleted_html );
@@ -1164,10 +1207,12 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	 *
 	 * @param array|string $metadata_body   Mocked metadata response body.
 	 * @param int          $metadata_status Mocked metadata status code.
+	 * @param string|null  $api_key         API key submitted with the form.
 	 * @return string Redirect URL.
 	 */
-	private function save_settings_with_auth_and_metadata( $metadata_body, $metadata_status ) {
+	private function save_settings_with_auth_and_metadata( $metadata_body, $metadata_status, $api_key = null ) {
 		$form_id = $this->form_id;
+		$api_key = $api_key ?? $this->api_key;
 		$stub    = static function ( $pre, $args, $url ) use ( $form_id, $metadata_body, $metadata_status ) {
 			if ( false !== strpos( $url, '/gateway/v1/auth/token/forms/' ) ) {
 				return array(
@@ -1195,7 +1240,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 
 		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Tests simulate a POST request and set a valid nonce below.
 		$_POST['form_id']     = $form_id;
-		$_POST['api_key']     = $this->api_key;
+		$_POST['api_key']     = $api_key;
 		$_POST['_wpnonce']    = wp_create_nonce( 'bcew_chefs_save' );
 		$_REQUEST['_wpnonce'] = $_POST['_wpnonce'];
 		// phpcs:enable WordPress.Security.NonceVerification.Missing

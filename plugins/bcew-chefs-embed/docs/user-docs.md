@@ -94,6 +94,9 @@ To update an API key, enter the same Form ID with the new API key and click
 **Save**. CHEFS validates the replacement credentials before WordPress updates
 the saved form.
 
+Updating the API key does not change the saved form title, custom confirmation,
+or block embed settings. Only the credentials for that Form ID are replaced.
+
 If validation fails, the existing saved Form ID and API key remain unchanged.
 
 To change the Form ID, first remove the old form from the Configured Forms list,
