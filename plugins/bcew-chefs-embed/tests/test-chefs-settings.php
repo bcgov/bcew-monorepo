@@ -330,6 +330,48 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Updating a form works when its old API key cannot be decrypted.
+	 *
+	 * @return void
+	 */
+	public function test_updating_api_key_preserves_settings_when_old_key_is_unreadable() {
+		$replacement_key    = 'replacement-api-key';
+		$original_form_name = 'Original saved form name';
+		$confirmation       = 'Thanks for applying.';
+
+		CredentialsManager::save( $this->form_id, 'original-api-key', $this->admin_user_id );
+		OptionsManager::save_form_name( $this->form_id, $original_form_name );
+		OptionsManager::save( $this->form_id, $confirmation );
+
+		global $wpdb;
+		$wpdb->update(
+			CredentialsManager::table_name(),
+			array( 'api_key' => 'unreadable-key' ),
+			array( 'form_id' => $this->form_id ),
+			array( '%s' ),
+			array( '%s' )
+		);
+
+		$redirect = $this->save_settings_with_auth_and_metadata(
+			array(
+				'title'    => 'Updated CHEFS title',
+				'versions' => array(
+					array(
+						'id'        => 'version-1',
+						'published' => true,
+					),
+				),
+			),
+			200,
+			$replacement_key
+		);
+
+		$this->assertStringContainsString( 'chefs_updated=1', $redirect );
+		$this->assertSame( $original_form_name, OptionsManager::get_form_name( $this->form_id ) );
+		$this->assertSame( $confirmation, OptionsManager::get_confirmation( $this->form_id ) );
+	}
+
+	/**
 	 * Handle save extracts a form ID from a URL with a fragment.
 	 *
 	 * @return void
@@ -1067,7 +1109,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 			'The Form ID field should include the acceptance-criteria example with highlighted values.'
 		);
 		$this->assertStringContainsString(
-			'aria-describedby="form-id-description"',
+			'aria-describedby="form-id-description form-id-update-description"',
 			$html,
 			'The Form ID field should be associated with its help text.'
 		);

@@ -177,7 +177,7 @@ class Settings {
 					<tr>
 						<th><label for="form_id"><?php esc_html_e( 'Form ID / URL', 'bcew-chefs-embed' ); ?></label></th>
 						<td>
-							<input type="text" class="regular-text code" id="form_id" name="form_id" required autocomplete="off" aria-describedby="form-id-description" placeholder="<?php esc_attr_e( 'CHEFS Form URL or Form ID', 'bcew-chefs-embed' ); ?>" />
+							<input type="text" class="regular-text code" id="form_id" name="form_id" required autocomplete="off" aria-describedby="form-id-description form-id-update-description" placeholder="<?php esc_attr_e( 'CHEFS Form URL or Form ID', 'bcew-chefs-embed' ); ?>" />
 							<p id="form-id-description" class="description" style="max-width: 78ch; line-height: 1.5;">
 								<?php
 								printf(
@@ -188,7 +188,7 @@ class Settings {
 								);
 								?>
 							</p>
-							<p class="description">
+							<p id="form-id-update-description" class="description">
 								<?php esc_html_e( 'Use the same Form ID to update an existing saved form.', 'bcew-chefs-embed' ); ?>
 							</p>
 						</td>
@@ -381,7 +381,7 @@ class Settings {
 			$form_name = $form_id;
 		}
 
-		$is_existing_form = null !== CredentialsManager::get_by_form_id( $form_id );
+		$is_existing_form = CredentialsManager::form_exists( $form_id );
 		$save_failed      = false === CredentialsManager::save( $form_id, $api_key );
 		if ( $save_failed ) {
 			$redirect_arg = 'chefs_error';

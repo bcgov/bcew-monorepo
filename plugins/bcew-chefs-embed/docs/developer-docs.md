@@ -142,6 +142,8 @@ The settings page requires the `manage_options` capability. Form save, deletion,
 
 API keys are encrypted before they are stored by `src/CredentialsManager.php`. `src/Crypto.php` prefers libsodium and falls back to OpenSSL AES-256-GCM. The encryption key is derived from the WordPress authentication salts, so encrypted values depend on the WordPress installation's salts.
 
+Potential bug: deciding whether a Form ID is new by calling `get_by_form_id()` can misclassify an existing row when its stored key cannot be decrypted. `get_by_form_id()` returns `null` for both a missing row and an undecryptable key, while `save()` can still update an existing row. Check whether the credentials row exists without decrypting the stored key. A valid replacement key for an existing row must preserve the saved form name and confirmation and report an update, even when the old key cannot be decrypted.
+
 During form rendering, the server decrypts the API key and uses it only for the CHEFS token exchange. Basic Authentication is server-to-server. The API key remains server-side and is not included in block attributes, rendered HTML, frontend source, or REST responses. The short-lived token is intentionally returned by `embed-config` and the frontend assigns it to the CHEFS viewer's `auth-token` attribute so the browser can load the form. The token is not stored in the block's persisted attributes.
 
 Do not commit API keys, add them to source code, or expose them in client-side code. Use the CHEFS settings page for configured credentials and use non-production credentials for local testing.
