@@ -152,6 +152,35 @@ class CredentialsManager {
 	}
 
 	/**
+	 * Check whether a credentials row exists without decrypting its API key.
+	 *
+	 * @param string $form_id CHEFS form ID.
+	 * @return bool
+	 */
+	public static function form_exists( $form_id ) {
+		global $wpdb;
+
+		$form_id = self::sanitize_form_id( $form_id );
+
+		if ( '' === $form_id ) {
+			return false;
+		}
+
+		$table = self::table_name();
+
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared -- table name cannot be parameterized.
+		$exists = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT 1 FROM `{$table}` WHERE form_id = %s LIMIT 1",
+				$form_id
+			)
+		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared
+
+		return '1' === (string) $exists;
+	}
+
+	/**
 	 * Get all saved CHEFS form IDs.
 	 *
 	 * @return string[]

@@ -8,10 +8,34 @@ const {
     getFormIdField,
     getRemoveFormButton,
     getSaveButton,
-    getSuccessNotice,
 } = require( './chefs-form-helpers' );
 
 test.describe( 'CHEFS Form settings', () => {
+    test( 'explains how to update an existing form API key beside the form fields', async ( {
+        admin,
+        page,
+    } ) => {
+        await clearSavedForms( admin, page );
+        await expect(
+            page.getByRole( 'heading', { name: 'Add or update a form' } )
+        ).toBeVisible();
+        await expect(
+            page.getByText(
+                'To update a saved form, enter its existing Form ID and the replacement API key.'
+            )
+        ).toBeVisible();
+        await expect(
+            page.getByText(
+                'Use the same Form ID to update an existing saved form.'
+            )
+        ).toBeVisible();
+        await expect(
+            page.getByText(
+                'For a new form, enter its API key. To update an existing form, enter the replacement API key.'
+            )
+        ).toBeVisible();
+    } );
+
     test( 'valid credentials are saved and shown in configured forms', async ( {
         admin,
         page,
@@ -23,6 +47,37 @@ test.describe( 'CHEFS Form settings', () => {
 
         await expect( page.getByText( formId, { exact: true } ) ).toBeVisible();
         await expect( await getRemoveFormButton( page ) ).toHaveCount( 1 );
+    } );
+
+    test( 'updates an API key without changing saved form settings', async ( {
+        admin,
+        page,
+    } ) => {
+        await clearSavedForms( admin, page );
+        const formId = '11111111-1111-4111-8111-111111111111';
+        const confirmation = 'Thanks for applying.';
+
+        await addSavedForm( admin, page, formId, 'api-key-one' );
+        await page.getByRole( 'link', { name: 'Edit confirmation' } ).click();
+        const confirmationField = await getConfirmationMessageField( page );
+        await confirmationField.fill( confirmation );
+        await page.getByRole( 'button', { name: 'Save confirmation' } ).click();
+        await expect( page.getByText( confirmation ) ).toBeVisible();
+
+        const formIdField = await getFormIdField( page );
+        const apiKeyField = await getApiKeyField( page );
+        const saveButton = await getSaveButton( page );
+        await formIdField.fill( formId );
+        await apiKeyField.fill( 'replacement-api-key' );
+        await saveButton.click();
+
+        await expect(
+            page
+                .locator( '.notice-success' )
+                .filter( { hasText: 'Form updated.' } )
+        ).toBeVisible();
+        await expect( page.getByText( 'E2E test form' ) ).toBeVisible();
+        await expect( page.getByText( confirmation ) ).toBeVisible();
     } );
 
     test( 'settings page can save, show, and delete a confirmation message', async ( {
@@ -49,7 +104,10 @@ test.describe( 'CHEFS Form settings', () => {
         ).toBeVisible();
         await confirmationField.fill( 'Thanks for applying.' );
         await page.getByRole( 'button', { name: 'Save confirmation' } ).click();
-        const successNotice = await getSuccessNotice( page );
+        const successNotice = page
+            .locator( '.notice-success' )
+            .filter( { hasText: /confirmation/i } )
+            .first();
         await expect( successNotice ).toContainText(
             'Confirmation message saved.'
         );
