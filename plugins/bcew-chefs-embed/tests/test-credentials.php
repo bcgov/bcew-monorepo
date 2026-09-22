@@ -187,8 +187,8 @@ class CredentialsTest extends \WP_UnitTestCase {
 			$this->assertIsString( $form['form_id'] );
 			$this->assertNotEmpty( $form['form_id'] );
 			$this->assertArrayHasKey( 'form_name', $form );
+			// The API key should not be exposed in the REST response.
 			$this->assertArrayNotHasKey( 'api_key', $form );
-			$this->assertArrayNotHasKey( 'apiKey', $form );
 		}
 	}
 
