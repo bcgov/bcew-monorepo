@@ -77,6 +77,50 @@ The block has one persisted attribute:
 
 The API key and runtime token are never block attributes.
 
+### Data flow
+
+The runtime path below shows the target server-rendered token flow from
+DSWP-1232. The browser receives a short-lived token so the CHEFS viewer can
+load the form, but it never receives the stored API key.
+
+```mermaid
+sequenceDiagram
+    actor Admin as WordPress admin
+    actor Editor as User with edit_posts
+    actor Visitor as Public visitor
+    participant WP as WordPress plugin
+    participant DB as Plugin database
+    participant CHEFS as CHEFS API
+    participant Viewer as CHEFS viewer script
+
+    Admin->>WP: Save Form ID and API key (admin-post + nonce)
+    WP->>CHEFS: Validate credentials over HTTPS
+    WP->>DB: Store Form ID and encrypted API key
+
+    Editor->>WP: GET saved forms over HTTPS
+    WP->>DB: Read Form IDs and names
+    DB-->>WP: Form metadata only
+    WP-->>Editor: Form IDs and names
+    Editor->>WP: Save selected Form ID in block
+
+    Visitor->>WP: Request public page over HTTPS
+    WP->>DB: render.php reads encrypted credentials
+    WP->>WP: Decrypt API key server-side
+    WP->>CHEFS: Exchange Form ID and API key over HTTPS
+    CHEFS-->>WP: Short-lived token
+    WP-->>Visitor: Render viewer configuration with token
+    Visitor->>Viewer: Load form with Form ID and token over HTTPS
+    Viewer->>CHEFS: Request form over HTTPS
+    CHEFS-->>Viewer: Form
+```
+
+Administrators manage Form IDs and API keys through nonce-protected
+`admin-post` actions. Users with `edit_posts` can retrieve saved Form IDs and
+select one in the block editor. Public visitors can load the published form
+with the short-lived token produced during server rendering, but the API key
+remains encrypted at rest and is only decrypted inside WordPress for the
+server-to-server CHEFS token exchange.
+
 ### Editor flow
 
 1. `src/chefs-form/edit.js` requests the saved forms from the `forms` REST route.
