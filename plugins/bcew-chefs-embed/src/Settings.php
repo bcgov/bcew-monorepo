@@ -131,7 +131,11 @@ class Settings {
 
 		// List only needs form_id + created_at (no API keys on this screen).
 		$forms = CredentialsManager::list_forms();
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only edit-mode flag.
+
+		/*
+		 * phpcs:disable WordPress.Security.NonceVerification.Recommended -- The GET
+		 * values below only control what is shown. Changes use POST forms with nonces.
+		 */
 		$editing_form_id = isset( $_GET['edit_confirmation'] ) ? sanitize_text_field( wp_unslash( $_GET['edit_confirmation'] ) ) : '';
 		?>
 		<div class="wrap">
@@ -143,28 +147,28 @@ class Settings {
 				<?php esc_html_e( 'For information and help please view the ', 'bcew-chefs-embed' ); ?><a href="<?php echo esc_url( self::DOCUMENTATION_URL ); ?>"><?php esc_html_e( 'documentation', 'bcew-chefs-embed' ); ?></a>.
 			</p>
 
-			<?php // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only redirect status flag. ?>
-			<?php if ( isset( $_GET['chefs_saved'] ) ) : ?>
+			<?php if ( isset( $_GET['chefs_updated'] ) ) : ?>
+				<div class="notice notice-success"><p><?php esc_html_e( 'Form updated.', 'bcew-chefs-embed' ); ?></p></div>
+			<?php elseif ( isset( $_GET['chefs_saved'] ) ) : ?>
 				<div class="notice notice-success"><p><?php esc_html_e( 'Saved.', 'bcew-chefs-embed' ); ?></p></div>
-			<?php // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only redirect status flag. ?>
 			<?php elseif ( isset( $_GET['chefs_error'] ) ) : ?>
-			<?php // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only redirect status flag. ?>
 				<div class="notice notice-error"><p><?php echo esc_html( self::get_error_message( sanitize_key( wp_unslash( $_GET['chefs_error'] ) ) ) ); ?></p></div>
-			<?php // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only redirect status flag. ?>
 			<?php elseif ( isset( $_GET['chefs_deleted'] ) ) : ?>
 				<div class="notice notice-success"><p><?php esc_html_e( 'Removed.', 'bcew-chefs-embed' ); ?></p></div>
-			<?php // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only redirect status flag. ?>
 			<?php elseif ( isset( $_GET['chefs_confirmation_saved'] ) ) : ?>
 				<div class="notice notice-success"><p><?php esc_html_e( 'Confirmation message saved.', 'bcew-chefs-embed' ); ?></p></div>
-			<?php // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only redirect status flag. ?>
 			<?php elseif ( isset( $_GET['chefs_confirmation_cleared'] ) ) : ?>
 				<div class="notice notice-success"><p><?php esc_html_e( 'Custom confirmation deleted. The generic success message will be used.', 'bcew-chefs-embed' ); ?></p></div>
-			<?php // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only redirect status flag. ?>
 			<?php elseif ( isset( $_GET['chefs_confirmation_error'] ) ) : ?>
 				<div class="notice notice-error"><p><?php esc_html_e( 'Unable to save the confirmation message. Enter a message, or use Remove custom confirmation to remove one.', 'bcew-chefs-embed' ); ?></p></div>
 			<?php endif; ?>
+			<?php // phpcs:enable WordPress.Security.NonceVerification.Recommended ?>
 
 			<?php // --- Save new / update credentials --- ?>
+			<h2><?php esc_html_e( 'Add or update a form', 'bcew-chefs-embed' ); ?></h2>
+			<p class="description">
+				<?php esc_html_e( 'To update a saved form, enter its existing Form ID and the replacement API key. The form name and custom confirmation will remain unchanged.', 'bcew-chefs-embed' ); ?>
+			</p>
 			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 				<?php wp_nonce_field( 'bcew_chefs_save' ); ?>
 				<input type="hidden" name="action" value="bcew_chefs_save" />
@@ -173,7 +177,7 @@ class Settings {
 					<tr>
 						<th><label for="form_id"><?php esc_html_e( 'Form ID / URL', 'bcew-chefs-embed' ); ?></label></th>
 						<td>
-							<input type="text" class="regular-text code" id="form_id" name="form_id" required autocomplete="off" aria-describedby="form-id-description" placeholder="<?php esc_attr_e( 'CHEFS Form URL or Form ID', 'bcew-chefs-embed' ); ?>" />
+							<input type="text" class="regular-text code" id="form_id" name="form_id" required autocomplete="off" aria-describedby="form-id-description form-id-update-description" placeholder="<?php esc_attr_e( 'CHEFS Form URL or Form ID', 'bcew-chefs-embed' ); ?>" />
 							<p id="form-id-description" class="description" style="max-width: 78ch; line-height: 1.5;">
 								<?php
 								printf(
@@ -184,11 +188,19 @@ class Settings {
 								);
 								?>
 							</p>
+							<p id="form-id-update-description" class="description">
+								<?php esc_html_e( 'Use the same Form ID to update an existing saved form.', 'bcew-chefs-embed' ); ?>
+							</p>
 						</td>
 					</tr>
 					<tr>
 						<th><label for="api_key"><?php esc_html_e( 'API Key', 'bcew-chefs-embed' ); ?></label></th>
-						<td><input type="password" class="regular-text" id="api_key" name="api_key" required autocomplete="new-password" /></td>
+						<td>
+							<input type="password" class="regular-text" id="api_key" name="api_key" required autocomplete="new-password" />
+							<p class="description">
+								<?php esc_html_e( 'For a new form, enter its API key. To update an existing form, enter the replacement API key.', 'bcew-chefs-embed' ); ?>
+							</p>
+						</td>
 					</tr>
 				</table>
 
@@ -200,7 +212,7 @@ class Settings {
 				<p class="description">
 					<?php esc_html_e( 'A custom confirmation is shown after someone submits that form. If none is saved, visitors see the generic message below.', 'bcew-chefs-embed' ); ?>
 				</p>
-				<div class="notice notice-info inline" style="margin: 0 0 12px; max-width: 720px;">
+				<div class="notice notice-success inline" style="margin: 0 0 12px; max-width: 720px;">
 					<p>
 						<strong><?php echo esc_html( self::GENERIC_SUCCESS_HEADING ); ?></strong><br />
 						<?php echo esc_html( self::GENERIC_SUCCESS_BODY ); ?>
@@ -369,12 +381,16 @@ class Settings {
 			$form_name = $form_id;
 		}
 
-		$saved_form_id = CredentialsManager::save( $form_id, $api_key );
-		if ( false !== $saved_form_id ) {
+		$is_existing_form = CredentialsManager::form_exists( $form_id );
+		$save_failed      = false === CredentialsManager::save( $form_id, $api_key );
+		if ( $save_failed ) {
+			$redirect_arg = 'chefs_error';
+		} elseif ( $is_existing_form ) {
+			$redirect_arg = 'chefs_updated';
+		} else {
 			OptionsManager::save_form_name( $form_id, $form_name );
+			$redirect_arg = 'chefs_saved';
 		}
-
-		$redirect_arg = false === $saved_form_id ? 'chefs_error' : 'chefs_saved';
 
 		wp_safe_redirect( add_query_arg( $redirect_arg, '1', self::get_page_url() ) );
 		exit;

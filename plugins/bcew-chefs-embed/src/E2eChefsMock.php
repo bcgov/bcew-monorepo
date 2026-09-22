@@ -44,8 +44,10 @@ class E2eChefsMock {
         $credentials               = base64_decode( preg_replace( '/^Basic\s+/i', '', $authorization ), true );
         list( $form_id, $api_key ) = array_pad( explode( ':', (string) $credentials, 2 ), 2, '' );
 
+        // Define valid credentials for the E2E mock.
         $valid_credentials = [
-            '11111111-1111-4111-8111-111111111111' => 'api-key-one',
+            // Accept both keys so the API-key rotation test can update this form.
+            '11111111-1111-4111-8111-111111111111' => [ 'api-key-one', 'replacement-api-key' ],
             '22222222-2222-4222-8222-222222222222' => 'api-key-two',
             '33333333-3333-4333-8333-333333333333' => 'persisted-api-key',
             '66666666-6666-4666-8666-666666666666' => 'preview-error-api-key',
@@ -53,6 +55,7 @@ class E2eChefsMock {
             '88888888-8888-4888-8888-888888888888' => 'frontend-error-api-key',
             '99999999-9999-4999-8999-999999999999' => 'frontend-url-api-key',
             'bbbbbbbb-cccc-4ddd-8eee-ffffffffffff' => 'confirmation-api-key',
+            // Frontend custom API key for testing.
             'cccccccc-dddd-4eee-8fff-000000000000' => [ 'original-api-key', 'frontend-custom-api-key' ],
             'cccccccc-dddd-4eee-8fff-111111111111' => 'frontend-error-handler-key',
         ];
