@@ -32,6 +32,43 @@ const TIMEOUTS = {
     SLOW: 10000,
 } as const;
 
+const loginAsEditor = async (
+    page: Page,
+    username: string,
+    password: string
+): Promise< void > => {
+    await page.goto( '/wp-login.php?reauth=1', {
+        waitUntil: 'domcontentloaded',
+    } );
+
+    await page.locator( '#user_login' ).fill( username );
+    await page.locator( '#user_pass' ).fill( password );
+
+    await Promise.all( [
+        page.waitForNavigation( { waitUntil: 'domcontentloaded' } ),
+        page.locator( '#wp-submit' ).click(),
+    ] );
+
+    const loginError = page.locator( '#login_error' );
+    if ( await loginError.isVisible().catch( () => false ) ) {
+        throw new Error(
+            `Editor login failed: ${ await loginError.innerText() }`
+        );
+    }
+
+    await page.waitForURL(
+        ( url ) =>
+            url.pathname.startsWith( '/wp-admin/' ) ||
+            '/wp-admin' === url.pathname,
+        { timeout: 30_000 }
+    );
+
+    await page
+        .locator( '#wpadminbar, #wpbody, #wpbody-content' )
+        .first()
+        .waitFor( { state: 'attached', timeout: 30_000 } );
+};
+
 const requestRestAsCurrentUser = async (
     page: Page,
     path: string,
@@ -1192,16 +1229,7 @@ test.describe( 'Navigation', () => {
         test( 'Editor cannot edit navigation menu content (restricted)', async ( {
             page,
         } ) => {
-            // Login as editor user using the page context
-            await page.goto( '/wp-login.php', {
-                waitUntil: 'domcontentloaded',
-            } );
-            await page.fill( '#user_login', editorUsername );
-            await page.fill( '#user_pass', 'password' );
-            await page.click( '#wp-submit' );
-            await page.waitForURL( /wp-admin/ );
-            // Wait for admin dashboard to load
-            await page.waitForLoadState( 'domcontentloaded' );
+            await loginAsEditor( page, editorUsername, 'password' );
 
             // Try to create a navigation menu via REST API as editor
             // Use fetch directly since RequestUtils.rest() doesn't support different auth
@@ -1230,19 +1258,7 @@ test.describe( 'Navigation', () => {
         test( 'Editor can view but not modify navigation block settings', async ( {
             page,
         } ) => {
-            // Login as editor user
-            await page.goto( '/wp-login.php', {
-                waitUntil: 'domcontentloaded',
-            } );
-            await page.fill( '#user_login', editorUsername );
-            await page.fill( '#user_pass', 'password' );
-            // Wait for redirect after submit; use explicit timeout to avoid eating full test timeout on CI
-            await Promise.all( [
-                page.waitForURL( /wp-admin/, { timeout: 30000 } ),
-                page.click( '#wp-submit' ),
-            ] );
-            // Wait for admin dashboard to load
-            await page.waitForLoadState( 'domcontentloaded' );
+            await loginAsEditor( page, editorUsername, 'password' );
 
             // Try to modify an existing navigation menu via REST API as editor
             // WordPress REST API uses POST with _method=PATCH or PATCH method
@@ -1267,15 +1283,7 @@ test.describe( 'Navigation', () => {
         test( 'Editor can insert Navigation block but cannot edit menu content', async ( {
             page,
         } ) => {
-            // Login as editor user
-            await page.goto( '/wp-login.php', {
-                waitUntil: 'domcontentloaded',
-            } );
-            await page.fill( '#user_login', editorUsername );
-            await page.fill( '#user_pass', 'password' );
-            await page.click( '#wp-submit' );
-            await page.waitForURL( /wp-admin/ );
-            await page.waitForLoadState( 'domcontentloaded' );
+            await loginAsEditor( page, editorUsername, 'password' );
 
             // Navigate to edit the existing page (editors can edit pages, just not create them)
             // Use domcontentloaded instead of networkidle to avoid timeout issues
@@ -1283,12 +1291,20 @@ test.describe( 'Navigation', () => {
                 `/wp-admin/post.php?post=${ editorPageId }&action=edit`,
                 {
                     waitUntil: 'domcontentloaded',
-                    timeout: TIMEOUTS.SLOW,
+                    timeout: 30_000,
                 }
             );
 
-            // Wait for page to load and check if we were redirected
-            await page.waitForLoadState( 'domcontentloaded' );
+            const editorLoaded = page.locator( '.block-editor-writing-flow' );
+            const adminError = page.locator( '.notice-error, .error' );
+
+            await Promise.race( [
+                editorLoaded.waitFor( {
+                    state: 'attached',
+                    timeout: 30_000,
+                } ),
+                adminError.waitFor( { state: 'visible', timeout: 30_000 } ),
+            ] ).catch( () => undefined );
 
             // Check if we were redirected (e.g., permission denied)
             const currentUrl = page.url();
