@@ -19,11 +19,20 @@ test.describe( 'CHEFS Form editor', () => {
         await clearSavedForms( admin, page );
     } );
 
+    test.afterEach( async ( { page } ) => {
+        await page.unrouteAll( { behavior: 'wait' } );
+    } );
+
     test( 'can be inserted from the block editor with a formId attribute', async ( {
         admin,
         editor,
+        page,
     } ) => {
         await admin.createNewPost();
+        await expect( page ).toHaveURL( /\/wp-admin\/post-new\.php/ );
+        await expect(
+            page.locator( '.block-editor__container' )
+        ).toBeVisible();
         await editor.insertBlock( { name: BLOCK_NAME } );
         await assertBlockVisible( editor );
         const chefsBlock = await getChefsBlock( editor );
@@ -46,6 +55,10 @@ test.describe( 'CHEFS Form editor', () => {
             baseUrl: mockBaseUrl,
         } );
         await admin.createNewPost();
+        await expect( page ).toHaveURL( /\/wp-admin\/post-new\.php/ );
+        await expect(
+            page.locator( '.block-editor__container' )
+        ).toBeVisible();
         await editor.insertBlock( { name: BLOCK_NAME } );
         await ensureBlockSettingsVisible( editor, page );
         const formSelect = getFormSelect( page );
@@ -114,6 +127,10 @@ test.describe( 'CHEFS Form editor', () => {
     } ) => {
         await clearSavedForms( admin, page );
         await admin.createNewPost();
+        await expect( page ).toHaveURL( /\/wp-admin\/post-new\.php/ );
+        await expect(
+            page.locator( '.block-editor__container' )
+        ).toBeVisible();
         await editor.insertBlock( { name: BLOCK_NAME } );
         await expect(
             editor.canvas.getByText(
@@ -157,6 +174,10 @@ test.describe( 'CHEFS Form editor', () => {
             } );
         } );
         await admin.createNewPost();
+        await expect( page ).toHaveURL( /\/wp-admin\/post-new\.php/ );
+        await expect(
+            page.locator( '.block-editor__container' )
+        ).toBeVisible();
         await editor.insertBlock( { name: BLOCK_NAME } );
         await ensureBlockSettingsVisible( editor, page );
         await selectSavedFormId( page, formId );
