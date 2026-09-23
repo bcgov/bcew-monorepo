@@ -2,8 +2,7 @@
 /**
  * Frontend markup for the CHEFS Form block.
  *
- * Outputs only the Form ID (no API key or token). The view script fetches a
- * short-lived token from embed-config and mounts the CHEFS web component.
+ * Obtains token in render_block_data hook.
  *
  * @package bcew-chefs-embed
  * @see https://github.com/WordPress/gutenberg/blob/trunk/docs/reference-guides/block-api/block-metadata.md#render
@@ -14,12 +13,8 @@
  *     $block (WP_Block): The block instance.
  */
 
-use Bcgov\BcewChefsEmbed\CredentialsManager;
-use Bcgov\BcewChefsEmbed\ChefsClient;
-
 $form_id = isset( $attributes['formId'] ) ? sanitize_text_field( (string) $attributes['formId'] ) : '';
-$credentials = CredentialsManager::get_by_form_id( $form_id );
-$token = ( new ChefsClient() )->authenticate( $form_id, $credentials['api_key'] )['token'] ?? null;
+$token = isset( $attributes['token'] ) ? sanitize_text_field( (string) $attributes['token'] ) : '';
 
 $wrapper_attributes = get_block_wrapper_attributes();
 ?>

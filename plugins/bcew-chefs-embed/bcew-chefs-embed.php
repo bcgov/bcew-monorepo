@@ -24,6 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 use Bcgov\BcewChefsEmbed\CredentialsManager;
 use Bcgov\BcewChefsEmbed\E2eChefsMock;
 use Bcgov\BcewChefsEmbed\OptionsManager;
+use Bcgov\BcewChefsEmbed\ChefsClient;
 
 /**
  * Load Composer autoloader when present.
@@ -48,6 +49,30 @@ add_action( 'plugins_loaded', 'bcew_chefs_embed_maybe_install_options_table' );
 if ( defined( 'BCEW_CHEFS_E2E_MOCK' ) && BCEW_CHEFS_E2E_MOCK ) {
 	add_filter( 'pre_http_request', array( E2eChefsMock::class, 'pre_http_request' ), 10, 3 );
 }
+
+/**
+ * Obtain CHEFS auth token for use in the chefs-form blocks' render.php.
+ */
+add_filter(
+    'render_block_data',
+    function( $parsed_block ) {
+        if ( $parsed_block['blockName'] !== 'bcew-chefs-embed/chefs-form' ) {
+            return $parsed_block;
+        }
+        $form_id = $parsed_block['attrs']['formId'] ?? '';
+        $credentials = CredentialsManager::get_by_form_id( $form_id );
+        // Could not find credentials for the form ID, so we cannot fetch a token. Return the block as-is.
+        if ( ! $credentials ) {
+            return $parsed_block;
+        }
+        $parsed_block['attrs']['token'] =
+            ( new ChefsClient() )->authenticate(
+                $form_id,
+                $credentials['api_key']
+            )['token'] ?? '';
+        return $parsed_block;
+    }
+);
 
 /**
  * Create the credentials table when the schema version is missing or outdated.
