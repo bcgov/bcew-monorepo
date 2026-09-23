@@ -1,6 +1,6 @@
 {
     "name": "bcew-chefs-embed",
-    "version": "1.0.0-alpha.2",
+    "version": "1.0.0-alpha.3",
     "description": "Embed BC Government Common Hosted Form Service (CHEFS) forms into WordPress pages and posts.",
     "author": "govwordpress@gov.bc.ca",
     "license": "GPL-2.0-or-later",
