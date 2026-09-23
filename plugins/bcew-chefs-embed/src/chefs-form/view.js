@@ -31,6 +31,23 @@ const PUBLIC_LOAD_ERRORS = {
 const PUBLIC_SUBMIT_ERROR =
 	'Your form could not be submitted. Please review your answers and try again.';
 
+/* ==== TEMP (DSWP-1267) START — DELETE THIS WHOLE BLOCK BEFORE MERGE ====
+ * On a published page with WP_DEBUG, append ?chefs_debug_error=<code> to
+ * preview public messages. Values match PUBLIC_LOAD_ERRORS keys, or "submit".
+ */
+const getDebugErrorCode = () => {
+	try {
+		return (
+			new URLSearchParams( window.location.search ).get(
+				'chefs_debug_error'
+			) || ''
+		);
+	} catch ( error ) {
+		return '';
+	}
+};
+/* ==== TEMP (DSWP-1267) END ==== */
+
 /**
  * Resolve the WordPress REST API root URL.
  *
@@ -69,9 +86,18 @@ const messageForLoadError = ( code ) =>
  * @return {Promise<{token: string, baseUrl: string, confirmation?: string|null}>} Embed config payload.
  */
 const fetchEmbedConfig = async ( formId ) => {
-	const url = `${ getRestRoot() }bcew-chefs-embed/v1/embed-config?formId=${ encodeURIComponent(
-		formId
-	) }`;
+	const params = new URLSearchParams( {
+		formId,
+	} );
+
+	/* ==== TEMP (DSWP-1267) START — DELETE THIS BLOCK BEFORE MERGE ==== */
+	const debugError = getDebugErrorCode();
+	if ( debugError && 'submit' !== debugError ) {
+		params.set( 'forceError', debugError );
+	}
+	/* ==== TEMP (DSWP-1267) END ==== */
+
+	const url = `${ getRestRoot() }bcew-chefs-embed/v1/embed-config?${ params.toString() }`;
 
 	const response = await fetch( url, {
 		method: 'GET',
@@ -258,6 +284,12 @@ const mountChefsForm = async ( root ) => {
 		if ( 'function' === typeof viewer.load ) {
 			await viewer.load();
 		}
+
+		/* ==== TEMP (DSWP-1267) START — DELETE THIS BLOCK BEFORE MERGE ==== */
+		if ( 'submit' === getDebugErrorCode() ) {
+			showSubmitError( root );
+		}
+		/* ==== TEMP (DSWP-1267) END ==== */
 	} catch ( error ) {
 		/*
 		 * Embed-config or the viewer script failed. Prefer the friendly
