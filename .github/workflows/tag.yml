@@ -1,7 +1,7 @@
 # Release a WordPress plugin or theme from this monorepo.
 #
 # Run this workflow by hand (Actions → Tag WordPress Plugin or Theme). Pick
-# the project and tick Alpha when the release should be an alpha. The version
+# the project. Alpha is ticked by default; untick it for a real release. The version
 # is not typed in: a script reads existing {project}/v* tags and applies the
 # house rules (alphas count up on the same X.Y.Z; a real release is that
 # X.Y.Z if it is missing; after a real release the next series is the next
@@ -32,7 +32,7 @@ on:
       alpha:
         description: 'Alpha'
         type: boolean
-        default: false
+        default: true
 
 # Share the lock with tag-delete.yml so packages.json is not written by two jobs at once.
 concurrency:
