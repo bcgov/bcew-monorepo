@@ -5,10 +5,31 @@
  * short-lived token, then mounts the CHEFS web component (editable — not read-only).
  * On successful submit, replaces the viewer with a static success message
  * (DSWP-1149 generic, DSWP-1150 custom confirmation).
- * On CHEFS submit/load HTTP errors, shows title, status, and detail above
- * the form (DSWP-1151) and leaves the form on the page.
+ * On load or submit failure, shows a clear public message (DSWP-1267) and keeps
+ * technical CHEFS wording off the page.
  */
 import ensureChefsFormViewerDefined from './utils/ensure-chefs-form-viewer';
+
+/*
+ * Visitor-facing copy for embed-config failures. Keys match the WP_Error
+ * codes returned by EmbedConfigController. Unknown codes use the generic
+ * "not available" message.
+ */
+const PUBLIC_LOAD_ERRORS = {
+	chefs_form_not_configured:
+		'This form is no longer set up on this website. Please contact the site administrator and ask them to reconnect it in CHEFS Forms.',
+	chefs_form_not_found:
+		'This form could not be found. Please contact the site administrator and ask them to check the Form ID in CHEFS (it may have been deleted).',
+	chefs_api_key_invalid:
+		'This form cannot load because its API key is invalid. Please contact the site administrator and ask them to update the API key in CHEFS Forms.',
+	chefs_unavailable:
+		'The form service is temporarily unavailable. Please try again in a few minutes. If this continues, contact the site administrator.',
+	chefs_form_unavailable:
+		'This form is not available to fill out right now. Please contact the site administrator and ask them to confirm it exists in CHEFS and is published.',
+};
+
+const PUBLIC_SUBMIT_ERROR =
+	'Your form could not be submitted. Please review your answers and try again.';
 
 /**
  * Resolve the WordPress REST API root URL.
@@ -16,21 +37,30 @@ import ensureChefsFormViewerDefined from './utils/ensure-chefs-form-viewer';
  * @return {string} Trailing-slash REST root.
  */
 const getRestRoot = () => {
-    /*
-     * WordPress prints a discovery link with the REST API root. Prefer that
-     * so the plugin still works when the site lives in a subdirectory.
-     * If the tag is missing, assume /wp-json/ on this origin.
-     */
-    const discovery = document.querySelector(
-        'link[rel="https://api.w.org/"]'
-    )?.href;
+	/*
+	 * WordPress prints a discovery link with the REST API root. Prefer that
+	 * so the plugin still works when the site lives in a subdirectory.
+	 * If the tag is missing, assume /wp-json/ on this origin.
+	 */
+	const discovery = document.querySelector(
+		'link[rel="https://api.w.org/"]'
+	)?.href;
 
-    if ( discovery ) {
-        return discovery.endsWith( '/' ) ? discovery : `${ discovery }/`;
-    }
+	if ( discovery ) {
+		return discovery.endsWith( '/' ) ? discovery : `${ discovery }/`;
+	}
 
-    return `${ window.location.origin }/wp-json/`;
+	return `${ window.location.origin }/wp-json/`;
 };
+
+/**
+ * Map an embed-config error code to visitor-facing text.
+ *
+ * @param {string|undefined} code WP_Error code from embed-config.
+ * @return {string} Public message.
+ */
+const messageForLoadError = ( code ) =>
+	PUBLIC_LOAD_ERRORS[ code ] || PUBLIC_LOAD_ERRORS.chefs_form_unavailable;
 
 /**
  * Fetch CHEFS embed configuration for a form ID.
@@ -39,161 +69,54 @@ const getRestRoot = () => {
  * @return {Promise<{token: string, baseUrl: string, confirmation?: string|null}>} Embed config payload.
  */
 const fetchEmbedConfig = async ( formId ) => {
-    const url = `${ getRestRoot() }bcew-chefs-embed/v1/embed-config?formId=${ encodeURIComponent(
-        formId
-    ) }`;
+	const url = `${ getRestRoot() }bcew-chefs-embed/v1/embed-config?formId=${ encodeURIComponent(
+		formId
+	) }`;
 
-    const response = await fetch( url, {
-        method: 'GET',
-        credentials: 'same-origin',
-        headers: {
-            Accept: 'application/json',
-        },
-    } );
+	const response = await fetch( url, {
+		method: 'GET',
+		credentials: 'same-origin',
+		headers: {
+			Accept: 'application/json',
+		},
+	} );
 
-    /*
-     * A failed status or a body without token and base URL means the form
-     * cannot load. Throw so mountChefsForm can show the load-error message.
-     */
-    const payload = await response.json().catch( () => ( {} ) );
+	const payload = await response.json().catch( () => ( {} ) );
 
-    if ( ! response.ok ) {
-        const error = new Error(
-            payload?.message || 'Request is missing content or is malformed'
-        );
-        error.status = response.status;
-        error.statusText = response.statusText;
-        error.response = {
-            status: response.status,
-            statusText: response.statusText,
-            data: payload,
-        };
-        throw error;
-    }
+	/*
+	 * Prefer the stable error code from WordPress so the page can show a
+	 * clear message. Fall back to the generic unavailable copy when the
+	 * response has no code.
+	 */
+	if ( ! response.ok ) {
+		throw new Error( messageForLoadError( payload?.code ) );
+	}
 
-    if ( ! payload?.token || ! payload?.baseUrl ) {
-        throw new Error( 'CHEFS returned an invalid embed configuration.' );
-    }
+	if ( ! payload?.token || ! payload?.baseUrl ) {
+		throw new Error( PUBLIC_LOAD_ERRORS.chefs_form_unavailable );
+	}
 
-    return payload;
-};
-
-/*
- * Only strings, numbers, and booleans become visible text. String(null)
- * would show "null", and a leftover object would show "[object Object]".
- * Those must not appear on the page.
- */
-const asPlainText = ( value ) => {
-    if ( 'number' === typeof value || 'boolean' === typeof value ) {
-        return String( value );
-    }
-
-    if ( 'string' === typeof value ) {
-        return value.trim();
-    }
-
-    return '';
+	return payload;
 };
 
 /**
- * Read title, status, and detail from a formio:error payload.
+ * Show a load-error message inside the block mount point.
  *
- * @param {unknown} payload Event detail from formio:error.
- * @return {{title: string, status: string, detail: string}} Error fields.
+ * Used when the form never loaded (embed-config or script failure). There is
+ * no form to keep on the page, so the mount is replaced.
+ *
+ * @param {HTMLElement} mount   Mount element.
+ * @param {string}      message Error text.
  */
-const readChefsError = ( payload ) => {
-    if ( ! payload || 'object' !== typeof payload ) {
-        return { title: '', status: '', detail: asPlainText( payload ) };
-    }
+const showError = ( mount, message ) => {
+	mount.replaceChildren();
+	mount.removeAttribute( 'aria-busy' );
 
-    if (
-        payload.error &&
-        'object' === typeof payload.error &&
-        ! Array.isArray( payload.error )
-    ) {
-        return {
-            title: asPlainText( payload.error.title ),
-            status: asPlainText( payload.error.status ),
-            detail:
-                asPlainText( payload.error.detail ) ||
-                asPlainText( payload.error.message ),
-        };
-    }
-
-    return {
-        title: asPlainText( payload.title ),
-        status: asPlainText( payload.status ),
-        detail:
-            asPlainText( payload.detail ) ||
-            asPlainText( payload.message ) ||
-            ( 'string' === typeof payload.error
-                ? asPlainText( payload.error )
-                : '' ),
-    };
-};
-
-/**
- * Normalize a CHEFS error payload from the fetch, the viewer, or a rejected load.
- *
- * Supports fetch Errors, direct viewer payloads, and wrapped shapes like
- * { error: { detail, status, ... } }.
- *
- * @param {unknown} payload Error payload.
- * @return {{title: string, status: string, detail: string}} Error fields.
- */
-const normalizeChefsError = ( payload ) => {
-    const raw =
-        payload &&
-        'object' === typeof payload &&
-        payload.error &&
-        'object' === typeof payload.error &&
-        ! Array.isArray( payload.error )
-            ? payload.error
-            : payload;
-
-    let response = {};
-
-    if ( raw?.response && 'object' === typeof raw.response ) {
-        response = raw.response;
-    } else if ( payload?.response && 'object' === typeof payload.response ) {
-        response = payload.response;
-    }
-
-    const status = asPlainText(
-        response.status ?? raw?.status ?? payload?.status ?? 500
-    );
-
-    let resolvedStatusText = 'Request failed';
-
-    if ( status && Number.isFinite( Number( status ) ) ) {
-        if ( status >= 400 && status < 500 ) {
-            resolvedStatusText = 'Bad Request';
-        }
-    }
-
-    const statusText = asPlainText(
-        response.statusText ??
-            raw?.statusText ??
-            payload?.statusText ??
-            resolvedStatusText
-    );
-
-    const detail =
-        asPlainText(
-            response?.data?.message ??
-                raw?.message ??
-                payload?.message ??
-                response?.data?.detail ??
-                raw?.detail ??
-                payload?.detail ??
-                ( 'string' === typeof raw?.error ? raw.error : '' )
-        ) || 'Unable to load the CHEFS form.';
-
-    return {
-        title: asPlainText( raw?.title ?? payload?.title ?? statusText ),
-        status,
-        detail,
-    };
+	const error = document.createElement( 'p' );
+	error.className = 'bcew-chefs-form__error';
+	error.setAttribute( 'role', 'alert' );
+	error.textContent = message;
+	mount.appendChild( error );
 };
 
 /**
@@ -202,67 +125,41 @@ const normalizeChefsError = ( payload ) => {
  * @param {HTMLElement} root Block wrapper.
  */
 const clearChefsError = ( root ) => {
-    /*
-     * Only remove banners that are direct children of this block. A second
-     * form on the page keeps its own message. A load-error paragraph inside
-     * the mount is also left alone.
-     */
-    root.querySelectorAll( ':scope > .bcew-chefs-form__error' ).forEach(
-        ( node ) => {
-            node.remove();
-        }
-    );
+	/*
+	 * Only remove banners that are direct children of this block. A second
+	 * form on the page keeps its own message. A load-error paragraph inside
+	 * the mount is also left alone.
+	 */
+	root.querySelectorAll( ':scope > .bcew-chefs-form__error' ).forEach(
+		( node ) => {
+			node.remove();
+		}
+	);
 };
 
 /**
- * Show a CHEFS error message above the form (DSWP-1151).
+ * Show a clear submit-failure message above the form. The form stays visible.
  *
- * Heading is "{title} - {status}". Body is detail. The form stays visible.
- *
- * @param {HTMLElement} root  Block wrapper.
- * @param {Object}      error Error fields (title, status, detail).
+ * @param {HTMLElement} root Block wrapper.
  */
-const showChefsError = ( root, error ) => {
-    /*
-     * Skip an empty payload so we do not insert a blank alert. Heading is
-     * "title - status" when those fields exist. Place the banner above the
-     * form so the visitor can read it and try again.
-     */
-    const normalized = normalizeChefsError( error );
+const showSubmitError = ( root ) => {
+	clearChefsError( root );
 
-    if ( ! normalized.title && ! normalized.status && ! normalized.detail ) {
-        return;
-    }
+	const region = document.createElement( 'div' );
+	region.className = 'bcew-chefs-form__error';
+	region.setAttribute( 'role', 'alert' );
 
-    clearChefsError( root );
+	const message = document.createElement( 'p' );
+	message.textContent = PUBLIC_SUBMIT_ERROR;
+	region.append( message );
 
-    const region = document.createElement( 'div' );
-    region.className = 'bcew-chefs-form__error';
-    region.setAttribute( 'role', 'alert' );
+	const mount = root.querySelector( '.bcew-chefs-form__mount' );
 
-    const headingText = [ normalized.title, normalized.status ]
-        .filter( Boolean )
-        .join( ' - ' );
-
-    if ( headingText ) {
-        const heading = document.createElement( 'h2' );
-        heading.textContent = headingText;
-        region.append( heading );
-    }
-
-    if ( normalized.detail ) {
-        const message = document.createElement( 'p' );
-        message.textContent = normalized.detail;
-        region.append( message );
-    }
-
-    const mount = root.querySelector( '.bcew-chefs-form__mount' );
-
-    if ( mount ) {
-        mount.before( region );
-    } else {
-        root.prepend( region );
-    }
+	if ( mount ) {
+		mount.before( region );
+	} else {
+		root.prepend( region );
+	}
 };
 
 /**
@@ -282,33 +179,33 @@ const GENERIC_SUCCESS_MESSAGE = 'Your form has been submitted successfully';
  * @param {string|null} customMessage Custom confirmation from embed-config.
  */
 const showSuccess = ( mount, customMessage ) => {
-    /*
-     * Success replaces the form. Clear any CHEFS error banner first.
-     * Heading is always "Success". The paragraph is the custom confirmation
-     * from Settings, or the generic sentence when none is saved.
-     */
-    if ( mount.parentElement ) {
-        clearChefsError( mount.parentElement );
-    }
+	/*
+	 * Success replaces the form. Clear any CHEFS error banner first.
+	 * Heading is always "Success". The paragraph is the custom confirmation
+	 * from Settings, or the generic sentence when none is saved.
+	 */
+	if ( mount.parentElement ) {
+		clearChefsError( mount.parentElement );
+	}
 
-    mount.replaceChildren();
-    mount.removeAttribute( 'aria-busy' );
+	mount.replaceChildren();
+	mount.removeAttribute( 'aria-busy' );
 
-    const region = document.createElement( 'div' );
-    region.className = 'bcew-chefs-form__success';
-    region.setAttribute( 'role', 'status' );
+	const region = document.createElement( 'div' );
+	region.className = 'bcew-chefs-form__success';
+	region.setAttribute( 'role', 'status' );
 
-    const heading = document.createElement( 'h2' );
-    heading.textContent = 'Success';
+	const heading = document.createElement( 'h2' );
+	heading.textContent = 'Success';
 
-    const trimmed =
-        'string' === typeof customMessage ? customMessage.trim() : '';
+	const trimmed =
+		'string' === typeof customMessage ? customMessage.trim() : '';
 
-    const message = document.createElement( 'p' );
-    message.textContent = trimmed || GENERIC_SUCCESS_MESSAGE;
+	const message = document.createElement( 'p' );
+	message.textContent = trimmed || GENERIC_SUCCESS_MESSAGE;
 
-    region.append( heading, message );
-    mount.appendChild( region );
+	region.append( heading, message );
+	mount.appendChild( region );
 };
 
 /**
@@ -318,57 +215,62 @@ const showSuccess = ( mount, customMessage ) => {
  * @return {Promise<void>}
  */
 const mountChefsForm = async ( root ) => {
-    const formId = root.dataset.formId?.trim() || '';
-    const mount = root.querySelector( '.bcew-chefs-form__mount' );
+	const formId = root.dataset.formId?.trim() || '';
+	const mount = root.querySelector( '.bcew-chefs-form__mount' );
 
-    if ( ! formId || ! mount ) {
-        return;
-    }
+	if ( ! formId || ! mount ) {
+		return;
+	}
 
-    try {
-        /*
-         * Fetch a short-lived token and any custom confirmation, then create
-         * the CHEFS web component. We draw success and error ourselves, so
-         * turn off CHEFS auto-reload after submit.
-         */
-        const config = await fetchEmbedConfig( formId );
-        await ensureChefsFormViewerDefined( config.baseUrl );
+	try {
+		/*
+		 * Fetch a short-lived token and any custom confirmation, then create
+		 * the CHEFS web component. We draw success and error ourselves, so
+		 * turn off CHEFS auto-reload after submit.
+		 */
+		const config = await fetchEmbedConfig( formId );
+		await ensureChefsFormViewerDefined( config.baseUrl );
 
-        const viewer = document.createElement( 'chefs-form-viewer' );
-        viewer.setAttribute( 'form-id', formId );
-        viewer.setAttribute( 'auth-token', config.token );
-        viewer.setAttribute( 'base-url', config.baseUrl );
-        viewer.setAttribute( 'auto-reload-on-submit', 'false' );
-        viewer.endpoints = {
-            formioJs: `${ config.baseUrl }/webcomponents/v1/assets/formio.js`,
-        };
+		const viewer = document.createElement( 'chefs-form-viewer' );
+		viewer.setAttribute( 'form-id', formId );
+		viewer.setAttribute( 'auth-token', config.token );
+		viewer.setAttribute( 'base-url', config.baseUrl );
+		viewer.setAttribute( 'auto-reload-on-submit', 'false' );
+		viewer.endpoints = {
+			formioJs: `${ config.baseUrl }/webcomponents/v1/assets/formio.js`,
+		};
 
-        /*
-         * Submit success and CHEFS HTTP errors are separate events. Success
-         * replaces the form. A CHEFS error is shown above it and the form stays.
-         */
-        viewer.addEventListener( 'formio:submitDone', () => {
-            showSuccess( mount, config.confirmation );
-        } );
+		/*
+		 * Submit success and CHEFS errors are separate events. Success
+		 * replaces the form. A submit error is shown above it and the form stays.
+		 */
+		viewer.addEventListener( 'formio:submitDone', () => {
+			showSuccess( mount, config.confirmation );
+		} );
 
-        viewer.addEventListener( 'formio:error', ( event ) => {
-            showChefsError( root, readChefsError( event?.detail ) );
-        } );
+		viewer.addEventListener( 'formio:error', () => {
+			showSubmitError( root );
+		} );
 
-        mount.replaceChildren( viewer );
-        mount.removeAttribute( 'aria-busy' );
+		mount.replaceChildren( viewer );
+		mount.removeAttribute( 'aria-busy' );
 
-        if ( 'function' === typeof viewer.load ) {
-            await viewer.load();
-        }
-    } catch ( error ) {
-        /*
-         * Embed-config or the viewer script failed. Keep the mount in place
-         * and show the normalized error above it.
-         */
-        mount.querySelector( 'chefs-form-viewer' )?.remove();
-        showChefsError( root, normalizeChefsError( error ) );
-    }
+		if ( 'function' === typeof viewer.load ) {
+			await viewer.load();
+		}
+	} catch ( error ) {
+		/*
+		 * Embed-config or the viewer script failed. Prefer the friendly
+		 * message thrown by fetchEmbedConfig. Script-load failures fall back
+		 * to the generic unavailable copy.
+		 */
+		const known = Object.values( PUBLIC_LOAD_ERRORS );
+		const text =
+			error?.message && known.includes( error.message )
+				? error.message
+				: PUBLIC_LOAD_ERRORS.chefs_form_unavailable;
+		showError( mount, text );
+	}
 };
 
 /*
@@ -377,9 +279,9 @@ const mountChefsForm = async ( root ) => {
  * class on the same element.
  */
 const roots = document.querySelectorAll(
-    '.wp-block-bcew-chefs-embed-chefs-form[data-form-id], .bcew-chefs-form[data-form-id]'
+	'.wp-block-bcew-chefs-embed-chefs-form[data-form-id], .bcew-chefs-form[data-form-id]'
 );
 
 roots.forEach( ( root ) => {
-    mountChefsForm( root );
+	mountChefsForm( root );
 } );

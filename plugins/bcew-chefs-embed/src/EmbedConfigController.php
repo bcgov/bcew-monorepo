@@ -57,6 +57,11 @@ class EmbedConfigController {
 		// API keys stay server-side; only the saved credential pair is used here.
 		$credentials = CredentialsManager::get_by_form_id( $form_id );
 
+		/*
+		 * No saved Form ID / API key in WordPress. This is distinct from a
+		 * CHEFS "form not found" response so the public page can tell the
+		 * visitor to reconnect the form under CHEFS Forms.
+		 */
 		if ( ! $credentials ) {
 			return new \WP_Error(
 				'chefs_form_not_configured',
@@ -71,23 +76,55 @@ class EmbedConfigController {
 		$authentication = ( new ChefsClient() )->authenticate( $credentials['form_id'], $credentials['api_key'] );
 
 		if ( ! $authentication['success'] ) {
-			$error_code    = 'request_failed' === $authentication['code'] ? 'chefs_auth_request_failed' : 'chefs_authentication_failed';
-			$error_message = 'request_failed' === $authentication['code']
-				? __( 'Unable to contact CHEFS. Try again later.', 'bcew-chefs-embed' )
-				: __( 'The configured CHEFS credentials could not be verified.', 'bcew-chefs-embed' );
+			/*
+			 * Map ChefsClient failure codes to stable public error codes.
+			 * The block frontend shows a clear visitor message for each code.
+			 * Do not expose API keys or raw upstream CHEFS details here.
+			 */
+			switch ( $authentication['code'] ) {
+				case 'form_not_found':
+					return new \WP_Error(
+						'chefs_form_not_found',
+						__( 'CHEFS could not find this form.', 'bcew-chefs-embed' ),
+						array(
+							'status' => \WP_Http::NOT_FOUND,
+						)
+					);
+				case 'invalid_credentials':
+					return new \WP_Error(
+						'chefs_api_key_invalid',
+						__( 'CHEFS rejected the API key.', 'bcew-chefs-embed' ),
+						array(
+							'status' => \WP_Http::FORBIDDEN,
+						)
+					);
+				case 'request_failed':
+					return new \WP_Error(
+						'chefs_unavailable',
+						__( 'Unable to contact CHEFS. Try again later.', 'bcew-chefs-embed' ),
+						array(
+							'status' => \WP_Http::BAD_GATEWAY,
+						)
+					);
+				default:
+					return new \WP_Error(
+						'chefs_form_unavailable',
+						__( 'The configured CHEFS credentials could not be verified.', 'bcew-chefs-embed' ),
+						array(
+							'status' => \WP_Http::BAD_GATEWAY,
+						)
+					);
+			}
+		}
 
-			// Do not expose API keys or detailed upstream authentication errors publicly.
+		if ( empty( $authentication['token'] ) ) {
 			return new \WP_Error(
-				$error_code,
-				$error_message,
+				'chefs_form_unavailable',
+				\__( 'CHEFS returned an invalid authentication response.', 'bcew-chefs-embed' ),
 				array(
 					'status' => \WP_Http::BAD_GATEWAY,
 				)
 			);
-		}
-
-		if ( empty( $authentication['token'] ) ) {
-			return new \WP_Error( 'chefs_invalid_auth_response', \__( 'CHEFS returned an invalid authentication response.', 'bcew-chefs-embed' ), array( 'status' => \WP_Http::BAD_GATEWAY ) );
 		}
 
 		// The block needs the token and endpoint; confirmation is optional configuration.

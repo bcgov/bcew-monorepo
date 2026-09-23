@@ -71,6 +71,8 @@ test.describe( 'CHEFS Form frontend', () => {
         editor,
         page,
     } ) => {
+        const submitError =
+            'Your form could not be submitted. Please review your answers and try again.';
         await publishFormAndVisit( admin, editor, page, {
             formId: 'cccccccc-dddd-4eee-8fff-111111111111',
             apiKey: 'frontend-error-handler-key',
@@ -88,12 +90,10 @@ test.describe( 'CHEFS Form frontend', () => {
         const error = await getFormError( page );
         await expect( error ).toBeVisible();
         await expect( error ).toHaveAttribute( 'role', 'alert' );
-        await expect( error.getByRole( 'heading', { level: 2 } ) ).toHaveText(
-            'Bad Request - 400'
+        await expect( error.getByRole( 'heading', { level: 2 } ) ).toHaveCount(
+            0
         );
-        await expect(
-            error.getByText( 'Request is missing content or is malformed' )
-        ).toBeVisible();
+        await expect( error.getByText( submitError ) ).toBeVisible();
         await expect( viewer ).toBeAttached();
         const errorIsAboveForm = await page.evaluate( () => {
             const banner = document.querySelector(
@@ -106,10 +106,7 @@ test.describe( 'CHEFS Form frontend', () => {
         await dispatchFormioEvent( viewer, 'formio:error', {
             error: 'Submission failed',
         } );
-        await expect( error.getByRole( 'heading', { level: 2 } ) ).toHaveCount(
-            0
-        );
-        await expect( error.getByText( 'Submission failed' ) ).toBeVisible();
+        await expect( error.getByText( submitError ) ).toBeVisible();
         await expect( viewer ).toBeAttached();
         await expect( error ).toHaveCount( 1 );
     } );
@@ -207,7 +204,8 @@ test.describe( 'CHEFS Form frontend', () => {
         await page.goto( `/?p=${ postId }` );
         await expect(
             page.getByRole( 'alert' ).filter( {
-                hasText: 'Unable to load the CHEFS form configuration.',
+                hasText:
+                    'This form is no longer set up on this website. Please contact the site administrator and ask them to reconnect it in CHEFS Forms.',
             } )
         ).toBeVisible();
     } );
