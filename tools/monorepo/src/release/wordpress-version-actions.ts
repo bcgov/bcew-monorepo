@@ -3,13 +3,13 @@
  *
  * Nx Release uses a "version actions" class to read and write version
  * numbers. The default class is built for npm packages. This one is wired
- * from nx.json (release.version.versionActions) and does three things:
+ * from nx.json (release.version.versionActions) and does two things:
  *
  * 1. Read the fallback version from package.json when git tags cannot.
  * 2. Write the new version to package.json (zip name, GitHub Release tag).
- * 3. Write the same version to the WordPress Version header so wp-admin
- *    matches the tag, including alphas.
  *
+ * It does not edit plugin or theme source. The WordPress Version header
+ * stays as it is in git. The release zip stamps that header in a temp copy.
  * It does not write composer.json. Composer versions come from git tags
  * and packages.json. It also does not rewrite dependency ranges between
  * plugins and themes; each project versions independently.
@@ -20,11 +20,10 @@ import { join } from 'node:path';
 import { VersionActions } from 'nx/release';
 import type { ProjectGraph } from '@nx/devkit';
 import type { NxReleaseVersionConfiguration } from 'nx/src/config/nx-json';
-import { applyWordpressHeaderVersion } from './wordpress-headers';
 
 /**
  * Nx Release version actions for WordPress plugins and themes.
- * Updates package.json and the WordPress Version header. Does not write composer.json.
+ * Updates package.json only. Does not write plugin or theme source, or composer.json.
  */
 export default class WordPressVersionActions extends VersionActions {
     validManifestFilenames = [ 'package.json' ];
@@ -94,7 +93,7 @@ export default class WordPressVersionActions extends VersionActions {
     }
 
     /**
-     * Write the new version to package.json and the WordPress header.
+     * Write the new version to package.json.
      *
      * @param {Tree}   tree       Virtual filesystem.
      * @param {string} newVersion Semver for this release.
@@ -105,12 +104,12 @@ export default class WordPressVersionActions extends VersionActions {
         newVersion: string
     ): Promise< string[] > {
         const logMessages: string[] = [];
-        const projectRoot = this.projectGraphNode.data.root;
 
         /*
          * package.json "version" is what the zip script and GitHub Release
          * tag use. Nx already decided newVersion (from our Action's
-         * specifier). We only write it.
+         * specifier). We only write it. Plugin PHP and theme style.css
+         * stay untouched.
          */
         for ( const manifestToUpdate of this.manifestsToUpdate ) {
             updateJson( tree, manifestToUpdate.manifestPath, ( json ) => {
@@ -122,12 +121,7 @@ export default class WordPressVersionActions extends VersionActions {
             );
         }
 
-        const headerLogs = this.updateWordpressHeaders(
-            tree,
-            projectRoot,
-            newVersion
-        );
-        return [ ...logMessages, ...headerLogs ];
+        return logMessages;
     }
 
     /**
@@ -141,61 +135,5 @@ export default class WordPressVersionActions extends VersionActions {
         _dependenciesToUpdate: Record< string, string >
     ): Promise< string[] > {
         return [];
-    }
-
-    /**
-     * Update style.css for themes, or the PHP file that contains Plugin Name for plugins.
-     *
-     * @param {Tree}   tree        Virtual filesystem.
-     * @param {string} projectRoot Project directory.
-     * @param {string} newVersion  Semver for this release.
-     * @return {string[]} Log lines.
-     */
-    private updateWordpressHeaders(
-        tree: Tree,
-        projectRoot: string,
-        newVersion: string
-    ): string[] {
-        /*
-         * Themes: style.css in the project root. If that file has Theme Name
-         * and Version, stamp it and stop. A plugin should not also have this
-         * file as its identity.
-         */
-        const styleCss = join( projectRoot, 'style.css' );
-        if ( tree.exists( styleCss ) ) {
-            const contents = tree.read( styleCss, 'utf-8' ) ?? '';
-            const next = applyWordpressHeaderVersion( contents, newVersion );
-            if ( next !== contents ) {
-                tree.write( styleCss, next );
-                return [
-                    `New version ${ newVersion } written to ${ styleCss }`,
-                ];
-            }
-        }
-
-        /*
-         * Plugins: look at every PHP file in the project root for Plugin
-         * Name. bcew-blocks is bcgov-wordpress-blocks.php, not
-         * bcew-blocks.php, so the filename is not enough.
-         */
-        const phpFiles = tree
-            .children( projectRoot )
-            .filter( ( name ) => name.endsWith( '.php' ) );
-
-        for ( const fileName of phpFiles ) {
-            const phpPath = join( projectRoot, fileName );
-            const contents = tree.read( phpPath, 'utf-8' ) ?? '';
-            const next = applyWordpressHeaderVersion( contents, newVersion );
-            if ( next !== contents ) {
-                tree.write( phpPath, next );
-                return [
-                    `New version ${ newVersion } written to ${ phpPath }`,
-                ];
-            }
-        }
-
-        return [
-            `No WordPress Version header found under ${ projectRoot }`,
-        ];
     }
 }

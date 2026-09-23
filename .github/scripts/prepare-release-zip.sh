@@ -35,9 +35,8 @@ if [[ -d "${PROJECT_PATH}/dist" ]]; then
   cp -R "${PROJECT_PATH}/dist" "${TMP}/dist"
 fi
 
-# Stamp Version in the zip as a safety net. Git already has the header after
-# Nx Release, including prereleases. This still covers plugin files that are
-# not named after the Nx project, and old tags that skipped the header.
+# Stamp Version on this temp copy only, including prereleases. The committed
+# plugin PHP and theme style.css stay as they are in git.
 if [[ -n "${VERSION}" ]]; then
   set_wordpress_version() {
     local file="$1"

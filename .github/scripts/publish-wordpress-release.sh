@@ -3,9 +3,11 @@
 # Publish step for Nx Release (the nx-release-publish target in nx.json).
 #
 # By the time this runs, Nx has already:
-# - written the version into package.json and the WordPress header
+# - written the version into package.json and the project changelog
 # - committed and tagged {project}/v{version}
 # - created the GitHub Release
+# Plugin PHP and theme style.css are left as they are in git. The zip
+# script stamps the WordPress Version header on a temp copy only.
 #
 # This script builds the plugin or theme, zips it, attaches the zip to that
 # Release, and adds the version to packages.json so Composer sites can install

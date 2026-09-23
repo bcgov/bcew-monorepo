@@ -5,8 +5,9 @@
 # is not typed in: a script reads existing {project}/v* tags and applies the
 # house rules (alphas count up on the same X.Y.Z; a real release is that
 # X.Y.Z if it is missing; after a real release the next series is the next
-# minor). Nx Release then stamps files, commits, tags, creates the GitHub
-# Release, zips the project, and updates packages.json for Composer.
+# minor). Nx Release then updates package.json and the changelog, commits
+# those, tags, creates the GitHub Release, zips the project, and updates
+# packages.json for Composer. Plugin PHP and theme style.css are not edited.
 #
 # Do not pass --specifier= or --git-commit to nx release. The version is a
 # positional argument. Commit, tag, and push come from nx.json.
