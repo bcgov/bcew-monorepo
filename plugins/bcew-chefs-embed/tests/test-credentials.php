@@ -167,7 +167,7 @@ class CredentialsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_rest_route_returns_saved_forms() {
-		$user_id = self::factory()->user->create( array( 'role' => 'author' ) );
+		$user_id = self::factory()->user->create( array( 'role' => 'editor' ) );
 		wp_set_current_user( $user_id );
 
 		$this->activate_and_init_rest();
@@ -187,6 +187,8 @@ class CredentialsTest extends \WP_UnitTestCase {
 			$this->assertIsString( $form['form_id'] );
 			$this->assertNotEmpty( $form['form_id'] );
 			$this->assertArrayHasKey( 'form_name', $form );
+			// The API key should not be exposed in the REST response.
+			$this->assertArrayNotHasKey( 'api_key', $form );
 		}
 	}
 
@@ -286,6 +288,23 @@ class CredentialsTest extends \WP_UnitTestCase {
 
 		CredentialsManager::install();
 		CredentialsManager::save( $this->form_id, 'test-api-key-value', $user_id );
+
+		$request  = new \WP_REST_Request( 'GET', '/bcew-chefs-embed/v1/forms' );
+		$response = rest_do_request( $request );
+
+		$this->assertSame( 403, $response->get_status() );
+		$this->assertSame( 'rest_forbidden', $response->get_data()['code'] );
+	}
+
+	/**
+	 * REST route denies access to logged-out visitors.
+	 *
+	 * @return void
+	 */
+	public function test_forms_route_blocks_logged_out_users() {
+		wp_set_current_user( 0 );
+
+		$this->activate_and_init_rest();
 
 		$request  = new \WP_REST_Request( 'GET', '/bcew-chefs-embed/v1/forms' );
 		$response = rest_do_request( $request );
