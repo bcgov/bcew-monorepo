@@ -1,8 +1,8 @@
-<!-- wp:group {"metadata":{"name":"Header"},"align":"wide","className":"has-base-background-color has-background","style":{"spacing":{"padding":{"right":"1rem","left":"1rem"}}},"layout":{"type":"constrained"}} -->
-<div class="wp-block-group alignwide has-base-background-color has-background"
-    style="padding-right:1rem;padding-left:1rem">
-    <!-- wp:group {"metadata":{"name":"header-top"},"align":"wide","layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap","orientation":"horizontal"}} -->
-    <div class="wp-block-group alignwide"><!-- wp:site-logo {"width":84} /-->
+<!-- wp:group {"metadata":{"name":"Header top"},"align":"full","className":"bcew-header-section bcew-header-top has-base-background-color has-background","style":{"border":{"bottom":{"color":"var:preset|color|border-default","width":"1px"}}},"layout":{"type":"constrained"}} -->
+<div class="wp-block-group alignfull bcew-header-section bcew-header-top has-base-background-color has-background"
+    style="border-bottom-color:var(--wp--preset--color--border-default);border-bottom-width:1px">
+    <!-- wp:group {"metadata":{"name":"header-top"},"layout":{"type":"flex","justifyContent":"space-between","flexWrap":"wrap","orientation":"horizontal"}} -->
+    <div class="wp-block-group"><!-- wp:site-logo {"width":84} /-->
 
         <!-- wp:design-system-wordpress-plugin/navigation {"overlayMenu":"always","ref":6,"menuId":6,"mobileBreakpoint":782,"showInDesktop":false,"showInMobile":true,"style":{"typography":{"lineHeight":"1.68"}}} /-->
 
@@ -13,16 +13,25 @@
         <!-- /wp:group -->
     </div>
     <!-- /wp:group -->
+</div>
+<!-- /wp:group -->
 
-    <!-- wp:group {"metadata":{"name":"header-nav"},"align":"wide","style":{"border":{"top":{"color":"var:preset|color|border-default","width":"1px"},"bottom":{"color":"var:preset|color|border-default","width":"1px"}}},"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"left","orientation":"horizontal"}} -->
-    <div class="wp-block-group alignwide"
-        style="border-top-color:var(--wp--preset--color--border-default);border-top-width:1px;border-bottom-color:var(--wp--preset--color--border-default);border-bottom-width:1px">
-        <!-- wp:design-system-wordpress-plugin/navigation {"overlayMenu":"mobile","ref":6,"menuId":6,"mobileBreakpoint":782,"align":"wide","className":"bcew-header-nav","style":{"typography":{"lineHeight":"1.68"}},"fontFamily":"bcsans"} /-->
+<!-- wp:group {"metadata":{"name":"Header navigation"},"align":"full","className":"bcew-header-section bcew-header-navigation has-base-background-color has-background","style":{"border":{"bottom":{"color":"var:preset|color|border-default","width":"1px"}}},"layout":{"type":"constrained"}} -->
+<div class="wp-block-group alignfull bcew-header-section bcew-header-navigation has-base-background-color has-background"
+    style="border-bottom-color:var(--wp--preset--color--border-default);border-bottom-width:1px">
+    <!-- wp:group {"metadata":{"name":"header-nav"},"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"left","orientation":"horizontal"}} -->
+    <div class="wp-block-group">
+        <!-- wp:design-system-wordpress-plugin/navigation {"overlayMenu":"mobile","ref":6,"menuId":6,"mobileBreakpoint":782,"className":"bcew-header-nav","style":{"typography":{"lineHeight":"1.68"}},"fontFamily":"bcsans"} /-->
     </div>
     <!-- /wp:group -->
+</div>
+<!-- /wp:group -->
 
-    <!-- wp:group {"metadata":{"name":"header-breadcrumbs"},"align":"wide","layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"center"}} -->
-    <div class="wp-block-group alignwide"><!-- wp:design-system-wordpress-plugin/breadcrumb /--></div>
+<!-- wp:group {"metadata":{"name":"Header breadcrumbs"},"align":"full","className":"bcew-header-section bcew-header-breadcrumbs has-base-background-color has-background","style":{"border":{"bottom":{"color":"var:preset|color|border-default","width":"1px"}}},"layout":{"type":"constrained"}} -->
+<div class="wp-block-group alignfull bcew-header-section bcew-header-breadcrumbs has-base-background-color has-background"
+    style="border-bottom-color:var(--wp--preset--color--border-default);border-bottom-width:1px">
+    <!-- wp:group {"metadata":{"name":"header-breadcrumbs"},"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"center"}} -->
+    <div class="wp-block-group"><!-- wp:design-system-wordpress-plugin/breadcrumb /--></div>
     <!-- /wp:group -->
 </div>
 <!-- /wp:group -->
