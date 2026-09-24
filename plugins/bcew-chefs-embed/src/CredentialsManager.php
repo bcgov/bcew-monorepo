@@ -14,6 +14,19 @@ namespace Bcgov\BcewChefsEmbed;
  * - user_id (integer, WordPress user ID)
  */
 class CredentialsManager {
+	use InstallsSiteTable;
+
+	/**
+	 * Credentials table schema version.
+	 *
+	 * Bump when table_definition() changes so existing installs re-run dbDelta.
+	 */
+	const DB_VERSION = '1';
+
+	/**
+	 * Option key storing the installed schema version.
+	 */
+	const DB_VERSION_OPTION = 'bcew_chefs_embed_db_version';
 
 	/**
 	 * Credentials table name (with WP prefix for the current site).
@@ -27,97 +40,74 @@ class CredentialsManager {
 	}
 
 	/**
-	 * Plugin activation callback (single site or network-wide).
+	 * Remove a form by CHEFS form ID (hard delete).
 	 *
-	 * @param bool $network_wide Whether the plugin is network-activated.
-	 * @return void
-	 */
-	public static function activate( $network_wide ) {
-		if ( is_multisite() && $network_wide ) {
-			$site_ids = get_sites(
-				array(
-					'fields' => 'ids',
-					'number' => 0,
-				)
-			);
-
-			foreach ( $site_ids as $site_id ) {
-				switch_to_blog( (int) $site_id );
-				self::install();
-				restore_current_blog();
-			}
-
-			return;
-		}
-
-		self::install();
-	}
-
-	/**
-	 * Create the credentials table for a newly created multisite site.
+	 * Used by the settings page Remove action.
+	 * Deletes the entire credentials row — including the stored API key —
+	 * so the form disappears from list_forms() / get_saved_form_ids().
 	 *
-	 * @param \WP_Site $new_site New site object.
-	 * @return void
-	 */
-	public static function on_initialize_site( $new_site ) {
-		if ( ! $new_site instanceof \WP_Site ) {
-			return;
-		}
-
-		switch_to_blog( (int) $new_site->blog_id );
-		self::install();
-		restore_current_blog();
-	}
-
-	/**
-	 * Create the credentials table via dbDelta.
-	 *
-	 * @return void
-	 */
-	public static function install() {
-		self::create_table();
-	}
-
-	/**
-	 * Remove a form by CHEFS form ID.
-	 *
-	 * @param string $form_id CHEFS form ID.
-	 * @return bool
+	 * @param string $form_id CHEFS form ID (primary key).
+	 * @return bool True when at least one row was deleted.
 	 */
 	public static function delete( $form_id ) {
 		global $wpdb;
 
+		// Normalize the ID the same way save()/get_by_form_id() do.
 		$form_id = self::sanitize_form_id( $form_id );
 
+		// Nothing to delete if the ID is empty after sanitize.
 		if ( '' === $form_id ) {
 			return false;
 		}
 
+		// $wpdb->delete builds a safe DELETE ... WHERE form_id = %s.
 		$deleted = $wpdb->delete(
 			self::table_name(),
 			array( 'form_id' => $form_id ),
 			array( '%s' )
 		);
 
+		/*
+		 * Removing a form should also remove its confirmation so leftover
+		 * messages are not shown if the same form ID is saved again later.
+		 */
+		OptionsManager::delete( $form_id );
+
+		// false = query error; 0 = no matching row; >0 = rows removed.
 		return false !== $deleted && $deleted > 0;
 	}
 
 	/**
-	 * List configured form IDs for the settings page.
+	 * List configured forms for the settings page.
 	 *
-	 * @return array<int,string>
+	 * Does not select api_key — the settings table shows the form name, ID,
+	 * date, and actions. Keeps secrets off the HTML page.
+	 *
+	 * @return array<int,array{form_id:string,form_name:string,created_at:string}>
 	 */
 	public static function list_forms() {
 		global $wpdb;
 
-		$table = self::table_name();
+		$table         = self::table_name();
+		$options_table = OptionsManager::table_name();
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- no user input; table name cannot be parameterized.
-		return $wpdb->get_col( 'SELECT form_id FROM `' . $table . '` ORDER BY created_at DESC' );
+		return $wpdb->get_results(
+			$wpdb->prepare(
+				'SELECT cred.form_id, IFNULL( opts.form_name, \'\' ) AS form_name, cred.created_at
+				FROM %i cred
+				LEFT JOIN %i opts ON opts.chefs_credentials_id = cred.form_id
+				ORDER BY cred.created_at DESC',
+				$table,
+				$options_table
+			),
+			ARRAY_A
+		);
 	}
 
 	/**
 	 * Get a stored form record by form ID (primary key).
+	 *
+	 * API key is decrypted for server-side use.
 	 *
 	 * @param string $form_id CHEFS form ID.
 	 * @return array{form_id:string,api_key:string,created_at:string,user_id:int}|null
@@ -147,12 +137,47 @@ class CredentialsManager {
 			return null;
 		}
 
+		$api_key = Crypto::decrypt( $row['api_key'] );
+
+		if ( false === $api_key ) {
+			return null;
+		}
+
 		return array(
 			'form_id'    => $row['form_id'],
-			'api_key'    => $row['api_key'],
+			'api_key'    => $api_key,
 			'created_at' => $row['created_at'],
 			'user_id'    => (int) $row['user_id'],
 		);
+	}
+
+	/**
+	 * Check whether a credentials row exists without decrypting its API key.
+	 *
+	 * @param string $form_id CHEFS form ID.
+	 * @return bool
+	 */
+	public static function form_exists( $form_id ) {
+		global $wpdb;
+
+		$form_id = self::sanitize_form_id( $form_id );
+
+		if ( '' === $form_id ) {
+			return false;
+		}
+
+		$table = self::table_name();
+
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared -- table name cannot be parameterized.
+		$exists = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT 1 FROM `{$table}` WHERE form_id = %s LIMIT 1",
+				$form_id
+			)
+		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared
+
+		return '1' === (string) $exists;
 	}
 
 	/**
@@ -200,6 +225,12 @@ class CredentialsManager {
 			return false;
 		}
 
+		$api_key_encrypted = Crypto::encrypt( $api_key );
+
+		if ( false === $api_key_encrypted ) {
+			return false;
+		}
+
 		if ( null === $user_id ) {
 			$user_id = get_current_user_id();
 		}
@@ -220,7 +251,7 @@ class CredentialsManager {
 			$result = $wpdb->update(
 				$table,
 				array(
-					'api_key' => $api_key,
+					'api_key' => $api_key_encrypted,
 					'user_id' => $user_id,
 				),
 				array( 'form_id' => $form_id ),
@@ -232,7 +263,7 @@ class CredentialsManager {
 				$table,
 				array(
 					'form_id' => $form_id,
-					'api_key' => $api_key,
+					'api_key' => $api_key_encrypted,
 					'user_id' => $user_id,
 				),
 				array( '%s', '%s', '%d' )
@@ -253,27 +284,18 @@ class CredentialsManager {
 	}
 
 	/**
-	 * Create or update the credentials table via dbDelta.
+	 * Column and index definitions for the credentials table.
 	 *
-	 * @return void
+	 * @return string
 	 */
-	private static function create_table() {
-		global $wpdb;
-
-		$table   = self::table_name();
-		$charset = $wpdb->get_charset_collate();
-
-		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-
-		$sql = "CREATE TABLE {$table} (
+	protected static function table_definition() {
+		return '
 			form_id varchar(36) NOT NULL,
 			api_key longtext NOT NULL,
 			created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			user_id bigint(20) unsigned NOT NULL DEFAULT 0,
 			PRIMARY KEY  (form_id),
 			KEY user_id (user_id)
-		) {$charset};";
-
-		dbDelta( $sql );
+		';
 	}
 }

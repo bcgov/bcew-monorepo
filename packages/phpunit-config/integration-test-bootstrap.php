@@ -59,27 +59,35 @@ function _manually_load_plugin_or_theme() {
  *                     no entrypoint could be found.
  */
 function _wordpressutils_find_entrypoint_file() {
-    $path = dirname( dirname( __FILE__ ), 4 );
+    $path = dirname( __DIR__ );
 
-    // If functions.php exists this is a theme, return true.
-    if (file_exists($path . '/functions.php')) {
-        return true;
-    } else {
-        // Get all php files in the plugin root.
-        $files = glob($path . '/*.php');
-        
+    for ( $i = 0; $i < 5; $i++ ) {
+        // If functions.php exists this is a theme, return true.
+        if ( file_exists( $path . '/functions.php' ) ) {
+            return true;
+        }
+
+        // Get all php files in the current directory.
+        $files = glob( $path . '/*.php' );
+
         $default_headers = [
             'Plugin Name' => 'Plugin Name',
         ];
 
         // Plugins should have an entrypoint file with the Plugin Name header.
-        foreach($files as $file) {
-            $file_data = get_file_data($file, $default_headers);
-            
-            if (!empty($file_data['Plugin Name'])) {
+        foreach ( $files as $file ) {
+            $file_data = get_file_data( $file, $default_headers );
+
+            if ( ! empty( $file_data['Plugin Name'] ) ) {
                 return $file;
             }
         }
+
+        $parent_path = dirname( $path );
+        if ( $parent_path === $path ) {
+            break;
+        }
+        $path = $parent_path;
     }
 
     // No theme or plugin entrypoint was found.
@@ -91,7 +99,20 @@ function _wordpressutils_find_entrypoint_file() {
  */
 function _register_theme() {
 
-    $theme_dir     = dirname( __DIR__, 4 );
+    $theme_dir = dirname( __DIR__ );
+
+    for ( $i = 0; $i < 5; $i++ ) {
+        if ( file_exists( $theme_dir . '/functions.php' ) ) {
+            break;
+        }
+
+        $parent_theme_dir = dirname( $theme_dir );
+        if ( $parent_theme_dir === $theme_dir ) {
+            throw new EntrypointNotFoundException( 'Could not find theme root.' );
+        }
+        $theme_dir = $parent_theme_dir;
+    }
+
     $current_theme = basename( $theme_dir );
     $theme_root    = dirname( $theme_dir );
 

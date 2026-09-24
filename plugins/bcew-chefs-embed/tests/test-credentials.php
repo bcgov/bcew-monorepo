@@ -1,6 +1,6 @@
 <?php
 /**
- * Integration tests for CHEFS credentials storage (DSWP-1034).
+ * Integration tests for CHEFS credentials storage
  *
  * @package bcew-chefs-embed
  */
@@ -8,6 +8,8 @@
 namespace Bcgov\BcewChefsEmbed\Test;
 
 use Bcgov\BcewChefsEmbed\CredentialsManager;
+use Bcgov\BcewChefsEmbed\OptionsManager;
+use Bcgov\BcewChefsEmbed\Settings;
 
 /**
  * Credentials table acceptance criteria.
@@ -30,6 +32,7 @@ class CredentialsTest extends \WP_UnitTestCase {
 		parent::set_up();
 
 		CredentialsManager::install();
+		OptionsManager::install();
 
 		global $wpdb;
 
@@ -52,6 +55,32 @@ class CredentialsTest extends \WP_UnitTestCase {
 		);
 
 		return $found === $table;
+	}
+
+	/**
+	 * Activate plugin and initialize REST API.
+	 *
+	 * @return void
+	 */
+	private function activate_and_init_rest() {
+		activate_plugin( 'bcew-chefs-embed/bcew-chefs-embed.php' );
+		do_action( 'rest_api_init' );
+	}
+
+	/**
+	 * Run a callback with an HTTP mock active, then remove the mock.
+	 *
+	 * @param callable $http_callback Mock HTTP handler.
+	 * @param callable $callback Callback to run while mock is active.
+	 * @return void
+	 */
+	private function with_http_mock( $http_callback, $callback ) {
+		add_filter( 'pre_http_request', $http_callback, 10, 3 );
+		try {
+			$callback();
+		} finally {
+			remove_filter( 'pre_http_request', $http_callback );
+		}
 	}
 
 	/**
@@ -119,32 +148,131 @@ class CredentialsTest extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Saved CHEFS form IDs are exposed through the REST API for users who can edit posts.
+	 * Build expected form data object for REST response assertions.
+	 *
+	 * @param string $form_id CHEFS form ID.
+	 * @return array
+	 */
+	private function get_expected_form_data( $form_id ) {
+		return array(
+			'form_id'    => $form_id,
+			'form_name'  => '',
+			'created_at' => $this->get_saved_form_created_at( $form_id ),
+		);
+	}
+
+	/**
+	 * Saved CHEFS forms are exposed through the REST API for users who can edit posts.
 	 *
 	 * @return void
 	 */
-	public function test_rest_route_returns_saved_form_ids() {
-		$user_id = self::factory()->user->create( array( 'role' => 'author' ) );
+	public function test_rest_route_returns_saved_forms() {
+		$user_id = self::factory()->user->create( array( 'role' => 'editor' ) );
 		wp_set_current_user( $user_id );
 
-		activate_plugin( 'bcew-chefs-embed/bcew-chefs-embed.php' );
-		do_action( 'rest_api_init' );
+		$this->activate_and_init_rest();
 
 		CredentialsManager::install();
 		CredentialsManager::save( $this->form_id, 'test-api-key-value', $user_id );
 		$second_form_id = 'deadbeef-1234-5678-90ab-cdef12345678';
 		CredentialsManager::save( $second_form_id, 'another-test-key', $user_id );
 
-		$request  = new \WP_REST_Request( 'GET', '/bcew-chefs-embed/v1/form-ids' );
+		$request  = new \WP_REST_Request( 'GET', '/bcew-chefs-embed/v1/forms' );
 		$response = rest_do_request( $request );
 
 		$this->assertSame( 200, $response->get_status() );
-		$this->assertEqualsCanonicalizing( array( $this->form_id, $second_form_id ), $response->get_data() );
+		$this->assertCount( 2, $response->get_data() );
 
-		foreach ( $response->get_data() as $saved_form_id ) {
-			$this->assertIsString( $saved_form_id );
-			$this->assertNotEmpty( $saved_form_id );
+		foreach ( $response->get_data() as $form ) {
+			$this->assertIsString( $form['form_id'] );
+			$this->assertNotEmpty( $form['form_id'] );
+			$this->assertArrayHasKey( 'form_name', $form );
+			// The API key should not be exposed in the REST response.
+			$this->assertArrayNotHasKey( 'api_key', $form );
 		}
+	}
+
+	/**
+	 * Get the stored creation time for REST response assertions.
+	 *
+	 * @param string $form_id CHEFS form ID.
+	 * @return string
+	 */
+	private function get_saved_form_created_at( $form_id ) {
+		global $wpdb;
+
+		$table = CredentialsManager::table_name();
+
+		return (string) $wpdb->get_var(
+			$wpdb->prepare(
+				'SELECT created_at FROM %i WHERE form_id = %s',
+				$table,
+				$form_id
+			)
+		);
+	}
+
+	/**
+	 * REST route returns an empty list when no forms are saved.
+	 *
+	 * @return void
+	 */
+	public function test_rest_route_returns_empty_list_when_no_saved_forms() {
+		$user_id = self::factory()->user->create( array( 'role' => 'author' ) );
+		wp_set_current_user( $user_id );
+
+		$this->activate_and_init_rest();
+
+		$request  = new \WP_REST_Request( 'GET', '/bcew-chefs-embed/v1/forms' );
+		$response = rest_do_request( $request );
+
+		$this->assertSame( 200, $response->get_status() );
+		$this->assertSame( array(), $response->get_data() );
+	}
+
+	/**
+	 * The editor script receives the settings page URL used by the no-forms message link.
+	 *
+	 * @return void
+	 */
+	public function test_editor_script_has_inline_settings_url_config() {
+		$registry = \WP_Block_Type_Registry::get_instance();
+		if ( $registry->is_registered( 'bcew-chefs-embed/chefs-form' ) ) {
+			$registry->unregister( 'bcew-chefs-embed/chefs-form' );
+		}
+
+		wp_register_script( 'bcew-chefs-embed-test-editor-script', false, array(), '1.0.0', true );
+		register_block_type(
+			'bcew-chefs-embed/chefs-form',
+			array(
+				'editor_script' => 'bcew-chefs-embed-test-editor-script',
+			)
+		);
+
+		bcew_chefs_embed_register_editor_settings();
+
+		$block_type = $registry->get_registered( 'bcew-chefs-embed/chefs-form' );
+
+		$this->assertNotNull( $block_type );
+		$this->assertNotEmpty( $block_type->editor_script_handles );
+
+		$editor_script_handle = reset( $block_type->editor_script_handles );
+		$this->assertIsString( $editor_script_handle );
+		$this->assertNotSame( '', $editor_script_handle );
+
+		$inline_scripts = wp_scripts()->get_data( $editor_script_handle, 'before' );
+
+		$this->assertNotFalse( $inline_scripts );
+		$this->assertIsArray( $inline_scripts );
+		$this->assertNotEmpty( $inline_scripts );
+
+		$inline_script = implode( "\n", $inline_scripts );
+
+		$this->assertStringContainsString( 'window.bcewChefsEmbedSettings', $inline_script );
+		$this->assertStringContainsString( 'settingsUrl', $inline_script );
+		$this->assertStringContainsString( Settings::PAGE_SLUG, $inline_script );
+
+		$registry->unregister( 'bcew-chefs-embed/chefs-form' );
 	}
 
 	/**
@@ -152,17 +280,33 @@ class CredentialsTest extends \WP_UnitTestCase {
 	 *
 	 * @return void
 	 */
-	public function test_rest_route_blocks_users_without_edit_posts_capability() {
+	public function test_forms_route_blocks_users_without_edit_posts_capability() {
 		$user_id = self::factory()->user->create( array( 'role' => 'subscriber' ) );
 		wp_set_current_user( $user_id );
 
-		activate_plugin( 'bcew-chefs-embed/bcew-chefs-embed.php' );
-		do_action( 'rest_api_init' );
+		$this->activate_and_init_rest();
 
 		CredentialsManager::install();
 		CredentialsManager::save( $this->form_id, 'test-api-key-value', $user_id );
 
-		$request  = new \WP_REST_Request( 'GET', '/bcew-chefs-embed/v1/form-ids' );
+		$request  = new \WP_REST_Request( 'GET', '/bcew-chefs-embed/v1/forms' );
+		$response = rest_do_request( $request );
+
+		$this->assertSame( 403, $response->get_status() );
+		$this->assertSame( 'rest_forbidden', $response->get_data()['code'] );
+	}
+
+	/**
+	 * REST route denies access to logged-out visitors.
+	 *
+	 * @return void
+	 */
+	public function test_forms_route_blocks_logged_out_users() {
+		wp_set_current_user( 0 );
+
+		$this->activate_and_init_rest();
+
+		$request  = new \WP_REST_Request( 'GET', '/bcew-chefs-embed/v1/forms' );
 		$response = rest_do_request( $request );
 
 		$this->assertSame( 403, $response->get_status() );
@@ -184,11 +328,16 @@ class CredentialsTest extends \WP_UnitTestCase {
 		activate_plugin( $plugin );
 		deactivate_plugins( $plugin );
 
-		$this->assertTrue( $this->table_exists() );
+		try {
+			$this->assertTrue( $this->table_exists() );
 
-		$row = CredentialsManager::get_by_form_id( $this->form_id );
-		$this->assertIsArray( $row );
-		$this->assertSame( 'persist-me', $row['api_key'] );
+			$row = CredentialsManager::get_by_form_id( $this->form_id );
+			$this->assertIsArray( $row );
+			$this->assertSame( 'persist-me', $row['api_key'] );
+		} finally {
+			// Leave the shared wp-env tests site active for e2e / manual checks.
+			activate_plugin( $plugin );
+		}
 	}
 
 	/**
@@ -225,5 +374,200 @@ class CredentialsTest extends \WP_UnitTestCase {
 		restore_current_blog();
 
 		$this->assertTrue( $this->table_exists() );
+	}
+
+	/**
+	 * Embed config REST route returns token + base URL and does not expose the API key.
+	 *
+	 * @return void
+	 */
+	public function test_embed_config_route_returns_token_and_base_url_without_exposing_api_key() {
+		$user_id = self::factory()->user->create( array( 'role' => 'author' ) );
+		wp_set_current_user( $user_id );
+
+		$this->activate_and_init_rest();
+
+		CredentialsManager::install();
+		OptionsManager::install();
+		CredentialsManager::save( $this->form_id, 'test-api-key-value', $user_id );
+
+		$http_callback = function ( $preempt, $parsed_args, $url ) {
+			$this->assertStringContainsString( '/auth/token/forms/' . rawurlencode( $this->form_id ), $url );
+			$this->assertSame(
+				// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Required to validate the HTTP Basic auth header used for the CHEFS token request.
+				'Basic ' . base64_encode( $this->form_id . ':test-api-key-value' ),
+				$parsed_args['headers']['Authorization']
+			);
+
+			return array(
+				'headers'  => array( 'content-type' => 'application/json' ),
+				'body'     => wp_json_encode( array( 'token' => 'chefs-token-123' ) ),
+				'response' => array(
+					'code'    => 200,
+					'message' => 'OK',
+				),
+			);
+		};
+
+		$this->with_http_mock(
+            $http_callback,
+            function () {
+				$request = new \WP_REST_Request( 'GET', '/bcew-chefs-embed/v1/embed-config' );
+				$request->set_param( 'formId', $this->form_id );
+				$response = rest_do_request( $request );
+
+				$this->assertSame( 200, $response->get_status() );
+				$this->assertSame( 'chefs-token-123', $response->get_data()['token'] );
+				$this->assertSame( 'https://submit.digital.gov.bc.ca/app', $response->get_data()['baseUrl'] );
+				$this->assertArrayHasKey( 'confirmation', $response->get_data() );
+				$this->assertNull( $response->get_data()['confirmation'] );
+				$this->assertArrayNotHasKey( 'apiKey', $response->get_data() );
+				$this->assertArrayNotHasKey( 'api_key', $response->get_data() );
+				$this->assertStringNotContainsString( 'test-api-key-value', wp_json_encode( $response->get_data() ) );
+			}
+        );
+	}
+
+	/**
+	 * Embed config REST route returns an error for an unknown Form ID.
+	 *
+	 * @return void
+	 */
+	public function test_embed_config_route_returns_error_for_unknown_form_id() {
+		$this->activate_and_init_rest();
+
+		CredentialsManager::install();
+
+		$request = new \WP_REST_Request(
+			'GET',
+			'/bcew-chefs-embed/v1/embed-config'
+		);
+
+		$request->set_param( 'formId', '00000000-0000-0000-0000-000000000000' );
+
+		$response = rest_do_request( $request );
+
+		$this->assertSame( 404, $response->get_status() );
+		$this->assertSame(
+			'chefs_form_not_configured',
+			$response->get_data()['code']
+		);
+	}
+
+	/**
+	 * Embed config includes a saved custom confirmation message.
+	 *
+	 * @return void
+	 */
+	public function test_embed_config_route_returns_custom_confirmation() {
+		$user_id = self::factory()->user->create( array( 'role' => 'author' ) );
+		wp_set_current_user( $user_id );
+
+		$this->activate_and_init_rest();
+
+		CredentialsManager::install();
+		OptionsManager::install();
+		CredentialsManager::save( $this->form_id, 'test-api-key-value', $user_id );
+		OptionsManager::save( $this->form_id, 'Thanks for applying.' );
+
+		$http_callback = function () {
+			return array(
+				'headers'  => array( 'content-type' => 'application/json' ),
+				'body'     => wp_json_encode( array( 'token' => 'chefs-token-123' ) ),
+				'response' => array(
+					'code'    => 200,
+					'message' => 'OK',
+				),
+			);
+		};
+
+		$this->with_http_mock(
+            $http_callback,
+            function () {
+				$request = new \WP_REST_Request( 'GET', '/bcew-chefs-embed/v1/embed-config' );
+				$request->set_param( 'formId', $this->form_id );
+				$response = rest_do_request( $request );
+
+				$this->assertSame( 200, $response->get_status() );
+				$this->assertSame( 'Thanks for applying.', $response->get_data()['confirmation'] );
+			}
+        );
+	}
+
+	/**
+	 * Removing credentials also removes the confirmation for that form.
+	 *
+	 * @return void
+	 */
+	public function test_deleting_credentials_also_deletes_confirmation() {
+		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		CredentialsManager::save( $this->form_id, 'test-api-key-value', $user_id );
+		OptionsManager::install();
+		OptionsManager::save( $this->form_id, 'Thanks for applying.' );
+
+		$this->assertSame( 'Thanks for applying.', OptionsManager::get_confirmation( $this->form_id ) );
+
+		CredentialsManager::delete( $this->form_id );
+
+		$this->assertNull( CredentialsManager::get_by_form_id( $this->form_id ) );
+		$this->assertNull( OptionsManager::get_confirmation( $this->form_id ) );
+	}
+
+	/**
+	 * Render the CHEFS Form block template with the given Form ID attribute.
+	 *
+	 * @param string $form_id Form ID attribute value.
+	 * @return string Rendered HTML.
+	 */
+	private function render_chefs_form_template( $form_id ) {
+		$attributes = array(
+			'formId' => $form_id,
+		);
+		$content    = '';
+		$block      = null;
+		$template   = dirname( __DIR__ ) . '/src/chefs-form/render.php';
+
+		$this->assertFileExists( $template );
+
+		ob_start();
+		// phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable -- Test loads the block render template by absolute path.
+		require $template;
+
+		return (string) ob_get_clean();
+	}
+
+	/**
+	 * Frontend block markup exposes the Form ID only (no API key or token).
+	 *
+	 * @return void
+	 */
+	public function test_block_render_outputs_form_id_without_secrets() {
+		$form_id = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+		$api_key = 'super-secret-api-key-value';
+
+		CredentialsManager::install();
+		CredentialsManager::save( $form_id, $api_key, get_current_user_id() );
+
+		$html = $this->render_chefs_form_template( $form_id );
+
+		$this->assertStringContainsString( 'data-form-id="' . $form_id . '"', $html );
+		$this->assertStringContainsString( 'bcew-chefs-form__mount', $html );
+		$this->assertStringNotContainsString( $api_key, $html );
+		$this->assertStringNotContainsString( 'auth-token', $html );
+		$this->assertStringNotContainsString( 'api_key', $html );
+		$this->assertStringNotContainsString( 'api-key', $html );
+	}
+
+	/**
+	 * Empty Form ID renders a clear empty state without secrets.
+	 *
+	 * @return void
+	 */
+	public function test_block_render_empty_form_id_shows_placeholder() {
+		$html = $this->render_chefs_form_template( '' );
+
+		$this->assertStringContainsString( 'data-form-id=""', $html );
+		$this->assertStringContainsString( 'No CHEFS form selected.', $html );
+		$this->assertStringNotContainsString( 'bcew-chefs-form__mount', $html );
 	}
 }

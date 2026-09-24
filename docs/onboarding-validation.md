@@ -48,6 +48,7 @@ After reading the docs site, a new contributor should be able to answer:
 - [ ] Where to add a new plugin or theme and which files are required
 - [ ] How PR CI chooses which projects to build
 - [ ] How to cut a release (tag format and what `tag.yml` does)
+- [ ] How to rename a plugin or theme already in the monorepo ([Renaming plugins and themes](./renaming-projects.md))
 - [ ] Where shared lint configuration lives vs package-specific config
 
 ## Known follow-ups

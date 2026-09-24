@@ -1,0 +1,41 @@
+{
+    "name": "bcew-document-repository",
+    "version": "1.2.0",
+    "description": "BCEW Document Repository plugin",
+    "author": "govwordpress@gov.bc.ca",
+    "license": "GPL-2.0-or-later",
+    "keywords": [
+        "WordPress",
+        "BCGov",
+        "Gutenberg",
+        "plugin"
+    ],
+    "homepage": "https://github.com/bcgov/bcew-monorepo/plugins/bcew-document-repository",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/bcgov/bcew-monorepo.git",
+        "directory": "plugins/bcew-document-repository"
+    },
+    "bugs": {
+        "url": "https://github.com/bcgov/bcew-monorepo/issues",
+        "email": "govwordpress@gov.bc.ca"
+    },
+    "dependencies": {
+        "@types/react": "^19.2.17",
+        "@wordpress/api-fetch": "catalog:",
+        "@wordpress/components": "catalog:",
+        "@wordpress/element": "catalog:",
+        "@wordpress/i18n": "catalog:",
+        "@wordpress/icons": "11.3.0"
+    },
+    "devDependencies": {
+        "@bcew-monorepo/e2e": "workspace:*",
+        "@playwright/test": "catalog:",
+        "@wordpress/e2e-test-utils-playwright": "catalog:"
+    },
+    "scripts": {
+        "build:doc-repo": "wp-scripts build --webpack-src-dir=assets/js/apps/bcew-document-repository --output-path=dist/bcew-document-repository",
+        "build:metadata-settings": "wp-scripts build --webpack-src-dir=assets/js/apps/metadata-settings --output-path=dist/metadata-settings",
+        "build:css": "wp-scripts build --webpack-src-dir=assets/scss --output-path=dist/css"
+    }
+}

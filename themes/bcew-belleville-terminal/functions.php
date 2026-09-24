@@ -23,7 +23,7 @@ function bcew_belleville_terminal_enqueue_styles() {
     wp_enqueue_style(
         'bcew-belleville-terminal-style',
         get_stylesheet_directory_uri() . '/dist/index.css',
-        array( 'design-system-styles' ),
+        array( 'bcew-theme-styles' ),
         $version
     );
 }

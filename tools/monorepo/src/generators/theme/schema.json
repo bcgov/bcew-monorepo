@@ -26,8 +26,8 @@
                 "type": "list",
                 "items": [
                     {
-                        "label": "Design System WordPress Theme",
-                        "value": "design-system-wordpress-theme"
+                        "label": "BC Extended Web Theme",
+                        "value": "bcew-theme"
                     },
                     {
                         "label": "None (this is a standalone theme)",

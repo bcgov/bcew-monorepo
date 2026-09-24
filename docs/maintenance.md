@@ -9,6 +9,7 @@ Update docs **in the same pull request** as the behavior change when you:
 - Add or remove Nx targets or change `nx.json` defaults
 - Change CI workflows (affected detection, lint commands, release steps)
 - Add a new plugin or theme (include `docs/index.md` and labeler entries)
+- Rename a plugin or theme (folder slug, Nx name, Composer name, `tag.yml` options — see [Renaming a plugin or theme](./renaming-projects.md))
 - Change tagging, Composer, or deployment assumptions
 
 ## Ownership

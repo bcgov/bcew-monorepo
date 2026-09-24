@@ -1,0 +1,32 @@
+{
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "name": "bcew-plugin",
+    "root": "plugins/bcew-plugin",
+    "sourceRoot": "plugins/bcew-plugin/src",
+    "projectType": "application",
+    "generators": {
+        "bcew-monorepo:plugin": {
+            "name": "BC Extended Web Plugin",
+            "slug": "bcew-plugin"
+        }
+    },
+    "targets": {
+        "composer-install": {},
+        "build": {},
+        "start": {},
+        "start-playwright": {},
+        "test-e2e": {},
+        "test-e2e-docker": {},
+        "test-integration": {
+            "dependsOn": ["composer-install", "build", "wp-env-start"],
+            "options": {
+                "command": "wp-env run tests-cli --env-cwd=wp-content/plugins/bcew-plugin composer test"
+            }
+        },
+        "wp-env-start": {},
+        "wp-env-clean": {},
+        "wp-env-stop": {}
+    },
+    "implicitDependencies": ["packages/phpunit-config/"],
+    "tags": ["type:wp-plugin"]
+}

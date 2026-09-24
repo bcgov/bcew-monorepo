@@ -98,6 +98,10 @@ describe( 'plugin generator', () => {
         expect( wpEnvConfig.plugins ).toEqual( [ '.' ] );
         expect( wpEnvConfig.port ).toBe( 9002 );
         expect( wpEnvConfig.testsPort ).toBe( 9003 );
+        expect( wpEnvConfig.lifecycleScripts ).toEqual( {
+            afterStart:
+                "wp-env run tests-cli bash -c 'wp theme activate twentytwentyfive && wp plugin activate wp-env-plugin'",
+        } );
     } );
 
     it( 'should assign the next available wp-env ports', async () => {

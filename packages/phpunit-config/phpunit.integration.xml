@@ -25,7 +25,7 @@
             <directory>../../../node_modules</directory>
         </exclude>
         <report>
-            <clover outputFile="../../../coverage/php/clover.xml" />
+            <clover outputFile="../../../coverage.xml" />
             <html outputDirectory="../../../coverage/php" lowUpperBound="50" highLowerBound="90"/>
         </report>
     </coverage>

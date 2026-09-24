@@ -1,6 +1,6 @@
 # bcew-ticorp
 
-BCEW child theme for TI Corp sites. Parent theme: `design-system-wordpress-theme`.
+BCEW child theme for TI Corp sites. Parent theme: `bcew-theme`.
 
 ## Notes
 
