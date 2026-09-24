@@ -28,25 +28,32 @@ The PR workflow compares the PR head to `origin/<github.base_ref>` (the target b
 ## Merges to `main`
 
 - **Docs:** Pushes to `main` that touch `docs/**`, package `docs/**`, sync script, or docs workflow deploy the VitePress site via `deploy-docs.yml` (see [Documentation site](./documentation-site.md)).
-- **Releases:** Merging code does **not** by itself publish plugin/theme zip artifacts. Publishing is **tag-driven** (`tag.yml`).
+- **Releases:** Merging code does **not** by itself publish plugin/theme zip artifacts. A maintainer starts **`tag.yml`** from Actions. That workflow creates the tag.
 
 ## Tags (`tag.yml`)
 
-On the GitHub repository, navigate to Actions > Release Subproject and Update packages.json > Run workflow. You should see the following options:
-![Release workflow options](assets/release-workflow.png)
+On the GitHub repository, navigate to Actions > Release Subproject and Update packages.json > Run workflow.
 
-Manual workflow used to create releases, given the following inputs:
+You do not type a version. The workflow reads existing `{project}/v*` tags and picks the next one.
 
-- Branch: Dropdown providing all branches from which this workflow can be run. Sometimes you may want to create a release off of a non-main branch if something must be tested remotely before it can be merged. In these cases, it should always be a prerelease. Most of the time releases will be created off the main branch.
-- Project name: Dropdown providing the names of all monorepo projects. This list is **hardcoded** in `tag.yml` (`workflow_dispatch.inputs.name.options`). When you [rename a project](./renaming-projects.md), add the new Nx name here or you cannot cut a release.
-- Version: Text input for the version to be released, eg. `1.0.1-alpha.1`.
-- Is prerelease: Boolean input determining if it's a prerelease. A prerelease version has a postfix like `alpha.1`. 
+Inputs:
+
+- **Use workflow from:** the branch to release. A release from a branch other than `main` should stay an alpha. Most releases run from `main`.
+- **Project to release:** dropdown of monorepo projects. This list is **hardcoded** in `tag.yml` (`workflow_dispatch.inputs.name.options`). When you [rename a project](./renaming-projects.md), add the new Nx name here or you cannot cut a release.
+- **Alpha:** ticked by default. Leave it ticked for an alpha. Untick it for a real release.
+
+How the next version is chosen:
+
+- A project with no `{project}/v*` tags starts at `1.0.0-alpha.1` (or `1.0.0` if Alpha is unticked).
+- Alphas count up on the same `X.Y.Z` (`1.0.0-alpha.1`, then `1.0.0-alpha.2`).
+- Unticking Alpha ships that `X.Y.Z` when it is not tagged yet.
+- After a real release, the next series is the next minor (`1.0.0` → `1.1.0` or `1.1.0-alpha.1`). Patch and major are not bumped.
+- Tags that are not `X.Y.Z` or `X.Y.Z-alpha.N` (for example `1.1.0-a1`) are ignored.
 
 What this workflow does:
 
-1. Updates versions in source, eg. updates `style.css` or `{plugin name}.php` version fields.
-2. Generates release notes describing all pull requests merged into the release.
-3. Creates a tag using the project name and version provided as inputs, eg. `bcew-project/v1.0.1-alpha.1`.
-4. Builds the project and creates a zip of the result named `<project>-<version>.zip` (for example, `bcew-blocks-1.0.1.zip`).
-5. Creates a GitHub Release and attaches that zip as an asset. Sets to prerelease if "is prerelease" input is true.
-6. Updates `packages.json` for the Composer repository on GitHub Pages and deploys it.
+1. Nx Release writes that version into the project's `package.json` and `CHANGELOG.md`, commits those files, and tags `{project}/v{version}` (for example `bcew-blocks/v1.0.0-alpha.1`).
+2. Plugin PHP files and theme `style.css` in git are not edited.
+3. Builds the project and creates a zip named `<project>-<version>.zip` (for example `bcew-blocks-1.0.0-alpha.1.zip`). The zip's `Version:` header is set to that version, including alphas.
+4. Creates a GitHub Release from the changelog and attaches the zip. An alpha version is published as a prerelease.
+5. Updates `packages.json` for the Composer repository on GitHub Pages and deploys it.

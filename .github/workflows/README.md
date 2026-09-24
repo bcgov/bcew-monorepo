@@ -12,18 +12,14 @@ Runs on every new commit in a PR. Features:
 
 ## Tag and release (`tag.yml`)
 
-Manual workflow used to create releases, given the following inputs:
-- Project name: Dropdown providing the names of all monorepo projects.
-- Version: Text input for the version to be released, eg. `1.0.1-alpha.1`.
-- Is prerelease: Boolean input determining if it's a prerelease. A prerelease version has a postfix like `alpha.1`. 
+Manual workflow. Pick a project. Alpha is ticked by default; untick it for a real release. The version is not typed in. A script reads existing `{project}/v*` tags and applies the house rules (alphas count up on the same `X.Y.Z`; a real release is that `X.Y.Z` if it is missing; after a real release the next series is the next minor).
 
 What this workflow does:
-1. Updates versions in source, eg. updates `style.css` or `{plugin name}.php` version fields.
-2. Generates release notes describing all pull requests merged into the release.
-3. Creates a tag using the project name and version provided as inputs, eg. `bcew-project/v1.0.1-alpha.1`.
-4. Builds the project and creates a zip of the result named `<project>-<version>.zip` (for example, `bcew-blocks-1.0.1.zip`).
-5. Creates a GitHub Release and attaches that zip as an asset. Sets to prerelease if "is prerelease" input is true.
-6. Updates `packages.json` for the Composer repository on GitHub Pages and deploys it.
+1. Nx Release writes the version into the project's `package.json` and `CHANGELOG.md`, commits those files, and tags `{project}/v{version}`.
+2. Plugin PHP files and theme `style.css` in git are not edited.
+3. Builds the project and creates a zip named `<project>-<version>.zip`. The zip's `Version:` header is set to that version, including alphas.
+4. Creates a GitHub Release from the changelog and attaches the zip. An alpha version is published as a prerelease.
+5. Updates `packages.json` for the Composer repository on GitHub Pages and deploys it.
 
 See `tag.yml` for exact permissions and steps.
 
