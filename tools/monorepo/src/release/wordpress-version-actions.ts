@@ -17,9 +17,9 @@
 
 import { readJson, updateJson, type Tree } from '@nx/devkit';
 import { join } from 'node:path';
+// nx is installed at the workspace root. This file is the Nx release version action.
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { VersionActions } from 'nx/release';
-import type { ProjectGraph } from '@nx/devkit';
-import type { NxReleaseVersionConfiguration } from 'nx/src/config/nx-json';
 
 /**
  * Nx Release version actions for WordPress plugins and themes.
@@ -46,7 +46,10 @@ export default class WordPressVersionActions extends VersionActions {
             this.projectGraphNode.data.root,
             'package.json'
         );
-        const packageJson = readJson<{ version?: string }>( tree, manifestPath );
+        const packageJson = readJson< { version?: string } >(
+            tree,
+            manifestPath
+        );
         if ( ! packageJson.version ) {
             return null;
         }
@@ -61,10 +64,10 @@ export default class WordPressVersionActions extends VersionActions {
      *
      * @return {Promise<null>} Always null.
      */
-    async readCurrentVersionFromRegistry(
-        _tree: Tree,
-        _currentVersionResolverMetadata: NxReleaseVersionConfiguration[ 'currentVersionResolverMetadata' ]
-    ): Promise< { currentVersion: string | null; logText: string } | null > {
+    async readCurrentVersionFromRegistry(): Promise< {
+        currentVersion: string | null;
+        logText: string;
+    } | null > {
         /*
          * We do not publish to npm, so there is no registry version to read.
          * Returning null tells Nx to use git tags or package.json instead.
@@ -77,11 +80,7 @@ export default class WordPressVersionActions extends VersionActions {
      *
      * @return {Promise<{currentVersion: null, dependencyCollection: null}>} Empty dependency version.
      */
-    async readCurrentVersionOfDependency(
-        _tree: Tree,
-        _projectGraph: ProjectGraph,
-        _dependencyProjectName: string
-    ): Promise< {
+    async readCurrentVersionOfDependency(): Promise< {
         currentVersion: string | null;
         dependencyCollection: string | null;
     } > {
@@ -129,11 +128,7 @@ export default class WordPressVersionActions extends VersionActions {
      *
      * @return {Promise<string[]>} No log lines.
      */
-    async updateProjectDependencies(
-        _tree: Tree,
-        _projectGraph: ProjectGraph,
-        _dependenciesToUpdate: Record< string, string >
-    ): Promise< string[] > {
+    async updateProjectDependencies(): Promise< string[] > {
         return [];
     }
 }
