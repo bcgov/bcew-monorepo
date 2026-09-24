@@ -4,7 +4,7 @@
     "themes": [
         <% if(parentTheme !== "none") { %>
         ".",
-        "bcgov/<%= parentTheme %>"
+        "../../themes/<%= parentTheme %>"
         <% } else { %>
         "."
         <% } %>
@@ -15,6 +15,6 @@
     "port": <%= wpEnvPort %>,
     "testsPort": <%= wpEnvPort + 1 %>,
     "lifecycleScripts": {
-        "afterStart": "wp-env run tests-cli wp theme activate <%= slug %>"
+        "afterStart": "wp-env run cli wp theme activate <%= slug %> && wp-env run tests-cli wp theme activate <%= slug %>"
     }
 }

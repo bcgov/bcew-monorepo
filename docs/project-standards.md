@@ -56,3 +56,5 @@ See the [monorepo README](https://github.com/bcgov/bcew-monorepo/blob/main/tools
 ## Labeler configuration
 
 When adding a new top-level plugin or theme folder, update [`.github/labeler.yml`](https://github.com/bcgov/bcew-monorepo/blob/main/.github/labeler.yml) so pull requests receive accurate area labels.
+
+When **renaming** an existing plugin or theme (folder slug, Nx name, Composer name), follow [Renaming a plugin or theme](./renaming-projects.md) instead of only editing `project.json`.

@@ -1,0 +1,31 @@
+{
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "name": "bcew-theme",
+    "root": "themes/bcew-theme",
+    "sourceRoot": "themes/bcew-theme/src",
+    "projectType": "application",
+    "generators": {
+        "bcew-monorepo:theme": {
+            "name": "BC Extended Web Theme",
+            "slug": "bcew-theme"
+        }
+    },
+    "targets": {
+        "composer-install": {},
+        "build": {},
+        "start": {},
+        "start-playwright": {},
+        "test-e2e": {},
+        "test-e2e-docker": {},
+        "test-integration": {},
+        "test-unit-js": {},
+        "test-screenshot": {},
+        "test-screenshot-generate": {},
+        "lint-template-parts": {},
+        "wp-env-start": {},
+        "wp-env-clean": {},
+        "wp-env-stop": {}
+    },
+    "implicitDependencies": ["packages/phpunit-config/"],
+    "tags": ["type:wp-theme"]
+}

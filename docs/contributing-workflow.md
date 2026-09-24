@@ -123,3 +123,9 @@ On the **standalone** repository:
 2. **Archive this repository** → confirm.
 
 History, old releases, and tags stay available for reference. Prefer **archive** over delete.
+
+## After migration: renaming
+
+Import often keeps the **legacy** folder name. Changing that name (and CSS/JS/PHP that only live in code) is a separate cutover. It is not the temporary `_` prefix in [Align structure with monorepo standards](#2-align-structure-with-monorepo-standards).
+
+Follow [Renaming a plugin or theme](./renaming-projects.md): local test, then [blog_gov_bc_ca](https://bitbucket.org/bc-gov/blog_gov_bc_ca) on your branch **before** the PR.

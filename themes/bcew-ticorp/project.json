@@ -12,7 +12,9 @@
     },
     "targets": {
         "composer-install": {},
-        "build": {},
+        "build": {
+            "dependsOn": ["bcew-theme:build"]
+        },
         "start": {},
         "start-playwright": {},
         "test-screenshot": {},
@@ -21,5 +23,9 @@
         "wp-env-clean": {},
         "wp-env-stop": {}
     },
+    "implicitDependencies": [
+        "packages/phpunit-config/",
+        "bcew-theme"
+    ],
     "tags": ["type:wp-theme"]
 }

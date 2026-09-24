@@ -1,12 +1,14 @@
 {
 	"core": "WordPress/WordPress#6.7.2",
 	"phpVersion": "7.4",
-	"plugins": [
-		"."
-	],
+	"plugins": ["."],
+	"themes": ["../../themes/bcew-theme"],
 	"config": {
 		"WP_AUTO_UPDATE_CORE": false
 	},
 	"port": 9012,
-	"testsPort": 9013
+	"testsPort": 9013,
+	"lifecycleScripts": {
+		"afterStart": "sh tools/setup-bcew-chefs-embed-wp-env.sh"
+	}
 }

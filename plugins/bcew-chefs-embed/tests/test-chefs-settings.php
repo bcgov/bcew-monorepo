@@ -10,6 +10,7 @@
 namespace Bcgov\BcewChefsEmbed\Test;
 
 use Bcgov\BcewChefsEmbed\CredentialsManager;
+use Bcgov\BcewChefsEmbed\OptionsManager;
 
 /**
  * CHEFS Settings page acceptance criteria.
@@ -31,6 +32,13 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	private $api_key = 'test-api-key-12345';
 
 	/**
+	 * Administrator user ID for testing.
+	 *
+	 * @var int
+	 */
+	private $admin_user_id;
+
+	/**
 	 * Ensure the table exists and clear rows before each test.
 	 *
 	 * @return void
@@ -39,12 +47,34 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		parent::set_up();
 
 		CredentialsManager::install();
+		OptionsManager::install();
 
 		global $wpdb;
 
-		$table = CredentialsManager::table_name();
+		$credentials_table = CredentialsManager::table_name();
+		$options_table     = OptionsManager::table_name();
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
-		$wpdb->query( "DELETE FROM `{$table}`" );
+		$wpdb->query( "DELETE FROM `{$credentials_table}`" );
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
+		$wpdb->query( "DELETE FROM `{$options_table}`" );
+
+		$this->admin_user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $this->admin_user_id );
+	}
+
+	/**
+	 * Init registers the admin-post handlers and plugin action-link filter.
+	 *
+	 * @return void
+	 */
+	public function test_init_registers_settings_hooks() {
+		$settings = new \Bcgov\BcewChefsEmbed\Settings();
+		$settings->init();
+
+		$this->assertSame( 10, has_action( 'admin_post_bcew_chefs_save', array( $settings, 'handle_save' ) ) );
+		$this->assertSame( 10, has_action( 'admin_post_bcew_chefs_delete', array( $settings, 'handle_delete' ) ) );
+		$this->assertSame( 10, has_action( 'admin_post_bcew_chefs_save_confirmation', array( $settings, 'handle_save_confirmation' ) ) );
+		$this->assertSame( 10, has_action( 'admin_post_bcew_chefs_delete_confirmation', array( $settings, 'handle_delete_confirmation' ) ) );
 	}
 
 	/**
@@ -55,10 +85,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_can_save_credentials() {
-		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
-
-		$result = CredentialsManager::save( $this->form_id, $this->api_key, $user_id );
+		$result = CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
 
 		$this->assertSame( $this->form_id, $result, 'save() should return the form_id on success.' );
 	}
@@ -71,10 +98,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_credentials_table_stores_form_id_and_api_key() {
-		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
-
-		CredentialsManager::save( $this->form_id, $this->api_key, $user_id );
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
 
 		$row = CredentialsManager::get_by_form_id( $this->form_id );
 
@@ -91,15 +115,12 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_credentials_table_stores_user_id() {
-		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
-
-		CredentialsManager::save( $this->form_id, $this->api_key, $user_id );
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
 
 		$row = CredentialsManager::get_by_form_id( $this->form_id );
 
 		$this->assertIsArray( $row );
-		$this->assertSame( $user_id, $row['user_id'], 'user_id should be stored automatically.' );
+		$this->assertSame( $this->admin_user_id, $row['user_id'], 'user_id should be stored automatically.' );
 	}
 
 	/**
@@ -110,23 +131,284 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_credentials_table_stores_created_at_timestamp() {
-		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
-
-		CredentialsManager::save( $this->form_id, $this->api_key, $user_id );
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
 
 		$row = CredentialsManager::get_by_form_id( $this->form_id );
 
 		$this->assertIsArray( $row );
 		$this->assertNotEmpty( $row['created_at'], 'created_at should be stored automatically.' );
+		$this->assertValidDatetime( $row['created_at'] );
+	}
 
-		// Verify the timestamp is in valid datetime format.
-		$datetime = \DateTime::createFromFormat( 'Y-m-d H:i:s', $row['created_at'] );
-		$this->assertInstanceOf(
-			\DateTime::class,
-			$datetime,
-			'created_at should be a valid datetime (Y-m-d H:i:s).'
+	/**
+	 * Handle save extracts a form ID from a CHEFS URL before storing it.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_extracts_form_id_from_url() {
+		$form_url = 'https://submit.digital.gov.bc.ca/app/form/manage?f=' . $this->form_id;
+
+		$this->save_settings( $form_url );
+
+		$this->assertIsArray( CredentialsManager::get_by_form_id( $this->form_id ) );
+		$this->assertNull( CredentialsManager::get_by_form_id( $form_url ) );
+	}
+
+	/**
+	 * Invalid credentials do not create a new saved form.
+	 *
+	 * @return void
+	 */
+	public function test_invalid_credentials_do_not_create_a_row() {
+		$redirect = $this->save_settings_with_response(
+			$this->form_id,
+			array( 'detail' => 'Forbidden' ),
+			403
 		);
+
+		$this->assertStringContainsString( 'chefs_error=invalid_credentials', $redirect );
+		$this->assertNull( CredentialsManager::get_by_form_id( $this->form_id ) );
+	}
+
+	/**
+	 * Saving without credentials redirects with a validation error.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_rejects_missing_credentials() {
+		$nonce                = wp_create_nonce( 'bcew_chefs_save' );
+		$_POST['form_id']     = '';
+		$_POST['api_key']     = '';
+		$_POST['_wpnonce']    = $nonce;
+		$_REQUEST['_wpnonce'] = $nonce;
+
+		$redirect = $this->capture_settings_redirect(
+			static function () {
+				( new \Bcgov\BcewChefsEmbed\Settings() )->handle_save();
+			}
+		);
+
+		$this->assertStringContainsString( 'chefs_error=missing_credentials', $redirect );
+	}
+
+	/**
+	 * Invalid metadata falls back to the Form ID after authentication.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_falls_back_when_metadata_is_invalid() {
+		$redirect = $this->save_settings_with_auth_and_metadata(
+			'{invalid-json',
+			200
+		);
+
+		$this->assertStringContainsString( 'chefs_saved=1', $redirect );
+	}
+
+	/**
+	 * A form without a title or name uses the Form ID as its display name.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_falls_back_when_form_has_no_name() {
+		$redirect = $this->save_settings_with_auth_and_metadata(
+			array(
+				'versions' => array(
+					array(
+						'id'        => 'version-1',
+						'published' => true,
+					),
+				),
+			),
+			200
+		);
+
+		$this->assertStringContainsString( 'chefs_saved=1', $redirect );
+	}
+
+	/**
+	 * A valid form redirects with the saved flag.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_redirects_after_saving_valid_form() {
+		$redirect = $this->save_settings_with_auth_and_metadata(
+			array(
+				'title'    => 'Published test form',
+				'versions' => array(
+					array(
+						'id'        => 'version-1',
+						'published' => true,
+					),
+				),
+			),
+			200
+		);
+
+		$this->assertStringContainsString( 'chefs_saved=1', $redirect );
+	}
+
+	/**
+	 * Draft-only forms are rejected before credentials are persisted.
+	 *
+	 * @return void
+	 */
+	public function test_draft_only_form_is_not_saved() {
+		$redirect = $this->save_settings_with_response(
+			$this->form_id,
+			array(
+				'token'    => 'test-token',
+				'title'    => 'Draft form',
+				'versions' => array(),
+			),
+			200
+		);
+
+		$this->assertStringContainsString( 'chefs_error=no_published_version', $redirect );
+		$this->assertNull( CredentialsManager::get_by_form_id( $this->form_id ) );
+	}
+
+	/**
+	 * Invalid replacement credentials preserve the existing row.
+	 *
+	 * @return void
+	 */
+	public function test_invalid_replacement_preserves_existing_credentials() {
+		$original_key = 'original-api-key';
+		CredentialsManager::save( $this->form_id, $original_key, $this->admin_user_id );
+
+		$this->save_settings_with_response(
+			$this->form_id,
+			array( 'detail' => 'Forbidden' ),
+			403,
+			'new-invalid-key'
+		);
+
+		$row = CredentialsManager::get_by_form_id( $this->form_id );
+		$this->assertIsArray( $row );
+		$this->assertSame( $original_key, $row['api_key'] );
+	}
+
+	/**
+	 * Updating the key keeps the form name and confirmation.
+	 *
+	 * @return void
+	 */
+	public function test_updating_api_key_preserves_form_name_and_confirmation() {
+		$original_key       = 'original-api-key';
+		$replacement_key    = 'replacement-api-key';
+		$original_form_name = 'Original saved form name';
+		$confirmation       = 'Thanks for applying.';
+
+		// Set up the existing form.
+		CredentialsManager::save( $this->form_id, $original_key, $this->admin_user_id );
+		OptionsManager::save_form_name( $this->form_id, $original_form_name );
+		OptionsManager::save( $this->form_id, $confirmation );
+
+		// Update the API key.
+		$redirect = $this->save_settings_with_auth_and_metadata(
+			array(
+				'title'    => 'Updated CHEFS title',
+				'versions' => array(
+					array(
+						'id'        => 'version-1',
+						'published' => true,
+					),
+				),
+			),
+			200,
+			$replacement_key
+		);
+
+		// Check that the key changed and the other settings stayed the same.
+		$this->assertStringContainsString( 'chefs_updated=1', $redirect );
+		$row = CredentialsManager::get_by_form_id( $this->form_id );
+		$this->assertIsArray( $row );
+		$this->assertSame( $replacement_key, $row['api_key'] );
+		$this->assertSame( $original_form_name, OptionsManager::get_form_name( $this->form_id ) );
+		$this->assertSame( $confirmation, OptionsManager::get_confirmation( $this->form_id ) );
+	}
+
+	/**
+	 * Updating a form works when its old API key cannot be decrypted.
+	 *
+	 * @return void
+	 */
+	public function test_updating_api_key_preserves_settings_when_old_key_is_unreadable() {
+		$replacement_key    = 'replacement-api-key';
+		$original_form_name = 'Original saved form name';
+		$confirmation       = 'Thanks for applying.';
+
+		CredentialsManager::save( $this->form_id, 'original-api-key', $this->admin_user_id );
+		OptionsManager::save_form_name( $this->form_id, $original_form_name );
+		OptionsManager::save( $this->form_id, $confirmation );
+
+		global $wpdb;
+		$wpdb->update(
+			CredentialsManager::table_name(),
+			array( 'api_key' => 'unreadable-key' ),
+			array( 'form_id' => $this->form_id ),
+			array( '%s' ),
+			array( '%s' )
+		);
+
+		$redirect = $this->save_settings_with_auth_and_metadata(
+			array(
+				'title'    => 'Updated CHEFS title',
+				'versions' => array(
+					array(
+						'id'        => 'version-1',
+						'published' => true,
+					),
+				),
+			),
+			200,
+			$replacement_key
+		);
+
+		$this->assertStringContainsString( 'chefs_updated=1', $redirect );
+		$this->assertSame( $original_form_name, OptionsManager::get_form_name( $this->form_id ) );
+		$this->assertSame( $confirmation, OptionsManager::get_confirmation( $this->form_id ) );
+	}
+
+	/**
+	 * Handle save extracts a form ID from a URL with a fragment.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_extracts_form_id_before_url_fragment() {
+		$form_url = 'https://submit.digital.gov.bc.ca/app/form/manage?f=' . $this->form_id . '#section';
+
+		$this->save_settings( $form_url );
+
+		$this->assertIsArray( CredentialsManager::get_by_form_id( $this->form_id ) );
+	}
+
+	/**
+	 * Handle save preserves a non-URL string containing an f query-like fragment.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_preserves_non_url_form_id() {
+		$form_id    = 'not-a-url?f=' . $this->form_id;
+		$reflection = new \ReflectionMethod( \Bcgov\BcewChefsEmbed\Settings::class, 'extract_form_id' );
+		$reflection->setAccessible( true );
+
+		$this->assertSame(
+			$form_id,
+			$reflection->invoke( new \Bcgov\BcewChefsEmbed\Settings(), $form_id )
+		);
+	}
+
+	/**
+	 * Handle save preserves a direct form ID after trimming whitespace.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_preserves_direct_form_id() {
+		$this->save_settings( ' ' . $this->form_id . ' ' );
+
+		$this->assertIsArray( CredentialsManager::get_by_form_id( $this->form_id ) );
 	}
 
 	/**
@@ -137,27 +419,33 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_duplicate_form_id_updates_existing_row() {
-		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
-
 		$first_key  = 'first-api-key';
 		$second_key = 'second-api-key';
 
 		// Save first time with first_key.
-		CredentialsManager::save( $this->form_id, $first_key, $user_id );
+		CredentialsManager::save( $this->form_id, $first_key, $this->admin_user_id );
+
+		global $wpdb;
+		$table = CredentialsManager::table_name();
+		$wpdb->update(
+			$table,
+			array( 'created_at' => '2000-01-01 00:00:00' ),
+			array( 'form_id' => $this->form_id ),
+			array( '%s' ),
+			array( '%s' )
+		);
 
 		// Save same form_id again with second_key (should update, not insert).
-		CredentialsManager::save( $this->form_id, $second_key, $user_id );
+		CredentialsManager::save( $this->form_id, $second_key, $this->admin_user_id );
 
 		$row = CredentialsManager::get_by_form_id( $this->form_id );
 
 		// Verify the row was updated (contains second_key, not first_key).
 		$this->assertIsArray( $row );
 		$this->assertSame( $second_key, $row['api_key'], 'Duplicate form_id should update api_key.' );
+		$this->assertSame( '2000-01-01 00:00:00', $row['created_at'], 'Updating credentials should preserve created_at.' );
 
 		// Verify only one row exists for this form_id.
-		global $wpdb;
-		$table = CredentialsManager::table_name();
 		$count = (int) $wpdb->get_var(
 			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table name cannot be parameterized.
 			$wpdb->prepare( 'SELECT COUNT(*) FROM `' . $table . '` WHERE form_id = %s', $this->form_id )
@@ -173,17 +461,14 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_credentials_are_readable_by_form_id() {
-		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
-
-		CredentialsManager::save( $this->form_id, $this->api_key, $user_id );
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
 
 		$row = CredentialsManager::get_by_form_id( $this->form_id );
 
 		$this->assertIsArray( $row );
 		$this->assertSame( $this->form_id, $row['form_id'] );
 		$this->assertSame( $this->api_key, $row['api_key'] );
-		$this->assertSame( $user_id, $row['user_id'] );
+		$this->assertSame( $this->admin_user_id, $row['user_id'] );
 		$this->assertNotEmpty( $row['created_at'] );
 	}
 
@@ -201,13 +486,12 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	/**
 	 * Credentials can be deleted by Form ID.
 	 *
+	 * Acceptance: Clicking remove deletes the row for that Form ID (database).
+	 *
 	 * @return void
 	 */
 	public function test_credentials_can_be_deleted() {
-		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
-
-		CredentialsManager::save( $this->form_id, $this->api_key, $user_id );
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
 
 		// Verify it was saved.
 		$row = CredentialsManager::get_by_form_id( $this->form_id );
@@ -217,34 +501,636 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		$deleted = CredentialsManager::delete( $this->form_id );
 		$this->assertTrue( $deleted, 'delete() should return true on successful deletion.' );
 
-		// Verify it's gone.
+		// Verify it's gone from lookup.
 		$row = CredentialsManager::get_by_form_id( $this->form_id );
 		$this->assertNull( $row, 'Deleted credential should not be retrievable.' );
+
+		// Verify the DB row is actually gone (not just the helper returning null).
+		global $wpdb;
+		$table = CredentialsManager::table_name();
+		$count = (int) $wpdb->get_var(
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table name cannot be parameterized.
+			$wpdb->prepare( 'SELECT COUNT(*) FROM `' . $table . '` WHERE form_id = %s', $this->form_id )
+		);
+		$this->assertSame( 0, $count, 'Deleted form_id should have zero rows in the credentials table.' );
 	}
 
 	/**
-	 * List_forms() returns all configured form IDs in reverse chronological order.
+	 * After delete, the form no longer appears in the saved forms list.
+	 *
+	 * Acceptance: Removed form no longer appears in the saved forms list.
+	 *
+	 * @return void
+	 */
+	public function test_deleted_form_no_longer_appears_in_list_forms() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+
+		$before_ids = array_column( CredentialsManager::list_forms(), 'form_id' );
+		$this->assertContains( $this->form_id, $before_ids );
+
+		CredentialsManager::delete( $this->form_id );
+
+		$after_ids = array_column( CredentialsManager::list_forms(), 'form_id' );
+		$this->assertNotContains( $this->form_id, $after_ids, 'Removed form must not appear in list_forms().' );
+	}
+
+	/**
+	 * Plugin action links include Settings and Documentation entries.
+	 *
+	 * @return void
+	 */
+	public function test_plugin_action_links_include_settings_and_documentation() {
+		$settings = new \Bcgov\BcewChefsEmbed\Settings();
+		$links    = $settings->add_plugin_action_links( array() );
+
+		$this->assertCount( 2, $links, 'Settings and Documentation links should be prepended.' );
+		$this->assertStringContainsString( 'Settings', $links[0] );
+		$this->assertStringContainsString( \Bcgov\BcewChefsEmbed\Settings::get_page_url(), $links[0] );
+		$this->assertStringContainsString( 'Documentation', $links[1] );
+		$this->assertStringContainsString( \Bcgov\BcewChefsEmbed\Settings::DOCUMENTATION_URL, $links[1] );
+	}
+
+	/**
+	 * Settings page renders the documentation helper sentence and link.
+	 *
+	 * @return void
+	 */
+	public function test_settings_page_renders_documentation_help_link() {
+		ob_start();
+		( new \Bcgov\BcewChefsEmbed\Settings() )->render_page();
+		$html = ob_get_clean();
+
+		$this->assertStringContainsString( 'For information and help please view the', $html );
+		$this->assertStringContainsString( 'documentation', $html );
+		$this->assertStringContainsString( 'href="' . esc_url( \Bcgov\BcewChefsEmbed\Settings::DOCUMENTATION_URL ) . '"', $html );
+		$this->assertStringNotContainsString( 'target="_blank"', $html );
+	}
+
+	/**
+	 * Settings page renders saved and deleted notices from redirect flags.
+	 *
+	 * @return void
+	 */
+	public function test_settings_page_renders_saved_and_deleted_notices() {
+		$saved_html = $this->render_page_with_get( 'chefs_saved', '1' );
+		$this->assertStringContainsString( 'Saved.', $saved_html );
+
+		$updated_html = $this->render_page_with_get( 'chefs_updated', '1' );
+		$this->assertStringContainsString( 'Form updated.', $updated_html );
+
+		$deleted_html = $this->render_page_with_get( 'chefs_deleted', '1' );
+		$this->assertStringContainsString( 'Removed.', $deleted_html );
+	}
+
+	/**
+	 * Settings page rejects users without manage_options.
+	 *
+	 * @return void
+	 */
+	public function test_render_page_requires_manage_options() {
+		$subscriber_id = self::factory()->user->create( array( 'role' => 'subscriber' ) );
+		wp_set_current_user( $subscriber_id );
+
+		$this->expectException( \WPDieException::class );
+		( new \Bcgov\BcewChefsEmbed\Settings() )->render_page();
+	}
+
+	/**
+	 * Handle save rejects users without manage_options.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_requires_manage_options() {
+		$subscriber_id = self::factory()->user->create( array( 'role' => 'subscriber' ) );
+		wp_set_current_user( $subscriber_id );
+
+		$this->expectException( \WPDieException::class );
+		( new \Bcgov\BcewChefsEmbed\Settings() )->handle_save();
+	}
+
+	/**
+	 * Registering the admin menu adds Settings and Documentation submenu items.
+	 *
+	 * @return void
+	 */
+	public function test_register_menu_adds_settings_and_documentation_submenus() {
+		global $submenu;
+
+		$submenu = array();
+
+		$settings = new \Bcgov\BcewChefsEmbed\Settings();
+		$settings->register_menu();
+
+		$this->assertArrayHasKey( \Bcgov\BcewChefsEmbed\Settings::PAGE_SLUG, $submenu );
+
+		$submenu_titles = array_column( $submenu[ \Bcgov\BcewChefsEmbed\Settings::PAGE_SLUG ], 0 );
+		$this->assertContains( 'Settings', $submenu_titles );
+		$this->assertContains( 'CHEFS Documentation', $submenu_titles );
+	}
+
+	/**
+	 * Settings page shows a Remove action that posts to admin_post_bcew_chefs_delete.
+	 *
+	 * Acceptance: Each saved form on the settings page has a remove action.
+	 *
+	 * @return void
+	 */
+	public function test_settings_page_renders_remove_action_for_each_form() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+
+		ob_start();
+		( new \Bcgov\BcewChefsEmbed\Settings() )->render_page();
+		$html = ob_get_clean();
+
+		$this->assertStringContainsString(
+			'name="action" value="bcew_chefs_delete"',
+			$html,
+			'Remove form must post action=bcew_chefs_delete.'
+		);
+		$this->assertStringContainsString(
+			'name="form_id" value="' . esc_attr( $this->form_id ) . '"',
+			$html,
+			'Remove form must include the Form ID as a hidden field.'
+		);
+		$this->assertStringContainsString(
+			'Remove form',
+			$html,
+			'Each saved form should expose a Remove form control.'
+		);
+		$this->assertStringContainsString(
+			'bcew_chefs_delete',
+			$html,
+			'Remove form must include a nonce for bcew_chefs_delete.'
+		);
+		$this->assertStringContainsString(
+			'Remove this form?',
+			$html,
+			'Remove form must ask before submitting.'
+		);
+	}
+
+	/**
+	 * Settings page shows confirmation as text, with edit on the right.
+	 *
+	 * @return void
+	 */
+	public function test_settings_page_renders_confirmation_field_for_each_form() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+
+		ob_start();
+		( new \Bcgov\BcewChefsEmbed\Settings() )->render_page();
+		$html = ob_get_clean();
+
+		$this->assertStringContainsString(
+			'Edit confirmation',
+			$html,
+			'Each saved form should expose an Edit confirmation control.'
+		);
+		$this->assertStringNotContainsString(
+			'name="action" value="bcew_chefs_save_confirmation"',
+			$html,
+			'The save form should not render until Edit confirmation is clicked.'
+		);
+		$this->assertStringNotContainsString(
+			'name="confirmation"',
+			$html,
+			'Confirmation should be plain text until Edit confirmation is clicked.'
+		);
+		$this->assertStringContainsString(
+			'Your form has been submitted successfully',
+			$html,
+			'The generic success body should be visible above the table.'
+		);
+		$this->assertStringContainsString(
+			'There is no custom confirmation for this form. The generic message will be used.',
+			$html,
+			'Forms without a custom message should say the generic message will be used.'
+		);
+		$this->assertStringNotContainsString(
+			'name="action" value="bcew_chefs_delete_confirmation"',
+			$html,
+			'Remove custom confirmation should be hidden until a custom message exists.'
+		);
+	}
+
+	/**
+	 * Saved confirmation text is shown as plain text, with remove and edit actions.
+	 *
+	 * @return void
+	 */
+	public function test_settings_page_shows_saved_confirmation_and_delete_action() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+		OptionsManager::save( $this->form_id, 'Thanks for applying.' );
+
+		ob_start();
+		( new \Bcgov\BcewChefsEmbed\Settings() )->render_page();
+		$html = ob_get_clean();
+
+		$this->assertStringContainsString(
+			'Thanks for applying.',
+			$html,
+			'The confirmation column should show the saved message as text.'
+		);
+		$this->assertStringNotContainsString(
+			'<textarea',
+			$html,
+			'The confirmation should not be an input until Edit confirmation is clicked.'
+		);
+		$this->assertStringContainsString(
+			'name="action" value="bcew_chefs_delete_confirmation"',
+			$html,
+			'Remove custom confirmation must post action=bcew_chefs_delete_confirmation.'
+		);
+		$this->assertStringContainsString(
+			'Remove this custom confirmation?',
+			$html,
+			'Remove custom confirmation must ask before submitting.'
+		);
+		$this->assertStringContainsString(
+			'Edit confirmation',
+			$html,
+			'A saved confirmation should expose Edit confirmation.'
+		);
+		$this->assertStringNotContainsString(
+			'There is no custom confirmation for this form. The generic message will be used.',
+			$html,
+			'Empty-state copy should not show while a custom message is saved.'
+		);
+	}
+
+	/**
+	 * Hostile confirmation text is rendered as escaped plain text in the admin UI.
+	 *
+	 * @return void
+	 */
+	public function test_settings_page_escapes_hostile_confirmation_output() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+		OptionsManager::save( $this->form_id, "<script>alert('hack')</script>Thanks" );
+
+		$html = $this->render_page_with_get( 'edit_confirmation', $this->form_id );
+
+		$this->assertStringContainsString( 'Thanks', $html );
+		$this->assertStringNotContainsString( '<script>', $html );
+
+		$html = $this->render_page_with_get( 'chefs_saved', '1' );
+		$this->assertStringNotContainsString( '<script>', $html );
+	}
+
+	/**
+	 * Edit mode shows a textarea and replaces Edit with Save confirmation.
+	 *
+	 * @return void
+	 */
+	public function test_settings_page_edit_mode_shows_textarea_and_save() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+		OptionsManager::save( $this->form_id, 'Thanks for applying.' );
+
+		$html = $this->render_page_with_get( 'edit_confirmation', $this->form_id );
+
+		$this->assertStringContainsString(
+			'name="action" value="bcew_chefs_save_confirmation"',
+			$html,
+			'Edit mode must post action=bcew_chefs_save_confirmation.'
+		);
+		$this->assertStringContainsString(
+			'<textarea',
+			$html,
+			'Edit mode should show a confirmation text box.'
+		);
+		$this->assertStringContainsString(
+			'Save confirmation',
+			$html,
+			'Edit mode should replace Edit confirmation with Save confirmation.'
+		);
+		$this->assertStringNotContainsString(
+			'Edit confirmation',
+			$html,
+			'Edit confirmation should not show while that row is in edit mode.'
+		);
+		$this->assertStringNotContainsString(
+			'Remove form',
+			$html,
+			'Remove form should not show while that row is in edit mode.'
+		);
+		$this->assertStringNotContainsString(
+			'Remove custom confirmation',
+			$html,
+			'Remove custom confirmation should not show while that row is in edit mode.'
+		);
+	}
+
+	/**
+	 * Handle save confirmation rejects users without manage_options.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_confirmation_requires_manage_options() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+
+		$subscriber_id = self::factory()->user->create( array( 'role' => 'subscriber' ) );
+		wp_set_current_user( $subscriber_id );
+
+		$nonce                 = wp_create_nonce( 'bcew_chefs_save_confirmation' );
+		$_POST['form_id']      = $this->form_id;
+		$_POST['confirmation'] = 'Thanks';
+		$_POST['_wpnonce']     = $nonce;
+		$_REQUEST['_wpnonce']  = $nonce;
+
+		$this->expectException( \WPDieException::class );
+
+		( new \Bcgov\BcewChefsEmbed\Settings() )->handle_save_confirmation();
+	}
+
+	/**
+	 * Handle delete confirmation rejects users without manage_options.
+	 *
+	 * @return void
+	 */
+	public function test_handle_delete_confirmation_requires_manage_options() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+		OptionsManager::save( $this->form_id, 'Thanks' );
+
+		$subscriber_id = self::factory()->user->create( array( 'role' => 'subscriber' ) );
+		wp_set_current_user( $subscriber_id );
+
+		$nonce                = wp_create_nonce( 'bcew_chefs_delete_confirmation' );
+		$_POST['form_id']     = $this->form_id;
+		$_POST['_wpnonce']    = $nonce;
+		$_REQUEST['_wpnonce'] = $nonce;
+
+		$this->expectException( \WPDieException::class );
+
+		( new \Bcgov\BcewChefsEmbed\Settings() )->handle_delete_confirmation();
+	}
+
+	/**
+	 * Saving a confirmation stores it and redirects with a success flag.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_confirmation_stores_message_and_redirects() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+
+		$message  = "Thanks for applying.\nPlease keep your reference number.";
+		$location = $this->save_confirmation( $this->form_id, $message );
+
+		$this->assertStringContainsString( 'chefs_confirmation_saved=1', $location );
+		$this->assertSame( $message, OptionsManager::get_confirmation( $this->form_id ) );
+	}
+
+	/**
+	 * Saving a blank confirmation is rejected and does not clear an existing message.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_confirmation_rejects_empty_message() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+		OptionsManager::save( $this->form_id, 'Keep me' );
+
+		$location = $this->save_confirmation( $this->form_id, '   ' );
+
+		$this->assertStringContainsString( 'chefs_confirmation_error=1', $location );
+		$this->assertSame( 'Keep me', OptionsManager::get_confirmation( $this->form_id ) );
+	}
+
+	/**
+	 * Removing a confirmation deletes it and redirects with a cleared flag.
+	 *
+	 * @return void
+	 */
+	public function test_handle_delete_confirmation_removes_message_and_redirects() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+		OptionsManager::save( $this->form_id, 'Thanks for applying.' );
+
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Tests simulate a POST request and set a valid nonce below.
+		$nonce                = wp_create_nonce( 'bcew_chefs_delete_confirmation' );
+		$_POST['form_id']     = $this->form_id;
+		$_POST['_wpnonce']    = $nonce;
+		$_REQUEST['_wpnonce'] = $nonce;
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+
+		$location = $this->capture_settings_redirect(
+			static function () {
+				( new \Bcgov\BcewChefsEmbed\Settings() )->handle_delete_confirmation();
+			}
+		);
+
+		$this->assertStringContainsString( 'chefs_confirmation_cleared=1', $location );
+		$this->assertNull( OptionsManager::get_confirmation( $this->form_id ) );
+	}
+
+	/**
+	 * Editing one form does not put other forms into edit mode.
+	 *
+	 * @return void
+	 */
+	public function test_settings_page_edit_mode_is_limited_to_one_form() {
+		$other_form_id = 'c3d4e5f6-a7b8-9012-cdef-123456789012';
+
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+		CredentialsManager::save( $other_form_id, $this->api_key, $this->admin_user_id );
+		OptionsManager::save( $this->form_id, 'Thanks for applying.' );
+
+		$html = $this->render_page_with_get( 'edit_confirmation', $this->form_id );
+
+		$this->assertSame( 1, substr_count( $html, 'Save confirmation' ) );
+		$this->assertSame( 1, substr_count( $html, 'Edit confirmation' ) );
+		$this->assertSame( 1, substr_count( $html, 'Remove form' ) );
+		$this->assertStringContainsString(
+			'There is no custom confirmation for this form. The generic message will be used.',
+			$html
+		);
+	}
+
+	/**
+	 * Confirmation status notices render from redirect flags.
+	 *
+	 * @return void
+	 */
+	public function test_settings_page_renders_confirmation_notices() {
+		$saved_html = $this->render_page_with_get( 'chefs_confirmation_saved', '1' );
+		$this->assertStringContainsString( 'Confirmation message saved.', $saved_html );
+
+		$cleared_html = $this->render_page_with_get( 'chefs_confirmation_cleared', '1' );
+		$this->assertStringContainsString(
+			'Custom confirmation deleted. The generic success message will be used.',
+			$cleared_html
+		);
+
+		$error_html = $this->render_page_with_get( 'chefs_confirmation_error', '1' );
+		$this->assertStringContainsString( 'Unable to save the confirmation message.', $error_html );
+	}
+
+	/**
+	 * Settings page renders each credential validation error safely.
+	 *
+	 * @return void
+	 */
+	public function test_settings_page_renders_credential_error_notices() {
+		$messages = array(
+			'missing_credentials' => 'Enter a Form ID/URL and API key.',
+			'form_not_found'      => 'CHEFS could not find that Form ID.',
+			'invalid_credentials' => 'could not be verified together',
+			'request_failed'      => 'Unable to contact CHEFS.',
+			'invalid_response'    => 'unexpected response',
+			'unknown_error'       => 'Unable to save credentials.',
+		);
+
+		foreach ( $messages as $error_code => $message ) {
+			$html = $this->render_page_with_get( 'chefs_error', $error_code );
+			$this->assertStringContainsString( $message, $html, "Expected notice for {$error_code}." );
+		}
+	}
+
+	/**
+	 * Settings page renders the confirmation editor when requested.
+	 *
+	 * @return void
+	 */
+	public function test_settings_page_renders_confirmation_edit_mode() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only edit-mode flag for testing.
+		$_GET['edit_confirmation'] = $this->form_id;
+		ob_start();
+		( new \Bcgov\BcewChefsEmbed\Settings() )->render_page();
+		$html = ob_get_clean();
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Clear test query parameter.
+		unset( $_GET['edit_confirmation'] );
+
+		$this->assertStringContainsString( 'name="confirmation"', $html );
+		$this->assertStringContainsString( 'name="action" value="bcew_chefs_save_confirmation"', $html );
+	}
+
+	/**
+	 * Handle delete rejects users without manage_options.
+	 *
+	 * Acceptance: Only users with manage_options can remove forms.
+	 *
+	 * @return void
+	 */
+	public function test_handle_delete_requires_manage_options() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+
+		$subscriber_id = self::factory()->user->create( array( 'role' => 'subscriber' ) );
+		wp_set_current_user( $subscriber_id );
+
+		$nonce                = wp_create_nonce( 'bcew_chefs_delete' );
+		$_POST['form_id']     = $this->form_id;
+		$_POST['_wpnonce']    = $nonce;
+		$_REQUEST['_wpnonce'] = $nonce;
+
+		$this->expectException( \WPDieException::class );
+
+		( new \Bcgov\BcewChefsEmbed\Settings() )->handle_delete();
+	}
+
+	/**
+	 * Handle delete removes the row and redirects with a success flag.
+	 *
+	 * @return void
+	 */
+	public function test_handle_delete_removes_form_and_redirects() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+		$nonce                = wp_create_nonce( 'bcew_chefs_delete' );
+		$_POST['form_id']     = $this->form_id;
+		$_POST['_wpnonce']    = $nonce;
+		$_REQUEST['_wpnonce'] = $nonce;
+
+		$redirect = $this->capture_settings_redirect(
+			function () {
+				( new \Bcgov\BcewChefsEmbed\Settings() )->handle_delete();
+			}
+		);
+
+		$this->assertStringContainsString( 'chefs_deleted=1', $redirect );
+		$this->assertNull( CredentialsManager::get_by_form_id( $this->form_id ) );
+	}
+
+	/**
+	 * List_forms() returns all configured forms as arrays with form_id and created_at.
 	 *
 	 * @return void
 	 */
 	public function test_list_forms_returns_all_configured_form_ids() {
-		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
-
 		$form_id_1 = 'form-1-' . time();
 		$form_id_2 = 'form-2-' . time();
 		$form_id_3 = 'form-3-' . time();
 
-		CredentialsManager::save( $form_id_1, 'key-1', $user_id );
-		CredentialsManager::save( $form_id_2, 'key-2', $user_id );
-		CredentialsManager::save( $form_id_3, 'key-3', $user_id );
+		CredentialsManager::save( $form_id_1, 'key-1', $this->admin_user_id );
+		CredentialsManager::save( $form_id_2, 'key-2', $this->admin_user_id );
+		CredentialsManager::save( $form_id_3, 'key-3', $this->admin_user_id );
 
 		$forms = CredentialsManager::list_forms();
 
 		$this->assertIsArray( $forms );
-		$this->assertContains( $form_id_1, $forms );
-		$this->assertContains( $form_id_2, $forms );
-		$this->assertContains( $form_id_3, $forms );
+
+		$returned_ids = array_column( $forms, 'form_id' );
+		$this->assertContains( $form_id_1, $returned_ids );
+		$this->assertContains( $form_id_2, $returned_ids );
+		$this->assertContains( $form_id_3, $returned_ids );
+	}
+
+	/**
+	 * List_forms() returns a created_at timestamp for each form.
+	 *
+	 * @return void
+	 */
+	public function test_list_forms_returns_created_at_for_each_form() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+
+		$forms = CredentialsManager::list_forms();
+
+		$this->assertNotEmpty( $forms );
+
+		$form = $forms[0];
+		$this->assertArrayHasKey( 'form_id', $form, 'Each list_forms() row must have a form_id key.' );
+		$this->assertArrayHasKey( 'created_at', $form, 'Each list_forms() row must have a created_at key.' );
+		$this->assertNotEmpty( $form['created_at'], 'created_at should not be empty.' );
+		$this->assertValidDatetime( $form['created_at'] );
+	}
+
+	/**
+	 * The 'Configured Forms' table renders the Form ID and formatted date for each saved form.
+	 *
+	 * @return void
+	 */
+	public function test_settings_page_renders_form_id_and_date_in_table() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+
+		$row           = CredentialsManager::get_by_form_id( $this->form_id );
+		$timestamp     = strtotime( $row['created_at'] );
+		$expected_date = $timestamp ? date_i18n( get_option( 'date_format' ), $timestamp ) : $row['created_at'];
+
+		ob_start();
+		( new \Bcgov\BcewChefsEmbed\Settings() )->render_page();
+		$html = ob_get_clean();
+
+		$this->assertStringContainsString(
+			esc_html( $this->form_id ),
+			$html,
+			'The Configured Forms table should display the Form ID.'
+		);
+		$this->assertStringContainsString(
+			esc_html( $expected_date ),
+			$html,
+			'The Configured Forms table should display the formatted created_at date.'
+		);
+		$this->assertStringContainsString(
+			'CHEFS Form URL or Form ID',
+			$html,
+			'The Form ID field should show a useful placeholder.'
+		);
+		$this->assertStringContainsString(
+			'Example URL <code>https://submit.digital.gov.bc.ca/app/form/submit?f=43cfb894-a0cf-4bef-8026-7c8001e3cdf5</code> or form ID <code>43cfb894-a0cf-4bef-8026-7c8001e3cdf5</code>',
+			$html,
+			'The Form ID field should include the acceptance-criteria example with highlighted values.'
+		);
+		$this->assertStringContainsString(
+			'aria-describedby="form-id-description form-id-update-description"',
+			$html,
+			'The Form ID field should be associated with its help text.'
+		);
 	}
 
 	/**
@@ -284,13 +1170,218 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 
 		CredentialsManager::activate( true );
 
+		// switch_to_blog changes DB context, so a new user is needed for that site.
 		switch_to_blog( $blog_id );
-		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
-		CredentialsManager::save( $this->form_id, $this->api_key, $user_id );
+		$switched_user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		CredentialsManager::save( $this->form_id, $this->api_key, $switched_user_id );
 		$row = CredentialsManager::get_by_form_id( $this->form_id );
 		$this->assertIsArray( $row, 'Credentials should be saveable on switched blog.' );
 		restore_current_blog();
 
 		$this->assertTrue( true, 'Multisite table support verified.' );
+	}
+
+	/**
+     * Assert that a given value is a valid Y-m-d H:i:s datetime string.
+     *
+     * @param string $value The value to check.
+     * @return void
+     */
+	private function assertValidDatetime( $value ) {
+		$datetime = \DateTime::createFromFormat( 'Y-m-d H:i:s', $value );
+		$errors   = \DateTime::getLastErrors();
+
+		$this->assertInstanceOf( \DateTime::class, $datetime, "'{$value}' should be a valid Y-m-d H:i:s datetime." );
+		$this->assertIsArray( $errors );
+		$this->assertSame( 0, (int) $errors['warning_count'], "'{$value}' should not produce DateTime parse warnings." );
+		$this->assertSame( 0, (int) $errors['error_count'], "'{$value}' should not produce DateTime parse errors." );
+		$this->assertSame( $value, $datetime->format( 'Y-m-d H:i:s' ), "'{$value}' should match the expected datetime format exactly." );
+	}
+
+	/**
+	 * Submit settings and capture the redirect.
+	 *
+	 * @param string $form_id_or_url Form ID or URL submitted to the settings handler.
+	 * @return string Redirect URL.
+	 */
+	private function save_settings( $form_id_or_url ) {
+		return $this->save_settings_with_response(
+			$form_id_or_url,
+			array(
+				'token'    => 'test-token',
+				'title'    => 'Published test form',
+				'versions' => array(
+					array(
+						'id'        => 'version-1',
+						'published' => true,
+					),
+				),
+			),
+			200,
+			$this->api_key
+		);
+	}
+
+	/**
+	 * Submit settings with a mocked CHEFS response and capture the redirect.
+	 *
+	 * @param string $form_id_or_url Form ID or URL submitted to the settings handler.
+	 * @param array  $body           Mocked CHEFS response body.
+	 * @param int    $status         Mocked HTTP status code.
+	 * @param string $api_key        API key submitted with the form.
+	 * @return string Redirect URL.
+	 */
+	private function save_settings_with_response( $form_id_or_url, array $body, $status, $api_key = 'test-api-key-12345' ) {
+		$chefs_stub = static function () use ( $body, $status ) {
+			return array(
+				'headers'  => array( 'content-type' => 'application/json' ),
+				'body'     => wp_json_encode( $body ),
+				'response' => array(
+					'code'    => $status,
+					'message' => 'OK',
+				),
+			);
+		};
+		add_filter( 'pre_http_request', $chefs_stub, 10, 3 );
+
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Tests simulate a POST request and set a valid nonce below.
+		$_POST['form_id']     = $form_id_or_url;
+		$_POST['api_key']     = $api_key;
+		$_POST['_wpnonce']    = wp_create_nonce( 'bcew_chefs_save' );
+		$_REQUEST['_wpnonce'] = $_POST['_wpnonce'];
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+
+		try {
+			return $this->capture_settings_redirect(
+				function () {
+					( new \Bcgov\BcewChefsEmbed\Settings() )->handle_save();
+				}
+			);
+		} finally {
+			remove_filter( 'pre_http_request', $chefs_stub, 10 );
+		}
+	}
+
+	/**
+	 * Submit settings with separate mocked authentication and metadata responses.
+	 *
+	 * @param array|string $metadata_body   Mocked metadata response body.
+	 * @param int          $metadata_status Mocked metadata status code.
+	 * @param string|null  $api_key         API key submitted with the form.
+	 * @return string Redirect URL.
+	 */
+	private function save_settings_with_auth_and_metadata( $metadata_body, $metadata_status, $api_key = null ) {
+		$form_id = $this->form_id;
+		$api_key = $api_key ?? $this->api_key;
+		$stub    = static function ( $pre, $args, $url ) use ( $form_id, $metadata_body, $metadata_status ) {
+			if ( false !== strpos( $url, '/gateway/v1/auth/token/forms/' ) ) {
+				return array(
+					'body'     => wp_json_encode( array( 'token' => 'test-token' ) ),
+					'response' => array(
+						'code'    => 200,
+						'message' => 'OK',
+					),
+				);
+			}
+
+			if ( false !== strpos( $url, '/api/v1/forms/' ) ) {
+				return array(
+					'body'     => is_string( $metadata_body ) ? $metadata_body : wp_json_encode( $metadata_body ),
+					'response' => array(
+						'code'    => $metadata_status,
+						'message' => 'OK',
+					),
+				);
+			}
+
+			return $pre;
+		};
+		add_filter( 'pre_http_request', $stub, 10, 3 );
+
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Tests simulate a POST request and set a valid nonce below.
+		$_POST['form_id']     = $form_id;
+		$_POST['api_key']     = $api_key;
+		$_POST['_wpnonce']    = wp_create_nonce( 'bcew_chefs_save' );
+		$_REQUEST['_wpnonce'] = $_POST['_wpnonce'];
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+
+		try {
+			return $this->capture_settings_redirect(
+				function () {
+					( new \Bcgov\BcewChefsEmbed\Settings() )->handle_save();
+				}
+			);
+		} finally {
+			remove_filter( 'pre_http_request', $stub, 10 );
+		}
+	}
+
+	/**
+	 * Run a settings handler and capture the redirect location.
+	 *
+	 * @param callable $callback Handler to invoke.
+	 * @return string Redirect URL.
+	 */
+	private function capture_settings_redirect( $callback ) {
+		add_filter(
+			'wp_redirect',
+			static function ( $location ) {
+				// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Redirect URL is captured for assertions, not printed.
+				throw new \RuntimeException( $location );
+			}
+		);
+
+		try {
+			$callback();
+			$this->fail( 'Expected a redirect.' );
+		} catch ( \RuntimeException $exception ) {
+			return $exception->getMessage();
+		} finally {
+			remove_all_filters( 'wp_redirect' );
+		}
+	}
+
+	/**
+	 * Save a confirmation message and capture the redirect.
+	 *
+	 * @param string $form_id Form ID for the confirmation.
+	 * @param string $confirmation_text Confirmation message to save.
+	 * @return string Redirect URL.
+	 */
+	private function save_confirmation( $form_id, $confirmation_text ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Tests simulate a POST request and set a valid nonce below.
+		$nonce                 = wp_create_nonce( 'bcew_chefs_save_confirmation' );
+		$_POST['form_id']      = $form_id;
+		$_POST['confirmation'] = $confirmation_text;
+		$_POST['_wpnonce']     = $nonce;
+		$_REQUEST['_wpnonce']  = $nonce;
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+
+		return $this->capture_settings_redirect(
+			static function () {
+				( new \Bcgov\BcewChefsEmbed\Settings() )->handle_save_confirmation();
+			}
+		);
+	}
+
+	/**
+	 * Render the settings page with a GET query parameter.
+	 *
+	 * @param string $key Query parameter key.
+	 * @param string $value Query parameter value.
+	 * @return string Rendered HTML from render_page().
+	 */
+	private function render_page_with_get( $key, $value ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only flag for testing.
+		$_GET[ $key ] = $value;
+
+		ob_start();
+		( new \Bcgov\BcewChefsEmbed\Settings() )->render_page();
+		$html = ob_get_clean();
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only flag for testing.
+		unset( $_GET[ $key ] );
+
+		return $html;
 	}
 }
