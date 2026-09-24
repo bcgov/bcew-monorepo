@@ -181,6 +181,45 @@ const waitForCanvasHeightStability = async (
 };
 
 /**
+ * Wait for a style book preview to finish growing before taking the screenshot.
+ *
+ * The preview can appear before its final layout is fully rendered, which makes
+ * the screenshot look shorter than the real block. We wait for a few equal height
+ * readings before we trust the layout.
+ *
+ * @param {any} preview Style book preview locator.
+ */
+const waitForPreviewHeightStability = async (
+    preview: any
+): Promise< void > => {
+    let previousHeight = 0;
+    let stableSamples = 0;
+
+    for ( let sampleIndex = 0; sampleIndex < 10; sampleIndex++ ) {
+        const height = await preview.evaluate( ( element: HTMLElement ) =>
+            Math.round( element.getBoundingClientRect().height )
+        );
+
+        // The preview is stable only when its height stops changing.
+        if ( height > 0 && height === previousHeight ) {
+            stableSamples++;
+        } else {
+            stableSamples = 0;
+        }
+
+        previousHeight = height;
+
+        if ( stableSamples >= 2 ) {
+            return;
+        }
+
+        await preview.page().waitForTimeout( 150 );
+    }
+
+    throw new Error( 'Style book preview height did not stabilize.' );
+};
+
+/**
  * Render single selected preview (fallback for newer WordPress versions).
  *
  * @param {any} canvas Canvas frame locator.
@@ -227,14 +266,21 @@ const renderBlocksGrid = async ( blocks: any ): Promise< void > => {
             continue;
         }
 
-        await expect(
-            block.locator( STYLEBOOK_PREVIEW_SELECTOR )
-        ).toHaveScreenshot( `style-book-${ formattedName }.png`, {
-            animations: 'disabled',
-            caret: 'hide',
-            scale: 'css',
-            maxDiffPixelRatio: 0.02,
-        } );
+        const preview = block.locator( STYLEBOOK_PREVIEW_SELECTOR ).first();
+
+        // The preview can be visible before it has finished growing.
+        // Wait until its height stops changing, then capture the screenshot.
+        await expect( preview ).toBeVisible();
+        await waitForPreviewHeightStability( preview );
+        await expect( preview ).toHaveScreenshot(
+            `style-book-${ formattedName }.png`,
+            {
+                animations: 'disabled',
+                caret: 'hide',
+                scale: 'css',
+                maxDiffPixelRatio: 0.02,
+            }
+        );
     }
 };
 
