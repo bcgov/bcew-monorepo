@@ -23,6 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use Bcgov\BcewChefsEmbed\CredentialsManager;
 use Bcgov\BcewChefsEmbed\EmbedConfigController;
+use Bcgov\BcewChefsEmbed\E2eChefsMock;
 use Bcgov\BcewChefsEmbed\OptionsManager;
 
 /**
@@ -44,6 +45,12 @@ add_action( 'wp_initialize_site', array( OptionsManager::class, 'on_initialize_s
 add_action( 'plugins_loaded', 'bcew_chefs_embed_maybe_install_options_table' );
 
 add_action( 'rest_api_init', array( EmbedConfigController::class, 'register_routes' ) );
+
+// E2E tests run against a local wp-env and must not depend on the live CHEFS
+// service. The mock is enabled only by the test environment.
+if ( defined( 'BCEW_CHEFS_E2E_MOCK' ) && BCEW_CHEFS_E2E_MOCK ) {
+	add_filter( 'pre_http_request', array( E2eChefsMock::class, 'pre_http_request' ), 10, 3 );
+}
 
 /**
  * Create the credentials table when the schema version is missing or outdated.
@@ -192,11 +199,11 @@ function bcew_chefs_embed_register_editor_settings() {
 function bcew_chefs_embed_register_rest_routes() {
 	register_rest_route(
 		'bcew-chefs-embed/v1',
-		'/form-ids',
+		'/forms',
 		[
 			[
 				'methods'             => 'GET',
-				'callback'            => 'bcew_chefs_embed_get_saved_form_ids',
+				'callback'            => 'bcew_chefs_embed_get_saved_forms',
 				'permission_callback' => 'bcew_chefs_embed_can_edit_posts',
 			],
 		]
@@ -206,14 +213,14 @@ function bcew_chefs_embed_register_rest_routes() {
 }
 
 /**
- * Return saved CHEFS form IDs from the credentials table.
+ * Return saved CHEFS forms with display names and IDs.
  *
- * @return WP_REST_Response REST response containing form IDs.
+ * @return WP_REST_Response REST response containing saved forms.
  */
-function bcew_chefs_embed_get_saved_form_ids() {
-	$form_ids = CredentialsManager::get_saved_form_ids();
+function bcew_chefs_embed_get_saved_forms() {
+	$forms = CredentialsManager::list_forms();
 
-	return new WP_REST_Response( $form_ids, 200 );
+	return new WP_REST_Response( $forms, 200 );
 }
 
 /**

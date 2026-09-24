@@ -18,6 +18,9 @@ pnpm docs:dev
 
 This runs `docs:sync` once, then watches package docs and rebuilds the site. See [Getting started](./getting-started.md) and [Contributing docs](./contributing.md).
 
+Mermaid diagrams are supported in Markdown with fenced `mermaid` code blocks.
+They render in the browser and adapt to the active light or dark theme.
+
 ## Deployment
 
 The workflow [`.github/workflows/deploy-docs.yml`](https://github.com/bcgov/bcew-monorepo/blob/main/.github/workflows/deploy-docs.yml) builds the site on pushes to `main` (when docs-related paths change) and deploys the output to the `docs/` folder on the `gh-pages` branch for GitHub Pages.

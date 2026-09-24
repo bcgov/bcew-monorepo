@@ -58,9 +58,17 @@ const fetchEmbedConfig = async ( formId ) => {
     const payload = await response.json().catch( () => ( {} ) );
 
     if ( ! response.ok ) {
-        throw new Error(
-            payload?.message || 'Unable to load the CHEFS form configuration.'
+        const error = new Error(
+            payload?.message || 'Request is missing content or is malformed'
         );
+        error.status = response.status;
+        error.statusText = response.statusText;
+        error.response = {
+            status: response.status,
+            statusText: response.statusText,
+            data: payload,
+        };
+        throw error;
     }
 
     if ( ! payload?.token || ! payload?.baseUrl ) {
@@ -68,30 +76,6 @@ const fetchEmbedConfig = async ( formId ) => {
     }
 
     return payload;
-};
-
-/**
- * Show an error message inside the block mount point.
- *
- * Used when the form never loaded (embed-config or script failure). There is
- * no form to keep on the page, so the mount is replaced.
- *
- * @param {HTMLElement} mount   Mount element.
- * @param {string}      message Error text.
- */
-const showError = ( mount, message ) => {
-    /*
-     * The form never appeared, so empty the mount and show one alert.
-     * This is not the CHEFS submit-error banner; that path keeps the form.
-     */
-    mount.replaceChildren();
-    mount.removeAttribute( 'aria-busy' );
-
-    const error = document.createElement( 'p' );
-    error.className = 'bcew-chefs-form__error';
-    error.setAttribute( 'role', 'alert' );
-    error.textContent = message;
-    mount.appendChild( error );
 };
 
 /*
@@ -118,13 +102,6 @@ const asPlainText = ( value ) => {
  * @return {{title: string, status: string, detail: string}} Error fields.
  */
 const readChefsError = ( payload ) => {
-    /*
-     * CHEFS errors use title, status, and detail. The web component may send
-     * that object, wrap it as { error: { title, status, detail } }, or — most
-     * often — only { error: "detail string" } after it has already pulled
-     * json.detail. Map all three onto the same three fields. Prefer detail,
-     * then message, then a string error field.
-     */
     if ( ! payload || 'object' !== typeof payload ) {
         return { title: '', status: '', detail: asPlainText( payload ) };
     }
@@ -152,6 +129,70 @@ const readChefsError = ( payload ) => {
             ( 'string' === typeof payload.error
                 ? asPlainText( payload.error )
                 : '' ),
+    };
+};
+
+/**
+ * Normalize a CHEFS error payload from the fetch, the viewer, or a rejected load.
+ *
+ * Supports fetch Errors, direct viewer payloads, and wrapped shapes like
+ * { error: { detail, status, ... } }.
+ *
+ * @param {unknown} payload Error payload.
+ * @return {{title: string, status: string, detail: string}} Error fields.
+ */
+const normalizeChefsError = ( payload ) => {
+    const raw =
+        payload &&
+        'object' === typeof payload &&
+        payload.error &&
+        'object' === typeof payload.error &&
+        ! Array.isArray( payload.error )
+            ? payload.error
+            : payload;
+
+    let response = {};
+
+    if ( raw?.response && 'object' === typeof raw.response ) {
+        response = raw.response;
+    } else if ( payload?.response && 'object' === typeof payload.response ) {
+        response = payload.response;
+    }
+
+    const status = asPlainText(
+        response.status ?? raw?.status ?? payload?.status ?? 500
+    );
+
+    let resolvedStatusText = 'Request failed';
+
+    if ( status && Number.isFinite( Number( status ) ) ) {
+        if ( status >= 400 && status < 500 ) {
+            resolvedStatusText = 'Bad Request';
+        }
+    }
+
+    const statusText = asPlainText(
+        response.statusText ??
+            raw?.statusText ??
+            payload?.statusText ??
+            resolvedStatusText
+    );
+
+    const detail =
+        asPlainText(
+            response?.data?.message ??
+                raw?.message ??
+                payload?.message ??
+                response?.data?.detail ??
+                raw?.detail ??
+                payload?.detail ??
+                ( 'string' === typeof raw?.error ? raw.error : '' )
+        ) || 'Unable to load the CHEFS form.';
+
+    return {
+        title: asPlainText( raw?.title ?? payload?.title ?? statusText ),
+        status,
+        detail,
     };
 };
 
@@ -187,7 +228,9 @@ const showChefsError = ( root, error ) => {
      * "title - status" when those fields exist. Place the banner above the
      * form so the visitor can read it and try again.
      */
-    if ( ! error.title && ! error.status && ! error.detail ) {
+    const normalized = normalizeChefsError( error );
+
+    if ( ! normalized.title && ! normalized.status && ! normalized.detail ) {
         return;
     }
 
@@ -197,7 +240,7 @@ const showChefsError = ( root, error ) => {
     region.className = 'bcew-chefs-form__error';
     region.setAttribute( 'role', 'alert' );
 
-    const headingText = [ error.title, error.status ]
+    const headingText = [ normalized.title, normalized.status ]
         .filter( Boolean )
         .join( ' - ' );
 
@@ -207,9 +250,9 @@ const showChefsError = ( root, error ) => {
         region.append( heading );
     }
 
-    if ( error.detail ) {
+    if ( normalized.detail ) {
         const message = document.createElement( 'p' );
-        message.textContent = error.detail;
+        message.textContent = normalized.detail;
         region.append( message );
     }
 
@@ -296,6 +339,9 @@ const mountChefsForm = async ( root ) => {
         viewer.setAttribute( 'auth-token', config.token );
         viewer.setAttribute( 'base-url', config.baseUrl );
         viewer.setAttribute( 'auto-reload-on-submit', 'false' );
+        viewer.endpoints = {
+            formioJs: `${ config.baseUrl }/webcomponents/v1/assets/formio.js`,
+        };
 
         /*
          * Submit success and CHEFS HTTP errors are separate events. Success
@@ -317,10 +363,11 @@ const mountChefsForm = async ( root ) => {
         }
     } catch ( error ) {
         /*
-         * Embed-config or the viewer script failed. There is no form to keep,
-         * so replace the mount with a single error paragraph.
+         * Embed-config or the viewer script failed. Keep the mount in place
+         * and show the normalized error above it.
          */
-        showError( mount, error?.message || 'Unable to load the CHEFS form.' );
+        mount.querySelector( 'chefs-form-viewer' )?.remove();
+        showChefsError( root, normalizeChefsError( error ) );
     }
 };
 

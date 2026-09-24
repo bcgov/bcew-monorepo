@@ -63,6 +63,21 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Init registers the admin-post handlers and plugin action-link filter.
+	 *
+	 * @return void
+	 */
+	public function test_init_registers_settings_hooks() {
+		$settings = new \Bcgov\BcewChefsEmbed\Settings();
+		$settings->init();
+
+		$this->assertSame( 10, has_action( 'admin_post_bcew_chefs_save', array( $settings, 'handle_save' ) ) );
+		$this->assertSame( 10, has_action( 'admin_post_bcew_chefs_delete', array( $settings, 'handle_delete' ) ) );
+		$this->assertSame( 10, has_action( 'admin_post_bcew_chefs_save_confirmation', array( $settings, 'handle_save_confirmation' ) ) );
+		$this->assertSame( 10, has_action( 'admin_post_bcew_chefs_delete_confirmation', array( $settings, 'handle_delete_confirmation' ) ) );
+	}
+
+	/**
 	 * Credentials can be saved to the database.
 	 *
 	 * Acceptance: Save stores Form ID and API key in the credentials table
@@ -140,6 +155,223 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Invalid credentials do not create a new saved form.
+	 *
+	 * @return void
+	 */
+	public function test_invalid_credentials_do_not_create_a_row() {
+		$redirect = $this->save_settings_with_response(
+			$this->form_id,
+			array( 'detail' => 'Forbidden' ),
+			403
+		);
+
+		$this->assertStringContainsString( 'chefs_error=invalid_credentials', $redirect );
+		$this->assertNull( CredentialsManager::get_by_form_id( $this->form_id ) );
+	}
+
+	/**
+	 * Saving without credentials redirects with a validation error.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_rejects_missing_credentials() {
+		$nonce                = wp_create_nonce( 'bcew_chefs_save' );
+		$_POST['form_id']     = '';
+		$_POST['api_key']     = '';
+		$_POST['_wpnonce']    = $nonce;
+		$_REQUEST['_wpnonce'] = $nonce;
+
+		$redirect = $this->capture_settings_redirect(
+			static function () {
+				( new \Bcgov\BcewChefsEmbed\Settings() )->handle_save();
+			}
+		);
+
+		$this->assertStringContainsString( 'chefs_error=missing_credentials', $redirect );
+	}
+
+	/**
+	 * Invalid metadata falls back to the Form ID after authentication.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_falls_back_when_metadata_is_invalid() {
+		$redirect = $this->save_settings_with_auth_and_metadata(
+			'{invalid-json',
+			200
+		);
+
+		$this->assertStringContainsString( 'chefs_saved=1', $redirect );
+	}
+
+	/**
+	 * A form without a title or name uses the Form ID as its display name.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_falls_back_when_form_has_no_name() {
+		$redirect = $this->save_settings_with_auth_and_metadata(
+			array(
+				'versions' => array(
+					array(
+						'id'        => 'version-1',
+						'published' => true,
+					),
+				),
+			),
+			200
+		);
+
+		$this->assertStringContainsString( 'chefs_saved=1', $redirect );
+	}
+
+	/**
+	 * A valid form redirects with the saved flag.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_redirects_after_saving_valid_form() {
+		$redirect = $this->save_settings_with_auth_and_metadata(
+			array(
+				'title'    => 'Published test form',
+				'versions' => array(
+					array(
+						'id'        => 'version-1',
+						'published' => true,
+					),
+				),
+			),
+			200
+		);
+
+		$this->assertStringContainsString( 'chefs_saved=1', $redirect );
+	}
+
+	/**
+	 * Draft-only forms are rejected before credentials are persisted.
+	 *
+	 * @return void
+	 */
+	public function test_draft_only_form_is_not_saved() {
+		$redirect = $this->save_settings_with_response(
+			$this->form_id,
+			array(
+				'token'    => 'test-token',
+				'title'    => 'Draft form',
+				'versions' => array(),
+			),
+			200
+		);
+
+		$this->assertStringContainsString( 'chefs_error=no_published_version', $redirect );
+		$this->assertNull( CredentialsManager::get_by_form_id( $this->form_id ) );
+	}
+
+	/**
+	 * Invalid replacement credentials preserve the existing row.
+	 *
+	 * @return void
+	 */
+	public function test_invalid_replacement_preserves_existing_credentials() {
+		$original_key = 'original-api-key';
+		CredentialsManager::save( $this->form_id, $original_key, $this->admin_user_id );
+
+		$this->save_settings_with_response(
+			$this->form_id,
+			array( 'detail' => 'Forbidden' ),
+			403,
+			'new-invalid-key'
+		);
+
+		$row = CredentialsManager::get_by_form_id( $this->form_id );
+		$this->assertIsArray( $row );
+		$this->assertSame( $original_key, $row['api_key'] );
+	}
+
+	/**
+	 * Updating the key keeps the form name and confirmation.
+	 *
+	 * @return void
+	 */
+	public function test_updating_api_key_preserves_form_name_and_confirmation() {
+		$original_key       = 'original-api-key';
+		$replacement_key    = 'replacement-api-key';
+		$original_form_name = 'Original saved form name';
+		$confirmation       = 'Thanks for applying.';
+
+		// Set up the existing form.
+		CredentialsManager::save( $this->form_id, $original_key, $this->admin_user_id );
+		OptionsManager::save_form_name( $this->form_id, $original_form_name );
+		OptionsManager::save( $this->form_id, $confirmation );
+
+		// Update the API key.
+		$redirect = $this->save_settings_with_auth_and_metadata(
+			array(
+				'title'    => 'Updated CHEFS title',
+				'versions' => array(
+					array(
+						'id'        => 'version-1',
+						'published' => true,
+					),
+				),
+			),
+			200,
+			$replacement_key
+		);
+
+		// Check that the key changed and the other settings stayed the same.
+		$this->assertStringContainsString( 'chefs_updated=1', $redirect );
+		$row = CredentialsManager::get_by_form_id( $this->form_id );
+		$this->assertIsArray( $row );
+		$this->assertSame( $replacement_key, $row['api_key'] );
+		$this->assertSame( $original_form_name, OptionsManager::get_form_name( $this->form_id ) );
+		$this->assertSame( $confirmation, OptionsManager::get_confirmation( $this->form_id ) );
+	}
+
+	/**
+	 * Updating a form works when its old API key cannot be decrypted.
+	 *
+	 * @return void
+	 */
+	public function test_updating_api_key_preserves_settings_when_old_key_is_unreadable() {
+		$replacement_key    = 'replacement-api-key';
+		$original_form_name = 'Original saved form name';
+		$confirmation       = 'Thanks for applying.';
+
+		CredentialsManager::save( $this->form_id, 'original-api-key', $this->admin_user_id );
+		OptionsManager::save_form_name( $this->form_id, $original_form_name );
+		OptionsManager::save( $this->form_id, $confirmation );
+
+		global $wpdb;
+		$wpdb->update(
+			CredentialsManager::table_name(),
+			array( 'api_key' => 'unreadable-key' ),
+			array( 'form_id' => $this->form_id ),
+			array( '%s' ),
+			array( '%s' )
+		);
+
+		$redirect = $this->save_settings_with_auth_and_metadata(
+			array(
+				'title'    => 'Updated CHEFS title',
+				'versions' => array(
+					array(
+						'id'        => 'version-1',
+						'published' => true,
+					),
+				),
+			),
+			200,
+			$replacement_key
+		);
+
+		$this->assertStringContainsString( 'chefs_updated=1', $redirect );
+		$this->assertSame( $original_form_name, OptionsManager::get_form_name( $this->form_id ) );
+		$this->assertSame( $confirmation, OptionsManager::get_confirmation( $this->form_id ) );
+	}
+
+	/**
 	 * Handle save extracts a form ID from a URL with a fragment.
 	 *
 	 * @return void
@@ -193,6 +425,16 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		// Save first time with first_key.
 		CredentialsManager::save( $this->form_id, $first_key, $this->admin_user_id );
 
+		global $wpdb;
+		$table = CredentialsManager::table_name();
+		$wpdb->update(
+			$table,
+			array( 'created_at' => '2000-01-01 00:00:00' ),
+			array( 'form_id' => $this->form_id ),
+			array( '%s' ),
+			array( '%s' )
+		);
+
 		// Save same form_id again with second_key (should update, not insert).
 		CredentialsManager::save( $this->form_id, $second_key, $this->admin_user_id );
 
@@ -201,10 +443,9 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		// Verify the row was updated (contains second_key, not first_key).
 		$this->assertIsArray( $row );
 		$this->assertSame( $second_key, $row['api_key'], 'Duplicate form_id should update api_key.' );
+		$this->assertSame( '2000-01-01 00:00:00', $row['created_at'], 'Updating credentials should preserve created_at.' );
 
 		// Verify only one row exists for this form_id.
-		global $wpdb;
-		$table = CredentialsManager::table_name();
 		$count = (int) $wpdb->get_var(
 			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table name cannot be parameterized.
 			$wpdb->prepare( 'SELECT COUNT(*) FROM `' . $table . '` WHERE form_id = %s', $this->form_id )
@@ -323,6 +564,48 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		$this->assertStringContainsString( 'documentation', $html );
 		$this->assertStringContainsString( 'href="' . esc_url( \Bcgov\BcewChefsEmbed\Settings::DOCUMENTATION_URL ) . '"', $html );
 		$this->assertStringNotContainsString( 'target="_blank"', $html );
+	}
+
+	/**
+	 * Settings page renders saved and deleted notices from redirect flags.
+	 *
+	 * @return void
+	 */
+	public function test_settings_page_renders_saved_and_deleted_notices() {
+		$saved_html = $this->render_page_with_get( 'chefs_saved', '1' );
+		$this->assertStringContainsString( 'Saved.', $saved_html );
+
+		$updated_html = $this->render_page_with_get( 'chefs_updated', '1' );
+		$this->assertStringContainsString( 'Form updated.', $updated_html );
+
+		$deleted_html = $this->render_page_with_get( 'chefs_deleted', '1' );
+		$this->assertStringContainsString( 'Removed.', $deleted_html );
+	}
+
+	/**
+	 * Settings page rejects users without manage_options.
+	 *
+	 * @return void
+	 */
+	public function test_render_page_requires_manage_options() {
+		$subscriber_id = self::factory()->user->create( array( 'role' => 'subscriber' ) );
+		wp_set_current_user( $subscriber_id );
+
+		$this->expectException( \WPDieException::class );
+		( new \Bcgov\BcewChefsEmbed\Settings() )->render_page();
+	}
+
+	/**
+	 * Handle save rejects users without manage_options.
+	 *
+	 * @return void
+	 */
+	public function test_handle_save_requires_manage_options() {
+		$subscriber_id = self::factory()->user->create( array( 'role' => 'subscriber' ) );
+		wp_set_current_user( $subscriber_id );
+
+		$this->expectException( \WPDieException::class );
+		( new \Bcgov\BcewChefsEmbed\Settings() )->handle_save();
 	}
 
 	/**
@@ -473,6 +756,24 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 			$html,
 			'Empty-state copy should not show while a custom message is saved.'
 		);
+	}
+
+	/**
+	 * Hostile confirmation text is rendered as escaped plain text in the admin UI.
+	 *
+	 * @return void
+	 */
+	public function test_settings_page_escapes_hostile_confirmation_output() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+		OptionsManager::save( $this->form_id, "<script>alert('hack')</script>Thanks" );
+
+		$html = $this->render_page_with_get( 'edit_confirmation', $this->form_id );
+
+		$this->assertStringContainsString( 'Thanks', $html );
+		$this->assertStringNotContainsString( '<script>', $html );
+
+		$html = $this->render_page_with_get( 'chefs_saved', '1' );
+		$this->assertStringNotContainsString( '<script>', $html );
 	}
 
 	/**
@@ -661,6 +962,47 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Settings page renders each credential validation error safely.
+	 *
+	 * @return void
+	 */
+	public function test_settings_page_renders_credential_error_notices() {
+		$messages = array(
+			'missing_credentials' => 'Enter a Form ID/URL and API key.',
+			'form_not_found'      => 'CHEFS could not find that Form ID.',
+			'invalid_credentials' => 'could not be verified together',
+			'request_failed'      => 'Unable to contact CHEFS.',
+			'invalid_response'    => 'unexpected response',
+			'unknown_error'       => 'Unable to save credentials.',
+		);
+
+		foreach ( $messages as $error_code => $message ) {
+			$html = $this->render_page_with_get( 'chefs_error', $error_code );
+			$this->assertStringContainsString( $message, $html, "Expected notice for {$error_code}." );
+		}
+	}
+
+	/**
+	 * Settings page renders the confirmation editor when requested.
+	 *
+	 * @return void
+	 */
+	public function test_settings_page_renders_confirmation_edit_mode() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only edit-mode flag for testing.
+		$_GET['edit_confirmation'] = $this->form_id;
+		ob_start();
+		( new \Bcgov\BcewChefsEmbed\Settings() )->render_page();
+		$html = ob_get_clean();
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Clear test query parameter.
+		unset( $_GET['edit_confirmation'] );
+
+		$this->assertStringContainsString( 'name="confirmation"', $html );
+		$this->assertStringContainsString( 'name="action" value="bcew_chefs_save_confirmation"', $html );
+	}
+
+	/**
 	 * Handle delete rejects users without manage_options.
 	 *
 	 * Acceptance: Only users with manage_options can remove forms.
@@ -681,6 +1023,28 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		$this->expectException( \WPDieException::class );
 
 		( new \Bcgov\BcewChefsEmbed\Settings() )->handle_delete();
+	}
+
+	/**
+	 * Handle delete removes the row and redirects with a success flag.
+	 *
+	 * @return void
+	 */
+	public function test_handle_delete_removes_form_and_redirects() {
+		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
+		$nonce                = wp_create_nonce( 'bcew_chefs_delete' );
+		$_POST['form_id']     = $this->form_id;
+		$_POST['_wpnonce']    = $nonce;
+		$_REQUEST['_wpnonce'] = $nonce;
+
+		$redirect = $this->capture_settings_redirect(
+			function () {
+				( new \Bcgov\BcewChefsEmbed\Settings() )->handle_delete();
+			}
+		);
+
+		$this->assertStringContainsString( 'chefs_deleted=1', $redirect );
+		$this->assertNull( CredentialsManager::get_by_form_id( $this->form_id ) );
 	}
 
 	/**
@@ -763,7 +1127,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 			'The Form ID field should include the acceptance-criteria example with highlighted values.'
 		);
 		$this->assertStringContainsString(
-			'aria-describedby="form-id-description"',
+			'aria-describedby="form-id-description form-id-update-description"',
 			$html,
 			'The Form ID field should be associated with its help text.'
 		);
@@ -841,18 +1205,115 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	 * @return string Redirect URL.
 	 */
 	private function save_settings( $form_id_or_url ) {
+		return $this->save_settings_with_response(
+			$form_id_or_url,
+			array(
+				'token'    => 'test-token',
+				'title'    => 'Published test form',
+				'versions' => array(
+					array(
+						'id'        => 'version-1',
+						'published' => true,
+					),
+				),
+			),
+			200,
+			$this->api_key
+		);
+	}
+
+	/**
+	 * Submit settings with a mocked CHEFS response and capture the redirect.
+	 *
+	 * @param string $form_id_or_url Form ID or URL submitted to the settings handler.
+	 * @param array  $body           Mocked CHEFS response body.
+	 * @param int    $status         Mocked HTTP status code.
+	 * @param string $api_key        API key submitted with the form.
+	 * @return string Redirect URL.
+	 */
+	private function save_settings_with_response( $form_id_or_url, array $body, $status, $api_key = 'test-api-key-12345' ) {
+		$chefs_stub = static function () use ( $body, $status ) {
+			return array(
+				'headers'  => array( 'content-type' => 'application/json' ),
+				'body'     => wp_json_encode( $body ),
+				'response' => array(
+					'code'    => $status,
+					'message' => 'OK',
+				),
+			);
+		};
+		add_filter( 'pre_http_request', $chefs_stub, 10, 3 );
+
 		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Tests simulate a POST request and set a valid nonce below.
 		$_POST['form_id']     = $form_id_or_url;
-		$_POST['api_key']     = $this->api_key;
+		$_POST['api_key']     = $api_key;
 		$_POST['_wpnonce']    = wp_create_nonce( 'bcew_chefs_save' );
 		$_REQUEST['_wpnonce'] = $_POST['_wpnonce'];
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 
-		return $this->capture_settings_redirect(
-			function () {
-				( new \Bcgov\BcewChefsEmbed\Settings() )->handle_save();
+		try {
+			return $this->capture_settings_redirect(
+				function () {
+					( new \Bcgov\BcewChefsEmbed\Settings() )->handle_save();
+				}
+			);
+		} finally {
+			remove_filter( 'pre_http_request', $chefs_stub, 10 );
+		}
+	}
+
+	/**
+	 * Submit settings with separate mocked authentication and metadata responses.
+	 *
+	 * @param array|string $metadata_body   Mocked metadata response body.
+	 * @param int          $metadata_status Mocked metadata status code.
+	 * @param string|null  $api_key         API key submitted with the form.
+	 * @return string Redirect URL.
+	 */
+	private function save_settings_with_auth_and_metadata( $metadata_body, $metadata_status, $api_key = null ) {
+		$form_id = $this->form_id;
+		$api_key = $api_key ?? $this->api_key;
+		$stub    = static function ( $pre, $args, $url ) use ( $form_id, $metadata_body, $metadata_status ) {
+			if ( false !== strpos( $url, '/gateway/v1/auth/token/forms/' ) ) {
+				return array(
+					'body'     => wp_json_encode( array( 'token' => 'test-token' ) ),
+					'response' => array(
+						'code'    => 200,
+						'message' => 'OK',
+					),
+				);
 			}
-		);
+
+			if ( false !== strpos( $url, '/api/v1/forms/' ) ) {
+				return array(
+					'body'     => is_string( $metadata_body ) ? $metadata_body : wp_json_encode( $metadata_body ),
+					'response' => array(
+						'code'    => $metadata_status,
+						'message' => 'OK',
+					),
+				);
+			}
+
+			return $pre;
+		};
+		add_filter( 'pre_http_request', $stub, 10, 3 );
+
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Tests simulate a POST request and set a valid nonce below.
+		$_POST['form_id']     = $form_id;
+		$_POST['api_key']     = $api_key;
+		$_POST['_wpnonce']    = wp_create_nonce( 'bcew_chefs_save' );
+		$_REQUEST['_wpnonce'] = $_POST['_wpnonce'];
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+
+		try {
+			return $this->capture_settings_redirect(
+				function () {
+					( new \Bcgov\BcewChefsEmbed\Settings() )->handle_save();
+				}
+			);
+		} finally {
+			remove_filter( 'pre_http_request', $stub, 10 );
+		}
 	}
 
 	/**

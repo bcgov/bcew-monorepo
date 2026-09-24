@@ -79,65 +79,99 @@ class OptionsTest extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Custom table is created on plugin activation if it does not already exist.
+	 * Get schema columns indexed by field name.
 	 *
-	 * @return void
+	 * @return array Columns keyed by field name.
 	 */
-	public function test_table_created_on_activation() {
-		OptionsManager::activate( false );
-
-		$this->assertTrue( $this->table_exists(), 'Activation should create the options table.' );
-
-		// Safe when the table already exists.
-		OptionsManager::activate( false );
-		$this->assertTrue( $this->table_exists() );
-	}
-
-	/**
-	 * Table schema matches the ticket (id PK, chefs_credentials_id, confirmation).
-	 *
-	 * @return void
-	 */
-	public function test_table_schema_matches_acceptance_criteria() {
+	private function get_column_schema() {
 		global $wpdb;
 
 		$table   = OptionsManager::table_name();
 		$columns = $wpdb->get_results( "DESCRIBE `{$table}`", ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
-
-		$this->assertNotEmpty( $columns );
 
 		$by_field = array();
 		foreach ( $columns as $column ) {
 			$by_field[ $column['Field'] ] = $column;
 		}
 
+		return $by_field;
+	}
+
+	/**
+	 * Get a table value by credentials ID.
+	 *
+	 * @param string $column Column name.
+	 * @param string $form_id Credentials ID.
+	 * @return mixed|null Table value.
+	 */
+	private function get_table_value( $column, $form_id ) {
+		global $wpdb;
+
+		return $wpdb->get_var(
+			$wpdb->prepare(
+				'SELECT %i FROM %i WHERE chefs_credentials_id = %s',
+				$column,
+				OptionsManager::table_name(),
+				$form_id
+			)
+		);
+	}
+
+	/**
+	 * Activation creates the options table.
+	 *
+	 * @return void
+	 */
+	public function test_table_created_on_activation() {
+		OptionsManager::activate( false );
+
+		$this->assertTrue( $this->table_exists() );
+		OptionsManager::activate( false );
+		$this->assertTrue( $this->table_exists() );
+	}
+
+	/**
+	 * The options table contains the required columns.
+	 *
+	 * @return void
+	 */
+	public function test_table_schema_matches_acceptance_criteria() {
+		$by_field = $this->get_column_schema();
+
+		$this->assertNotEmpty( $by_field );
 		$this->assertArrayHasKey( 'id', $by_field );
 		$this->assertSame( 'PRI', $by_field['id']['Key'] );
 		$this->assertStringContainsString( 'auto_increment', strtolower( $by_field['id']['Extra'] ) );
-
 		$this->assertArrayHasKey( 'chefs_credentials_id', $by_field );
+		$this->assertArrayHasKey( 'form_name', $by_field );
 		$this->assertArrayHasKey( 'confirmation', $by_field );
 	}
 
 	/**
-	 * Confirmation can be looked up by form / credentials ID.
+	 * Form names can be saved independently of confirmations.
+	 *
+	 * @return void
+	 */
+	public function test_save_form_name() {
+		$this->assertSame( $this->form_id, OptionsManager::save_form_name( $this->form_id, ' Grant application ' ) );
+		$this->assertSame( 'Grant application', $this->get_table_value( 'form_name', $this->form_id ) );
+		$this->assertNull( OptionsManager::get_confirmation( $this->form_id ) );
+	}
+
+	/**
+	 * Confirmations can be looked up by credentials ID.
 	 *
 	 * @return void
 	 */
 	public function test_get_confirmation_by_credentials_id() {
 		$this->insert_option_row( $this->form_id, 'Thanks for submitting!' );
 
-		$this->assertSame(
-			'Thanks for submitting!',
-			OptionsManager::get_confirmation( $this->form_id )
-		);
-		$this->assertNull(
-			OptionsManager::get_confirmation( '00000000-0000-0000-0000-000000000000' )
-		);
+		$this->assertSame( 'Thanks for submitting!', OptionsManager::get_confirmation( $this->form_id ) );
+		$this->assertNull( OptionsManager::get_confirmation( '00000000-0000-0000-0000-000000000000' ) );
 	}
 
 	/**
-	 * Empty credentials IDs are rejected before querying.
+	 * Empty credentials IDs are rejected.
 	 *
 	 * @return void
 	 */
@@ -147,23 +181,18 @@ class OptionsTest extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * New-site hook installs the table for a site-like object.
+	 * New-site initialization installs the options table.
 	 *
 	 * @return void
 	 */
 	public function test_on_initialize_site_installs_table() {
-		$site = (object) array(
-			'blog_id' => \get_current_blog_id(),
-		);
+		$site = (object) array( 'blog_id' => \get_current_blog_id() );
 
 		delete_option( OptionsManager::DB_VERSION_OPTION );
 		OptionsManager::on_initialize_site( $site );
 
 		$this->assertTrue( $this->table_exists() );
-		$this->assertSame(
-			OptionsManager::DB_VERSION,
-			get_option( OptionsManager::DB_VERSION_OPTION )
-		);
+		$this->assertSame( OptionsManager::DB_VERSION, get_option( OptionsManager::DB_VERSION_OPTION ) );
 	}
 
 	/**
@@ -373,6 +402,22 @@ class OptionsTest extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Hostile form IDs and confirmation messages are sanitized before storage.
+	 *
+	 * @return void
+	 */
+	public function test_save_sanitizes_hostile_values() {
+		$hostile_form_id = $this->form_id . '<script>alert(1)</script>';
+		$hostile_message = "<script>alert('hack')</script><b>Thanks</b>";
+
+		$result = OptionsManager::save( $hostile_form_id, $hostile_message );
+
+		$this->assertSame( $this->form_id, $result );
+		$this->assertSame( 'Thanks', OptionsManager::get_confirmation( $result ) );
+		$this->assertStringNotContainsString( '<script>', $this->get_table_value( 'confirmation', $result ) );
+	}
+
+	/**
 	 * Delete removes the confirmation so lookups fall back to generic.
 	 *
 	 * @return void
@@ -382,6 +427,19 @@ class OptionsTest extends \WP_UnitTestCase {
 
 		$this->assertTrue( OptionsManager::delete( $this->form_id ) );
 		$this->assertNull( OptionsManager::get_confirmation( $this->form_id ) );
+	}
+
+	/**
+	 * Clearing a confirmation preserves the stored form name.
+	 *
+	 * @return void
+	 */
+	public function test_clear_confirmation_preserves_form_name() {
+		OptionsManager::save_form_name( $this->form_id, 'Grant application' );
+		OptionsManager::save( $this->form_id, 'Thanks for submitting!' );
+
+		$this->assertTrue( OptionsManager::clear_confirmation( $this->form_id ) );
+		$this->assertSame( 'Grant application', OptionsManager::get_form_name( $this->form_id ) );
 	}
 
 	/**

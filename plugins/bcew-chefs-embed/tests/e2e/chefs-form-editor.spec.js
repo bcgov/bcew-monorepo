@@ -2,12 +2,16 @@ const { test, expect } = require( '@wordpress/e2e-test-utils-playwright' );
 const {
     BLOCK_NAME,
     addSavedForm,
+    assertBlockVisible,
     clearSavedForms,
     ensureBlockSettingsVisible,
+    getChefsBlock,
+    getFormOptionLabels,
+    getFormOptionValues,
+    getFormSelect,
     mockChefsFormRoutes,
     selectFormAndPublish,
     selectSavedFormId,
-    setup,
 } = require( './chefs-form-helpers' );
 
 test.describe( 'CHEFS Form editor', () => {
@@ -15,19 +19,23 @@ test.describe( 'CHEFS Form editor', () => {
         await clearSavedForms( admin, page );
     } );
 
+    test.afterEach( async ( { page } ) => {
+        await page.unrouteAll( { behavior: 'wait' } );
+    } );
+
     test( 'can be inserted from the block editor with a formId attribute', async ( {
         admin,
         editor,
+        page,
     } ) => {
         await admin.createNewPost();
-        await editor.insertBlock( { name: BLOCK_NAME } );
+        await expect( page ).toHaveURL( /\/wp-admin\/post-new\.php/ );
         await expect(
-            editor.canvas.locator( `[data-type="${ BLOCK_NAME }"]` )
+            page.locator( '.block-editor__container' )
         ).toBeVisible();
-        const blocks = await editor.getBlocks();
-        const chefsBlock = blocks.find(
-            ( block ) => block.name === BLOCK_NAME
-        );
+        await editor.insertBlock( { name: BLOCK_NAME } );
+        await assertBlockVisible( editor );
+        const chefsBlock = await getChefsBlock( editor );
         expect( chefsBlock ).toBeDefined();
         expect( chefsBlock.attributes.formId ).toBeDefined();
     } );
@@ -47,17 +55,22 @@ test.describe( 'CHEFS Form editor', () => {
             baseUrl: mockBaseUrl,
         } );
         await admin.createNewPost();
+        await expect( page ).toHaveURL( /\/wp-admin\/post-new\.php/ );
+        await expect(
+            page.locator( '.block-editor__container' )
+        ).toBeVisible();
         await editor.insertBlock( { name: BLOCK_NAME } );
         await ensureBlockSettingsVisible( editor, page );
-        const formSelect = page.getByLabel( 'Form ID' ).first();
+        const formSelect = getFormSelect( page );
         await expect( formSelect ).toBeVisible();
-        const optionValues = await formSelect
-            .locator( 'option' )
-            .evaluateAll( ( options ) =>
-                options.map( ( option ) => option.value )
-            );
+        const optionValues = await getFormOptionValues( page );
         expect( optionValues ).toEqual(
             expect.arrayContaining( [ '', formIdOne, formIdTwo ] )
+        );
+        // Verify form titles are displayed in dropdown options
+        const optionLabels = await getFormOptionLabels( page );
+        expect( optionLabels ).toEqual(
+            expect.arrayContaining( [ 'E2E test form' ] )
         );
         await selectSavedFormId( page, formIdOne );
         const viewer = editor.canvas.locator( 'chefs-form-viewer' );
@@ -66,6 +79,10 @@ test.describe( 'CHEFS Form editor', () => {
         await expect( viewer ).toHaveAttribute( 'auth-token', 'preview-token' );
         await expect( viewer ).toHaveAttribute( 'base-url', mockBaseUrl );
         await expect( viewer ).toHaveAttribute( 'read-only', '' );
+        await expect( viewer ).toHaveAttribute(
+            'data-formio-js',
+            `${ mockBaseUrl }/webcomponents/v1/assets/formio.js`
+        );
     } );
 
     test( 'persists and clears a selected Form ID when the saved form is removed', async ( {
@@ -86,27 +103,20 @@ test.describe( 'CHEFS Form editor', () => {
             formId
         );
         await page.goto( `/wp-admin/post.php?post=${ postId }&action=edit` );
-        await expect(
-            editor.canvas.locator( `[data-type="${ BLOCK_NAME }"]` ).first()
-        ).toBeVisible();
+        await assertBlockVisible( editor );
         await ensureBlockSettingsVisible( editor, page );
-        await expect( page.getByLabel( 'Form ID' ).first() ).toHaveValue(
+        await expect( page.getByLabel( 'Form name' ).first() ).toHaveValue(
             formId
         );
         await clearSavedForms( admin, page );
         await page.goto( `/wp-admin/post.php?post=${ postId }&action=edit` );
-        await expect(
-            editor.canvas.locator( `[data-type="${ BLOCK_NAME }"]` ).first()
-        ).toBeVisible();
+        await assertBlockVisible( editor );
         await expect(
             editor.canvas.getByText(
                 'Select a CHEFS form in the block settings.'
             )
         ).toBeVisible();
-        const blocks = await editor.getBlocks();
-        const chefsBlock = blocks.find(
-            ( block ) => block.name === BLOCK_NAME
-        );
+        const chefsBlock = await getChefsBlock( editor );
         expect( chefsBlock.attributes.formId ).toBe( '' );
     } );
 
@@ -115,8 +125,12 @@ test.describe( 'CHEFS Form editor', () => {
         editor,
         page,
     } ) => {
-        await setup( { admin, page } );
+        await clearSavedForms( admin, page );
         await admin.createNewPost();
+        await expect( page ).toHaveURL( /\/wp-admin\/post-new\.php/ );
+        await expect(
+            page.locator( '.block-editor__container' )
+        ).toBeVisible();
         await editor.insertBlock( { name: BLOCK_NAME } );
         await expect(
             editor.canvas.getByText(
@@ -160,6 +174,10 @@ test.describe( 'CHEFS Form editor', () => {
             } );
         } );
         await admin.createNewPost();
+        await expect( page ).toHaveURL( /\/wp-admin\/post-new\.php/ );
+        await expect(
+            page.locator( '.block-editor__container' )
+        ).toBeVisible();
         await editor.insertBlock( { name: BLOCK_NAME } );
         await ensureBlockSettingsVisible( editor, page );
         await selectSavedFormId( page, formId );

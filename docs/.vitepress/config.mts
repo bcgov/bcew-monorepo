@@ -233,6 +233,23 @@ export default defineConfig({
   description: 'Shared docs for themes, plugins, and monorepo workflows',
   srcExclude: ['**/README.md'],
   cleanUrls: true,
+  markdown: {
+    config(md) {
+      const defaultFence = md.renderer.rules.fence;
+
+      md.renderer.rules.fence = (tokens, index, options, env, self) => {
+        const token = tokens[index];
+
+        if (token.info.trim() === 'mermaid') {
+          return `<MermaidDiagram code="${md.utils.escapeHtml(token.content)}" />`;
+        }
+
+        return defaultFence
+          ? defaultFence(tokens, index, options, env, self)
+          : self.renderToken(tokens, index, options);
+      };
+    }
+  },
   themeConfig: {
     nav: [
       { text: 'Home', link: '/' },

@@ -21,6 +21,19 @@ import './editor.scss';
 import ChefsFormPreview from './components/chefs-form-preview';
 
 /**
+ * Transform API response into block-compatible form object.
+ *
+ * @param {Object}        form           API form object with form_id and form_name.
+ * @param {string|number} form.form_id   API form identifier.
+ * @param {string}        form.form_name API form name.
+ * @return {Object} Transformed form with formId and formName.
+ */
+const transformForm = ( { form_id: formId, form_name: formName } ) => ( {
+    formId,
+    formName: formName || formId,
+} );
+
+/**
  * The edit function describes the structure of your block in the context of the
  * editor. This represents what the editor will render when the block is used.
  *
@@ -33,7 +46,7 @@ import ChefsFormPreview from './components/chefs-form-preview';
  */
 const Edit = ( { attributes, setAttributes } ) => {
     const { formId = '' } = attributes;
-    const [ formIds, setFormIds ] = useState( [] );
+    const [ savedForms, setSavedForms ] = useState( [] );
     const [ isLoading, setIsLoading ] = useState( true );
     const [ fetchError, setFetchError ] = useState( '' );
     const settingsUrl = window.bcewChefsEmbedSettings?.settingsUrl || '';
@@ -41,24 +54,31 @@ const Edit = ( { attributes, setAttributes } ) => {
     useEffect( () => {
         let isMounted = true;
 
-        const loadFormIds = async () => {
+        const loadSavedForms = async () => {
             setIsLoading( true );
             setFetchError( '' );
 
             try {
                 const response = await apiFetch( {
-                    path: '/bcew-chefs-embed/v1/form-ids',
+                    path: '/bcew-chefs-embed/v1/forms',
                 } );
 
                 if ( ! isMounted ) {
                     return;
                 }
 
-                const savedFormIds = Array.isArray( response ) ? response : [];
+                const forms = Array.isArray( response )
+                    ? response
+                          .map( transformForm )
+                          .filter( ( form ) => form.formId )
+                    : [];
 
-                setFormIds( savedFormIds );
+                setSavedForms( forms );
 
-                if ( formId && ! savedFormIds.includes( formId ) ) {
+                if (
+                    formId &&
+                    ! forms.some( ( form ) => form.formId === formId )
+                ) {
                     setAttributes( { formId: '' } );
                 }
             } catch ( error ) {
@@ -73,7 +93,7 @@ const Edit = ( { attributes, setAttributes } ) => {
                             'bcew-chefs-embed'
                         )
                 );
-                setFormIds( [] );
+                setSavedForms( [] );
             } finally {
                 if ( isMounted ) {
                     setIsLoading( false );
@@ -81,7 +101,7 @@ const Edit = ( { attributes, setAttributes } ) => {
             }
         };
 
-        loadFormIds();
+        loadSavedForms();
 
         return () => {
             isMounted = false;
@@ -93,9 +113,9 @@ const Edit = ( { attributes, setAttributes } ) => {
             label: __( 'Select a form…', 'bcew-chefs-embed' ),
             value: '',
         },
-        ...formIds.map( ( savedFormId ) => ( {
-            label: savedFormId,
-            value: savedFormId,
+        ...savedForms.map( ( form ) => ( {
+            label: form.formName,
+            value: form.formId,
         } ) ),
     ];
 
@@ -114,9 +134,9 @@ const Edit = ( { attributes, setAttributes } ) => {
                         </Notice>
                     ) }
 
-                    { ! isLoading && ! fetchError && formIds.length > 0 && (
+                    { ! isLoading && ! fetchError && savedForms.length > 0 && (
                         <SelectControl
-                            label={ __( 'Form ID', 'bcew-chefs-embed' ) }
+                            label={ __( 'Form name', 'bcew-chefs-embed' ) }
                             help={ __(
                                 'Choose one of the CHEFS forms saved in plugin settings.',
                                 'bcew-chefs-embed'
@@ -130,26 +150,28 @@ const Edit = ( { attributes, setAttributes } ) => {
                         />
                     ) }
 
-                    { ! isLoading && ! fetchError && 0 === formIds.length && (
-                        <Notice status="info" isDismissible={ false }>
-                            <p>
-                                { __(
-                                    'No CHEFS forms have been saved yet.',
-                                    'bcew-chefs-embed'
-                                ) }
-                            </p>
-                            { settingsUrl && (
+                    { ! isLoading &&
+                        ! fetchError &&
+                        0 === savedForms.length && (
+                            <Notice status="info" isDismissible={ false }>
                                 <p>
-                                    <ExternalLink href={ settingsUrl }>
-                                        { __(
-                                            'Open CHEFS settings',
-                                            'bcew-chefs-embed'
-                                        ) }
-                                    </ExternalLink>
+                                    { __(
+                                        'No CHEFS forms have been saved yet.',
+                                        'bcew-chefs-embed'
+                                    ) }
                                 </p>
-                            ) }
-                        </Notice>
-                    ) }
+                                { settingsUrl && (
+                                    <p>
+                                        <ExternalLink href={ settingsUrl }>
+                                            { __(
+                                                'Open CHEFS settings',
+                                                'bcew-chefs-embed'
+                                            ) }
+                                        </ExternalLink>
+                                    </p>
+                                ) }
+                            </Notice>
+                        ) }
                 </PanelBody>
             </InspectorControls>
             <div { ...useBlockProps() }>

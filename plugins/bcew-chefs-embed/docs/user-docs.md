@@ -9,6 +9,7 @@ Before configuring a form in WordPress, you will need:
 - access to the CHEFS service
 - a Form ID from your form
 - an API key from your form
+- a published version of the form in CHEFS; draft-only forms cannot be embedded
 
 ## How to get your Form ID and API key for the CHEFS plugin
 
@@ -21,6 +22,10 @@ Log in to the CHEFS service portal at <https://submit.digital.gov.bc.ca/app>.
 3. Copy the Form ID from the URL. For example, in `https://submit.digital.gov.bc.ca/app/form/submit?f=43cfb894-a0cf-4bef-8026-7c8001e3cdf5`, the Form ID is `43cfb894-a0cf-4bef-8026-7c8001e3cdf5`.
 
 You can also copy the Form ID from the `f` value in the URL on the form's **Manage** page.
+
+Make sure the form has been published in CHEFS before adding it to WordPress.
+The WordPress integration requires a published version to load the form; a
+form that only has draft versions cannot be saved or embedded.
 
 ### Get your API key
 
@@ -41,14 +46,24 @@ Open WordPress Admin and go to CHEFS Forms.
 2. Enter the API Key for that form.
 3. Click **Save**.
 
+CHEFS validates the Form ID and API key before WordPress saves them. If the
+credentials are invalid, the form is not added or updated. You may see an
+error when the Form ID cannot be found, the API key is invalid, or CHEFS is
+temporarily unavailable, or the form has no published version.
+
 After you save:
 
-- The form is added to the Configured Forms list.
-- The Form ID becomes available in the CHEFS Form block options.
+- CHEFS confirms the credentials and the form title is stored in WordPress.
+- The form title is shown in the Configured Forms list, with the Form ID
+  retained for support.
+- The form title becomes available in the CHEFS Form block options.
+
+If CHEFS cannot confirm the credentials, the form is not saved.
 
 The Configured Forms table includes:
 
 - Form ID
+- Form title
 - Date added
 - Confirmation message
 - Actions:
@@ -73,11 +88,21 @@ Note: Removing a form here does not delete the form in CHEFS. Any WordPress
 page embedding it will show an error until the form is saved again or the
 block is removed.
 
-### Update a Form ID or API key
+### Update an API key or change a Form ID
 
-There is no in-place update for Form ID or API key.
+To update an API key, enter the same Form ID with the new API key and click
+**Save**. CHEFS validates the replacement credentials before WordPress updates
+the saved form.
 
-To update credentials, delete the existing form and add it again with the new values.
+Updating the API key does not change the saved form title, custom confirmation,
+or block embed settings. Only the credentials for that Form ID are replaced.
+
+If validation fails, the existing saved Form ID and API key remain unchanged.
+
+To change the Form ID, first remove the old form from the Configured Forms list,
+then add the new Form ID and its API key as a new form. Saving a different Form
+ID creates an additional configured form; it does not replace the existing row,
+so the old Form ID remains available in the block picker until you remove it.
 
 ## Manage confirmation messages
 
@@ -98,7 +123,8 @@ To update credentials, delete the existing form and add it again with the new va
 
 ## Block options
 
-- **Form ID:** Selects which saved CHEFS form to embed.
+- **Form name:** Selects which saved CHEFS form to embed.
 - Available values come from the CHEFS Forms options page.
+- The Form ID remains the saved block value so the correct form is embedded.
 - If no forms are saved, the block shows a message and a link to open CHEFS settings.
 - If a selected Form ID is deleted from settings, the block selection is cleared and must be set again.

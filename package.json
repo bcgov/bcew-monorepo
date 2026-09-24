@@ -28,6 +28,7 @@
     "@wordpress/env": "catalog:",
     "@wordpress/scripts": "catalog:",
     "@wordpress/stylelint-config": "catalog:",
+    "beautiful-mermaid": "catalog:",
     "chokidar-cli": "catalog:",
     "concurrently": "catalog:",
     "eslint-plugin-playwright": "catalog:",
