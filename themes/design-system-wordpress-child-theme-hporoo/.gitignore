@@ -1,0 +1,25 @@
+.cache-loader
+.DS_Store
+node_modules
+npm-debug.log
+yarn-error.log
+/vendor
+tests/_output
+.audit
+.phpdocs
+.phpunit.result.*
+dist/scripts/*.php
+coverage
+.idea
+.temp
+.cache
+/documentation/docs/.vuepress/dist/**
+.vscode/**
+./
+artifacts
+.github/copilot-instructions.md
+
+# documentation
+documentation/docs/.vuepress/.temp
+documentation/docs/.vuepress/.cache
+documentation/node_modules
