@@ -87,14 +87,12 @@ class ApiKeyEncryptionTest extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Encryption uses sodium (libsodium) with WordPress auth salt when available.
+	 * Encryption uses sodium secretbox only.
 	 *
 	 * @return void
 	 */
-	public function test_api_key_is_encrypted_with_sodium_when_available() {
-		if ( ! function_exists( 'sodium_crypto_secretbox' ) ) {
-			$this->markTestSkipped( 'libsodium is required for this acceptance criterion.' );
-		}
+	public function test_api_key_is_encrypted_with_sodium_secretbox() {
+		$this->assertTrue( function_exists( 'sodium_crypto_secretbox' ) );
 
 		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
 

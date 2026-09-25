@@ -19,132 +19,80 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Symmetric encryption helpers for stored form credentials.
  *
  * "Symmetric" = same key encrypts and decrypts (unlike public/private key pairs).
+ * The only supported algorithm is libsodium secretbox.
  */
 class Crypto {
 
 	/**
-	 * Version prefixes so we know which algorithm produced a stored value.
-	 * Lets us change crypto later without breaking old rows.
+	 * Prefix so we know a stored value was produced by sodium secretbox.
 	 */
-	const PREFIX_SODIUM  = 's1:'; // Sodium secretbox, format version 1.
-	const PREFIX_OPENSSL = 'o1:'; // OpenSSL AES-256-GCM, format version 1.
+	const PREFIX_SODIUM = 's1:';
 
 	/**
 	 * Encrypt a plaintext string (e.g. a CHEFS API key).
-	 *
-	 * Prefers libsodium when available; falls back to OpenSSL AES-GCM.
 	 *
 	 * @param string $plaintext Plaintext API key.
 	 * @return string|false Ciphertext payload for the DB, or false on failure.
 	 */
 	public static function encrypt( $plaintext ) {
-		// Reject non-strings and empty strings — nothing useful to encrypt.
-		if ( ! is_string( $plaintext ) || '' === $plaintext ) {
+		/*
+		 * Empty values are not credentials. Without secretbox there is no
+		 * supported way to encrypt, so refuse instead of storing plaintext.
+		 */
+		if ( ! is_string( $plaintext ) || '' === $plaintext || ! function_exists( 'sodium_crypto_secretbox' ) ) {
 			return false;
 		}
 
-		// 32-byte key derived from this site's WordPress auth salts.
 		$key = self::get_key();
 
-		// Preferred path: libsodium (modern, hard to misuse).
-		if ( function_exists( 'sodium_crypto_secretbox' ) ) {
-			// Nonce = one-time random value; never reuse with the same key.
-			$nonce = random_bytes( SODIUM_CRYPTO_SECRETBOX_NONCEBYTES );
-			// Encrypt+authenticate the plaintext into a binary "box".
-			$box = sodium_crypto_secretbox( $plaintext, $nonce, $key );
+		/*
+		 * The nonce is random and must never be reused with the same key.
+		 * Hex-encoding nonce plus ciphertext keeps the binary box safe in a text column.
+		 * The "s1:" prefix marks this as secretbox format version 1.
+		 */
+		$nonce = random_bytes( SODIUM_CRYPTO_SECRETBOX_NONCEBYTES );
+		$box   = sodium_crypto_secretbox( $plaintext, $nonce, $key );
 
-			// Store as: "s1:" + hex( nonce + ciphertext ).
-			// Hex keeps binary ciphertext safe for a text DB column.
-			return self::PREFIX_SODIUM . bin2hex( $nonce . $box );
-		}
-
-		// Fallback if sodium is missing: AES-256-GCM via OpenSSL.
-		if ( function_exists( 'openssl_encrypt' ) ) {
-			// IV (initialization vector) = random per encryption, like a nonce.
-			$iv = random_bytes( 12 );
-			// GCM auth tag is filled in by openssl_encrypt by reference.
-			$tag        = '';
-			$ciphertext = openssl_encrypt( $plaintext, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag );
-
-			// OpenSSL returns false if encryption failed.
-			if ( false === $ciphertext ) {
-				return false;
-			}
-
-			// Store as: "o1:" + hex( iv + tag + ciphertext ).
-			return self::PREFIX_OPENSSL . bin2hex( $iv . $tag . $ciphertext );
-		}
-
-		// Neither sodium nor openssl available — cannot encrypt.
-		return false;
+		return self::PREFIX_SODIUM . bin2hex( $nonce . $box );
 	}
 
 	/**
 	 * Decrypt a payload previously produced by encrypt().
 	 *
-	 * Chooses the algorithm from the prefix (s1: vs o1:).
-	 *
 	 * @param string $payload Ciphertext payload from the DB.
 	 * @return string|false Plaintext API key, or false on failure.
 	 */
 	public static function decrypt( $payload ) {
-		// Same guard as encrypt: need a non-empty string.
-		if ( ! is_string( $payload ) || '' === $payload ) {
+		/*
+		 * Only non-empty secretbox payloads can be opened. Anything else
+		 * is treated as undecryptable.
+		 */
+		if ( ! is_string( $payload ) || '' === $payload || ! function_exists( 'sodium_crypto_secretbox_open' ) ) {
 			return false;
 		}
 
-		// Must use the same key that encrypted the value (same WP salts).
+		if ( 0 !== strpos( $payload, self::PREFIX_SODIUM ) ) {
+			return false;
+		}
+
 		$key = self::get_key();
 
-		// Sodium payload path.
-		if ( 0 === strpos( $payload, self::PREFIX_SODIUM ) ) {
-			// Can't decrypt sodium if the extension isn't loaded on this server.
-			if ( ! function_exists( 'sodium_crypto_secretbox_open' ) ) {
-				return false;
-			}
+		/*
+		 * Strip "s1:" and turn the hex back into nonce plus ciphertext.
+		 * A short or invalid payload cannot be a real secretbox.
+		 * Opening the box fails when the key or nonce is wrong, or the data was changed.
+		 */
+		$raw = self::hex_to_bin( substr( $payload, strlen( self::PREFIX_SODIUM ) ) );
 
-			// Strip "s1:" then hex-decode back to raw binary (nonce + box).
-			$raw = self::hex_to_bin( substr( $payload, strlen( self::PREFIX_SODIUM ) ) );
-
-			// Invalid hex, or too short to contain a full nonce.
-			if ( false === $raw || strlen( $raw ) < SODIUM_CRYPTO_SECRETBOX_NONCEBYTES ) {
-				return false;
-			}
-
-			// First N bytes = nonce; remainder = ciphertext box.
-			$nonce = substr( $raw, 0, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES );
-			$box   = substr( $raw, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES );
-			// Returns plaintext, or false if key/nonce wrong or data tampered.
-			$plain = sodium_crypto_secretbox_open( $box, $nonce, $key );
-
-			return false === $plain ? false : $plain;
+		if ( false === $raw || strlen( $raw ) < SODIUM_CRYPTO_SECRETBOX_NONCEBYTES ) {
+			return false;
 		}
 
-		// OpenSSL AES-GCM payload path.
-		if ( 0 === strpos( $payload, self::PREFIX_OPENSSL ) ) {
-			if ( ! function_exists( 'openssl_decrypt' ) ) {
-				return false;
-			}
+		$nonce = substr( $raw, 0, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES );
+		$box   = substr( $raw, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES );
+		$plain = sodium_crypto_secretbox_open( $box, $nonce, $key );
 
-			// Strip "o1:" then decode binary: iv (12) + tag (16) + ciphertext.
-			$raw = self::hex_to_bin( substr( $payload, strlen( self::PREFIX_OPENSSL ) ) );
-
-			// 12 + 16 = 28 minimum bytes before any ciphertext.
-			if ( false === $raw || strlen( $raw ) < 28 ) {
-				return false;
-			}
-
-			$iv         = substr( $raw, 0, 12 );  // Initialization vector.
-			$tag        = substr( $raw, 12, 16 ); // GCM authentication tag.
-			$ciphertext = substr( $raw, 28 );     // Actual encrypted bytes.
-			$plain      = openssl_decrypt( $ciphertext, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag );
-
-			// false if wrong key, wrong tag (tampered), or decrypt error.
-			return false === $plain ? false : $plain;
-		}
-
-		// Unknown prefix (legacy plaintext, corrupt row, or future format we don't know).
-		return false;
+		return false === $plain ? false : $plain;
 	}
 
 	/**
@@ -171,9 +119,11 @@ class Crypto {
 	 * @return string Raw 32-byte binary key (not hex).
 	 */
 	private static function get_key() {
-		// wp_salt( 'auth' ) = AUTH_KEY / AUTH_SALT from wp-config (or Docker env).
-		// '|bcew-chefs-embed' namespaces the key so it isn't identical to other uses of the same salt.
-		// hash( ..., true ) = raw binary SHA-256 (32 bytes), required by sodium/openssl.
+		/*
+		 * WordPress auth salts differ per environment, so this key does too.
+		 * The plugin name keeps the key separate from other uses of the same salt.
+		 * Raw SHA-256 is 32 bytes, which is the key length secretbox requires.
+		 */
 		return hash( 'sha256', wp_salt( 'auth' ) . '|bcew-chefs-embed', true );
 	}
 }
