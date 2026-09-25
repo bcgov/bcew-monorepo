@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Admin settings for saved CHEFS credentials.
  *
- * UI lives here; database work stays in CredentialsManager and OptionsManager.
+ * UI lives here; database work stays in CredentialsManager.
  */
 class Settings {
 	/**
@@ -231,7 +231,7 @@ class Settings {
 					<tbody>
 					<?php foreach ( $forms as $form ) : ?>
 						<?php
-						$confirmation = OptionsManager::get_confirmation( $form['form_id'] );
+						$confirmation = CredentialsManager::get_confirmation( $form['form_id'] );
 						$is_editing   = $editing_form_id === $form['form_id'];
 						$save_form_id = 'bcew-chefs-save-confirmation-' . $form['form_id'];
 						?>
@@ -388,7 +388,7 @@ class Settings {
 		} elseif ( $is_existing_form ) {
 			$redirect_arg = 'chefs_updated';
 		} else {
-			OptionsManager::save_form_name( $form_id, $form_name );
+			CredentialsManager::save_form_name( $form_id, $form_name );
 			$redirect_arg = 'chefs_saved';
 		}
 
@@ -533,7 +533,7 @@ class Settings {
 		$form_id = sanitize_text_field( wp_unslash( $_POST['form_id'] ?? '' ) );
 		$message = sanitize_textarea_field( wp_unslash( $_POST['confirmation'] ?? '' ) );
 
-		$saved        = OptionsManager::save( $form_id, $message );
+		$saved        = CredentialsManager::save_confirmation( $form_id, $message );
 		$redirect_arg = false === $saved ? 'chefs_confirmation_error' : 'chefs_confirmation_saved';
 
 		wp_safe_redirect( add_query_arg( $redirect_arg, '1', self::get_page_url() ) );
@@ -554,7 +554,7 @@ class Settings {
 
 		$form_id = sanitize_text_field( wp_unslash( $_POST['form_id'] ?? '' ) );
 
-		OptionsManager::clear_confirmation( $form_id );
+		CredentialsManager::clear_confirmation( $form_id );
 
 		wp_safe_redirect( add_query_arg( 'chefs_confirmation_cleared', '1', self::get_page_url() ) );
 		exit;

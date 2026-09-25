@@ -184,7 +184,7 @@ The route is registered and handled by `src/EmbedConfigController.php`.
 
 The settings page requires the `manage_options` capability. Form save, deletion, and confirmation actions use WordPress admin-post handlers with nonce validation.
 
-API keys are encrypted before they are stored by `src/CredentialsManager.php`. `src/Crypto.php` encrypts them with libsodium `sodium_crypto_secretbox()`. The encryption key is derived from the WordPress authentication salts, so encrypted values depend on the WordPress installation's salts.
+Each saved form is one row in `{prefix}bcew_chefs_credentials`, with the Form ID, encrypted API key, form name, confirmation message, created time, and user ID. On upgrade, a form name and confirmation still stored in `{prefix}bcew_chefs_options` are copied onto the matching credentials row, and that table is removed. API keys are encrypted before they are stored by `src/CredentialsManager.php`. `src/Crypto.php` encrypts them with libsodium `sodium_crypto_secretbox()`. The encryption key is derived from the WordPress authentication salts, so encrypted values depend on the WordPress installation's salts.
 
 Implementation safeguard: do not decide whether a Form ID is new by calling `get_by_form_id()`. It returns `null` for both a missing row and an undecryptable key, while `save()` can still update an existing row. Use `CredentialsManager::form_exists()` to check for the row without decrypting the stored key. A valid replacement key for an existing row must preserve the saved form name and confirmation and report an update, even when the old key cannot be decrypted.
 

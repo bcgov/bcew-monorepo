@@ -10,7 +10,6 @@
 namespace Bcgov\BcewChefsEmbed\Test;
 
 use Bcgov\BcewChefsEmbed\CredentialsManager;
-use Bcgov\BcewChefsEmbed\OptionsManager;
 
 /**
  * CHEFS Settings page acceptance criteria.
@@ -47,16 +46,12 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		parent::set_up();
 
 		CredentialsManager::install();
-		OptionsManager::install();
 
 		global $wpdb;
 
 		$credentials_table = CredentialsManager::table_name();
-		$options_table     = OptionsManager::table_name();
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
 		$wpdb->query( "DELETE FROM `{$credentials_table}`" );
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
-		$wpdb->query( "DELETE FROM `{$options_table}`" );
 
 		$this->admin_user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $this->admin_user_id );
@@ -302,8 +297,8 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 
 		// Set up the existing form.
 		CredentialsManager::save( $this->form_id, $original_key, $this->admin_user_id );
-		OptionsManager::save_form_name( $this->form_id, $original_form_name );
-		OptionsManager::save( $this->form_id, $confirmation );
+		CredentialsManager::save_form_name( $this->form_id, $original_form_name );
+		CredentialsManager::save_confirmation( $this->form_id, $confirmation );
 
 		// Update the API key.
 		$redirect = $this->save_settings_with_auth_and_metadata(
@@ -325,8 +320,8 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		$row = CredentialsManager::get_by_form_id( $this->form_id );
 		$this->assertIsArray( $row );
 		$this->assertSame( $replacement_key, $row['api_key'] );
-		$this->assertSame( $original_form_name, OptionsManager::get_form_name( $this->form_id ) );
-		$this->assertSame( $confirmation, OptionsManager::get_confirmation( $this->form_id ) );
+		$this->assertSame( $original_form_name, CredentialsManager::get_form_name( $this->form_id ) );
+		$this->assertSame( $confirmation, CredentialsManager::get_confirmation( $this->form_id ) );
 	}
 
 	/**
@@ -340,8 +335,8 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		$confirmation       = 'Thanks for applying.';
 
 		CredentialsManager::save( $this->form_id, 'original-api-key', $this->admin_user_id );
-		OptionsManager::save_form_name( $this->form_id, $original_form_name );
-		OptionsManager::save( $this->form_id, $confirmation );
+		CredentialsManager::save_form_name( $this->form_id, $original_form_name );
+		CredentialsManager::save_confirmation( $this->form_id, $confirmation );
 
 		global $wpdb;
 		$wpdb->update(
@@ -367,8 +362,8 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		);
 
 		$this->assertStringContainsString( 'chefs_updated=1', $redirect );
-		$this->assertSame( $original_form_name, OptionsManager::get_form_name( $this->form_id ) );
-		$this->assertSame( $confirmation, OptionsManager::get_confirmation( $this->form_id ) );
+		$this->assertSame( $original_form_name, CredentialsManager::get_form_name( $this->form_id ) );
+		$this->assertSame( $confirmation, CredentialsManager::get_confirmation( $this->form_id ) );
 	}
 
 	/**
@@ -720,7 +715,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	 */
 	public function test_settings_page_shows_saved_confirmation_and_delete_action() {
 		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
-		OptionsManager::save( $this->form_id, 'Thanks for applying.' );
+		CredentialsManager::save_confirmation( $this->form_id, 'Thanks for applying.' );
 
 		ob_start();
 		( new \Bcgov\BcewChefsEmbed\Settings() )->render_page();
@@ -765,7 +760,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	 */
 	public function test_settings_page_escapes_hostile_confirmation_output() {
 		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
-		OptionsManager::save( $this->form_id, "<script>alert('hack')</script>Thanks" );
+		CredentialsManager::save_confirmation( $this->form_id, "<script>alert('hack')</script>Thanks" );
 
 		$html = $this->render_page_with_get( 'edit_confirmation', $this->form_id );
 
@@ -783,7 +778,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	 */
 	public function test_settings_page_edit_mode_shows_textarea_and_save() {
 		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
-		OptionsManager::save( $this->form_id, 'Thanks for applying.' );
+		CredentialsManager::save_confirmation( $this->form_id, 'Thanks for applying.' );
 
 		$html = $this->render_page_with_get( 'edit_confirmation', $this->form_id );
 
@@ -848,7 +843,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	 */
 	public function test_handle_delete_confirmation_requires_manage_options() {
 		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
-		OptionsManager::save( $this->form_id, 'Thanks' );
+		CredentialsManager::save_confirmation( $this->form_id, 'Thanks' );
 
 		$subscriber_id = self::factory()->user->create( array( 'role' => 'subscriber' ) );
 		wp_set_current_user( $subscriber_id );
@@ -875,7 +870,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		$location = $this->save_confirmation( $this->form_id, $message );
 
 		$this->assertStringContainsString( 'chefs_confirmation_saved=1', $location );
-		$this->assertSame( $message, OptionsManager::get_confirmation( $this->form_id ) );
+		$this->assertSame( $message, CredentialsManager::get_confirmation( $this->form_id ) );
 	}
 
 	/**
@@ -885,12 +880,12 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	 */
 	public function test_handle_save_confirmation_rejects_empty_message() {
 		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
-		OptionsManager::save( $this->form_id, 'Keep me' );
+		CredentialsManager::save_confirmation( $this->form_id, 'Keep me' );
 
 		$location = $this->save_confirmation( $this->form_id, '   ' );
 
 		$this->assertStringContainsString( 'chefs_confirmation_error=1', $location );
-		$this->assertSame( 'Keep me', OptionsManager::get_confirmation( $this->form_id ) );
+		$this->assertSame( 'Keep me', CredentialsManager::get_confirmation( $this->form_id ) );
 	}
 
 	/**
@@ -900,7 +895,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	 */
 	public function test_handle_delete_confirmation_removes_message_and_redirects() {
 		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
-		OptionsManager::save( $this->form_id, 'Thanks for applying.' );
+		CredentialsManager::save_confirmation( $this->form_id, 'Thanks for applying.' );
 
 		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Tests simulate a POST request and set a valid nonce below.
 		$nonce                = wp_create_nonce( 'bcew_chefs_delete_confirmation' );
@@ -916,7 +911,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		);
 
 		$this->assertStringContainsString( 'chefs_confirmation_cleared=1', $location );
-		$this->assertNull( OptionsManager::get_confirmation( $this->form_id ) );
+		$this->assertNull( CredentialsManager::get_confirmation( $this->form_id ) );
 	}
 
 	/**
@@ -929,7 +924,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 
 		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
 		CredentialsManager::save( $other_form_id, $this->api_key, $this->admin_user_id );
-		OptionsManager::save( $this->form_id, 'Thanks for applying.' );
+		CredentialsManager::save_confirmation( $this->form_id, 'Thanks for applying.' );
 
 		$html = $this->render_page_with_get( 'edit_confirmation', $this->form_id );
 

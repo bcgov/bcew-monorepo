@@ -7,7 +7,7 @@
 
 namespace Bcgov\BcewChefsEmbed\Test;
 
-use Bcgov\BcewChefsEmbed\OptionsManager;
+use Bcgov\BcewChefsEmbed\CredentialsManager;
 
 /**
  * Options table acceptance criteria.
@@ -31,13 +31,14 @@ class OptionsTest extends \WP_UnitTestCase {
 
 		require_once __DIR__ . '/wp-multisite-stubs.php';
 
-		OptionsManager::install();
+		CredentialsManager::install();
 
 		global $wpdb;
 
-		$table = OptionsManager::table_name();
+		$table = CredentialsManager::table_name();
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
 		$wpdb->query( "DELETE FROM `{$table}`" );
+		CredentialsManager::save( $this->form_id, 'seed-api-key', 1 );
 	}
 
 	/**
@@ -48,7 +49,7 @@ class OptionsTest extends \WP_UnitTestCase {
 	private function table_exists() {
 		global $wpdb;
 
-		$table = OptionsManager::table_name();
+		$table = CredentialsManager::table_name();
 		$found = $wpdb->get_var(
 			$wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $table ) )
 		);
@@ -64,18 +65,9 @@ class OptionsTest extends \WP_UnitTestCase {
 	 * @return int|false Insert ID or false on failure.
 	 */
 	private function insert_option_row( $chefs_credentials_id, $confirmation ) {
-		global $wpdb;
+		CredentialsManager::save( $chefs_credentials_id, 'seed-api-key', 1 );
 
-		$result = $wpdb->insert(
-			OptionsManager::table_name(),
-			array(
-				'chefs_credentials_id' => $chefs_credentials_id,
-				'confirmation'         => $confirmation,
-			),
-			array( '%s', '%s' )
-		);
-
-		return false === $result ? false : (int) $wpdb->insert_id;
+		return CredentialsManager::save_confirmation( $chefs_credentials_id, $confirmation );
 	}
 
 	/**
@@ -86,7 +78,7 @@ class OptionsTest extends \WP_UnitTestCase {
 	private function get_column_schema() {
 		global $wpdb;
 
-		$table   = OptionsManager::table_name();
+		$table   = CredentialsManager::table_name();
 		$columns = $wpdb->get_results( "DESCRIBE `{$table}`", ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- internal table name.
 
 		$by_field = array();
@@ -109,9 +101,9 @@ class OptionsTest extends \WP_UnitTestCase {
 
 		return $wpdb->get_var(
 			$wpdb->prepare(
-				'SELECT %i FROM %i WHERE chefs_credentials_id = %s',
+				'SELECT %i FROM %i WHERE form_id = %s',
 				$column,
-				OptionsManager::table_name(),
+				CredentialsManager::table_name(),
 				$form_id
 			)
 		);
@@ -123,10 +115,10 @@ class OptionsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_table_created_on_activation() {
-		OptionsManager::activate( false );
+		CredentialsManager::activate( false );
 
 		$this->assertTrue( $this->table_exists() );
-		OptionsManager::activate( false );
+		CredentialsManager::activate( false );
 		$this->assertTrue( $this->table_exists() );
 	}
 
@@ -139,12 +131,14 @@ class OptionsTest extends \WP_UnitTestCase {
 		$by_field = $this->get_column_schema();
 
 		$this->assertNotEmpty( $by_field );
-		$this->assertArrayHasKey( 'id', $by_field );
-		$this->assertSame( 'PRI', $by_field['id']['Key'] );
-		$this->assertStringContainsString( 'auto_increment', strtolower( $by_field['id']['Extra'] ) );
-		$this->assertArrayHasKey( 'chefs_credentials_id', $by_field );
+		$this->assertArrayHasKey( 'form_id', $by_field );
+		$this->assertSame( 'PRI', $by_field['form_id']['Key'] );
+		$this->assertArrayHasKey( 'api_key', $by_field );
 		$this->assertArrayHasKey( 'form_name', $by_field );
 		$this->assertArrayHasKey( 'confirmation', $by_field );
+		$this->assertArrayHasKey( 'created_at', $by_field );
+		$this->assertArrayHasKey( 'user_id', $by_field );
+		$this->assertArrayNotHasKey( 'chefs_credentials_id', $by_field );
 	}
 
 	/**
@@ -153,9 +147,9 @@ class OptionsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_save_form_name() {
-		$this->assertSame( $this->form_id, OptionsManager::save_form_name( $this->form_id, ' Grant application ' ) );
+		$this->assertSame( $this->form_id, CredentialsManager::save_form_name( $this->form_id, ' Grant application ' ) );
 		$this->assertSame( 'Grant application', $this->get_table_value( 'form_name', $this->form_id ) );
-		$this->assertNull( OptionsManager::get_confirmation( $this->form_id ) );
+		$this->assertNull( CredentialsManager::get_confirmation( $this->form_id ) );
 	}
 
 	/**
@@ -166,8 +160,8 @@ class OptionsTest extends \WP_UnitTestCase {
 	public function test_get_confirmation_by_credentials_id() {
 		$this->insert_option_row( $this->form_id, 'Thanks for submitting!' );
 
-		$this->assertSame( 'Thanks for submitting!', OptionsManager::get_confirmation( $this->form_id ) );
-		$this->assertNull( OptionsManager::get_confirmation( '00000000-0000-0000-0000-000000000000' ) );
+		$this->assertSame( 'Thanks for submitting!', CredentialsManager::get_confirmation( $this->form_id ) );
+		$this->assertNull( CredentialsManager::get_confirmation( '00000000-0000-0000-0000-000000000000' ) );
 	}
 
 	/**
@@ -176,8 +170,8 @@ class OptionsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_get_confirmation_rejects_empty_id() {
-		$this->assertNull( OptionsManager::get_confirmation( '' ) );
-		$this->assertNull( OptionsManager::get_confirmation( '   ' ) );
+		$this->assertNull( CredentialsManager::get_confirmation( '' ) );
+		$this->assertNull( CredentialsManager::get_confirmation( '   ' ) );
 	}
 
 	/**
@@ -188,11 +182,11 @@ class OptionsTest extends \WP_UnitTestCase {
 	public function test_on_initialize_site_installs_table() {
 		$site = (object) array( 'blog_id' => \get_current_blog_id() );
 
-		delete_option( OptionsManager::DB_VERSION_OPTION );
-		OptionsManager::on_initialize_site( $site );
+		delete_option( CredentialsManager::DB_VERSION_OPTION );
+		CredentialsManager::on_initialize_site( $site );
 
 		$this->assertTrue( $this->table_exists() );
-		$this->assertSame( OptionsManager::DB_VERSION, get_option( OptionsManager::DB_VERSION_OPTION ) );
+		$this->assertSame( CredentialsManager::DB_VERSION, get_option( CredentialsManager::DB_VERSION_OPTION ) );
 	}
 
 	/**
@@ -201,9 +195,9 @@ class OptionsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_on_initialize_site_ignores_invalid_site() {
-		OptionsManager::on_initialize_site( null );
-		OptionsManager::on_initialize_site( 'not-a-site' );
-		OptionsManager::on_initialize_site( (object) array() );
+		CredentialsManager::on_initialize_site( null );
+		CredentialsManager::on_initialize_site( 'not-a-site' );
+		CredentialsManager::on_initialize_site( (object) array() );
 
 		$this->assertTrue( $this->table_exists() );
 	}
@@ -214,16 +208,16 @@ class OptionsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_install_for_blog_creates_table() {
-		delete_option( OptionsManager::DB_VERSION_OPTION );
+		delete_option( CredentialsManager::DB_VERSION_OPTION );
 		unset( $GLOBALS['bcew_chefs_embed_switched_blog'] );
 
 		$blog_id = \get_current_blog_id();
-		OptionsManager::install_for_blog( $blog_id );
+		CredentialsManager::install_for_blog( $blog_id );
 
 		$this->assertTrue( $this->table_exists() );
 		$this->assertSame(
-			OptionsManager::DB_VERSION,
-			get_option( OptionsManager::DB_VERSION_OPTION )
+			CredentialsManager::DB_VERSION,
+			get_option( CredentialsManager::DB_VERSION_OPTION )
 		);
 		// Stubs (or real multisite) should leave restore clearing the switch marker.
 		$this->assertArrayNotHasKey( 'bcew_chefs_embed_switched_blog', $GLOBALS );
@@ -235,14 +229,14 @@ class OptionsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_install_on_sites_creates_table() {
-		delete_option( OptionsManager::DB_VERSION_OPTION );
+		delete_option( CredentialsManager::DB_VERSION_OPTION );
 
-		OptionsManager::install_on_sites( array( \get_current_blog_id() ) );
+		CredentialsManager::install_on_sites( array( \get_current_blog_id() ) );
 
 		$this->assertTrue( $this->table_exists() );
 		$this->assertSame(
-			OptionsManager::DB_VERSION,
-			get_option( OptionsManager::DB_VERSION_OPTION )
+			CredentialsManager::DB_VERSION,
+			get_option( CredentialsManager::DB_VERSION_OPTION )
 		);
 	}
 
@@ -252,14 +246,14 @@ class OptionsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_activate_network_wide_installs() {
-		delete_option( OptionsManager::DB_VERSION_OPTION );
+		delete_option( CredentialsManager::DB_VERSION_OPTION );
 
-		OptionsManager::activate( true );
+		CredentialsManager::activate( true );
 
 		$this->assertTrue( $this->table_exists() );
 		$this->assertSame(
-			OptionsManager::DB_VERSION,
-			get_option( OptionsManager::DB_VERSION_OPTION )
+			CredentialsManager::DB_VERSION,
+			get_option( CredentialsManager::DB_VERSION_OPTION )
 		);
 	}
 
@@ -269,7 +263,7 @@ class OptionsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_site_ids_for_network_install_includes_current_blog() {
-		$site_ids = OptionsManager::site_ids_for_network_install();
+		$site_ids = CredentialsManager::site_ids_for_network_install();
 
 		$this->assertContains( \get_current_blog_id(), $site_ids );
 	}
@@ -280,14 +274,14 @@ class OptionsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_maybe_install_options_table_when_version_missing() {
-		delete_option( OptionsManager::DB_VERSION_OPTION );
+		delete_option( CredentialsManager::DB_VERSION_OPTION );
 
-		bcew_chefs_embed_maybe_install_options_table();
+		bcew_chefs_embed_maybe_install_credentials_table();
 
 		$this->assertTrue( $this->table_exists() );
 		$this->assertSame(
-			OptionsManager::DB_VERSION,
-			get_option( OptionsManager::DB_VERSION_OPTION )
+			CredentialsManager::DB_VERSION,
+			get_option( CredentialsManager::DB_VERSION_OPTION )
 		);
 	}
 
@@ -297,15 +291,15 @@ class OptionsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_maybe_install_options_table_skips_when_current() {
-		OptionsManager::install();
+		CredentialsManager::install();
 		$this->insert_option_row( $this->form_id, 'Keep me' );
 
-		bcew_chefs_embed_maybe_install_options_table();
+		bcew_chefs_embed_maybe_install_credentials_table();
 
-		$this->assertSame( 'Keep me', OptionsManager::get_confirmation( $this->form_id ) );
+		$this->assertSame( 'Keep me', CredentialsManager::get_confirmation( $this->form_id ) );
 		$this->assertSame(
-			OptionsManager::DB_VERSION,
-			get_option( OptionsManager::DB_VERSION_OPTION )
+			CredentialsManager::DB_VERSION,
+			get_option( CredentialsManager::DB_VERSION_OPTION )
 		);
 	}
 
@@ -315,7 +309,7 @@ class OptionsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_deactivation_does_not_delete_data() {
-		OptionsManager::install();
+		CredentialsManager::install();
 		$this->insert_option_row( $this->form_id, 'Persist me' );
 
 		$plugin = 'bcew-chefs-embed/bcew-chefs-embed.php';
@@ -324,7 +318,7 @@ class OptionsTest extends \WP_UnitTestCase {
 
 		try {
 			$this->assertTrue( $this->table_exists() );
-			$this->assertSame( 'Persist me', OptionsManager::get_confirmation( $this->form_id ) );
+			$this->assertSame( 'Persist me', CredentialsManager::get_confirmation( $this->form_id ) );
 		} finally {
 			activate_plugin( $plugin );
 		}
@@ -336,17 +330,17 @@ class OptionsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_reactivation_does_not_delete_data() {
-		OptionsManager::install();
+		CredentialsManager::install();
 		$this->insert_option_row( $this->form_id, 'Still here' );
 
 		$plugin = 'bcew-chefs-embed/bcew-chefs-embed.php';
 		activate_plugin( $plugin );
 		deactivate_plugins( $plugin );
 		activate_plugin( $plugin );
-		OptionsManager::activate( false );
+		CredentialsManager::activate( false );
 
 		$this->assertTrue( $this->table_exists() );
-		$this->assertSame( 'Still here', OptionsManager::get_confirmation( $this->form_id ) );
+		$this->assertSame( 'Still here', CredentialsManager::get_confirmation( $this->form_id ) );
 	}
 
 	/**
@@ -355,10 +349,10 @@ class OptionsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_save_creates_confirmation() {
-		$result = OptionsManager::save( $this->form_id, 'Thanks for submitting!' );
+		$result = CredentialsManager::save_confirmation( $this->form_id, 'Thanks for submitting!' );
 
 		$this->assertSame( $this->form_id, $result );
-		$this->assertSame( 'Thanks for submitting!', OptionsManager::get_confirmation( $this->form_id ) );
+		$this->assertSame( 'Thanks for submitting!', CredentialsManager::get_confirmation( $this->form_id ) );
 	}
 
 	/**
@@ -367,11 +361,11 @@ class OptionsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_save_updates_existing_confirmation() {
-		OptionsManager::save( $this->form_id, 'First message' );
-		$result = OptionsManager::save( $this->form_id, 'Updated message' );
+		CredentialsManager::save_confirmation( $this->form_id, 'First message' );
+		$result = CredentialsManager::save_confirmation( $this->form_id, 'Updated message' );
 
 		$this->assertSame( $this->form_id, $result );
-		$this->assertSame( 'Updated message', OptionsManager::get_confirmation( $this->form_id ) );
+		$this->assertSame( 'Updated message', CredentialsManager::get_confirmation( $this->form_id ) );
 	}
 
 	/**
@@ -380,12 +374,12 @@ class OptionsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_save_rejects_empty_values() {
-		OptionsManager::save( $this->form_id, 'Keep me' );
+		CredentialsManager::save_confirmation( $this->form_id, 'Keep me' );
 
-		$this->assertFalse( OptionsManager::save( '', 'Thanks' ) );
-		$this->assertFalse( OptionsManager::save( $this->form_id, '' ) );
-		$this->assertFalse( OptionsManager::save( $this->form_id, '   ' ) );
-		$this->assertSame( 'Keep me', OptionsManager::get_confirmation( $this->form_id ) );
+		$this->assertFalse( CredentialsManager::save_confirmation( '', 'Thanks' ) );
+		$this->assertFalse( CredentialsManager::save_confirmation( $this->form_id, '' ) );
+		$this->assertFalse( CredentialsManager::save_confirmation( $this->form_id, '   ' ) );
+		$this->assertSame( 'Keep me', CredentialsManager::get_confirmation( $this->form_id ) );
 	}
 
 	/**
@@ -396,9 +390,9 @@ class OptionsTest extends \WP_UnitTestCase {
 	public function test_save_preserves_newlines() {
 		$message = "Line one.\nLine two.";
 
-		OptionsManager::save( $this->form_id, $message );
+		CredentialsManager::save_confirmation( $this->form_id, $message );
 
-		$this->assertSame( $message, OptionsManager::get_confirmation( $this->form_id ) );
+		$this->assertSame( $message, CredentialsManager::get_confirmation( $this->form_id ) );
 	}
 
 	/**
@@ -410,10 +404,10 @@ class OptionsTest extends \WP_UnitTestCase {
 		$hostile_form_id = $this->form_id . '<script>alert(1)</script>';
 		$hostile_message = "<script>alert('hack')</script><b>Thanks</b>";
 
-		$result = OptionsManager::save( $hostile_form_id, $hostile_message );
+		$result = CredentialsManager::save_confirmation( $hostile_form_id, $hostile_message );
 
 		$this->assertSame( $this->form_id, $result );
-		$this->assertSame( 'Thanks', OptionsManager::get_confirmation( $result ) );
+		$this->assertSame( 'Thanks', CredentialsManager::get_confirmation( $result ) );
 		$this->assertStringNotContainsString( '<script>', $this->get_table_value( 'confirmation', $result ) );
 	}
 
@@ -423,10 +417,10 @@ class OptionsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_delete_removes_confirmation() {
-		OptionsManager::save( $this->form_id, 'Thanks for submitting!' );
+		CredentialsManager::save_confirmation( $this->form_id, 'Thanks for submitting!' );
 
-		$this->assertTrue( OptionsManager::delete( $this->form_id ) );
-		$this->assertNull( OptionsManager::get_confirmation( $this->form_id ) );
+		$this->assertTrue( CredentialsManager::delete( $this->form_id ) );
+		$this->assertNull( CredentialsManager::get_confirmation( $this->form_id ) );
 	}
 
 	/**
@@ -435,11 +429,11 @@ class OptionsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_clear_confirmation_preserves_form_name() {
-		OptionsManager::save_form_name( $this->form_id, 'Grant application' );
-		OptionsManager::save( $this->form_id, 'Thanks for submitting!' );
+		CredentialsManager::save_form_name( $this->form_id, 'Grant application' );
+		CredentialsManager::save_confirmation( $this->form_id, 'Thanks for submitting!' );
 
-		$this->assertTrue( OptionsManager::clear_confirmation( $this->form_id ) );
-		$this->assertSame( 'Grant application', OptionsManager::get_form_name( $this->form_id ) );
+		$this->assertTrue( CredentialsManager::clear_confirmation( $this->form_id ) );
+		$this->assertSame( 'Grant application', CredentialsManager::get_form_name( $this->form_id ) );
 	}
 
 	/**
@@ -448,8 +442,8 @@ class OptionsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_delete_returns_false_when_nothing_to_remove() {
-		$this->assertFalse( OptionsManager::delete( '' ) );
-		$this->assertFalse( OptionsManager::delete( $this->form_id ) );
+		$this->assertFalse( CredentialsManager::delete( '' ) );
+		$this->assertFalse( CredentialsManager::delete( '00000000-0000-4000-8000-000000000000' ) );
 	}
 
 	/**
@@ -460,9 +454,9 @@ class OptionsTest extends \WP_UnitTestCase {
 	public function test_install_uses_current_site_table_prefix() {
 		global $wpdb;
 
-		OptionsManager::install();
+		CredentialsManager::install();
 
-		$this->assertStringStartsWith( $wpdb->prefix, OptionsManager::table_name() );
+		$this->assertStringStartsWith( $wpdb->prefix, CredentialsManager::table_name() );
 		$this->assertTrue( $this->table_exists() );
 	}
 
@@ -483,7 +477,7 @@ class OptionsTest extends \WP_UnitTestCase {
 			)
 		);
 
-		OptionsManager::activate( true );
+		CredentialsManager::activate( true );
 
 		foreach ( $site_ids as $site_id ) {
 			switch_to_blog( (int) $site_id );
