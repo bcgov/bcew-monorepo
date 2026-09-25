@@ -38,6 +38,13 @@ test( 'copyright template part renders current year on frontend', async ( {
     // Open the frontend preview.
     const previewPage = await editor.openPreviewPage();
 
+    // Preview generation can briefly show a placeholder screen before the page
+    // content is ready; wait until the preview is rendered before asserting.
+    await previewPage.waitForLoadState( 'domcontentloaded' );
+    await expect
+        .poll( async () => await previewPage.locator( 'body' ).innerText() )
+        .not.toContain( 'Generating preview…' );
+
     // The shortcode must be expanded — not the literal placeholder.
     await expect( previewPage.locator( 'body' ) ).not.toContainText(
         '[current_year]'
