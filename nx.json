@@ -132,6 +132,13 @@
                 "{workspaceRoot}/tools/validate-template-parts.mjs"
             ],
             "cache": true
+        },
+        "nx-release-publish": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "bash .github/scripts/publish-wordpress-release.sh {projectName}",
+                "cwd": "{workspaceRoot}"
+            }
         }
     },
     "namedInputs": {
@@ -145,8 +152,23 @@
         "sharedGlobals": []
     },
     "release": {
+        "projects": ["plugins/*", "themes/*"],
+        "projectsRelationship": "independent",
+        "releaseTag": {
+            "pattern": "{projectName}/v{version}"
+        },
+        "git": {
+            "commit": true,
+            "tag": true
+        },
+        "version": {
+            "currentVersionResolver": "git-tag",
+            "fallbackCurrentVersionResolver": "disk",
+            "versionActions": "tools/monorepo/src/release/wordpress-version-actions.ts"
+        },
         "changelog": {
-            "workspaceChangelog": {
+            "workspaceChangelog": false,
+            "projectChangelogs": {
                 "createRelease": "github"
             }
         }
