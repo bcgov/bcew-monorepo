@@ -132,19 +132,18 @@ Blog repo: [blog_gov_bc_ca](https://bitbucket.org/bc-gov/blog_gov_bc_ca) on Bitb
 2. GitHub → **bcew-monorepo → Actions → Release Subproject and Update packages.json → Run workflow**.
 3. **Use workflow from:** your branch
 4. **Project to release:** `<new-slug>`
-5. **Version:** `<current-version>-alpha.1` (example: `1.16.0-alpha.1`)
-6. **Is this a pre-release?:** checked
-7. Run it. Wait for green. This publishes a zip to GitHub Releases and adds `bcgov-plugin/<new-slug>` or `bcgov-theme/<new-slug>` to [packages.json](https://bcgov.github.io/bcew-monorepo/).
+5. Leave **Alpha** ticked. A new name has no `{project}/v*` tags, so the workflow releases `1.0.0-alpha.1`.
+6. Run it. Wait for green. The log prints the version. This publishes a zip to GitHub Releases and adds `bcgov-plugin/<new-slug>` or `bcgov-theme/<new-slug>` to [packages.json](https://bcgov.github.io/bcew-monorepo/).
 
 ### Blog repo: install the pre-release on test
 
 **1.** Clone [blog_gov_bc_ca](https://bitbucket.org/bc-gov/blog_gov_bc_ca). Branch from `development`.
 
-**2.** In `composer.json`, add the **new** package at the pre-release version from monorepo step 5. Keep the **old** package in `require`.
+**2.** In `composer.json`, add the **new** package at the version the workflow printed (monorepo step 6). Keep the **old** package in `require`.
 
 ```json
 "bcgov-plugin/<old-slug>": "<existing-version>",
-"bcgov-plugin/<new-slug>": "1.16.0-alpha.1"
+"bcgov-plugin/<new-slug>": "1.0.0-alpha.1"
 ```
 
 For a theme, use `bcgov-theme/<new-slug>` instead of `bcgov-plugin/<new-slug>`.
