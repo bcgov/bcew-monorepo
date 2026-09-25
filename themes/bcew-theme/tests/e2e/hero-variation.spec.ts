@@ -80,7 +80,6 @@ test( 'test that we can create a Hero Image block with all fields filled', async
         .frameLocator( 'iframe[name="editor-canvas"]' )
         .locator( '.editor-styles-wrapper' );
     await editorContent.waitFor();
-    await editorContent.evaluate( async () => document.fonts.ready );
     await expect( editorContent ).toHaveScreenshot(
         'hero-image-all-fields-editor.png',
         { animations: 'disabled' }
@@ -142,7 +141,6 @@ test( 'test that we can create a Hero Image block with only a title', async ( {
         .frameLocator( 'iframe[name="editor-canvas"]' )
         .locator( '.editor-styles-wrapper' );
     await editorContentTitleOnly.waitFor();
-    await editorContentTitleOnly.evaluate( async () => document.fonts.ready );
     await expect( editorContentTitleOnly ).toHaveScreenshot(
         'hero-image-title-only-editor.png',
         { animations: 'disabled' }
