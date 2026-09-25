@@ -4,7 +4,6 @@
     position: relative;
     max-width: 70rem;
     min-width: 43.125rem;
-    border-radius: 4px;
     overflow: hidden;
     background: var(--dswp-surface-color-background-white);
 
@@ -20,6 +19,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            border-radius: 4px;
         }
     }
 
