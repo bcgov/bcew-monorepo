@@ -184,7 +184,7 @@ The route is registered and handled by `src/EmbedConfigController.php`.
 
 The settings page requires the `manage_options` capability. Form save, deletion, and confirmation actions use WordPress admin-post handlers with nonce validation.
 
-API keys are encrypted before they are stored by `src/CredentialsManager.php`. `src/Crypto.php` prefers libsodium and falls back to OpenSSL AES-256-GCM. The encryption key is derived from the WordPress authentication salts, so encrypted values depend on the WordPress installation's salts.
+API keys are encrypted before they are stored by `src/CredentialsManager.php`. `src/Crypto.php` encrypts them with libsodium `sodium_crypto_secretbox()`. The encryption key is derived from the WordPress authentication salts, so encrypted values depend on the WordPress installation's salts.
 
 Implementation safeguard: do not decide whether a Form ID is new by calling `get_by_form_id()`. It returns `null` for both a missing row and an undecryptable key, while `save()` can still update an existing row. Use `CredentialsManager::form_exists()` to check for the row without decrypting the stored key. A valid replacement key for an existing row must preserve the saved form name and confirmation and report an update, even when the old key cannot be decrypted.
 
