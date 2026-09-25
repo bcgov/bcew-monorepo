@@ -79,39 +79,9 @@ This command generates:
 
 The block title is derived automatically from the block name, so `hero-banner` becomes `Hero Banner`.
 
-### Create a release tag
+### Cut a release
 
-```shell
-npx nx generate monorepo:release-tag
-```
-
-Prompts for a project name and a semantic version, validates both, then creates and pushes a Git tag in the required format `<project>/v<semver>`.
-
-The version must be [Composer-compatible semver](https://semver.org): `MAJOR.MINOR.PATCH` with optional pre-release and build-metadata suffixes (e.g. `1.2.3`, `1.2.3-beta.1`, `1.2.3+build.42`). A leading `v` in the version input is accepted and stripped automatically.
-
-#### Examples
-
-Interactive (will prompt for project and version):
-
-```shell
-pnpm release
-# or
-npx nx generate monorepo:release-tag
-```
-
-Non-interactive:
-
-```shell
-npx nx generate monorepo:release-tag bcew-blocks 1.4.2
-```
-
-Create the tag locally without pushing to origin:
-
-```shell
-npx nx generate monorepo:release-tag bcew-blocks 1.4.2 --push=false
-```
-
-The created tag (`bcew-blocks/v1.4.2`) triggers the [`tag.yml`](../../.github/workflows/tag.yml) release workflow.
+Releases are cut from GitHub Actions. Open **Actions → Release Subproject and Update packages.json**, pick the project, and leave **Alpha** ticked unless this is a real release. The workflow chooses the version, commits `package.json` and `CHANGELOG.md`, creates the `<project>/v<version>` tag, and publishes the zip. See [CI/CD](../../docs/ci-cd.md).
 
 ## Building
 

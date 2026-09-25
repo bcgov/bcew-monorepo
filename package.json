@@ -85,6 +85,6 @@
     "docs:dev": "pnpm docs:sync && concurrently -k \"pnpm run docs:sync:watch\" \"vitepress dev docs\"",
     "docs:build": "pnpm docs:sync && vitepress build docs",
     "docs:preview": "vitepress preview docs",
-    "release": "npx nx g monorepo:release-tag"
+    "release": "npx nx release"
   }
 }

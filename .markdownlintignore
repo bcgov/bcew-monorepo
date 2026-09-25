@@ -1,6 +1,7 @@
 artifacts
 vendor
 node_modules
+**/CHANGELOG.md
 tools/monorepo/src/generators/plugin-generator/files/**
 # Todo: Enable when integrating this documentation.
 plugins/bcew-document-repository/documentation/**
