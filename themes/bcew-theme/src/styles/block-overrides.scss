@@ -47,6 +47,10 @@
 	background-color: var(--dswp-theme-primary-gold);
 }
 
+.wp-block-button.is-style-outline .wp-block-button__link:hover {
+	background-color: var(--dswp-surface-color-secondary-button-hover);
+}
+
 @media (max-width: $break-medium) {
 
 	.dswp-text-image-block-custom-layout *,
