@@ -1,4 +1,4 @@
-import{_ as i,I as a,o as n,c as r,a8 as s,J as o}from"./chunks/framework.D4ejoiGF.js";const g=JSON.parse('{"title":"Developer docs","description":"","frontmatter":{},"headers":[],"relativePath":"content/plugins/bcew-chefs-embed/developer-docs.md","filePath":"content/plugins/bcew-chefs-embed/developer-docs.md"}'),d={name:"content/plugins/bcew-chefs-embed/developer-docs.md"};function l(h,e,c,p,k,m){const t=a("MermaidDiagram");return n(),r("div",null,[e[0]||(e[0]=s("",27)),o(t,{code:`sequenceDiagram
+import{_ as i,I as a,o as n,c as o,a8 as s,J as r}from"./chunks/framework.D4ejoiGF.js";const g=JSON.parse('{"title":"Developer docs","description":"","frontmatter":{},"headers":[],"relativePath":"content/plugins/bcew-chefs-embed/developer-docs.md","filePath":"content/plugins/bcew-chefs-embed/developer-docs.md"}'),d={name:"content/plugins/bcew-chefs-embed/developer-docs.md"};function l(h,e,c,p,k,m){const t=a("MermaidDiagram");return n(),o("div",null,[e[0]||(e[0]=s("",27)),r(t,{code:`sequenceDiagram
     actor Admin as WordPress admin
     actor Editor as User with edit_posts
     actor Visitor as Public visitor
