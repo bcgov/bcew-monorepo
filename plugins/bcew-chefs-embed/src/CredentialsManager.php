@@ -3,13 +3,13 @@
 namespace Bcgov\BcewChefsEmbed;
 
 /**
- * CredentialsManager - CHEFS form credentials storage.
+ * CredentialsManager - one row per saved CHEFS form.
  *
- * Storage-only helper for the custom credentials table (DSWP-1034).
- *
- * Table schema:
+ * Table schema (`{prefix}bcew_chefs_credentials`):
  * - form_id (string, primary key)
- * - api_key (string)
+ * - api_key (encrypted string)
+ * - form_name (CHEFS form title)
+ * - confirmation (custom success message)
  * - created_at (timestamp)
  * - user_id (integer, WordPress user ID)
  */
@@ -21,7 +21,7 @@ class CredentialsManager {
 	 *
 	 * Bump when table_definition() changes so existing installs re-run dbDelta.
 	 */
-	const DB_VERSION = '1';
+	const DB_VERSION = '2';
 
 	/**
 	 * Option key storing the installed schema version.
@@ -37,6 +37,78 @@ class CredentialsManager {
 		global $wpdb;
 
 		return $wpdb->prefix . 'bcew_chefs_credentials';
+	}
+
+	/**
+	 * Whether this site still has the options table from before the tables were combined.
+	 *
+	 * @return bool
+	 */
+	public static function has_legacy_options_table() {
+		global $wpdb;
+
+		$table = $wpdb->prefix . 'bcew_chefs_options';
+		$found = $wpdb->get_var(
+			$wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $table ) )
+		);
+
+		return $found === $table;
+	}
+
+	/**
+	 * Copy form names and confirmations onto the credentials rows, then drop the old options table.
+	 *
+	 * The upgrade adds the form name and confirmation columns when the credentials
+	 * table is still the older shape. The API key, created time, and user ID stay
+	 * on the existing row.
+	 *
+	 * @return void
+	 */
+	public static function migrate_legacy_options_table() {
+		global $wpdb;
+
+		self::install();
+
+		if ( ! self::has_legacy_options_table() ) {
+			return;
+		}
+
+		$credentials = self::table_name();
+		$options     = $wpdb->prefix . 'bcew_chefs_options';
+
+		/*
+		 * Copy the saved form name and confirmation onto the credentials row
+		 * with the same Form ID. The old table used its own id as the primary
+		 * key, so more than one row could exist for a form. The newest row is
+		 * the one the settings page was showing.
+		 */
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- table names from code.
+		$copied = $wpdb->query(
+			"UPDATE `{$credentials}` AS credentials
+			INNER JOIN `{$options}` AS options
+				ON credentials.form_id = options.chefs_credentials_id
+			INNER JOIN (
+				SELECT chefs_credentials_id, MAX(id) AS id
+				FROM `{$options}`
+				GROUP BY chefs_credentials_id
+			) AS latest ON options.id = latest.id
+			SET credentials.form_name = options.form_name,
+				credentials.confirmation = options.confirmation"
+		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+
+		if ( false === $copied ) {
+			return;
+		}
+
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange -- old options table name from code.
+		$dropped = $wpdb->query( "DROP TABLE IF EXISTS `{$options}`" );
+
+		if ( false === $dropped ) {
+			return;
+		}
+
+		delete_option( 'bcew_chefs_options_db_version' );
 	}
 
 	/**
@@ -67,12 +139,6 @@ class CredentialsManager {
 			array( '%s' )
 		);
 
-		/*
-		 * Removing a form should also remove its confirmation so leftover
-		 * messages are not shown if the same form ID is saved again later.
-		 */
-		OptionsManager::delete( $form_id );
-
 		// false = query error; 0 = no matching row; >0 = rows removed.
 		return false !== $deleted && $deleted > 0;
 	}
@@ -88,17 +154,12 @@ class CredentialsManager {
 	public static function list_forms() {
 		global $wpdb;
 
-		$table         = self::table_name();
-		$options_table = OptionsManager::table_name();
+		$table = self::table_name();
 
 		return $wpdb->get_results(
 			$wpdb->prepare(
-				'SELECT cred.form_id, IFNULL( opts.form_name, \'\' ) AS form_name, cred.created_at
-				FROM %i cred
-				LEFT JOIN %i opts ON opts.chefs_credentials_id = cred.form_id
-				ORDER BY cred.created_at DESC',
-				$table,
-				$options_table
+				'SELECT form_id, form_name, created_at FROM %i ORDER BY created_at DESC',
+				$table
 			),
 			ARRAY_A
 		);
@@ -238,39 +299,171 @@ class CredentialsManager {
 		$user_id = absint( $user_id );
 		$table   = self::table_name();
 
+		/*
+		 * The primary key decides insert versus update, so a separate
+		 * existence query is unnecessary. A second save replaces the key
+		 * and user only. Form name and confirmation stay on the row.
+		 */
 		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared -- table name cannot be parameterized.
-		$existing = (bool) $wpdb->get_var(
+		$result = $wpdb->query(
 			$wpdb->prepare(
-				"SELECT 1 FROM `{$table}` WHERE form_id = %s LIMIT 1",
-				$form_id
+				"INSERT INTO `{$table}` (form_id, api_key, form_name, confirmation, user_id)
+				VALUES (%s, %s, '', '', %d)
+				ON DUPLICATE KEY UPDATE api_key = VALUES(api_key), user_id = VALUES(user_id)",
+				$form_id,
+				$api_key_encrypted,
+				$user_id
 			)
 		);
 		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared
 
-		if ( $existing ) {
-			$result = $wpdb->update(
-				$table,
-				array(
-					'api_key' => $api_key_encrypted,
-					'user_id' => $user_id,
-				),
-				array( 'form_id' => $form_id ),
-				array( '%s', '%d' ),
-				array( '%s' )
-			);
-		} else {
-			$result = $wpdb->insert(
-				$table,
-				array(
-					'form_id' => $form_id,
-					'api_key' => $api_key_encrypted,
-					'user_id' => $user_id,
-				),
-				array( '%s', '%s', '%d' )
-			);
+		return false === $result ? false : $form_id;
+	}
+
+	/**
+	 * Look up a confirmation message by CHEFS form ID.
+	 *
+	 * @param string $form_id CHEFS form ID.
+	 * @return string|null Confirmation text, or null when missing or blank.
+	 */
+	public static function get_confirmation( $form_id ) {
+		return self::get_text_column( 'confirmation', $form_id );
+	}
+
+	/**
+	 * Look up the stored CHEFS form title.
+	 *
+	 * @param string $form_id CHEFS form ID.
+	 * @return string|null Form title, or null when missing or blank.
+	 */
+	public static function get_form_name( $form_id ) {
+		return self::get_text_column( 'form_name', $form_id );
+	}
+
+	/**
+	 * Save a CHEFS form title on an existing form row.
+	 *
+	 * @param string $form_id CHEFS form ID.
+	 * @param string $form_name CHEFS form title.
+	 * @return string|false Form ID on success, false on failure.
+	 */
+	public static function save_form_name( $form_id, $form_name ) {
+		$form_id   = self::sanitize_form_id( $form_id );
+		$form_name = trim( sanitize_text_field( (string) $form_name ) );
+
+		if ( '' === $form_id || '' === $form_name ) {
+			return false;
 		}
 
-		return false === $result ? false : $form_id;
+		return self::update_text_column( 'form_name', $form_id, $form_name );
+	}
+
+	/**
+	 * Save a confirmation message on an existing form row.
+	 *
+	 * @param string $form_id CHEFS form ID.
+	 * @param string $message Confirmation text.
+	 * @return string|false Form ID on success, false on failure.
+	 */
+	public static function save_confirmation( $form_id, $message ) {
+		/*
+		 * Sanitize the form ID and message so they are safe to store.
+		 * A message that is only whitespace is treated as empty. If either
+		 * value is empty, return false instead of saving a blank message.
+		 * To remove an existing message, use clear_confirmation().
+		 */
+		$form_id = self::sanitize_form_id( $form_id );
+		$message = trim( sanitize_textarea_field( (string) $message ) );
+
+		if ( '' === $form_id || '' === $message ) {
+			return false;
+		}
+
+		return self::update_text_column( 'confirmation', $form_id, $message );
+	}
+
+	/**
+	 * Clear a confirmation while preserving the form name and API key.
+	 *
+	 * @param string $form_id CHEFS form ID.
+	 * @return bool True when the form row exists and the message is cleared.
+	 */
+	public static function clear_confirmation( $form_id ) {
+		$form_id = self::sanitize_form_id( $form_id );
+
+		if ( '' === $form_id ) {
+			return false;
+		}
+
+		return false !== self::update_text_column( 'confirmation', $form_id, '' );
+	}
+
+	/**
+	 * Read a text column, treating a blank value as missing.
+	 *
+	 * @param string $column  form_name or confirmation.
+	 * @param string $form_id CHEFS form ID.
+	 * @return string|null
+	 */
+	private static function get_text_column( $column, $form_id ) {
+		global $wpdb;
+
+		if ( ! in_array( $column, array( 'form_name', 'confirmation' ), true ) ) {
+			return null;
+		}
+
+		$form_id = self::sanitize_form_id( $form_id );
+
+		if ( '' === $form_id ) {
+			return null;
+		}
+
+		$table = self::table_name();
+
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- column allow-list; table name from code.
+		$value = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT `{$column}` FROM `{$table}` WHERE form_id = %s",
+				$form_id
+			)
+		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		if ( ! is_string( $value ) || '' === trim( $value ) ) {
+			return null;
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Update one text column on an existing form row.
+	 *
+	 * @param string $column  form_name or confirmation.
+	 * @param string $form_id CHEFS form ID.
+	 * @param string $value   Stored value.
+	 * @return string|false Form ID on success, false when the form row is missing.
+	 */
+	private static function update_text_column( $column, $form_id, $value ) {
+		global $wpdb;
+
+		$updated = $wpdb->update(
+			self::table_name(),
+			array( $column => $value ),
+			array( 'form_id' => $form_id ),
+			array( '%s' ),
+			array( '%s' )
+		);
+
+		if ( false === $updated ) {
+			return false;
+		}
+
+		if ( $updated > 0 || self::form_exists( $form_id ) ) {
+			return $form_id;
+		}
+
+		return false;
 	}
 
 	/**
@@ -292,6 +485,8 @@ class CredentialsManager {
 		return '
 			form_id varchar(36) NOT NULL,
 			api_key longtext NOT NULL,
+			form_name varchar(255) NOT NULL DEFAULT \'\',
+			confirmation longtext NOT NULL,
 			created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			user_id bigint(20) unsigned NOT NULL DEFAULT 0,
 			PRIMARY KEY  (form_id),
