@@ -15,6 +15,28 @@ npx nx run bcew-theme:wp-env-start
 npx nx run bcew-theme:start
 ```
 
+### Plugin Dependencies
+
+This theme requires the **bcew-plugin** to function properly. The plugin is automatically loaded in local development through the `.wp-env.override.json` configuration, which extends the base `.wp-env.json` with:
+
+- Plugin: `../../plugins/bcew-plugin`
+- Activation: Both CLI and tests-cli environments
+
+If you're running E2E or screenshot tests locally and the plugin is not automatically activated, manually activate it:
+
+```bash
+wp-env run cli wp plugin activate bcew-plugin
+wp-env run tests-cli wp plugin activate bcew-plugin
+```
+
+To verify the plugin is loaded in your local environment:
+
+```bash
+wp-env run cli wp plugin list
+```
+
+Ensure `bcew-plugin` appears in the output with status `active`.
+
 ## Build
 
 ```bash

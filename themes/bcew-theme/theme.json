@@ -94,12 +94,6 @@
                             "text": "var(--wp--custom--dswp--typography-color-button-secondary-default)",
                             "background": "var(--wp--custom--dswp--surface-color-secondary-button-default)"
                         },
-                        ":hover": {
-                            "color": {
-                                "text": "var(--wp--custom--dswp--typography-color-button-secondary-hover)",
-                                "background": "var(--wp--custom--dswp--surface-color-secondary-button-hover)"
-                            }
-                        },
                         "border": {
                             "color": "var(--wp--custom--dswp--surface-color-border-dark)",
                             "radius": "4px",
