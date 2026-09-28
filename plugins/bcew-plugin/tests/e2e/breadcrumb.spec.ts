@@ -1,5 +1,20 @@
 import { test, expect } from '@wordpress/e2e-test-utils-playwright';
 
+// Ensure WordPress is fully initialized before running tests
+test.beforeAll( async ( { browser } ) => {
+    const context = await browser.createContext();
+    const page = await context.newPage();
+
+    try {
+        // Wait for WordPress REST API to be available
+        await page.goto( '/wp-json/', { waitUntil: 'networkidle' } );
+        await page.waitForTimeout( 2000 );
+    } finally {
+        await page.close();
+        await context.close();
+    }
+} );
+
 test.describe( 'Breadcrumb Block', () => {
     const BLOCK_NAME = 'design-system-wordpress-plugin/breadcrumb';
 
