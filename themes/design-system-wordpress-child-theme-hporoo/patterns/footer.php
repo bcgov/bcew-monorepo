@@ -18,8 +18,8 @@ $bcgov_logo = esc_url( get_stylesheet_directory_uri() . '/assets/images/bcgov-lo
         <!-- wp:column {"width":"35rem","style":{"spacing":{"blockGap":"var:preset|spacing|40"}}} -->
         <div class="wp-block-column" style="flex-basis:35rem">
             <!-- wp:image {"id":1954,"width":"145px","sizeSlug":"full","linkDestination":"none","className":"bcgov-logo"} -->
-            <figure class="wp-block-image is-resized bcgov-logo"><img src="<?php echo esc_url( $bcgov_logo ); ?>"
-                    alt="BC Government Logo" class="wp-image-1954" style="width:145px;height:auto" /></figure>
+                <figure class="wp-block-image size-full is-resized bcgov-logo"><img src="<?php echo esc_url( $bcgov_logo ); ?>"
+                    alt="BC Government Logo" class="wp-image-1954" style="width:145px" /></figure>
             <!-- /wp:image -->
 
             <!-- wp:paragraph {"style":{"typography":{"fontSize":"14px"}},"fontFamily":"bcsans"} -->

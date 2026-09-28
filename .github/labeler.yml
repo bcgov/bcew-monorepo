@@ -46,3 +46,7 @@ plugins/bcew-plugin:
 themes/bcew-theme:
     - changed-files:
         - any-glob-to-any-file: 'themes/bcew-theme/**'
+
+themes/design-system-wordpress-child-theme-hporoo:
+    - changed-files:
+        - any-glob-to-any-file: 'themes/design-system-wordpress-child-theme-hporoo/**'

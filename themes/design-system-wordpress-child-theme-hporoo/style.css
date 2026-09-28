@@ -2,7 +2,7 @@
 Theme Name:   Design System Wordpress HPOROO Child Theme
 Theme URI:    https://github.com/bcgov/design-system-wordpress-child-theme-hporoo
 Version:      1.2.0
-Template:     design-system-wordpress-theme
+Template:     bcew-theme
 */
 
 /* Force fill style button to mimic outline style. */
@@ -13,7 +13,7 @@ Template:     design-system-wordpress-theme
     background-color: var(--wp--preset--color--white);
     padding: 10px 19px;
     font-size: var(--dswp-typography-font-size-body);
-    font-weight: 700;
+    font-weight: bold;
 }
 
 /* Force fill style button to mimic outline hover style. */

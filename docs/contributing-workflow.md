@@ -71,12 +71,16 @@ After import, the tree often needs to match generator output:
 3. Copy generated files **into** the renamed import directory, overwriting where appropriate (some hosts block bulk overwrites in the IDE; use the filesystem if needed).
 4. Remove the empty generator-only directory; restore the imported directory name.
 5. Use Git to **revert** any overwrite that should stay legacy (for example real version numbers instead of generator defaults).
-6. Remove redundant per-repo files that now belong at the root (see [Shared tooling](./shared-tooling.md)):
+6. Reconcile runtime dependencies before testing:
+   - For a child theme, make the parent consistent across `style.css` (`Template:`), `.wp-env.json`, and `project.json` (`build` dependency and `implicitDependencies`).
+   - If templates use blocks from a monorepo plugin, add the plugin to `.wp-env.json`, activate it in the environment lifecycle scripts, and add the plugin to `implicitDependencies`.
+   - Compare generated browser-test configuration with existing suites. Prefer shared helpers from `@bcew-monorepo/e2e` when applicable, then regenerate and verify screenshot baselines.
+7. Remove redundant per-repo files that now belong at the root (see [Shared tooling](./shared-tooling.md)):
    - `.github/` (per-package workflows)
    - `dist/` / build output
    - Duplicate `.gitignore`, `.markdownlint*`, `CODEOWNERS` if superseded by monorepo policy
-   - `composer.lock` at package level when the monorepo standard is root + package resolution (follow team practice)
-7. Commit the migration; run `pnpm composer-install`, `npx nx run <project>:build`, and `pnpm lint`.
+   - `composer.lock` at package level when the monorepo standard is root + package resolution (follow team practice). A local Composer install may recreate an ignored lockfile; do not commit it.
+8. Commit the migration; run `pnpm composer-install`, `npx nx run <project>:build`, and `pnpm lint`.
 
 ### Tag namespacing after migration
 
@@ -96,6 +100,8 @@ Use [documented conventions](./versioning.md#branch-naming) (`feature/…`, `fix
 
 - [ ] Import completed with `nx import` (history preserved)
 - [ ] `project.json`, `package.json`, and `composer.json` valid for Nx and CI
+- [ ] Child-theme parent and required plugin dependencies configured in `style.css`, `.wp-env.json`, and `project.json`
+- [ ] Existing browser tests reconciled with shared helpers; screenshot baselines regenerated and verified where applicable
 - [ ] Redundant config removed; root tooling used where possible
 - [ ] `.github/labeler.yml` updated
 - [ ] Package `docs/index.md` added or ported
