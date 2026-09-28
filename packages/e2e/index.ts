@@ -282,6 +282,15 @@ const renderBlocksGrid = async ( blocks: any ): Promise< void > => {
         const preview = block.locator( STYLEBOOK_PREVIEW_SELECTOR );
 
         await expect( preview ).toBeVisible( { timeout: 15000 } );
+
+        // Wait for block to stabilize before taking screenshot
+        try {
+            await preview.waitForElementState( 'stable', { timeout: 5000 } );
+        } catch {
+            // If stability timeout occurs, still proceed with screenshot
+            // (some blocks may not stabilize but are still renderable)
+        }
+
         await expect( preview ).toHaveScreenshot(
             `style-book-${ formattedName }.png`,
             {
@@ -375,7 +384,30 @@ export const createStylebookTests = () => {
 export const createPatternTests = ( themeSlug: string, patterns: string[] ) => {
     test.describe( 'pattern', () => {
         test.beforeEach( async ( { admin } ) => {
-            await admin.createNewPost();
+            // Ensure WordPress is fully initialized before creating post
+            await admin.page.waitForTimeout( 1000 );
+
+            // Retry logic for createNewPost to handle initialization timing
+            let attempt = 0;
+            const maxAttempts = 3;
+
+            while ( attempt < maxAttempts ) {
+                try {
+                    await admin.createNewPost();
+                    break;
+                } catch ( error ) {
+                    attempt++;
+
+                    if ( attempt >= maxAttempts ) {
+                        throw new Error(
+                            `Failed to create new post after ${ maxAttempts } attempts: ${ error.message }`
+                        );
+                    }
+
+                    // Wait and retry
+                    await admin.page.waitForTimeout( 2000 );
+                }
+            }
         } );
 
         for ( const p of patterns ) {
