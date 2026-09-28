@@ -45,7 +45,12 @@ const loginAsEditor = async (
     await page.locator( '#user_pass' ).fill( password );
 
     await Promise.all( [
-        page.waitForNavigation( { waitUntil: 'domcontentloaded' } ),
+        page.waitForURL(
+            ( url ) =>
+                url.pathname.startsWith( '/wp-admin/' ) ||
+                '/wp-admin' === url.pathname,
+            { waitUntil: 'domcontentloaded' }
+        ),
         page.locator( '#wp-submit' ).click(),
     ] );
 
