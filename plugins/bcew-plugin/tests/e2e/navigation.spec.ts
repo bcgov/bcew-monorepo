@@ -32,32 +32,14 @@ const TIMEOUTS = {
     SLOW: 10000,
 } as const;
 
-// Ensure WordPress is fully initialized before running tests
-test.beforeAll( async ( { browser } ) => {
-    const context = await browser.createContext();
-    const page = await context.newPage();
-
-    try {
-        // Wait for WordPress REST API and login page to be available
-        await page.goto( '/wp-json/', { waitUntil: 'networkidle' } );
-        await page.waitForTimeout( 1000 );
-
-        // Also check login page is accessible
-        await page.goto( '/wp-login.php', {
-            waitUntil: 'domcontentloaded',
-        } );
-        await page.waitForTimeout( 1000 );
-    } finally {
-        await page.close();
-        await context.close();
-    }
-} );
-
 const loginAsEditor = async (
     page: Page,
     username: string,
     password: string
 ): Promise< void > => {
+    // Give WordPress time to initialize if needed
+    await page.waitForTimeout( 2000 );
+
     await page.goto( '/wp-login.php?reauth=1', {
         waitUntil: 'domcontentloaded',
     } );
@@ -72,7 +54,7 @@ const loginAsEditor = async (
             ( url ) =>
                 url.pathname.startsWith( '/wp-admin/' ) ||
                 '/wp-admin' === url.pathname,
-            { waitUntil: 'domcontentloaded', timeout: 30_000 }
+            { waitUntil: 'domcontentloaded', timeout: 45_000 }
         );
     } catch ( error ) {
         if ( page.isClosed() ) {
