@@ -36,8 +36,7 @@ class ChefsClient {
             array(
                 'timeout' => 15,
                 'headers' => array(
-                    // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Required for HTTP Basic auth.
-                    'Authorization' => 'Basic ' . base64_encode( $form_id . ':' . $api_key ),
+                    'Authorization' => self::authorization_header( $form_id, $api_key ),
                     'Accept'        => 'application/json',
                 ),
             )
@@ -77,5 +76,48 @@ class ChefsClient {
             'success' => false,
             'code'    => $code,
         );
+    }
+
+    /**
+     * Build the Basic Authorization header CHEFS expects.
+     *
+     * @param string $form_id Form ID.
+     * @param string $api_key API key.
+     * @return string
+     */
+    public static function authorization_header( string $form_id, string $api_key ): string {
+        if ( ! function_exists( 'sodium_bin2base64' ) ) {
+            return '';
+        }
+
+        return 'Basic ' . sodium_bin2base64( $form_id . ':' . $api_key, SODIUM_BASE64_VARIANT_ORIGINAL );
+    }
+
+    /**
+     * Read the Form ID and API key from a Basic Authorization header.
+     *
+     * @param string $authorization Header value.
+     * @return array{0:string,1:string}
+     */
+    public static function basic_credentials( string $authorization ): array {
+        $payload = preg_replace( '/^Basic\s+/i', '', $authorization );
+
+        if ( ! is_string( $payload ) || '' === $payload || ! function_exists( 'sodium_base642bin' ) ) {
+            return array( '', '' );
+        }
+
+        /*
+         * A header that is not valid base64 cannot be opened. Treat that as
+         * missing credentials so the caller can reject the request.
+         */
+        try {
+            $decoded = sodium_base642bin( $payload, SODIUM_BASE64_VARIANT_ORIGINAL );
+        } catch ( \SodiumException $exception ) {
+            return array( '', '' );
+        }
+
+        $parts = explode( ':', $decoded, 2 );
+
+        return array( $parts[0] ?? '', $parts[1] ?? '' );
     }
 }

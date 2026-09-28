@@ -55,6 +55,10 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 
 		$this->admin_user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $this->admin_user_id );
+
+		global $wp_settings_errors;
+		$wp_settings_errors = array();
+		delete_transient( 'settings_errors' );
 	}
 
 	/**
@@ -70,6 +74,10 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		$this->assertSame( 10, has_action( 'admin_post_bcew_chefs_delete', array( $settings, 'handle_delete' ) ) );
 		$this->assertSame( 10, has_action( 'admin_post_bcew_chefs_save_confirmation', array( $settings, 'handle_save_confirmation' ) ) );
 		$this->assertSame( 10, has_action( 'admin_post_bcew_chefs_delete_confirmation', array( $settings, 'handle_delete_confirmation' ) ) );
+
+		$registered = get_registered_settings();
+		$this->assertArrayHasKey( \Bcgov\BcewChefsEmbed\Settings::OPTION_NAME, $registered );
+		$this->assertFalse( $registered[ \Bcgov\BcewChefsEmbed\Settings::OPTION_NAME ]['show_in_rest'] );
 	}
 
 	/**
@@ -161,7 +169,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 			403
 		);
 
-		$this->assertStringContainsString( 'chefs_error=invalid_credentials', $redirect );
+		$this->assert_settings_notice( $redirect, 'invalid_credentials' );
 		$this->assertNull( CredentialsManager::get_by_form_id( $this->form_id ) );
 	}
 
@@ -183,7 +191,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 			}
 		);
 
-		$this->assertStringContainsString( 'chefs_error=missing_credentials', $redirect );
+		$this->assert_settings_notice( $redirect, 'missing_credentials' );
 	}
 
 	/**
@@ -197,7 +205,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 			200
 		);
 
-		$this->assertStringContainsString( 'chefs_saved=1', $redirect );
+		$this->assert_settings_notice( $redirect, 'chefs_saved' );
 	}
 
 	/**
@@ -218,7 +226,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 			200
 		);
 
-		$this->assertStringContainsString( 'chefs_saved=1', $redirect );
+		$this->assert_settings_notice( $redirect, 'chefs_saved' );
 	}
 
 	/**
@@ -240,7 +248,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 			200
 		);
 
-		$this->assertStringContainsString( 'chefs_saved=1', $redirect );
+		$this->assert_settings_notice( $redirect, 'chefs_saved' );
 	}
 
 	/**
@@ -259,7 +267,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 			200
 		);
 
-		$this->assertStringContainsString( 'chefs_error=no_published_version', $redirect );
+		$this->assert_settings_notice( $redirect, 'no_published_version' );
 		$this->assertNull( CredentialsManager::get_by_form_id( $this->form_id ) );
 	}
 
@@ -316,7 +324,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		);
 
 		// Check that the key changed and the other settings stayed the same.
-		$this->assertStringContainsString( 'chefs_updated=1', $redirect );
+		$this->assert_settings_notice( $redirect, 'chefs_updated' );
 		$row = CredentialsManager::get_by_form_id( $this->form_id );
 		$this->assertIsArray( $row );
 		$this->assertSame( $replacement_key, $row['api_key'] );
@@ -361,7 +369,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 			$replacement_key
 		);
 
-		$this->assertStringContainsString( 'chefs_updated=1', $redirect );
+		$this->assert_settings_notice( $redirect, 'chefs_updated' );
 		$this->assertSame( $original_form_name, CredentialsManager::get_form_name( $this->form_id ) );
 		$this->assertSame( $confirmation, CredentialsManager::get_confirmation( $this->form_id ) );
 	}
@@ -562,18 +570,18 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Settings page renders saved and deleted notices from redirect flags.
+	 * Settings page renders saved and deleted notices from the Settings API.
 	 *
 	 * @return void
 	 */
 	public function test_settings_page_renders_saved_and_deleted_notices() {
-		$saved_html = $this->render_page_with_get( 'chefs_saved', '1' );
+		$saved_html = $this->render_page_with_notice( 'chefs_saved', 'Saved.', 'success' );
 		$this->assertStringContainsString( 'Saved.', $saved_html );
 
-		$updated_html = $this->render_page_with_get( 'chefs_updated', '1' );
+		$updated_html = $this->render_page_with_notice( 'chefs_updated', 'Form updated.', 'success' );
 		$this->assertStringContainsString( 'Form updated.', $updated_html );
 
-		$deleted_html = $this->render_page_with_get( 'chefs_deleted', '1' );
+		$deleted_html = $this->render_page_with_notice( 'chefs_deleted', 'Removed.', 'success' );
 		$this->assertStringContainsString( 'Removed.', $deleted_html );
 	}
 
@@ -767,7 +775,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		$this->assertStringContainsString( 'Thanks', $html );
 		$this->assertStringNotContainsString( '<script>', $html );
 
-		$html = $this->render_page_with_get( 'chefs_saved', '1' );
+		$html = $this->render_page_with_notice( 'chefs_saved', 'Saved.', 'success' );
 		$this->assertStringNotContainsString( '<script>', $html );
 	}
 
@@ -869,7 +877,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		$message  = "Thanks for applying.\nPlease keep your reference number.";
 		$location = $this->save_confirmation( $this->form_id, $message );
 
-		$this->assertStringContainsString( 'chefs_confirmation_saved=1', $location );
+		$this->assert_settings_notice( $location, 'chefs_confirmation_saved' );
 		$this->assertSame( $message, CredentialsManager::get_confirmation( $this->form_id ) );
 	}
 
@@ -884,7 +892,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 
 		$location = $this->save_confirmation( $this->form_id, '   ' );
 
-		$this->assertStringContainsString( 'chefs_confirmation_error=1', $location );
+		$this->assert_settings_notice( $location, 'chefs_confirmation_error' );
 		$this->assertSame( 'Keep me', CredentialsManager::get_confirmation( $this->form_id ) );
 	}
 
@@ -910,7 +918,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 			}
 		);
 
-		$this->assertStringContainsString( 'chefs_confirmation_cleared=1', $location );
+		$this->assert_settings_notice( $location, 'chefs_confirmation_cleared' );
 		$this->assertNull( CredentialsManager::get_confirmation( $this->form_id ) );
 	}
 
@@ -938,21 +946,29 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Confirmation status notices render from redirect flags.
+	 * Confirmation status notices render from the Settings API.
 	 *
 	 * @return void
 	 */
 	public function test_settings_page_renders_confirmation_notices() {
-		$saved_html = $this->render_page_with_get( 'chefs_confirmation_saved', '1' );
+		$saved_html = $this->render_page_with_notice( 'chefs_confirmation_saved', 'Confirmation message saved.', 'success' );
 		$this->assertStringContainsString( 'Confirmation message saved.', $saved_html );
 
-		$cleared_html = $this->render_page_with_get( 'chefs_confirmation_cleared', '1' );
+		$cleared_html = $this->render_page_with_notice(
+			'chefs_confirmation_cleared',
+			'Custom confirmation deleted. The generic success message will be used.',
+			'success'
+		);
 		$this->assertStringContainsString(
 			'Custom confirmation deleted. The generic success message will be used.',
 			$cleared_html
 		);
 
-		$error_html = $this->render_page_with_get( 'chefs_confirmation_error', '1' );
+		$error_html = $this->render_page_with_notice(
+			'chefs_confirmation_error',
+			'Unable to save the confirmation message. Enter a message, or use Remove custom confirmation to remove one.',
+			'error'
+		);
 		$this->assertStringContainsString( 'Unable to save the confirmation message.', $error_html );
 	}
 
@@ -972,7 +988,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 		);
 
 		foreach ( $messages as $error_code => $message ) {
-			$html = $this->render_page_with_get( 'chefs_error', $error_code );
+			$html = $this->render_page_with_notice( $error_code, $message, 'error' );
 			$this->assertStringContainsString( $message, $html, "Expected notice for {$error_code}." );
 		}
 	}
@@ -985,13 +1001,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	public function test_settings_page_renders_confirmation_edit_mode() {
 		CredentialsManager::save( $this->form_id, $this->api_key, $this->admin_user_id );
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only edit-mode flag for testing.
-		$_GET['edit_confirmation'] = $this->form_id;
-		ob_start();
-		( new \Bcgov\BcewChefsEmbed\Settings() )->render_page();
-		$html = ob_get_clean();
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Clear test query parameter.
-		unset( $_GET['edit_confirmation'] );
+		$html = $this->render_page_with_get( 'edit_confirmation', $this->form_id );
 
 		$this->assertStringContainsString( 'name="confirmation"', $html );
 		$this->assertStringContainsString( 'name="action" value="bcew_chefs_save_confirmation"', $html );
@@ -1038,7 +1048,7 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 			}
 		);
 
-		$this->assertStringContainsString( 'chefs_deleted=1', $redirect );
+		$this->assert_settings_notice( $redirect, 'chefs_deleted' );
 		$this->assertNull( CredentialsManager::get_by_form_id( $this->form_id ) );
 	}
 
@@ -1115,6 +1125,16 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 			'CHEFS Form URL or Form ID',
 			$html,
 			'The Form ID field should show a useful placeholder.'
+		);
+		$this->assertStringContainsString(
+			'action="' . esc_url( admin_url( 'options.php' ) ) . '"',
+			$html,
+			'The add form should post through the Settings API.'
+		);
+		$this->assertStringContainsString(
+			'name="' . esc_attr( \Bcgov\BcewChefsEmbed\Settings::OPTION_NAME ) . '[form_id]"',
+			$html,
+			'The Form ID field should be part of the registered setting.'
 		);
 		$this->assertStringContainsString(
 			'Example URL <code>https://submit.digital.gov.bc.ca/app/form/submit?f=43cfb894-a0cf-4bef-8026-7c8001e3cdf5</code> or form ID <code>43cfb894-a0cf-4bef-8026-7c8001e3cdf5</code>',
@@ -1360,6 +1380,44 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Assert that a redirect stored a Settings API notice.
+	 *
+	 * @param string $redirect Redirect URL captured from the handler.
+	 * @param string $code     Settings error code.
+	 * @return void
+	 */
+	private function assert_settings_notice( $redirect, $code ) {
+		$this->assertStringContainsString( 'settings-updated=true', $redirect );
+
+		$stored = get_transient( 'settings_errors' );
+		$this->assertIsArray( $stored );
+		$this->assertContains( $code, wp_list_pluck( $stored, 'code' ) );
+	}
+
+	/**
+	 * Render the settings page with a Settings API notice already recorded.
+	 *
+	 * @param string $code    Notice code.
+	 * @param string $message Notice text.
+	 * @param string $type    success or error.
+	 * @return string Rendered HTML from render_page().
+	 */
+	private function render_page_with_notice( $code, $message, $type ) {
+		global $wp_settings_errors;
+
+		$wp_settings_errors = array();
+		add_settings_error( \Bcgov\BcewChefsEmbed\Settings::OPTION_NAME, $code, $message, $type );
+
+		ob_start();
+		( new \Bcgov\BcewChefsEmbed\Settings() )->render_page();
+		$html = ob_get_clean();
+
+		$wp_settings_errors = array();
+
+		return $html;
+	}
+
+	/**
 	 * Render the settings page with a GET query parameter.
 	 *
 	 * @param string $key Query parameter key.
@@ -1367,15 +1425,14 @@ class ChefsSettingsTest extends \WP_UnitTestCase {
 	 * @return string Rendered HTML from render_page().
 	 */
 	private function render_page_with_get( $key, $value ) {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only flag for testing.
-		$_GET[ $key ] = $value;
+		$_GET[ $key ]       = $value;
+		$_GET['_wpnonce']   = wp_create_nonce( 'bcew_chefs_edit_confirmation_' . $value );
 
 		ob_start();
 		( new \Bcgov\BcewChefsEmbed\Settings() )->render_page();
 		$html = ob_get_clean();
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only flag for testing.
-		unset( $_GET[ $key ] );
+		unset( $_GET[ $key ], $_GET['_wpnonce'] );
 
 		return $html;
 	}

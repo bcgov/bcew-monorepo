@@ -40,9 +40,7 @@ class E2eChefsMock {
      */
     private static function mocked_response( $args, $is_form_request ) {
         $authorization = $args['headers']['Authorization'] ?? '';
-        // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- Decode the Basic Auth fixture header used by the local E2E mock.
-        $credentials               = base64_decode( preg_replace( '/^Basic\s+/i', '', $authorization ), true );
-        list( $form_id, $api_key ) = array_pad( explode( ':', (string) $credentials, 2 ), 2, '' );
+        list( $form_id, $api_key ) = ChefsClient::basic_credentials( (string) $authorization );
 
         // Define valid credentials for the E2E mock.
         $valid_credentials = [

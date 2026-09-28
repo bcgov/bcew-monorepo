@@ -447,8 +447,7 @@ class CredentialsTest extends \WP_UnitTestCase {
 		$http_callback = function ( $preempt, $parsed_args, $url ) {
 			$this->assertStringContainsString( '/auth/token/forms/' . rawurlencode( $this->form_id ), $url );
 			$this->assertSame(
-				// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Required to validate the HTTP Basic auth header used for the CHEFS token request.
-				'Basic ' . base64_encode( $this->form_id . ':test-api-key-value' ),
+				\Bcgov\BcewChefsEmbed\ChefsClient::authorization_header( $this->form_id, 'test-api-key-value' ),
 				$parsed_args['headers']['Authorization']
 			);
 

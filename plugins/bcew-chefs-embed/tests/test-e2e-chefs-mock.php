@@ -134,7 +134,7 @@ class E2eChefsMockTest extends \WP_UnitTestCase {
 	private function request_args( $form_id, $api_key ) {
 		return array(
 			'headers' => array(
-				'Authorization' => 'Basic ' . base64_encode( $form_id . ':' . $api_key ), // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Build the Basic Auth fixture header expected by the mock.
+				'Authorization' => \Bcgov\BcewChefsEmbed\ChefsClient::authorization_header( $form_id, $api_key ),
 			),
 		);
 	}
