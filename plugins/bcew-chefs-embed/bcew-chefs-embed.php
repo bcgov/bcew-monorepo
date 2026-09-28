@@ -24,7 +24,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 use Bcgov\BcewChefsEmbed\CredentialsManager;
 use Bcgov\BcewChefsEmbed\EmbedConfigController;
 use Bcgov\BcewChefsEmbed\E2eChefsMock;
-use Bcgov\BcewChefsEmbed\OptionsManager;
 
 /**
  * Load Composer autoloader when present.
@@ -40,10 +39,6 @@ add_action( 'rest_api_init', 'bcew_chefs_embed_register_rest_routes' );
 // Ensure the credentials table exists even if activation ran before Composer autoload was available.
 add_action( 'plugins_loaded', 'bcew_chefs_embed_maybe_install_credentials_table' );
 
-register_activation_hook( __FILE__, array( OptionsManager::class, 'activate' ) );
-add_action( 'wp_initialize_site', array( OptionsManager::class, 'on_initialize_site' ) );
-add_action( 'plugins_loaded', 'bcew_chefs_embed_maybe_install_options_table' );
-
 add_action( 'rest_api_init', array( EmbedConfigController::class, 'register_routes' ) );
 
 // E2E tests run against a local wp-env and must not depend on the live CHEFS
@@ -53,29 +48,25 @@ if ( defined( 'BCEW_CHEFS_E2E_MOCK' ) && BCEW_CHEFS_E2E_MOCK ) {
 }
 
 /**
- * Create the credentials table when the schema version is missing or outdated.
+ * Create or upgrade the credentials table.
+ *
+ * When the old options table is still present, copy each form's name and
+ * confirmation onto the matching credentials row, then drop that table.
+ * The API key, created time, and user ID stay on the credentials row.
  *
  * @return void
  */
 function bcew_chefs_embed_maybe_install_credentials_table() {
+	if ( CredentialsManager::has_legacy_options_table() ) {
+		CredentialsManager::migrate_legacy_options_table();
+		return;
+	}
+
 	if ( get_option( CredentialsManager::DB_VERSION_OPTION ) === CredentialsManager::DB_VERSION ) {
 		return;
 	}
 
 	CredentialsManager::install();
-}
-
-/**
- * Create the options table when the schema version is missing or outdated.
- *
- * @return void
- */
-function bcew_chefs_embed_maybe_install_options_table() {
-	if ( get_option( OptionsManager::DB_VERSION_OPTION ) === OptionsManager::DB_VERSION ) {
-		return;
-	}
-
-	OptionsManager::install();
 }
 
 /**

@@ -95,7 +95,7 @@ class EmbedConfigController {
 			array(
 				'token'        => $authentication['token'],
 				'baseUrl'      => 'https://submit.digital.gov.bc.ca/app',
-				'confirmation' => OptionsManager::get_confirmation( $form_id ),
+				'confirmation' => CredentialsManager::get_confirmation( $form_id ),
 			)
 		);
 	}

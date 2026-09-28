@@ -8,7 +8,6 @@
 namespace Bcgov\BcewChefsEmbed\Test;
 
 use Bcgov\BcewChefsEmbed\CredentialsManager;
-use Bcgov\BcewChefsEmbed\OptionsManager;
 
 /**
  * CHEFS plugin bootstrap behavior.
@@ -23,7 +22,6 @@ class PluginBootstrapTest extends \WP_UnitTestCase {
 	public function set_up() {
 		parent::set_up();
 		CredentialsManager::install();
-		OptionsManager::install();
 
 		global $wpdb;
 
@@ -107,16 +105,12 @@ class PluginBootstrapTest extends \WP_UnitTestCase {
 	 */
 	public function test_install_guards_create_tables() {
 		delete_option( CredentialsManager::DB_VERSION_OPTION );
-		delete_option( OptionsManager::DB_VERSION_OPTION );
 
 		bcew_chefs_embed_maybe_install_credentials_table();
-		bcew_chefs_embed_maybe_install_options_table();
 
 		$this->assertSame( CredentialsManager::DB_VERSION, get_option( CredentialsManager::DB_VERSION_OPTION ) );
-		$this->assertSame( OptionsManager::DB_VERSION, get_option( OptionsManager::DB_VERSION_OPTION ) );
 
 		bcew_chefs_embed_maybe_install_credentials_table();
-		bcew_chefs_embed_maybe_install_options_table();
 		$this->assertTrue( true, 'Current schema versions should be no-op install guards.' );
 	}
 

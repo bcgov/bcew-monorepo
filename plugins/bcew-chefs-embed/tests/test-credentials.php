@@ -8,7 +8,6 @@
 namespace Bcgov\BcewChefsEmbed\Test;
 
 use Bcgov\BcewChefsEmbed\CredentialsManager;
-use Bcgov\BcewChefsEmbed\OptionsManager;
 use Bcgov\BcewChefsEmbed\Settings;
 
 /**
@@ -32,7 +31,6 @@ class CredentialsTest extends \WP_UnitTestCase {
 		parent::set_up();
 
 		CredentialsManager::install();
-		OptionsManager::install();
 
 		global $wpdb;
 
@@ -119,10 +117,66 @@ class CredentialsTest extends \WP_UnitTestCase {
 
 		$this->assertArrayHasKey( 'form_id', $by_name );
 		$this->assertArrayHasKey( 'api_key', $by_name );
+		$this->assertArrayHasKey( 'form_name', $by_name );
+		$this->assertArrayHasKey( 'confirmation', $by_name );
 		$this->assertArrayHasKey( 'created_at', $by_name );
 		$this->assertArrayHasKey( 'user_id', $by_name );
 
 		$this->assertSame( 'PRI', $by_name['form_id']['Key'] );
+	}
+
+	/**
+	 * A site that still has the old options table keeps its saved form on load.
+	 *
+	 * @return void
+	 */
+	public function test_legacy_options_are_copied_onto_the_form_row() {
+		global $wpdb;
+
+		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		CredentialsManager::save( $this->form_id, 'test-api-key-value', $user_id );
+
+		$table = CredentialsManager::table_name();
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- test schema; table name from code.
+		$wpdb->query( "ALTER TABLE `{$table}` DROP COLUMN form_name, DROP COLUMN confirmation" );
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		update_option( CredentialsManager::DB_VERSION_OPTION, '1' );
+
+		$options_table = $wpdb->prefix . 'bcew_chefs_options';
+		$charset       = $wpdb->get_charset_collate();
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- test schema; table name from code.
+		$wpdb->query(
+			"CREATE TABLE `{$options_table}` (
+				id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+				chefs_credentials_id varchar(36) NOT NULL,
+				form_name varchar(255) NOT NULL DEFAULT '',
+				confirmation longtext NOT NULL,
+				PRIMARY KEY (id)
+			) {$charset}"
+		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$wpdb->insert(
+			$options_table,
+			array(
+				'chefs_credentials_id' => $this->form_id,
+				'form_name'            => 'Permit form',
+				'confirmation'         => 'Thanks for applying.',
+			),
+			array( '%s', '%s', '%s' )
+		);
+		update_option( 'bcew_chefs_options_db_version', '4' );
+
+		CredentialsManager::migrate_legacy_options_table();
+
+		$found = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $options_table ) ) );
+		$this->assertNull( $found );
+		$this->assertFalse( get_option( 'bcew_chefs_options_db_version' ) );
+		$this->assertSame( 'Permit form', CredentialsManager::get_form_name( $this->form_id ) );
+		$this->assertSame( 'Thanks for applying.', CredentialsManager::get_confirmation( $this->form_id ) );
+		$this->assertSame( 'test-api-key-value', CredentialsManager::get_by_form_id( $this->form_id )['api_key'] );
+
+		CredentialsManager::migrate_legacy_options_table();
+		$this->assertSame( 'Permit form', CredentialsManager::get_form_name( $this->form_id ) );
 	}
 
 	/**
@@ -388,7 +442,6 @@ class CredentialsTest extends \WP_UnitTestCase {
 		$this->activate_and_init_rest();
 
 		CredentialsManager::install();
-		OptionsManager::install();
 		CredentialsManager::save( $this->form_id, 'test-api-key-value', $user_id );
 
 		$http_callback = function ( $preempt, $parsed_args, $url ) {
@@ -466,9 +519,8 @@ class CredentialsTest extends \WP_UnitTestCase {
 		$this->activate_and_init_rest();
 
 		CredentialsManager::install();
-		OptionsManager::install();
 		CredentialsManager::save( $this->form_id, 'test-api-key-value', $user_id );
-		OptionsManager::save( $this->form_id, 'Thanks for applying.' );
+		CredentialsManager::save_confirmation( $this->form_id, 'Thanks for applying.' );
 
 		$http_callback = function () {
 			return array(
@@ -502,15 +554,15 @@ class CredentialsTest extends \WP_UnitTestCase {
 	public function test_deleting_credentials_also_deletes_confirmation() {
 		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
 		CredentialsManager::save( $this->form_id, 'test-api-key-value', $user_id );
-		OptionsManager::install();
-		OptionsManager::save( $this->form_id, 'Thanks for applying.' );
+		CredentialsManager::install();
+		CredentialsManager::save_confirmation( $this->form_id, 'Thanks for applying.' );
 
-		$this->assertSame( 'Thanks for applying.', OptionsManager::get_confirmation( $this->form_id ) );
+		$this->assertSame( 'Thanks for applying.', CredentialsManager::get_confirmation( $this->form_id ) );
 
 		CredentialsManager::delete( $this->form_id );
 
 		$this->assertNull( CredentialsManager::get_by_form_id( $this->form_id ) );
-		$this->assertNull( OptionsManager::get_confirmation( $this->form_id ) );
+		$this->assertNull( CredentialsManager::get_confirmation( $this->form_id ) );
 	}
 
 	/**
