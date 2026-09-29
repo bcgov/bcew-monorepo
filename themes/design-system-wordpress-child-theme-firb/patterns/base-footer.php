@@ -388,14 +388,12 @@
                         <!-- /wp:heading -->
 
                         <!-- wp:paragraph {"style":{"typography":{"lineHeight":"1.7"}}} -->
-                        <p style="line-height:1.7"><a href="placeholder" data-type="link"
-                                data-id="placeholder"></a>Phone: <a href="tel:250-356-8945" data-type="link"
-                                data-id="placeholder"></a><a href="tel:2503568945">250-356-8945</a></p>
+                        <p style="line-height:1.7">Phone: <a href="tel:2503568945">250-356-8945</a></p>
                         <!-- /wp:paragraph -->
 
                         <!-- wp:paragraph {"style":{"typography":{"lineHeight":"1.7"}}} -->
-                        <p style="line-height:1.7"><a href="placeholder"></a>Email: <a
-                                href="mailto:firb@gov.bc.ca">firb@gov.bc.ca</a></p>
+                        <p style="line-height:1.7">Email: <a
+                            href="mailto:firb@gov.bc.ca">firb@gov.bc.ca</a></p>
                         <!-- /wp:paragraph -->
                     </div>
                     <!-- /wp:group -->
