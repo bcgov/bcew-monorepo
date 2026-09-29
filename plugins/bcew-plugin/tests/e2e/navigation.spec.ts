@@ -37,61 +37,33 @@ const loginAsEditor = async (
     username: string,
     password: string
 ): Promise< void > => {
-    // Give WordPress time to initialize if needed
-    await page.waitForTimeout( 2000 );
+    // Do not reuse the admin authentication state for the editor login.
+    await page.context().clearCookies();
 
-    await page.goto( '/wp-login.php?reauth=1', {
+    await page.goto( '/wp-login.php', {
         waitUntil: 'domcontentloaded',
     } );
 
-    // Ensure login form is ready before filling
     await page
-        .locator( '#user_login' )
-        .waitFor( { state: 'visible', timeout: 10000 } );
+        .locator( '#loginform' )
+        .waitFor( { state: 'visible', timeout: 15_000 } );
 
     await page.locator( '#user_login' ).fill( username );
     await page.locator( '#user_pass' ).fill( password );
 
-    // Ensure submit button is clickable before clicking
-    const submitButton = page.locator( '#wp-submit' );
-    await submitButton.waitFor( { state: 'visible' } );
-    await submitButton.click();
-
-    try {
-        await page.waitForURL(
+    await Promise.all( [
+        page.waitForURL(
             ( url ) =>
-                url.pathname.startsWith( '/wp-admin/' ) ||
-                '/wp-admin' === url.pathname,
-            { waitUntil: 'domcontentloaded', timeout: 30_000 }
-        );
-    } catch ( error ) {
-        if ( page.isClosed() ) {
-            throw new Error( 'Page was closed during editor login.' );
-        }
+                '/wp-admin' === url.pathname ||
+                url.pathname.startsWith( '/wp-admin/' ),
+            {
+                waitUntil: 'domcontentloaded',
+                timeout: 30_000,
+            }
+        ),
+        page.locator( '#wp-submit' ).click(),
+    ] );
 
-        // Check for login errors
-        const loginError = page.locator( '#login_error' );
-        const errorVisible = await loginError.isVisible().catch( () => false );
-
-        if ( errorVisible ) {
-            const errorText = await loginError
-                .innerText()
-                .catch( () => 'Unknown error' );
-            throw new Error( `Editor login failed: ${ errorText }` );
-        }
-
-        // Check current URL to debug where we are
-        const currentUrl = page.url();
-        throw new Error(
-            `Editor login timeout. Current URL: ${ currentUrl }. Original error: ${ error.message }`
-        );
-    }
-
-    if ( page.isClosed() ) {
-        throw new Error( 'Page was closed after editor login.' );
-    }
-
-    // Verify admin interface loaded
     await page
         .locator( '#wpadminbar, #wpbody, #wpbody-content' )
         .first()
@@ -1184,14 +1156,16 @@ test.describe( 'Navigation', () => {
         let editorUserId: number;
         let editorPageId: number;
         let editorUsername: string;
+        let editorPassword: string;
 
         test.beforeAll( async ( { requestUtils: utils } ) => {
             // Create an editor role user
             editorUsername = `test_editor_${ Date.now() }`;
+            editorPassword = `Editor-${ Date.now() }-Password!`;
             const editorUser = await utils.createUser( {
                 username: editorUsername,
                 email: `${ editorUsername }@example.com`,
-                password: 'password',
+                password: editorPassword,
                 roles: [ 'editor' ],
             } );
             editorUserId = editorUser.id;
@@ -1269,7 +1243,7 @@ test.describe( 'Navigation', () => {
         test( 'Editor cannot edit navigation menu content (restricted)', async ( {
             page,
         } ) => {
-            await loginAsEditor( page, editorUsername, 'password' );
+            await loginAsEditor( page, editorUsername, editorPassword );
 
             // Try to create a navigation menu via REST API as editor
             // Use fetch directly since RequestUtils.rest() doesn't support different auth
@@ -1298,7 +1272,7 @@ test.describe( 'Navigation', () => {
         test( 'Editor can view but not modify navigation block settings', async ( {
             page,
         } ) => {
-            await loginAsEditor( page, editorUsername, 'password' );
+            await loginAsEditor( page, editorUsername, editorPassword );
 
             // Try to modify an existing navigation menu via REST API as editor
             // WordPress REST API uses POST with _method=PATCH or PATCH method
@@ -1323,7 +1297,7 @@ test.describe( 'Navigation', () => {
         test( 'Editor can insert Navigation block but cannot edit menu content', async ( {
             page,
         } ) => {
-            await loginAsEditor( page, editorUsername, 'password' );
+            await loginAsEditor( page, editorUsername, editorPassword );
 
             // Navigate to edit the existing page (editors can edit pages, just not create them)
             // Use domcontentloaded instead of networkidle to avoid timeout issues
