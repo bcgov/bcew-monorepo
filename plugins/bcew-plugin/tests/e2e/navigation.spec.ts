@@ -51,17 +51,24 @@ const loginAsEditor = async (
     await page.locator( '#user_login' ).fill( username );
     await page.locator( '#user_pass' ).fill( password );
 
-    await Promise.all( [
+    const loginError = page.locator( '#login_error' );
+
+    await page.locator( '#wp-submit' ).click();
+
+    await Promise.race( [
         page.waitForURL(
             ( url ) =>
-                '/wp-admin' === url.pathname ||
-                url.pathname.startsWith( '/wp-admin/' ),
-            {
-                waitUntil: 'domcontentloaded',
-                timeout: 30_000,
+                url.pathname.startsWith( '/wp-admin/' ) ||
+                '/wp-admin' === url.pathname,
+            { waitUntil: 'domcontentloaded', timeout: 60_000 }
+        ),
+        loginError.waitFor( { state: 'visible', timeout: 60_000 } ).then(
+            async () => {
+                throw new Error(
+                    `Editor login failed: ${ await loginError.innerText() }`
+                );
             }
         ),
-        page.locator( '#wp-submit' ).click(),
     ] );
 
     await page
