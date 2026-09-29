@@ -196,10 +196,15 @@ test.describe( 'Navigation', () => {
 
             const preview = await editor.openPreviewPage();
 
+            // Verify the custom block is present and visible in the frontend preview.
+            // In CI, WordPress can render core navigation wrappers alongside the custom
+            // block markup, so the reliable check is that our custom block is active and
+            // exposes the expected menu links.
             const nav = preview.locator(
                 '.wp-block-design-system-wordpress-plugin-navigation'
             );
 
+            await expect( nav ).toHaveCount( 1 );
             await expect( nav ).toBeVisible();
             await expect(
                 nav.getByRole( 'link', { name: 'Home' } )
