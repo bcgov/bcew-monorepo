@@ -97,9 +97,7 @@ export const renderPattern = async ( editor: any, patternSlug: string ) => {
     const previewPage = await editor.openPreviewPage();
     await previewPage.waitForLoadState( 'domcontentloaded' );
     const preview = previewPage.locator( '.entry-content' ).first();
-
     await expect( preview ).toBeVisible( { timeout: 15000 } );
-
     await previewPage.evaluate( async () => {
         await document.fonts.ready;
 
@@ -368,11 +366,9 @@ export const renderStylebook = async ( admin: any ) => {
     const canvas = admin.page.frameLocator(
         'iframe[name="style-book-canvas"]'
     );
-
     await expect(
         admin.page.locator( 'iframe[name="style-book-canvas"]' )
     ).toBeVisible( { timeout: 30000 } );
-
     await expect( canvas.locator( 'body' ) ).toBeVisible( {
         timeout: 15000,
     } );
@@ -429,7 +425,31 @@ export const createStylebookTests = () => {
 export const createPatternTests = ( themeSlug: string, patterns: string[] ) => {
     test.describe( 'pattern', () => {
         test.beforeEach( async ( { admin } ) => {
-            await admin.createNewPost();
+            await admin.page.waitForTimeout( 1000 );
+
+            let attempt = 0;
+            const maxAttempts = 3;
+
+            while ( attempt < maxAttempts ) {
+                try {
+                    await admin.createNewPost();
+                    break;
+                } catch ( error ) {
+                    attempt++;
+
+                    if ( attempt >= maxAttempts ) {
+                        const message =
+                            error instanceof Error
+                                ? error.message
+                                : String( error );
+                        throw new Error(
+                            `Failed to create new post after ${ maxAttempts } attempts: ${ message }`
+                        );
+                    }
+
+                    await admin.page.waitForTimeout( 2000 );
+                }
+            }
         } );
 
         for ( const pattern of patterns ) {
