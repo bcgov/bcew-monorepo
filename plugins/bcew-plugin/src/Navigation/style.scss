@@ -53,6 +53,17 @@
 	}
 }
 
+.dswp-block-navigation-is-always-overlay[data-show-in-desktop="false"][data-show-in-mobile="false"] {
+
+	.dswp-nav-mobile-toggle-icon {
+		display: flex;
+	}
+
+	.dswp-block-navigation__container {
+		display: none;
+	}
+}
+
 // Main navigation container
 .dswp-block-navigation__container {
 	--dswp-nav-active-bg: var(--bcds-surface-color-secondary-pressed, #e0dedc);
