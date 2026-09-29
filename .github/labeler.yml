@@ -50,3 +50,7 @@ themes/bcew-theme:
 themes/design-system-wordpress-child-theme-hporoo:
     - changed-files:
         - any-glob-to-any-file: 'themes/design-system-wordpress-child-theme-hporoo/**'
+
+themes/design-system-wordpress-child-theme-firb:
+    - changed-files:
+        - any-glob-to-any-file: 'themes/design-system-wordpress-child-theme-firb/**'
