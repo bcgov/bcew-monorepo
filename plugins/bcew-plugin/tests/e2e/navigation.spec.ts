@@ -37,50 +37,18 @@ const loginAsEditor = async (
     username: string,
     password: string
 ): Promise< void > => {
-    await page.goto( '/wp-login.php?reauth=1', {
+    const response = await page.request.post( '/wp-login.php', {
+        form: {
+            log: username,
+            pwd: password,
+        },
+    } );
+    await response.dispose();
+
+    await page.goto( '/wp-admin/', {
         waitUntil: 'domcontentloaded',
     } );
-
-    await page.locator( '#user_login' ).fill( username );
-    await page.locator( '#user_pass' ).fill( password );
-
-    const loginError = page.locator( '#login_error' );
-
-    await page.locator( '#wp-submit' ).click();
-
-    try {
-        await Promise.race( [
-            page.waitForURL(
-                ( url ) =>
-                    url.pathname.startsWith( '/wp-admin/' ) ||
-                    '/wp-admin' === url.pathname,
-                {
-                    timeout: 30_000,
-                    waitUntil: 'domcontentloaded',
-                }
-            ),
-            loginError
-                .waitFor( { state: 'visible', timeout: 30_000 } )
-                .then( async () => {
-                    throw new Error(
-                        `Editor login failed: ${ await loginError.innerText() }`
-                    );
-                } ),
-        ] );
-    } catch ( error ) {
-        const currentUrl = page.url();
-        const pageTitle = await page.title().catch( () => 'unknown' );
-        const errorText = await loginError.innerText().catch( () => 'none' );
-
-        throw new Error(
-            `Login failed for user "${ username }": ` +
-                `URL=${ currentUrl }, Title=${ pageTitle }, ` +
-                `Error=${ errorText }. ` +
-                `Original error: ${
-                    error instanceof Error ? error.message : String( error )
-                }`
-        );
-    }
+    await expect( page ).toHaveURL( /\/wp-admin(?:\/|$)/ );
 
     await page
         .locator( '#wpadminbar, #wpbody, #wpbody-content' )
