@@ -95,7 +95,6 @@ export const renderPattern = async ( editor: any, patternSlug: string ) => {
         .getByRole( 'button', { name: 'Exit code editor' } )
         .click();
     const previewPage = await editor.openPreviewPage();
-
     await previewPage.waitForLoadState( 'domcontentloaded' );
     const preview = previewPage.locator( '.entry-content' ).first();
 
@@ -121,7 +120,6 @@ export const renderPattern = async ( editor: any, patternSlug: string ) => {
                 )
         );
     } );
-
     await expect( preview ).toHaveScreenshot();
 };
 
