@@ -48,21 +48,39 @@ const loginAsEditor = async (
 
     await page.locator( '#wp-submit' ).click();
 
-    await Promise.race( [
-        page.waitForURL(
-            ( url ) =>
-                url.pathname.startsWith( '/wp-admin/' ) ||
-                '/wp-admin' === url.pathname,
-            { timeout: 60_000 }
-        ),
-        loginError
-            .waitFor( { state: 'visible', timeout: 60_000 } )
-            .then( async () => {
-                throw new Error(
-                    `Editor login failed: ${ await loginError.innerText() }`
-                );
-            } ),
-    ] );
+    try {
+        await Promise.race( [
+            page.waitForURL(
+                ( url ) =>
+                    url.pathname.startsWith( '/wp-admin/' ) ||
+                    '/wp-admin' === url.pathname,
+                {
+                    timeout: 30_000,
+                    waitUntil: 'domcontentloaded',
+                }
+            ),
+            loginError
+                .waitFor( { state: 'visible', timeout: 30_000 } )
+                .then( async () => {
+                    throw new Error(
+                        `Editor login failed: ${ await loginError.innerText() }`
+                    );
+                } ),
+        ] );
+    } catch ( error ) {
+        const currentUrl = page.url();
+        const pageTitle = await page.title().catch( () => 'unknown' );
+        const errorText = await loginError.innerText().catch( () => 'none' );
+
+        throw new Error(
+            `Login failed for user "${ username }": ` +
+                `URL=${ currentUrl }, Title=${ pageTitle }, ` +
+                `Error=${ errorText }. ` +
+                `Original error: ${
+                    error instanceof Error ? error.message : String( error )
+                }`
+        );
+    }
 
     await page
         .locator( '#wpadminbar, #wpbody, #wpbody-content' )
