@@ -44,41 +44,58 @@ const loginAsEditor = async (
         waitUntil: 'domcontentloaded',
     } );
 
+    // Ensure login form is ready before filling
+    await page
+        .locator( '#user_login' )
+        .waitFor( { state: 'visible', timeout: 10000 } );
+
     await page.locator( '#user_login' ).fill( username );
     await page.locator( '#user_pass' ).fill( password );
 
-    await page.locator( '#wp-submit' ).click();
+    // Ensure submit button is clickable before clicking
+    const submitButton = page.locator( '#wp-submit' );
+    await submitButton.waitFor( { state: 'visible' } );
+    await submitButton.click();
 
     try {
         await page.waitForURL(
             ( url ) =>
                 url.pathname.startsWith( '/wp-admin/' ) ||
                 '/wp-admin' === url.pathname,
-            { waitUntil: 'domcontentloaded', timeout: 45_000 }
+            { waitUntil: 'domcontentloaded', timeout: 30_000 }
         );
     } catch ( error ) {
         if ( page.isClosed() ) {
             throw new Error( 'Page was closed during editor login.' );
         }
 
+        // Check for login errors
         const loginError = page.locator( '#login_error' );
-        if ( await loginError.isVisible().catch( () => false ) ) {
-            throw new Error(
-                `Editor login failed: ${ await loginError.innerText() }`
-            );
+        const errorVisible = await loginError.isVisible().catch( () => false );
+
+        if ( errorVisible ) {
+            const errorText = await loginError
+                .innerText()
+                .catch( () => 'Unknown error' );
+            throw new Error( `Editor login failed: ${ errorText }` );
         }
 
-        throw error;
+        // Check current URL to debug where we are
+        const currentUrl = page.url();
+        throw new Error(
+            `Editor login timeout. Current URL: ${ currentUrl }. Original error: ${ error.message }`
+        );
     }
 
     if ( page.isClosed() ) {
         throw new Error( 'Page was closed after editor login.' );
     }
 
+    // Verify admin interface loaded
     await page
         .locator( '#wpadminbar, #wpbody, #wpbody-content' )
         .first()
-        .waitFor( { state: 'attached', timeout: 30_000 } );
+        .waitFor( { state: 'attached', timeout: 15_000 } );
 };
 
 const requestRestAsCurrentUser = async (
