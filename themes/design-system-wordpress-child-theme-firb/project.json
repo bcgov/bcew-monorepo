@@ -13,7 +13,7 @@
     "targets": {
         "composer-install": {},
         "build": {
-            "dependsOn": ["bcew-theme:build"]
+            "dependsOn": ["bcew-theme:build", "bcew-plugin:build"]
         },
         "start": {},
         "start-playwright": {},
