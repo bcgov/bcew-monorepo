@@ -94,9 +94,28 @@ export const renderPattern = async ( editor: any, patternSlug: string ) => {
     await editor.page
         .getByRole( 'button', { name: 'Exit code editor' } )
         .click();
-    const preview = ( await editor.openPreviewPage() )
-        .locator( '.entry-content' )
-        .first();
+    const previewPage = await editor.openPreviewPage();
+    await previewPage.waitForLoadState( 'load' );
+    await previewPage.evaluate( async () => {
+        await document.fonts.ready;
+
+        await Promise.all(
+            Array.from( document.images )
+                .filter( ( image ) => ! image.complete )
+                .map(
+                    ( image ) =>
+                        new Promise< void >( ( resolve ) => {
+                            image.addEventListener( 'load', () => resolve(), {
+                                once: true,
+                            } );
+                            image.addEventListener( 'error', () => resolve(), {
+                                once: true,
+                            } );
+                        } )
+                )
+        );
+    } );
+    const preview = previewPage.locator( '.entry-content' ).first();
     await expect( preview ).toHaveScreenshot();
 };
 
