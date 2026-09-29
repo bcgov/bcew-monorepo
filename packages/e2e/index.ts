@@ -95,8 +95,8 @@ export const renderPattern = async ( editor: any, patternSlug: string ) => {
         .getByRole( 'button', { name: 'Exit code editor' } )
         .click();
     const previewPage = await editor.openPreviewPage();
-    // Block view scripts reveal elements on DOMContentLoaded, so wait for them to run.
-    await previewPage.waitForLoadState( 'load' );
+
+    await previewPage.waitForLoadState( 'domcontentloaded' );
     const preview = previewPage.locator( '.entry-content' ).first();
 
     await expect( preview ).toBeVisible( { timeout: 15000 } );
