@@ -62,13 +62,13 @@ const loginAsEditor = async (
                 '/wp-admin' === url.pathname,
             { waitUntil: 'domcontentloaded', timeout: 60_000 }
         ),
-        loginError.waitFor( { state: 'visible', timeout: 60_000 } ).then(
-            async () => {
+        loginError
+            .waitFor( { state: 'visible', timeout: 60_000 } )
+            .then( async () => {
                 throw new Error(
                     `Editor login failed: ${ await loginError.innerText() }`
                 );
-            }
-        ),
+            } ),
     ] );
 
     await page
