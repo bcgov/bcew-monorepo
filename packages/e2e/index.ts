@@ -294,31 +294,42 @@ const renderBlocksGrid = async ( blocks: any ): Promise< void > => {
         // Add a brief wait for lazy-loaded images (galleries, etc) to paint.
         // Timeouts quickly to prevent blocking; partial loads are acceptable.
         try {
-            await preview.evaluate( () => {
-                const images = Array.from(
-                    document.querySelectorAll( 'img' )
-                ) as HTMLImageElement[];
+            await preview.evaluate(
+                () => {
+                    const images = Array.from(
+                        document.querySelectorAll( 'img' )
+                    ) as HTMLImageElement[];
 
-                return Promise.race( [
-                    Promise.all(
-                        images.map( ( image ) =>
-                            image.complete
-                                ? Promise.resolve()
-                                : new Promise< void >( ( resolve ) => {
-                                      image.addEventListener( 'load', resolve, {
-                                          once: true,
-                                      } );
-                                      image.addEventListener( 'error', resolve, {
-                                          once: true,
-                                      } );
-                                  } )
-                        )
-                    ),
-                    new Promise< void >( ( resolve ) =>
-                        setTimeout( resolve, 2000 )
-                    ),
-                ] );
-            }, { timeout: 2500 } );
+                    return Promise.race( [
+                        Promise.all(
+                            images.map( ( image ) =>
+                                image.complete
+                                    ? Promise.resolve()
+                                    : new Promise< void >( ( resolve ) => {
+                                          image.addEventListener(
+                                              'load',
+                                              resolve,
+                                              {
+                                                  once: true,
+                                              }
+                                          );
+                                          image.addEventListener(
+                                              'error',
+                                              resolve,
+                                              {
+                                                  once: true,
+                                              }
+                                          );
+                                      } )
+                            )
+                        ),
+                        new Promise< void >( ( resolve ) =>
+                            setTimeout( resolve, 2000 )
+                        ),
+                    ] );
+                },
+                { timeout: 2500 }
+            );
         } catch {
             // Non-fatal timeout; proceed with screenshot anyway
         }
