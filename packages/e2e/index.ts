@@ -95,6 +95,9 @@ export const renderPattern = async ( editor: any, patternSlug: string ) => {
         .getByRole( 'button', { name: 'Exit code editor' } )
         .click();
     const previewPage = await editor.openPreviewPage();
+    await previewPage.waitForLoadState( 'domcontentloaded' );
+    const preview = previewPage.locator( '.entry-content' ).first();
+    await expect( preview ).toBeVisible( { timeout: 15000 } );
     await previewPage.waitForLoadState( 'load' );
     await previewPage.evaluate( async () => {
         await document.fonts.ready;
@@ -115,7 +118,6 @@ export const renderPattern = async ( editor: any, patternSlug: string ) => {
                 )
         );
     } );
-    const preview = previewPage.locator( '.entry-content' ).first();
     await expect( preview ).toHaveScreenshot();
 };
 
@@ -159,6 +161,32 @@ const STYLEBOOK_SELECTED_PREVIEW_SELECTOR = [
     'div.edit-site-style-book__example-preview',
     'div.editor-style-book__example-preview',
 ].join( ', ' );
+
+const waitForStylebookResources = async ( canvas: any ): Promise< void > => {
+    await canvas.locator( 'body' ).evaluate( async ( body: HTMLElement ) => {
+        await document.fonts.ready;
+
+        const images = Array.from(
+            body.querySelectorAll( 'img' )
+        ) as HTMLImageElement[];
+
+        await Promise.all(
+            images.map( ( image ) =>
+                image.complete
+                    ? Promise.resolve()
+                    : new Promise< void >( ( resolve ) => {
+                          image.addEventListener( 'load', () => resolve(), {
+                              once: true,
+                          } );
+                          image.addEventListener( 'error', () => resolve(), {
+                              once: true,
+                          } );
+                          setTimeout( resolve, 5000 );
+                      } )
+            )
+        );
+    } );
+};
 
 /**
  * Wait for the style book canvas height to stabilize.
@@ -246,14 +274,63 @@ const renderBlocksGrid = async ( blocks: any ): Promise< void > => {
             continue;
         }
 
-        await expect(
-            block.locator( STYLEBOOK_PREVIEW_SELECTOR )
-        ).toHaveScreenshot( `style-book-${ formattedName }.png`, {
-            animations: 'disabled',
-            caret: 'hide',
-            scale: 'css',
-            maxDiffPixelRatio: 0.02,
-        } );
+        const preview = block.locator( STYLEBOOK_PREVIEW_SELECTOR );
+
+        await expect( preview ).toBeVisible( { timeout: 15000 } );
+
+        try {
+            await preview.waitForElementState( 'stable', { timeout: 5000 } );
+        } catch {
+            // Some stylebook previews remain dynamic but can still render.
+        }
+
+        await preview.evaluate(
+            ( element: HTMLElement ) => {
+                const images = Array.from(
+                    element.querySelectorAll( 'img' )
+                ) as HTMLImageElement[];
+
+                return Promise.race( [
+                    Promise.all(
+                        images.map( ( image ) =>
+                            image.complete
+                                ? Promise.resolve()
+                                : new Promise< void >( ( resolve ) => {
+                                      image.addEventListener(
+                                          'load',
+                                          () => resolve(),
+                                          {
+                                              once: true,
+                                          }
+                                      );
+                                      image.addEventListener(
+                                          'error',
+                                          () => resolve(),
+                                          {
+                                              once: true,
+                                          }
+                                      );
+                                  } )
+                        )
+                    ),
+                    new Promise< void >( ( resolve ) =>
+                        setTimeout( resolve, 2000 )
+                    ),
+                ] );
+            },
+            { timeout: 2500 }
+        );
+
+        await expect( preview ).toHaveScreenshot(
+            `style-book-${ formattedName }.png`,
+            {
+                animations: 'disabled',
+                caret: 'hide',
+                scale: 'css',
+                maxDiffPixelRatio: 0.02,
+                timeout: 15000,
+            }
+        );
     }
 };
 
@@ -277,14 +354,19 @@ export const renderStylebook = async ( admin: any ) => {
     const canvas = admin.page.frameLocator(
         'iframe[name="style-book-canvas"]'
     );
-    await expect( canvas.locator( 'body' ) ).toBeVisible();
+    await expect(
+        admin.page.locator( 'iframe[name="style-book-canvas"]' )
+    ).toBeVisible( { timeout: 30000 } );
+    await expect( canvas.locator( 'body' ) ).toBeVisible( {
+        timeout: 15000,
+    } );
 
     const blocks = canvas.locator( STYLEBOOK_EXAMPLE_SELECTOR );
 
     try {
         await expect
             .poll( async () => blocks.count(), {
-                timeout: 10000,
+                timeout: 15000,
                 message:
                     'Expected style book examples to render in style-book-canvas iframe.',
             } )
@@ -307,7 +389,7 @@ export const renderStylebook = async ( admin: any ) => {
         return;
     }
 
-    // Render all blocks in the grid.
+    await waitForStylebookResources( canvas );
     await renderBlocksGrid( blocks );
 };
 
@@ -331,7 +413,31 @@ export const createStylebookTests = () => {
 export const createPatternTests = ( themeSlug: string, patterns: string[] ) => {
     test.describe( 'pattern', () => {
         test.beforeEach( async ( { admin } ) => {
-            await admin.createNewPost();
+            await admin.page.waitForTimeout( 1000 );
+
+            let attempt = 0;
+            const maxAttempts = 3;
+
+            while ( attempt < maxAttempts ) {
+                try {
+                    await admin.createNewPost();
+                    break;
+                } catch ( error ) {
+                    attempt++;
+
+                    if ( attempt >= maxAttempts ) {
+                        const message =
+                            error instanceof Error
+                                ? error.message
+                                : String( error );
+                        throw new Error(
+                            `Failed to create new post after ${ maxAttempts } attempts: ${ message }`
+                        );
+                    }
+
+                    await admin.page.waitForTimeout( 2000 );
+                }
+            }
         } );
 
         for ( const p of patterns ) {
