@@ -98,11 +98,16 @@ export const renderPattern = async ( editor: any, patternSlug: string ) => {
     await previewPage.waitForLoadState( 'domcontentloaded' );
     const preview = previewPage.locator( '.entry-content' ).first();
     await expect( preview ).toBeVisible( { timeout: 15000 } );
-    await previewPage.evaluate( async () => {
-        await document.fonts.ready;
+    await previewPage.waitForLoadState( 'load' );
+    await preview.evaluate( async ( element: HTMLElement ) => {
+        const images = Array.from(
+            element.querySelectorAll< HTMLImageElement >( 'img' )
+        );
+        images.forEach( ( image ) => ( image.loading = 'eager' ) );
 
+        await document.fonts.ready;
         await Promise.all(
-            Array.from( document.images )
+            images
                 .filter( ( image ) => ! image.complete )
                 .map(
                     ( image ) =>
