@@ -281,7 +281,7 @@ jobs:
               run: docker compose up -d playwright
 
             - name: Run screenshot tests
-              run: npx nx run "${{ matrix.project }}:test-screenshot"
+              run: npx nx run "${{ matrix.project }}:test-screenshot" --outputStyle=stream
 
             - uses: actions/upload-artifact@v7.0.1
               if: ${{ !cancelled() }}
