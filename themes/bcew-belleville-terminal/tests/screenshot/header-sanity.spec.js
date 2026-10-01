@@ -10,8 +10,10 @@ const HEADER_SECTION_SELECTORS = [
 
 const openHomePage = async ( page, viewport ) => {
     await page.setViewportSize( viewport );
-    await page.goto( '/' );
-    await page.waitForLoadState( 'networkidle' );
+    await page.goto( '/', { waitUntil: 'domcontentloaded' } );
+    await expect(
+        page.locator( HEADER_SECTION_SELECTORS.join( ', ' ) )
+    ).toHaveCount( HEADER_SECTION_SELECTORS.length );
 };
 
 const collectHeaderMetrics = async ( page ) => {

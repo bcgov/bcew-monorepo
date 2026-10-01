@@ -231,14 +231,8 @@ const waitForCanvasHeightStability = async (
  * Render single selected preview (fallback for newer WordPress versions).
  *
  * @param {any} canvas Canvas frame locator.
- * @param {any} admin  Admin fixture object.
  */
-const renderSinglePreview = async (
-    canvas: any,
-    admin: any
-): Promise< void > => {
-    await admin.page.waitForTimeout( 300 );
-
+const renderSinglePreview = async ( canvas: any ): Promise< void > => {
     const selectedPreview = canvas
         .locator( STYLEBOOK_SELECTED_PREVIEW_SELECTOR )
         .first();
@@ -258,8 +252,8 @@ const renderSinglePreview = async (
  * @param {any} blocks Blocks locator.
  */
 const renderBlocksGrid = async ( blocks: any ): Promise< void > => {
-    const blockNames = await blocks.evaluateAll( ( blockElements ) =>
-        blockElements.map( ( blockElement ) => blockElement.id )
+    const blockNames = await blocks.evaluateAll( ( examples: HTMLElement[] ) =>
+        examples.map( ( example ) => example.id )
     );
 
     for ( let blockIndex = 0; blockIndex < blockNames.length; blockIndex++ ) {
@@ -280,25 +274,14 @@ const renderBlocksGrid = async ( blocks: any ): Promise< void > => {
 
         await expect( preview ).toBeVisible( { timeout: 15000 } );
 
-        // Wait for block to stabilize before taking screenshot
-        try {
-            const previewHandle = await preview.elementHandle();
-            await previewHandle.waitForElementState( 'stable', {
-                timeout: 5000,
-            } );
-        } catch {
-            // If stability timeout occurs, still proceed with screenshot
-            // (some blocks may not stabilize but are still renderable)
-        }
-
         // Add a brief wait for lazy-loaded images (galleries, etc) to paint.
         // Timeouts quickly to prevent blocking; partial loads are acceptable.
         try {
             await preview.evaluate(
-                ( previewElement ) => {
+                ( previewElement: HTMLElement ) => {
                     const images = Array.from(
                         previewElement.querySelectorAll( 'img' )
-                    );
+                    ) as HTMLImageElement[];
 
                     return Promise.race( [
                         Promise.all(
@@ -396,7 +379,7 @@ export const renderStylebook = async ( admin: any ) => {
         await waitForCanvasHeightStability( canvasFrame );
 
         // Render single selected preview (fallback).
-        await renderSinglePreview( canvas, admin );
+        await renderSinglePreview( canvas );
 
         return;
     }
@@ -425,8 +408,6 @@ export const createStylebookTests = () => {
 export const createPatternTests = ( themeSlug: string, patterns: string[] ) => {
     test.describe( 'pattern', () => {
         test.beforeEach( async ( { admin } ) => {
-            await admin.page.waitForTimeout( 1000 );
-
             let attempt = 0;
             const maxAttempts = 3;
 
@@ -452,11 +433,13 @@ export const createPatternTests = ( themeSlug: string, patterns: string[] ) => {
             }
         } );
 
-        for ( const pattern of patterns ) {
+        const registerPatternTest = ( pattern: string ) => {
             test( pattern, async ( { editor } ) => {
                 await renderPattern( editor, `${ themeSlug }/${ pattern }` );
             } );
-        }
+        };
+
+        patterns.forEach( registerPatternTest );
     } );
 };
 
