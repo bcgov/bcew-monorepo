@@ -207,11 +207,47 @@ jobs:
                     themes/*/artifacts/test-results/
                   retention-days: 7
 
-    test-screenshot:
-        name: Test screenshots (affected)
+    screenshot-projects:
+        name: Find affected screenshot projects
         runs-on: ubuntu-latest
-        timeout-minutes: 20 
         if: github.event_name == 'pull_request'
+        outputs:
+            projects: ${{ steps.projects.outputs.projects }}
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v7
+              with:
+                  fetch-depth: 0
+                  ref: ${{ github.head_ref }}
+
+            - name: Setup Node.js 24
+              uses: actions/setup-node@v6.4.0
+              with:
+                  node-version: 24
+
+            - name: Install pnpm
+              uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+              with:
+                  version: 10
+                  run_install: true
+                  cache: true
+
+            - name: Find affected projects with screenshot tests
+              id: projects
+              run: |
+                  projects=$(pnpm nx show projects --affected --base="origin/${{ github.base_ref }}" --withTarget=test-screenshot --json)
+                  printf 'projects=%s\n' "$(jq -c . <<< "$projects")" >> "$GITHUB_OUTPUT"
+
+    test-screenshot:
+        name: Test screenshots (${{ matrix.project }})
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+        if: github.event_name == 'pull_request' && needs.screenshot-projects.outputs.projects != '[]'
+        needs: screenshot-projects
+        strategy:
+            fail-fast: false
+            matrix:
+                project: ${{ fromJSON(needs.screenshot-projects.outputs.projects) }}
         steps:
             - name: Checkout
               uses: actions/checkout@v7
@@ -245,12 +281,12 @@ jobs:
               run: docker compose up -d playwright
 
             - name: Run screenshot tests
-              run: npx nx affected --base="origin/${{ github.base_ref }}" -t test-screenshot
+              run: npx nx run "${{ matrix.project }}:test-screenshot"
 
             - uses: actions/upload-artifact@v7.0.1
               if: ${{ !cancelled() }}
               with:
-                  name: playwright-screenshot-report
+                  name: playwright-screenshot-report-${{ matrix.project }}
                   path: |
                     plugins/*/artifacts/test-results/
                     themes/*/artifacts/test-results/
