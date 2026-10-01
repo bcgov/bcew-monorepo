@@ -24,9 +24,6 @@
   "main": "src/index.js",
   "devDependencies": {
     "@bcew-monorepo/e2e": "workspace:*",
-    "@playwright/test": "catalog:",
-    "@wordpress/base-styles": "catalog:",
-    "@wordpress/e2e-test-utils-playwright": "catalog:",
-    "@wordpress/scripts": "catalog:"
+    "@playwright/test": "catalog:"
   }
 }
