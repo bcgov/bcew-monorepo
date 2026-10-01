@@ -37,36 +37,37 @@ const loginAsEditor = async (
     username: string,
     password: string
 ): Promise< void > => {
-    await page.goto( '/wp-login.php?reauth=1', {
+    // Do not reuse the admin authentication state for the editor login.
+    await page.context().clearCookies();
+
+    await page.goto( '/wp-login.php', {
         waitUntil: 'domcontentloaded',
     } );
+
+    await page
+        .locator( '#loginform' )
+        .waitFor( { state: 'visible', timeout: 15_000 } );
 
     await page.locator( '#user_login' ).fill( username );
     await page.locator( '#user_pass' ).fill( password );
 
     await Promise.all( [
-        page.waitForNavigation( { waitUntil: 'domcontentloaded' } ),
+        page.waitForURL(
+            ( url ) =>
+                '/wp-admin' === url.pathname ||
+                url.pathname.startsWith( '/wp-admin/' ),
+            {
+                waitUntil: 'domcontentloaded',
+                timeout: 30_000,
+            }
+        ),
         page.locator( '#wp-submit' ).click(),
     ] );
-
-    const loginError = page.locator( '#login_error' );
-    if ( await loginError.isVisible().catch( () => false ) ) {
-        throw new Error(
-            `Editor login failed: ${ await loginError.innerText() }`
-        );
-    }
-
-    await page.waitForURL(
-        ( url ) =>
-            url.pathname.startsWith( '/wp-admin/' ) ||
-            '/wp-admin' === url.pathname,
-        { timeout: 30_000 }
-    );
 
     await page
         .locator( '#wpadminbar, #wpbody, #wpbody-content' )
         .first()
-        .waitFor( { state: 'attached', timeout: 30_000 } );
+        .waitFor( { state: 'attached', timeout: 15_000 } );
 };
 
 const requestRestAsCurrentUser = async (
@@ -1155,14 +1156,16 @@ test.describe( 'Navigation', () => {
         let editorUserId: number;
         let editorPageId: number;
         let editorUsername: string;
+        let editorPassword: string;
 
         test.beforeAll( async ( { requestUtils: utils } ) => {
             // Create an editor role user
             editorUsername = `test_editor_${ Date.now() }`;
+            editorPassword = `Editor-${ Date.now() }-Password!`;
             const editorUser = await utils.createUser( {
                 username: editorUsername,
                 email: `${ editorUsername }@example.com`,
-                password: 'password',
+                password: editorPassword,
                 roles: [ 'editor' ],
             } );
             editorUserId = editorUser.id;
@@ -1178,6 +1181,17 @@ test.describe( 'Navigation', () => {
                 },
             } );
             editorPageId = page.id;
+        } );
+
+        test.afterEach( async ( { page } ) => {
+            // Clean up any extra pages/contexts to prevent browser resource exhaustion
+            // during the long-running permission test suite.
+            const pages = page.context().pages();
+            for ( const p of pages ) {
+                if ( p !== page && ! p.isClosed() ) {
+                    await p.close().catch( () => undefined );
+                }
+            }
         } );
 
         test( 'Admin can insert Navigation block and select menu', async ( {
@@ -1229,7 +1243,7 @@ test.describe( 'Navigation', () => {
         test( 'Editor cannot edit navigation menu content (restricted)', async ( {
             page,
         } ) => {
-            await loginAsEditor( page, editorUsername, 'password' );
+            await loginAsEditor( page, editorUsername, editorPassword );
 
             // Try to create a navigation menu via REST API as editor
             // Use fetch directly since RequestUtils.rest() doesn't support different auth
@@ -1258,7 +1272,7 @@ test.describe( 'Navigation', () => {
         test( 'Editor can view but not modify navigation block settings', async ( {
             page,
         } ) => {
-            await loginAsEditor( page, editorUsername, 'password' );
+            await loginAsEditor( page, editorUsername, editorPassword );
 
             // Try to modify an existing navigation menu via REST API as editor
             // WordPress REST API uses POST with _method=PATCH or PATCH method
@@ -1283,7 +1297,7 @@ test.describe( 'Navigation', () => {
         test( 'Editor can insert Navigation block but cannot edit menu content', async ( {
             page,
         } ) => {
-            await loginAsEditor( page, editorUsername, 'password' );
+            await loginAsEditor( page, editorUsername, editorPassword );
 
             // Navigate to edit the existing page (editors can edit pages, just not create them)
             // Use domcontentloaded instead of networkidle to avoid timeout issues

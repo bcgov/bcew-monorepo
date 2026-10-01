@@ -1,0 +1,29 @@
+{
+  "name": "design-system-wordpress-child-theme-hporoo",
+  "version": "1.1.0",
+  "description": "HPOROO Child Theme",
+  "author": "govwordpress@gov.bc.ca",
+  "license": "GPL-2.0-or-later",
+  "keywords": [
+    "WordPress",
+    "Block Theme",
+    "BCGov",
+    "DesignSystem",
+    "Gutenberg"
+  ],
+  "homepage": "https://github.com/bcgov/bcew-monorepo/tree/main/themes/design-system-wordpress-child-theme-hporoo",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bcgov/bcew-monorepo.git",
+    "directory": "themes/design-system-wordpress-child-theme-hporoo"
+  },
+  "bugs": {
+    "url": "https://github.com/bcgov/bcew-monorepo/issues",
+    "email": "govwordpress@gov.bc.ca"
+  },
+  "main": "src/index.js",
+  "devDependencies": {
+    "@bcew-monorepo/e2e": "workspace:*",
+    "@playwright/test": "catalog:"
+  }
+}

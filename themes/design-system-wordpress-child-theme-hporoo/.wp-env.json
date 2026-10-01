@@ -1,0 +1,19 @@
+{
+    "core": "WordPress/WordPress#6.7.2",
+    "phpVersion": "7.4",
+    "themes": [
+        ".",
+        "../../themes/bcew-theme"
+    ],
+    "plugins": [
+        "../../plugins/bcew-plugin"
+    ],
+    "config": {
+        "WP_AUTO_UPDATE_CORE": false
+    },
+    "port": 9018,
+    "testsPort": 9019,
+    "lifecycleScripts": {
+        "afterStart": "wp-env run cli bash -c 'wp theme activate design-system-wordpress-child-theme-hporoo && wp plugin activate bcew-plugin' && wp-env run tests-cli bash -c 'wp theme activate design-system-wordpress-child-theme-hporoo && wp plugin activate bcew-plugin'"
+    }
+}

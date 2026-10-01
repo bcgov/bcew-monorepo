@@ -48,6 +48,7 @@ AGENTS.md
 .github/skills/**
 .github/prompts/**
 .github/agents/*.md
-.github/*.md
-*plan.md
-*PLAN.md
+
+# Planning and assessment docs
+*-plan.md
+*-migration-plan.md
