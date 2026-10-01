@@ -231,14 +231,8 @@ const waitForCanvasHeightStability = async (
  * Render single selected preview (fallback for newer WordPress versions).
  *
  * @param {any} canvas Canvas frame locator.
- * @param {any} admin  Admin fixture object.
  */
-const renderSinglePreview = async (
-    canvas: any,
-    admin: any
-): Promise< void > => {
-    await admin.page.waitForTimeout( 300 );
-
+const renderSinglePreview = async ( canvas: any ): Promise< void > => {
     const selectedPreview = canvas
         .locator( STYLEBOOK_SELECTED_PREVIEW_SELECTOR )
         .first();
@@ -258,11 +252,13 @@ const renderSinglePreview = async (
  * @param {any} blocks Blocks locator.
  */
 const renderBlocksGrid = async ( blocks: any ): Promise< void > => {
-    const blockCount = await blocks.count();
+    const blockNames = await blocks.evaluateAll( ( examples: HTMLElement[] ) =>
+        examples.map( ( example ) => example.id )
+    );
 
-    for ( let blockIndex = 0; blockIndex < blockCount; blockIndex++ ) {
+    for ( let blockIndex = 0; blockIndex < blockNames.length; blockIndex++ ) {
         const block = blocks.nth( blockIndex );
-        const blockName = await block.getAttribute( 'id' );
+        const blockName = blockNames[ blockIndex ];
 
         if ( ! blockName ) {
             throw new Error( 'Style book example is missing an id attribute.' );
@@ -277,12 +273,6 @@ const renderBlocksGrid = async ( blocks: any ): Promise< void > => {
         const preview = block.locator( STYLEBOOK_PREVIEW_SELECTOR );
 
         await expect( preview ).toBeVisible( { timeout: 15000 } );
-
-        try {
-            await preview.waitForElementState( 'stable', { timeout: 5000 } );
-        } catch {
-            // Some stylebook previews remain dynamic but can still render.
-        }
 
         await preview.evaluate(
             ( element: HTMLElement ) => {
@@ -384,7 +374,7 @@ export const renderStylebook = async ( admin: any ) => {
         await waitForCanvasHeightStability( canvasFrame );
 
         // Render single selected preview (fallback).
-        await renderSinglePreview( canvas, admin );
+        await renderSinglePreview( canvas );
 
         return;
     }
@@ -413,8 +403,6 @@ export const createStylebookTests = () => {
 export const createPatternTests = ( themeSlug: string, patterns: string[] ) => {
     test.describe( 'pattern', () => {
         test.beforeEach( async ( { admin } ) => {
-            await admin.page.waitForTimeout( 1000 );
-
             let attempt = 0;
             const maxAttempts = 3;
 
@@ -440,11 +428,13 @@ export const createPatternTests = ( themeSlug: string, patterns: string[] ) => {
             }
         } );
 
-        for ( const p of patterns ) {
-            test( p, async ( { editor } ) => {
-                await renderPattern( editor, `${ themeSlug }/${ p }` );
+        const registerPatternTest = ( pattern: string ) => {
+            test( pattern, async ( { editor } ) => {
+                await renderPattern( editor, `${ themeSlug }/${ pattern }` );
             } );
-        }
+        };
+
+        patterns.forEach( registerPatternTest );
     } );
 };
 

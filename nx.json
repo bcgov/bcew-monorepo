@@ -75,6 +75,7 @@
         },
         "test-screenshot": {
             "executor": "nx:run-commands",
+            "parallelism": false,
             "options": {
                 "command": "docker exec playwright sh -c \"cd {projectRoot} && npx wp-scripts test-playwright --config playwright.regression.config.js --update-snapshots none\""
             },
