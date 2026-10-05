@@ -13,4 +13,4 @@
  * Remove this filter once the firb, hporoo, and ticorp child themes have added their own
  * `dswp_legacy_pattern_allow` handling.
  */
-add_filter( 'dswp_legacy_pattern_allow', '__return_true', 10 );
+add_filter( 'dswp_legacy_pattern_allow', '__return_true', 100 );
