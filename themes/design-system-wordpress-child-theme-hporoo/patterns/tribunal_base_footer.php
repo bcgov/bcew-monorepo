@@ -90,7 +90,7 @@ $mail_icon  = esc_url( get_stylesheet_directory_uri() . '/assets/images/building
                                 <div class="wp-block-group dswp-information-contact-socials-card-img-group">
                                     <!-- wp:image {"width":"16px","linkDestination":"none","className":"dswp-information-contact-socials-card-img"} -->
                                     <figure class="wp-block-image is-resized dswp-information-contact-socials-card-img">
-                                        <img src="<?php echo esc_attr( $phone_icon ); ?>" alt="Phone" style="width:16px" /></figure>
+                                        <img src="<?php echo esc_attr( $phone_icon ); ?>" alt="" style="width:16px" /></figure>
                                     <!-- /wp:image -->
                                 </div>
                                 <!-- /wp:group -->
@@ -120,7 +120,7 @@ $mail_icon  = esc_url( get_stylesheet_directory_uri() . '/assets/images/building
                                 <div class="wp-block-group dswp-information-contact-socials-card-img-group">
                                     <!-- wp:image {"width":"16px","linkDestination":"none","className":"dswp-information-contact-socials-card-img"} -->
                                     <figure class="wp-block-image is-resized dswp-information-contact-socials-card-img">
-                                        <img src="<?php echo esc_attr( $phone_icon ); ?>" alt="Phone" style="width:16px" /></figure>
+                                        <img src="<?php echo esc_attr( $phone_icon ); ?>" alt="" style="width:16px" /></figure>
                                     <!-- /wp:image -->
                                 </div>
                                 <!-- /wp:group -->

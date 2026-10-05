@@ -40,4 +40,6 @@ Generate updated snapshots for intentional visual changes:
 npx nx run design-system-wordpress-child-theme-hporoo:test-screenshot-generate
 ```
 
-The current screenshot suite is defined in `tests/screenshot/style-book.spec.ts`.
+The screenshot suite is defined in `tests/screenshot/style-book.spec.ts` and
+`tests/screenshot/patterns.spec.js`. The pattern spec covers the footer,
+HPOROO base footer, HPOROO hero, and tribunal base footer.
