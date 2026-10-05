@@ -19,7 +19,14 @@
         "start-playwright": {},
         "test-screenshot": {},
         "test-screenshot-generate": {},
-        "wp-env-start": {},
+        "wp-env-start": {
+            "dependsOn": [
+                "composer-install",
+                "bcew-theme:build",
+                "bcew-plugin:composer-install",
+                "bcew-plugin:build"
+            ]
+        },
         "wp-env-clean": {},
         "wp-env-stop": {}
     },

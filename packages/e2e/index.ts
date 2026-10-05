@@ -298,10 +298,10 @@ const renderBlocksGrid = async ( blocks: any ): Promise< void > => {
         // Timeouts quickly to prevent blocking; partial loads are acceptable.
         try {
             await preview.evaluate(
-                () => {
+                ( previewElement ) => {
                     const images = Array.from(
-                        document.querySelectorAll( 'img' )
-                    ) as HTMLImageElement[];
+                        previewElement.querySelectorAll( 'img' )
+                    );
 
                     return Promise.race( [
                         Promise.all(

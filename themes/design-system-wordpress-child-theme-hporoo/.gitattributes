@@ -15,7 +15,7 @@ jest.config.js	        export-ignore
 package-lock.json	    export-ignore
 package.json	        export-ignore
 phpunit.xml             export-ignore
-playwright.config.js    export-ignore
+playwright.regression.config.js export-ignore
 README.md	            export-ignore
 scripts                 export-ignore
 tests                   export-ignore
