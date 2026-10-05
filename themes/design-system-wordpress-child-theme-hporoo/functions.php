@@ -11,15 +11,10 @@ add_action(
     }
 );
 
-// Enqueue the same styles for the block editor.
+// Load child styles in block editor content.
 add_action(
-    'enqueue_block_editor_assets',
+    'after_setup_theme',
     function () {
-            wp_enqueue_style(
-                'child-editor-style',
-                get_stylesheet_directory_uri() . '/style.css',
-                array(),
-                wp_get_theme()->get( 'Version' )
-            );
+        add_editor_style( 'style.css' );
     }
 );
