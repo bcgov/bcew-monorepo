@@ -35,10 +35,6 @@
         }
     ],
     "settings": {
-        "background": {
-            "backgroundImage": true,
-            "backgroundSize": true
-        },
         "color": {
             "defaultPalette": false,
             "palette": [
