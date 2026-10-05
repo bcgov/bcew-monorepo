@@ -2,7 +2,7 @@
   "name": "bcgov-theme/design-system-wordpress-child-theme-firb",
   "description": "Design System Wordpress Child Theme FIRB",
   "type": "wordpress-theme",
-  "license": "Apache-2.0",
+  "license": "GPL-2.0-or-later",
   "repositories": [
     {
       "type": "path",
