@@ -4,8 +4,9 @@ test.describe( 'Breadcrumb Block', () => {
     const BLOCK_NAME = 'design-system-wordpress-plugin/breadcrumb';
 
     test.beforeEach( async ( { admin } ) => {
-        // Ensure WordPress is initialized before each test
-        await admin.page.waitForTimeout( 1000 );
+        await admin.page.waitForFunction(
+            () => document.readyState === 'complete'
+        );
     } );
 
     test.afterEach( async ( { requestUtils } ) => {

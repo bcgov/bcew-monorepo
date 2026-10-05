@@ -331,8 +331,7 @@ const renderBlocksGrid = async ( blocks: any ): Promise< void > => {
                             setTimeout( resolve, 2000 )
                         ),
                     ] );
-                },
-                { timeout: 2500 }
+                }
             );
         } catch {
             // Non-fatal timeout; proceed with screenshot anyway
