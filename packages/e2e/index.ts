@@ -285,7 +285,10 @@ const renderBlocksGrid = async ( blocks: any ): Promise< void > => {
 
         // Wait for block to stabilize before taking screenshot
         try {
-            await preview.waitForElementState( 'stable', { timeout: 5000 } );
+            const previewHandle = await preview.elementHandle();
+            await previewHandle.waitForElementState( 'stable', {
+                timeout: 5000,
+            } );
         } catch {
             // If stability timeout occurs, still proceed with screenshot
             // (some blocks may not stabilize but are still renderable)

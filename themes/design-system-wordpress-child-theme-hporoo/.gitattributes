@@ -10,7 +10,7 @@
 CHANGELOG.md	        export-ignore
 checklist.md            export-ignore
 CODEOWNERS              export-ignore
-documentation           export-ignore
+docs                    export-ignore
 jest.config.js	        export-ignore
 package-lock.json	    export-ignore
 package.json	        export-ignore

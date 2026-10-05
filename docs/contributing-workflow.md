@@ -79,7 +79,7 @@ After import, the tree often needs to match generator output:
    - `.github/` (per-package workflows)
    - `dist/` / build output
    - Duplicate `.gitignore`, `.markdownlint*`, `CODEOWNERS` if superseded by monorepo policy
-   - `composer.lock` at package level when the monorepo standard is root + package resolution (follow team practice). A local Composer install may recreate an ignored lockfile; do not commit it.
+   - `composer.lock` at package level when the monorepo standard is root + package resolution (follow team practice). A local Composer install may recreate a package-level lockfile; do not commit it.
 8. Commit the migration; run `pnpm composer-install`, `npx nx run <project>:build`, and `pnpm lint`.
 
 ### Tag namespacing after migration
