@@ -8,7 +8,7 @@ add_action(
                 [],
                 wp_get_theme()->get( 'Version' )
             );
-	}
+    }
 );
 
 // Enqueue the same styles for the block editor.
@@ -21,5 +21,5 @@ add_action(
                 array(),
                 wp_get_theme()->get( 'Version' )
             );
-	}
+    }
 );

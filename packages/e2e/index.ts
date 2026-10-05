@@ -382,7 +382,7 @@ export const renderStylebook = async ( admin: any ) => {
 
     try {
         await expect
-            .poll( async () => blocks.count(), {
+            .poll( () => blocks.count(), {
                 timeout: 15000,
                 message:
                     'Expected style book examples to render in style-book-canvas iframe.',
