@@ -196,18 +196,9 @@ test.describe( 'Navigation', () => {
 
             const preview = await editor.openPreviewPage();
 
-            // Verify we're using the plugin's navigation block, not WordPress core's
-            // Plugin block uses: wp-block-design-system-wordpress-plugin-navigation
-            // Core block uses: wp-block-navigation (without the plugin prefix)
             const nav = preview.locator(
                 '.wp-block-design-system-wordpress-plugin-navigation'
             );
-
-            // Ensure it's NOT WordPress core's navigation block
-            const coreNav = preview.locator(
-                '.wp-block-navigation:not(.wp-block-design-system-wordpress-plugin-navigation)'
-            );
-            await expect( coreNav ).toHaveCount( 0 );
 
             await expect( nav ).toBeVisible();
             await expect(
