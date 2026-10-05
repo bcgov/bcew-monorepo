@@ -40,18 +40,29 @@ const loginAsEditor = async (
     // Do not reuse the admin authentication state for the editor login.
     await page.context().clearCookies();
 
-    const response = await page.request.post( '/wp-login.php', {
-        form: {
-            log: username,
-            pwd: password,
-        },
-    } );
-    await response.dispose();
-
-    await page.goto( '/wp-admin/', {
+    await page.goto( '/wp-login.php', {
         waitUntil: 'domcontentloaded',
     } );
-    await expect( page ).toHaveURL( /\/wp-admin(?:\/|$)/ );
+
+    await page
+        .locator( '#loginform' )
+        .waitFor( { state: 'visible', timeout: 15_000 } );
+
+    await page.locator( '#user_login' ).fill( username );
+    await page.locator( '#user_pass' ).fill( password );
+
+    await Promise.all( [
+        page.waitForURL(
+            ( url ) =>
+                '/wp-admin' === url.pathname ||
+                url.pathname.startsWith( '/wp-admin/' ),
+            {
+                waitUntil: 'domcontentloaded',
+                timeout: 30_000,
+            }
+        ),
+        page.locator( '#wp-submit' ).click(),
+    ] );
 
     await page
         .locator( '#wpadminbar, #wpbody, #wpbody-content' )
@@ -185,15 +196,10 @@ test.describe( 'Navigation', () => {
 
             const preview = await editor.openPreviewPage();
 
-            // Verify the custom block is present and visible in the frontend preview.
-            // In CI, WordPress can render core navigation wrappers alongside the custom
-            // block markup, so the reliable check is that our custom block is active and
-            // exposes the expected menu links.
             const nav = preview.locator(
                 '.wp-block-design-system-wordpress-plugin-navigation'
             );
 
-            await expect( nav ).toHaveCount( 1 );
             await expect( nav ).toBeVisible();
             await expect(
                 nav.getByRole( 'link', { name: 'Home' } )

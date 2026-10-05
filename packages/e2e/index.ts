@@ -95,19 +95,18 @@ export const renderPattern = async ( editor: any, patternSlug: string ) => {
         .getByRole( 'button', { name: 'Exit code editor' } )
         .click();
     const previewPage = await editor.openPreviewPage();
-    await previewPage.waitForLoadState( 'domcontentloaded' );
-    const preview = previewPage.locator( '.entry-content' ).first();
-    await expect( preview ).toBeVisible( { timeout: 15000 } );
-    await previewPage.waitForLoadState( 'load' );
-    await preview.evaluate( async ( element: HTMLElement ) => {
-        const images = Array.from(
-            element.querySelectorAll< HTMLImageElement >( 'img' )
-        );
-        images.forEach( ( image ) => ( image.loading = 'eager' ) );
 
+    await previewPage.waitForLoadState( 'domcontentloaded' );
+
+    const preview = previewPage.locator( '.entry-content' ).first();
+
+    await expect( preview ).toBeVisible( { timeout: 15000 } );
+
+    await previewPage.evaluate( async () => {
         await document.fonts.ready;
+
         await Promise.all(
-            images
+            Array.from( document.images )
                 .filter( ( image ) => ! image.complete )
                 .map(
                     ( image ) =>
@@ -123,6 +122,7 @@ export const renderPattern = async ( editor: any, patternSlug: string ) => {
                 )
         );
     } );
+
     await expect( preview ).toHaveScreenshot();
 };
 
@@ -236,8 +236,14 @@ const waitForCanvasHeightStability = async (
  * Render single selected preview (fallback for newer WordPress versions).
  *
  * @param {any} canvas Canvas frame locator.
+ * @param {any} admin  Admin fixture object.
  */
-const renderSinglePreview = async ( canvas: any ): Promise< void > => {
+const renderSinglePreview = async (
+    canvas: any,
+    admin: any
+): Promise< void > => {
+    await admin.page.waitForTimeout( 300 );
+
     const selectedPreview = canvas
         .locator( STYLEBOOK_SELECTED_PREVIEW_SELECTOR )
         .first();
@@ -257,8 +263,8 @@ const renderSinglePreview = async ( canvas: any ): Promise< void > => {
  * @param {any} blocks Blocks locator.
  */
 const renderBlocksGrid = async ( blocks: any ): Promise< void > => {
-    const blockNames = await blocks.evaluateAll( ( examples: HTMLElement[] ) =>
-        examples.map( ( example ) => example.id )
+    const blockNames = await blocks.evaluateAll( ( blockElements ) =>
+        blockElements.map( ( blockElement ) => blockElement.id )
     );
 
     for ( let blockIndex = 0; blockIndex < blockNames.length; blockIndex++ ) {
@@ -279,6 +285,17 @@ const renderBlocksGrid = async ( blocks: any ): Promise< void > => {
 
         await expect( preview ).toBeVisible( { timeout: 15000 } );
 
+        // Wait for block to stabilize before taking screenshot
+        try {
+            const previewHandle = await preview.elementHandle();
+            await previewHandle.waitForElementState( 'stable', {
+                timeout: 5000,
+            } );
+        } catch {
+            // If stability timeout occurs, still proceed with screenshot
+            // (some blocks may not stabilize but are still renderable)
+        }
+
         // Add a brief wait for lazy-loaded images (galleries, etc) to paint.
         // Timeouts quickly to prevent blocking; partial loads are acceptable.
         try {
@@ -287,7 +304,6 @@ const renderBlocksGrid = async ( blocks: any ): Promise< void > => {
                     const images = Array.from(
                         previewElement.querySelectorAll( 'img' )
                     ) as HTMLImageElement[];
-
                     return Promise.race( [
                         Promise.all(
                             images.map( ( image ) =>
@@ -354,9 +370,11 @@ export const renderStylebook = async ( admin: any ) => {
     const canvas = admin.page.frameLocator(
         'iframe[name="style-book-canvas"]'
     );
+
     await expect(
         admin.page.locator( 'iframe[name="style-book-canvas"]' )
     ).toBeVisible( { timeout: 30000 } );
+
     await expect( canvas.locator( 'body' ) ).toBeVisible( {
         timeout: 15000,
     } );
@@ -384,7 +402,7 @@ export const renderStylebook = async ( admin: any ) => {
         await waitForCanvasHeightStability( canvasFrame );
 
         // Render single selected preview (fallback).
-        await renderSinglePreview( canvas );
+        await renderSinglePreview( canvas, admin );
 
         return;
     }
@@ -413,38 +431,14 @@ export const createStylebookTests = () => {
 export const createPatternTests = ( themeSlug: string, patterns: string[] ) => {
     test.describe( 'pattern', () => {
         test.beforeEach( async ( { admin } ) => {
-            let attempt = 0;
-            const maxAttempts = 3;
-
-            while ( attempt < maxAttempts ) {
-                try {
-                    await admin.createNewPost();
-                    break;
-                } catch ( error ) {
-                    attempt++;
-
-                    if ( attempt >= maxAttempts ) {
-                        const message =
-                            error instanceof Error
-                                ? error.message
-                                : String( error );
-                        throw new Error(
-                            `Failed to create new post after ${ maxAttempts } attempts: ${ message }`
-                        );
-                    }
-
-                    await admin.page.waitForTimeout( 2000 );
-                }
-            }
+            await admin.createNewPost();
         } );
 
-        const registerPatternTest = ( pattern: string ) => {
+        for ( const pattern of patterns ) {
             test( pattern, async ( { editor } ) => {
                 await renderPattern( editor, `${ themeSlug }/${ pattern }` );
             } );
-        };
-
-        patterns.forEach( registerPatternTest );
+        }
     } );
 };
 
