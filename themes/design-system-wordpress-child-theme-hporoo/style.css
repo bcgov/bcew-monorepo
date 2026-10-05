@@ -5,6 +5,10 @@ Version:      1.2.0
 Template:     bcew-theme
 */
 
+.hporoo-hero-image {
+    background-position: left center;
+}
+
 /* Force fill style button to mimic outline style. */
 .wp-block-button .wp-block-button__link {
     border: 1px solid var(--wp--preset--color--hyperlink-primary);
