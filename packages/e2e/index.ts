@@ -263,11 +263,13 @@ const renderSinglePreview = async (
  * @param {any} blocks Blocks locator.
  */
 const renderBlocksGrid = async ( blocks: any ): Promise< void > => {
-    const blockCount = await blocks.count();
+    const blockNames = await blocks.evaluateAll( ( blockElements ) =>
+        blockElements.map( ( blockElement ) => blockElement.id )
+    );
 
-    for ( let blockIndex = 0; blockIndex < blockCount; blockIndex++ ) {
+    for ( let blockIndex = 0; blockIndex < blockNames.length; blockIndex++ ) {
         const block = blocks.nth( blockIndex );
-        const blockName = await block.getAttribute( 'id' );
+        const blockName = blockNames[ blockIndex ];
 
         if ( ! blockName ) {
             throw new Error( 'Style book example is missing an id attribute.' );
@@ -430,35 +432,12 @@ export const createStylebookTests = () => {
 export const createPatternTests = ( themeSlug: string, patterns: string[] ) => {
     test.describe( 'pattern', () => {
         test.beforeEach( async ( { admin } ) => {
-            // Ensure WordPress is fully initialized before creating post
-            await admin.page.waitForTimeout( 1000 );
-
-            // Retry logic for createNewPost to handle initialization timing
-            let attempt = 0;
-            const maxAttempts = 3;
-
-            while ( attempt < maxAttempts ) {
-                try {
-                    await admin.createNewPost();
-                    break;
-                } catch ( error ) {
-                    attempt++;
-
-                    if ( attempt >= maxAttempts ) {
-                        throw new Error(
-                            `Failed to create new post after ${ maxAttempts } attempts: ${ error.message }`
-                        );
-                    }
-
-                    // Wait and retry
-                    await admin.page.waitForTimeout( 2000 );
-                }
-            }
+            await admin.createNewPost();
         } );
 
-        for ( const p of patterns ) {
-            test( p, async ( { editor } ) => {
-                await renderPattern( editor, `${ themeSlug }/${ p }` );
+        for ( const pattern of patterns ) {
+            test( pattern, async ( { editor } ) => {
+                await renderPattern( editor, `${ themeSlug }/${ pattern }` );
             } );
         }
     } );
