@@ -36,6 +36,7 @@ test.describe( 'InPageNav', () => {
             editor,
         } ) => {
             await admin.createNewPost( {
+                postType: 'post',
                 showWelcomeGuide: false,
             } );
             await editor.setContent( `
