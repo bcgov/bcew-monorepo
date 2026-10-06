@@ -6,6 +6,7 @@
 
 import { expect, Page } from '@playwright/test';
 import { test } from '@wordpress/e2e-test-utils-playwright';
+import { writeFile } from 'node:fs/promises';
 import config from './playwright.config';
 
 /**
@@ -184,9 +185,16 @@ export const renderPattern = async ( editor: any, patternSlug: string ) => {
         await previewPage.waitForTimeout( 250 );
         const after = await sampleLayout();
         const diagnostics = { before, after };
+        const diagnosticsPath = test
+            .info()
+            .outputPath( 'base-footer-layout-diagnostics.json' );
 
+        await writeFile(
+            diagnosticsPath,
+            JSON.stringify( diagnostics, null, 2 )
+        );
         await test.info().attach( 'base-footer-layout-diagnostics', {
-            body: Buffer.from( JSON.stringify( diagnostics, null, 2 ) ),
+            path: diagnosticsPath,
             contentType: 'application/json',
         } );
     }
