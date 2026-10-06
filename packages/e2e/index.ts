@@ -123,7 +123,7 @@ export const renderPattern = async ( editor: any, patternSlug: string ) => {
         );
     } );
 
-    if ( patternSlug === 'base-footer' ) {
+    if ( 'base-footer' === patternSlug ) {
         const sampleLayout = () =>
             previewPage.evaluate( () => {
                 const bounds = ( element: Element | null ) => {
@@ -152,15 +152,17 @@ export const renderPattern = async ( editor: any, patternSlug: string ) => {
                         } ) ),
                     legalLinks: legalLinks
                         ? {
-                                bounds: bounds( legalLinks ),
-                                paddingBottom: getComputedStyle( legalLinks )
-                                    .paddingBottom,
-                                spacing50: getComputedStyle( document.documentElement )
-                                    .getPropertyValue(
-                                        '--wp--preset--spacing--50'
-                                    )
-                                    .trim(),
-                            }
+                              bounds: bounds( legalLinks ),
+                              paddingBottom:
+                                  getComputedStyle( legalLinks ).paddingBottom,
+                              spacing50: getComputedStyle(
+                                  document.documentElement
+                              )
+                                  .getPropertyValue(
+                                      '--wp--preset--spacing--50'
+                                  )
+                                  .trim(),
+                          }
                         : null,
                     fontsStatus: document.fonts.status,
                     images: Array.from( document.images ).map( ( image ) => ( {
@@ -181,9 +183,10 @@ export const renderPattern = async ( editor: any, patternSlug: string ) => {
         const before = await sampleLayout();
         await previewPage.waitForTimeout( 250 );
         const after = await sampleLayout();
+        const diagnostics = { before, after };
 
         await test.info().attach( 'base-footer-layout-diagnostics', {
-            body: JSON.stringify( { before, after }, null, 2 ),
+            body: Buffer.from( JSON.stringify( diagnostics, null, 2 ) ),
             contentType: 'application/json',
         } );
     }
