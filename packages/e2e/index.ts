@@ -123,6 +123,71 @@ export const renderPattern = async ( editor: any, patternSlug: string ) => {
         );
     } );
 
+    if ( patternSlug === 'base-footer' ) {
+        const sampleLayout = () =>
+            previewPage.evaluate( () => {
+                const bounds = ( element: Element | null ) => {
+                    if ( ! element ) {
+                        return null;
+                    }
+
+                    const { x, y, width, height, bottom } =
+                        element.getBoundingClientRect();
+                    return { x, y, width, height, bottom };
+                };
+                const legalLinks = document
+                    .querySelector( 'a[href*="disclaimer"]' )
+                    ?.closest( '.wp-block-group' );
+                const content = document.querySelector( '.entry-content' );
+
+                return {
+                    content: bounds( content ),
+                    lastChildren: Array.from( content?.children ?? [] )
+                        .slice( -8 )
+                        .map( ( element ) => ( {
+                            tag: element.tagName,
+                            className: element.className,
+                            text: element.textContent?.trim().slice( 0, 100 ),
+                            bounds: bounds( element ),
+                        } ) ),
+                    legalLinks: legalLinks
+                        ? {
+                                bounds: bounds( legalLinks ),
+                                paddingBottom: getComputedStyle( legalLinks )
+                                    .paddingBottom,
+                                spacing50: getComputedStyle( document.documentElement )
+                                    .getPropertyValue(
+                                        '--wp--preset--spacing--50'
+                                    )
+                                    .trim(),
+                            }
+                        : null,
+                    fontsStatus: document.fonts.status,
+                    images: Array.from( document.images ).map( ( image ) => ( {
+                        src: image.currentSrc || image.src,
+                        complete: image.complete,
+                        naturalWidth: image.naturalWidth,
+                        naturalHeight: image.naturalHeight,
+                    } ) ),
+                    stylesheets: Array.from(
+                        document.querySelectorAll( 'link[rel="stylesheet"]' )
+                    ).map( ( link ) => ( {
+                        href: ( link as HTMLLinkElement ).href,
+                        loaded: !! ( link as HTMLLinkElement ).sheet,
+                    } ) ),
+                };
+            } );
+
+        const before = await sampleLayout();
+        await previewPage.waitForTimeout( 250 );
+        const after = await sampleLayout();
+
+        await test.info().attach( 'base-footer-layout-diagnostics', {
+            body: JSON.stringify( { before, after }, null, 2 ),
+            contentType: 'application/json',
+        } );
+    }
+
     await expect( preview ).toHaveScreenshot();
 };
 
