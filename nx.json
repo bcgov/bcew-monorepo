@@ -64,7 +64,7 @@
         "test-e2e-docker": {
             "executor": "nx:run-commands",
             "options": {
-                "command": "docker exec playwright sh -c \"cd {projectRoot} && npx wp-scripts test-playwright\""
+                "command": "docker exec playwright sh -c \"cd {projectRoot} && npx wp-scripts test-playwright {args.playwrightArgs}\""
             },
             "dependsOn": [
                 "composer-install",

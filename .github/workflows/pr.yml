@@ -182,21 +182,13 @@ jobs:
                   run_install: true
                   cache: true
 
-            - name: Install Composer dependencies
-              run: composer i
-
-            - name: Cache pnpm store
-              uses: actions/cache@v6.1.0
-              with:
-                  path: .pnpm-store
-                  key: pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
-                  restore-keys: pnpm-store-
-
             - name: Start playwright container
               run: docker compose up -d playwright
 
+            # --nxBail stops queued projects after the first failure; in-flight ones still finish.
+            # --max-failures=1 stops each project's Playwright run at its first failing test.
             - name: Run e2e tests
-              run: npx nx affected --base="origin/${{ github.base_ref }}" -t test-e2e-docker
+              run: npx nx affected --base="origin/${{ github.base_ref }}" -t test-e2e-docker --nxBail --playwrightArgs=--max-failures=1
 
             - uses: actions/upload-artifact@v7.0.1
               if: ${{ !cancelled() }}
@@ -231,21 +223,11 @@ jobs:
                   run_install: true
                   cache: true
 
-            - name: Install Composer dependencies
-              run: composer i
-
-            - name: Cache pnpm store
-              uses: actions/cache@v6.1.0
-              with:
-                  path: .pnpm-store
-                  key: pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
-                  restore-keys: pnpm-store-
-
             - name: Start playwright container
               run: docker compose up -d playwright
 
             - name: Run screenshot tests
-              run: npx nx affected --base="origin/${{ github.base_ref }}" -t test-screenshot
+              run: npx nx affected --base="origin/${{ github.base_ref }}" -t test-screenshot --nxBail
 
             - uses: actions/upload-artifact@v7.0.1
               if: ${{ !cancelled() }}
