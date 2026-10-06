@@ -125,7 +125,7 @@ export const renderPattern = async ( editor: any, patternSlug: string ) => {
 
     let diagnosticsMessage: string | undefined;
 
-    if ( 'base-footer' === patternSlug ) {
+    if ( patternSlug.endsWith( '/base-footer' ) ) {
         const sampleLayout = () =>
             previewPage.evaluate( () => {
                 const bounds = ( element: Element | null ) => {
@@ -186,9 +186,13 @@ export const renderPattern = async ( editor: any, patternSlug: string ) => {
         await previewPage.waitForTimeout( 250 );
         const after = await sampleLayout();
         const diagnostics = { before, after };
-        diagnosticsMessage = `BASE_FOOTER_LAYOUT_DIAGNOSTICS ${ JSON.stringify(
-            diagnostics
-        ) }`;
+        const diagnosticsJson = JSON.stringify( diagnostics, null, 2 );
+        diagnosticsMessage = `BASE_FOOTER_LAYOUT_DIAGNOSTICS ${ diagnosticsJson }`;
+
+        await test.info().attach( 'base-footer-layout-diagnostics', {
+            body: Buffer.from( diagnosticsJson ),
+            contentType: 'application/json',
+        } );
     }
 
     await expect( preview, diagnosticsMessage ).toHaveScreenshot();
