@@ -296,35 +296,26 @@ const renderBlocksGrid = async ( blocks: any ): Promise< void > => {
             // (some blocks may not stabilize but are still renderable)
         }
 
-        // Add a brief wait for lazy-loaded images (galleries, etc) to paint.
-        // Timeouts quickly to prevent blocking; partial loads are acceptable.
+        // Ensure images in this preview are requested and decoded before capture.
         try {
-            await preview.evaluate( ( previewElement: HTMLElement ) => {
+            await preview.evaluate( async ( previewElement: HTMLElement ) => {
+                await document.fonts.ready;
                 const images = Array.from(
                     previewElement.querySelectorAll( 'img' )
                 ) as HTMLImageElement[];
 
-                return Promise.race( [
+                images.forEach( ( image ) => {
+                    image.loading = 'eager';
+                } );
+
+                await Promise.race( [
                     Promise.all(
                         images.map( ( image ) =>
-                            image.complete
-                                ? Promise.resolve()
-                                : new Promise< void >( ( resolve ) => {
-                                      image.addEventListener( 'load', resolve, {
-                                          once: true,
-                                      } );
-                                      image.addEventListener(
-                                          'error',
-                                          resolve,
-                                          {
-                                              once: true,
-                                          }
-                                      );
-                                  } )
+                            image.decode().catch( () => undefined )
                         )
                     ),
                     new Promise< void >( ( resolve ) =>
-                        setTimeout( resolve, 2000 )
+                        setTimeout( resolve, 5000 )
                     ),
                 ] );
             } );
