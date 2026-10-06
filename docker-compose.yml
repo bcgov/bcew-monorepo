@@ -15,11 +15,18 @@ services:
       NODE_ENV: test
       WP_ENVIRONMENT: local
       WP_E2E_SKIP_ENV_SETUP: "true"
+    healthcheck:
+      test: ["CMD-SHELL", "test -f /tmp/playwright-ready"]
+      interval: 2s
+      timeout: 5s
+      retries: 60
+      start_period: 2s
 
     command: >
       sh -c "
         npm i -g pnpm
         pnpm install --frozen-lockfile --yes
+        touch /tmp/playwright-ready
         tail -f /dev/null
       "
 
