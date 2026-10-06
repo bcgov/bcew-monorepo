@@ -63,7 +63,7 @@
 
                                     <!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"constrained"}} -->
                                     <div class="wp-block-group">
-                                        <!-- wp:paragraph {"align":"left","style":{"layout":{"selfStretch":"fit","flexSize":null},"typography":{"lineHeight":"1.5"}},"textColor":"font dark"} -->
+                                        <!-- wp:paragraph {"align":"left","style":{"layout":{"selfStretch":"fit","flexSize":null},"typography":{"lineHeight":"1.5"}},"textColor":"font-dark"} -->
                                         <p class="has-text-align-left has-font-dark-color has-text-color"
                                             style="line-height:1.5">8:30 am to 4:30 pm</p>
                                         <!-- /wp:paragraph -->
@@ -106,13 +106,13 @@
                                 <!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"flex","orientation":"vertical"}} -->
                                 <div class="wp-block-group">
                                     <!-- wp:heading {"level":4,"style":{"spacing":{"margin":{"top":"0","bottom":"0"}}}} -->
-                                    <h4 class="wp-block-heading" id="lorem-ipsum" style="margin-top:0;margin-bottom:0">
+                                    <h4 class="wp-block-heading" id="phone" style="margin-top:0;margin-bottom:0">
                                         Phone</h4>
                                     <!-- /wp:heading -->
 
                                     <!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|20"}},"layout":{"type":"constrained"}} -->
                                     <div class="wp-block-group">
-                                        <!-- wp:paragraph {"align":"left","style":{"layout":{"selfStretch":"fit","flexSize":null},"typography":{"lineHeight":"1.5"}},"textColor":"font dark"} -->
+                                        <!-- wp:paragraph {"align":"left","style":{"layout":{"selfStretch":"fit","flexSize":null},"typography":{"lineHeight":"1.5"}},"textColor":"font-dark"} -->
                                         <p class="has-text-align-left has-font-dark-color has-text-color"
                                             style="line-height:1.5"><a href="tel:18006637867">1-800-663-7867</a>
                                             (toll-free, Canada and USA)</p>
@@ -161,7 +161,7 @@
                                 <!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"flex","orientation":"vertical"}} -->
                                 <div class="wp-block-group">
                                     <!-- wp:heading {"level":4,"style":{"spacing":{"margin":{"top":"0","bottom":"0"}}}} -->
-                                    <h4 class="wp-block-heading" id="lorem-ipsum" style="margin-top:0;margin-bottom:0">
+                                    <h4 class="wp-block-heading" id="email" style="margin-top:0;margin-bottom:0">
                                         Email</h4>
                                     <!-- /wp:heading -->
 
@@ -201,7 +201,7 @@
                                 <!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"flex","orientation":"vertical"}} -->
                                 <div class="wp-block-group">
                                     <!-- wp:heading {"level":4,"style":{"spacing":{"margin":{"top":"0","bottom":"0"}}}} -->
-                                    <h4 class="wp-block-heading" id="lorem-ipsum" style="margin-top:0;margin-bottom:0">
+                                    <h4 class="wp-block-heading" id="fax" style="margin-top:0;margin-bottom:0">
                                         Fax</h4>
                                     <!-- /wp:heading -->
 
@@ -246,11 +246,11 @@
                                 <!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"flex","orientation":"vertical"}} -->
                                 <div class="wp-block-group">
                                     <!-- wp:heading {"level":4,"style":{"spacing":{"margin":{"top":"0","bottom":"0"}}}} -->
-                                    <h4 class="wp-block-heading" id="lorem-ipsum" style="margin-top:0;margin-bottom:0">
+                                    <h4 class="wp-block-heading" id="mailing-address" style="margin-top:0;margin-bottom:0">
                                         Mailing address</h4>
                                     <!-- /wp:heading -->
 
-                                    <!-- wp:paragraph {"align":"left","style":{"layout":{"selfStretch":"fit","flexSize":null},"elements":{"link":{"color":{"text":"var:preset|color|font dark"}}},"typography":{"lineHeight":"1.5"}},"textColor":"font dark"} -->
+                                    <!-- wp:paragraph {"align":"left","style":{"layout":{"selfStretch":"fit","flexSize":null},"elements":{"link":{"color":{"text":"var:preset|color|font-dark"}}},"typography":{"lineHeight":"1.5"}},"textColor":"font-dark"} -->
                                     <p class="has-text-align-left has-font-dark-color has-text-color has-link-color"
                                         style="line-height:1.5">PO Box 9129 Stn Prov Govt<br>Victoria, B.C. V8W 9B5</p>
                                     <!-- /wp:paragraph -->
@@ -286,11 +286,11 @@
                                 <!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"flex","orientation":"vertical"}} -->
                                 <div class="wp-block-group">
                                     <!-- wp:heading {"level":4,"style":{"spacing":{"margin":{"top":"0","bottom":"0"}}}} -->
-                                    <h4 class="wp-block-heading" id="lorem-ipsum" style="margin-top:0;margin-bottom:0">
+                                    <h4 class="wp-block-heading" id="street-address" style="margin-top:0;margin-bottom:0">
                                         Street address</h4>
                                     <!-- /wp:heading -->
 
-                                    <!-- wp:paragraph {"align":"left","style":{"layout":{"selfStretch":"fit","flexSize":null},"elements":{"link":{"color":{"text":"var:preset|color|font dark"}}},"typography":{"lineHeight":"1.5"}},"textColor":"font dark"} -->
+                                    <!-- wp:paragraph {"align":"left","style":{"layout":{"selfStretch":"fit","flexSize":null},"elements":{"link":{"color":{"text":"var:preset|color|font-dark"}}},"typography":{"lineHeight":"1.5"}},"textColor":"font-dark"} -->
                                     <p class="has-text-align-left has-font-dark-color has-text-color has-link-color"
                                         style="line-height:1.5">1st floor, 2975 Jutland Road<br>Victoria, B.C. V8T 5J9
                                     </p>
@@ -341,7 +341,7 @@
 
                     <!-- wp:pattern {"slug":"design-system-wordpress-child-theme-firb/site-logo"} /-->
 
-                    <!-- wp:paragraph {"align":"left","style":{"elements":{"link":{"color":{"text":"var:preset|color|font dark"}}},"typography":{"lineHeight":"1.7"},"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"0"}}},"textColor":"font dark"} -->
+                    <!-- wp:paragraph {"style":{"elements":{"link":{"color":{"text":"var:preset|color|font-dark"}}},"typography":{"lineHeight":"1.7"},"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"0"}}},"textColor":"font-dark"} -->
                     <p class="has-text-align-left has-font-dark-color has-text-color has-link-color"
                         style="padding-top:var(--wp--preset--spacing--60);padding-bottom:0;line-height:1.7">BCFIRB is an
                         independent administrative tribunal that advances the public interest through fair and effective

@@ -22,7 +22,9 @@
         "wp-env-start": {
             "dependsOn": [
                 "composer-install",
+                "bcew-theme:build",
                 "bcew-plugin:composer-install",
+                "bcew-plugin:build",
                 "bcew-theme:composer-install"
             ]
         },

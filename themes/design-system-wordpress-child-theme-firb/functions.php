@@ -6,11 +6,8 @@
  */
 
 /**
- * Fallback: allow legacy archived block patterns until dependent child themes opt in explicitly.
+ * FIRB opts in to displaying legacy archived block patterns.
  *
- * Priority 100 runs late so child themes can override with a higher priority (e.g. 110).
- *
- * Remove this filter once the firb, hporoo, and ticorp child themes have added their own
- * `dswp_legacy_pattern_allow` handling.
+ * Keep this child-theme filter while FIRB requires access to legacy patterns.
  */
 add_filter( 'dswp_legacy_pattern_allow', '__return_true', 100 );
