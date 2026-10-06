@@ -279,15 +279,19 @@ jobs:
 
             - name: Install Composer dependencies and start playwright container
               run: |
-                  docker compose up -d playwright &
-                  compose_pid=$!
+                  docker compose up -d playwright
                   composer i
-                  wait "$compose_pid"
+                  until [ "$(docker inspect --format='{{.State.Health.Status}}' playwright)" = healthy ]; do
+                    health_status=$(docker inspect --format='{{.State.Health.Status}}' playwright)
+                    if [ "$health_status" = unhealthy ]; then
+                      docker logs playwright
+                      exit 1
+                    fi
+                    sleep 2
+                  done
 
             - name: Run screenshot tests
-              env:
-                  SCREENSHOT_PLAYWRIGHT_ARGS: --max-failures=1 --reporter=list,github
-              run: npx nx run "${{ matrix.project }}:test-screenshot" --no-tui
+              run: npx nx run "${{ matrix.project }}:test-screenshot" --playwrightArgs="--max-failures=1 --reporter=list,github" --no-tui
 
             - name: Summarize screenshot failures
               if: failure()

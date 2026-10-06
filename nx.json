@@ -76,7 +76,7 @@
         "test-screenshot": {
             "executor": "nx:run-commands",
             "options": {
-                "command": "docker exec playwright sh -c \"cd {projectRoot} && npx wp-scripts test-playwright --config playwright.regression.config.js --update-snapshots none\""
+                "command": "docker exec playwright sh -c \"cd {projectRoot} && npx wp-scripts test-playwright --config playwright.regression.config.js --update-snapshots none {args.playwrightArgs}\""
             },
             "dependsOn": [
                 "composer-install",
