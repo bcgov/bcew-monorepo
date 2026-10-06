@@ -299,7 +299,7 @@ jobs:
                     echo
                     echo "Download the \`playwright-screenshot-report-$PROJECT\` artifact for actual, expected, and diff images plus traces."
                     echo
-                    find plugins themes -path '*/artifacts/test-results/*' -name '*-diff.png' -printf -- '- `%p`\n' 2>/dev/null
+                    find plugins themes -path '*/artifacts/test-results/*' -name '*-diff.png' -print 2>/dev/null
                     find plugins themes -path '*/artifacts/test-results/*' -name 'error-context.md' 2>/dev/null | while read -r file; do
                       echo
                       echo "<details><summary>$file</summary>"
