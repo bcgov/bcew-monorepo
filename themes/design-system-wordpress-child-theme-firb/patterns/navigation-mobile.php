@@ -8,4 +8,4 @@
  */
 ?>
 
-<!-- wp:design-system-wordpress-plugin/navigation {"overlayMenu":"always","menuId":24757,"showInDesktop":true,"showInMobile":true,"style":{"layout":{"selfStretch":"fit","flexSize":null}}} /-->
+<!-- wp:design-system-wordpress-plugin/navigation {"overlayMenu":"always","menuId":24757,"showInDesktop":false,"showInMobile":true,"style":{"layout":{"selfStretch":"fit","flexSize":null}}} /-->
