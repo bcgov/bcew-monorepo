@@ -123,6 +123,8 @@ export const renderPattern = async ( editor: any, patternSlug: string ) => {
         );
     } );
 
+    let diagnosticsMessage: string | undefined;
+
     if ( 'base-footer' === patternSlug ) {
         const sampleLayout = () =>
             previewPage.evaluate( () => {
@@ -184,15 +186,12 @@ export const renderPattern = async ( editor: any, patternSlug: string ) => {
         await previewPage.waitForTimeout( 250 );
         const after = await sampleLayout();
         const diagnostics = { before, after };
-
-        process.stdout.write(
-            `BASE_FOOTER_LAYOUT_DIAGNOSTICS ${ JSON.stringify(
-                diagnostics
-            ) }\n`
-        );
+        diagnosticsMessage = `BASE_FOOTER_LAYOUT_DIAGNOSTICS ${ JSON.stringify(
+            diagnostics
+        ) }`;
     }
 
-    await expect( preview ).toHaveScreenshot();
+    await expect( preview, diagnosticsMessage ).toHaveScreenshot();
 };
 
 const EXCLUDED_STYLEBOOK_BLOCKS = new Set( [
