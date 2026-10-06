@@ -1,0 +1,39 @@
+{
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "name": "design-system-wordpress-child-theme-hporoo",
+    "root": "themes/design-system-wordpress-child-theme-hporoo",
+    "sourceRoot": "themes/design-system-wordpress-child-theme-hporoo/src",
+    "projectType": "application",
+    "generators": {
+        "bcew-monorepo:theme": {
+            "name": "design-system-wordpress-child-theme-hporoo",
+            "slug": "design-system-wordpress-child-theme-hporoo"
+        }
+    },
+    "targets": {
+        "composer-install": {},
+        "build": {
+            "dependsOn": ["bcew-theme:build"]
+        },
+        "start": {},
+        "start-playwright": {},
+        "test-screenshot": {},
+        "test-screenshot-generate": {},
+        "wp-env-start": {
+            "dependsOn": [
+                "composer-install",
+                "bcew-theme:build",
+                "bcew-plugin:composer-install",
+                "bcew-plugin:build"
+            ]
+        },
+        "wp-env-clean": {},
+        "wp-env-stop": {}
+    },
+    "implicitDependencies": [
+        "packages/phpunit-config/",
+        "bcew-theme",
+        "bcew-plugin"
+    ],
+    "tags": ["type:wp-theme"]
+}

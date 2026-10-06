@@ -1,0 +1,45 @@
+/*
+Theme Name:   Design System WordPress HPOROO Child Theme
+Theme URI:    https://github.com/bcgov/bcew-monorepo/themes/design-system-wordpress-child-theme-hporoo
+Version:      1.2.0
+Template:     bcew-theme
+*/
+
+.hporoo-hero-image .wp-block-cover__image-background {
+    object-position: left center;
+}
+
+/* Force fill style button to mimic outline style. */
+.wp-block-button .wp-block-button__link {
+    border: 1px solid var(--wp--preset--color--hyperlink-primary);
+    border-radius: 10px;
+    color: var(--wp--preset--color--hyperlink-primary);
+    background-color: var(--wp--preset--color--background-white);
+    padding: 10px 19px;
+    font-size: var(--dswp-typography-font-size-body);
+    font-weight: bold;
+}
+
+/* Force fill style button to mimic outline hover style. */
+.wp-block-button:hover .wp-block-button__link {
+    color: var(--wp--preset--color--hyperlink-hover);
+    background-color: var(--wp--preset--color--button-hover);
+    text-decoration-line: underline;
+}
+
+/* Force fill style button to mimic outline active style. */
+.wp-block-button:active .wp-block-button__link {
+    color: var(--wp--preset--color--hyperlink-pressed);
+    background-color: var(--wp--preset--color--button-hover);
+    text-decoration-line: underline;
+}
+
+/* Resize contact card icons. */
+.dswp-information-contact-socials-card-img-group > figure {
+    display: flex;
+    height: 32px;
+    width: 32px;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+}

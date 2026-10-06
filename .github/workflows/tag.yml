@@ -29,6 +29,7 @@ on:
           - bcew-chefs-embed
           - bcew-theme
           - bcew-plugin
+          - design-system-wordpress-child-theme-hporoo
       alpha:
         description: 'Alpha'
         type: boolean

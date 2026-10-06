@@ -3,6 +3,11 @@ import { test, expect } from '@wordpress/e2e-test-utils-playwright';
 test.describe( 'Breadcrumb Block', () => {
     const BLOCK_NAME = 'design-system-wordpress-plugin/breadcrumb';
 
+    test.beforeEach( async ( { admin } ) => {
+        // Ensure WordPress is initialized before each test
+        await admin.page.waitForTimeout( 1000 );
+    } );
+
     test.afterEach( async ( { requestUtils } ) => {
         await requestUtils.deleteAllPages();
     } );
