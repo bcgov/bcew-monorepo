@@ -8,4 +8,4 @@
  */
 ?>
 
-<!-- wp:design-system-wordpress-plugin/navigation {"showInMobile":false,"menuId":24757} -->
+<!-- wp:design-system-wordpress-plugin/navigation {"showInMobile":false,"menuId":24757} /-->

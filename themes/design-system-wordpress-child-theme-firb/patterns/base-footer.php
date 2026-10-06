@@ -56,7 +56,7 @@
                                 <!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|40"}},"layout":{"type":"flex","orientation":"vertical"}} -->
                                 <div class="wp-block-group">
                                     <!-- wp:heading {"level":4,"style":{"spacing":{"margin":{"top":"0","bottom":"0"}}}} -->
-                                    <h4 class="wp-block-heading" id="lorem-ipsum" style="margin-top:0;margin-bottom:0">
+                                    <h4 class="wp-block-heading" id="business-hours" style="margin-top:0;margin-bottom:0">
                                         <strong>Business hours</strong>
                                     </h4>
                                     <!-- /wp:heading -->
@@ -114,7 +114,7 @@
                                     <div class="wp-block-group">
                                         <!-- wp:paragraph {"align":"left","style":{"layout":{"selfStretch":"fit","flexSize":null},"typography":{"lineHeight":"1.5"}},"textColor":"font dark"} -->
                                         <p class="has-text-align-left has-font-dark-color has-text-color"
-                                            style="line-height:1.5"><a href="tel:18006637867">250-356-8945</a>
+                                            style="line-height:1.5"><a href="tel:18006637867">1-800-663-7867</a>
                                             (toll-free, Canada and USA)</p>
                                         <!-- /wp:paragraph -->
 

@@ -12,6 +12,6 @@
 <figure class="wp-block-image size-full is-resized">
     <a href="<?php echo esc_url( home_url() ); ?>">
         <img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/BCFIRB-Logo-H-CMYK.png' ); ?>"
-            alt="" class="wp-image-22802" style="width:267px" /></a>
+            alt="B.C. Farm Industry Review Board home" class="wp-image-22802" style="width:267px" /></a>
 </figure>
 <!-- /wp:image -->
