@@ -50,7 +50,7 @@ $mail_icon  = esc_url( get_stylesheet_directory_uri() . '/assets/images/building
                                     <!-- wp:image {"width":"16px","linkDestination":"none","className":"dswp-information-contact-socials-card-img is-style-default"} -->
                                     <figure
                                         class="wp-block-image is-resized dswp-information-contact-socials-card-img is-style-default">
-                                        <img src="<?php echo esc_attr( $email_icon ); ?>" alt="Email" style="width:16px" />
+                                        <img src="<?php echo esc_attr( $email_icon ); ?>" alt="" style="width:16px" />
                                     </figure>
                                     <!-- /wp:image -->
                                 </div>
@@ -58,7 +58,7 @@ $mail_icon  = esc_url( get_stylesheet_directory_uri() . '/assets/images/building
 
                                 <!-- wp:group {"style":{"spacing":{"blockGap":"0"},"typography":{"lineHeight":"1.68"}},"layout":{"type":"flex","orientation":"vertical"}} -->
                                 <div class="wp-block-group" style="line-height:1.68">
-                                    <!-- wp:heading {"level":6,"style":{"spacing":{"margin":{"top":"0"}},"elements":{"link":{"color":{"text":"var:preset|color|font dark"}}},"typography":{"fontSize":"16px"}},"textColor":"font dark"} -->
+                                    <!-- wp:heading {"level":6,"style":{"spacing":{"margin":{"top":"0"}},"elements":{"link":{"color":{"text":"var:preset|color|font-dark"}}},"typography":{"fontSize":"16px"}},"textColor":"font-dark"} -->
                                     <h6 class="wp-block-heading has-font-dark-color has-text-color has-link-color"
                                         style="margin-top:0;font-size:16px">
                                         Email:</h6>
@@ -97,7 +97,7 @@ $mail_icon  = esc_url( get_stylesheet_directory_uri() . '/assets/images/building
 
                                 <!-- wp:group {"style":{"spacing":{"blockGap":"0"}},"layout":{"type":"flex","orientation":"vertical"}} -->
                                 <div class="wp-block-group">
-                                    <!-- wp:heading {"level":6,"style":{"spacing":{"margin":{"top":"0"}},"typography":{"fontSize":"16px","lineHeight":"1.68"}},"textColor":"font dark"} -->
+                                    <!-- wp:heading {"level":6,"style":{"spacing":{"margin":{"top":"0"}},"typography":{"fontSize":"16px","lineHeight":"1.68"}},"textColor":"font-dark"} -->
                                     <h6 class="wp-block-heading has-font-dark-color has-text-color"
                                         style="margin-top:0;font-size:16px;line-height:1.68">Phone:
                                     </h6>
@@ -127,7 +127,7 @@ $mail_icon  = esc_url( get_stylesheet_directory_uri() . '/assets/images/building
 
                                 <!-- wp:group {"style":{"spacing":{"blockGap":"0"}},"layout":{"type":"flex","orientation":"vertical"}} -->
                                 <div class="wp-block-group">
-                                    <!-- wp:heading {"level":6,"style":{"spacing":{"margin":{"top":"0"}},"elements":{"link":{"color":{"text":"var:preset|color|font dark"}}},"typography":{"fontSize":"16px","lineHeight":"1.68"}},"textColor":"font dark"} -->
+                                    <!-- wp:heading {"level":6,"style":{"spacing":{"margin":{"top":"0"}},"elements":{"link":{"color":{"text":"var:preset|color|font-dark"}}},"typography":{"fontSize":"16px","lineHeight":"1.68"}},"textColor":"font-dark"} -->
                                     <h6 class="wp-block-heading has-font-dark-color has-text-color has-link-color"
                                         style="margin-top:0;font-size:16px;line-height:1.68">Phone:</h6>
                                     <!-- /wp:heading -->
@@ -159,7 +159,7 @@ $mail_icon  = esc_url( get_stylesheet_directory_uri() . '/assets/images/building
                                 <div class="wp-block-group dswp-information-contact-socials-card-img-group">
                                     <!-- wp:image {"width":"16px","linkDestination":"none","className":"dswp-information-contact-socials-card-img"} -->
                                     <figure class="wp-block-image is-resized dswp-information-contact-socials-card-img">
-                                        <img src="<?php echo esc_attr( $mail_icon ); ?>" alt="Address" style="width:16px" />
+                                        <img src="<?php echo esc_attr( $mail_icon ); ?>" alt="" style="width:16px" />
                                     </figure>
                                     <!-- /wp:image -->
                                 </div>
@@ -167,13 +167,13 @@ $mail_icon  = esc_url( get_stylesheet_directory_uri() . '/assets/images/building
 
                                 <!-- wp:group {"style":{"spacing":{"blockGap":"0"},"typography":{"lineHeight":"1.68"}},"layout":{"type":"flex","orientation":"vertical"}} -->
                                 <div class="wp-block-group" style="line-height:1.68">
-                                    <!-- wp:heading {"level":6,"style":{"spacing":{"margin":{"top":"0","bottom":"0rem"}},"elements":{"link":{"color":{"text":"var:preset|color|font dark"}}},"typography":{"fontSize":"16px"}},"textColor":"font dark"} -->
+                                    <!-- wp:heading {"level":6,"style":{"spacing":{"margin":{"top":"0","bottom":"0rem"}},"elements":{"link":{"color":{"text":"var:preset|color|font-dark"}}},"typography":{"fontSize":"16px"}},"textColor":"font-dark"} -->
                                     <h6 class="wp-block-heading has-font-dark-color has-text-color has-link-color"
                                         style="margin-top:0;margin-bottom:0rem;font-size:16px">
                                         Mailing address:</h6>
                                     <!-- /wp:heading -->
 
-                                    <!-- wp:paragraph {"align":"left","style":{"layout":{"selfStretch":"fit","flexSize":null},"elements":{"link":{"color":{"text":"var:preset|color|font dark"}}},"typography":{"fontSize":"16px"}},"textColor":"font dark"} -->
+                                    <!-- wp:paragraph {"align":"left","style":{"layout":{"selfStretch":"fit","flexSize":null},"elements":{"link":{"color":{"text":"var:preset|color|font-dark"}}},"typography":{"fontSize":"16px"}},"textColor":"font-dark"} -->
                                     <p class="has-text-align-left has-font-dark-color has-text-color has-link-color"
                                         style="font-size:16px">
                                         PO
