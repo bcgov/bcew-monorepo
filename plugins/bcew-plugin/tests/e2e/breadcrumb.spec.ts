@@ -5,7 +5,7 @@ test.describe( 'Breadcrumb Block', () => {
 
     test.beforeEach( async ( { admin } ) => {
         await admin.page.waitForFunction(
-            () => document.readyState === 'complete'
+            () => 'complete' === document.readyState
         );
     } );
 

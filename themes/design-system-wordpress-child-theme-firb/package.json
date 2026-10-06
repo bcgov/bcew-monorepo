@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Child Theme FIRB",
   "author": "govwordpress@gov.bc.ca",
-  "license": "Apache-2.0",
+  "license": "GPL-2.0-or-later",
   "keywords": [
     "WordPress",
     "Block Theme",
