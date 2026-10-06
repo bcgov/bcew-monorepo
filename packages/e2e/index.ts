@@ -123,79 +123,7 @@ export const renderPattern = async ( editor: any, patternSlug: string ) => {
         );
     } );
 
-    let diagnosticsMessage: string | undefined;
-
-    if ( patternSlug.endsWith( '/base-footer' ) ) {
-        const sampleLayout = () =>
-            previewPage.evaluate( () => {
-                const bounds = ( element: Element | null ) => {
-                    if ( ! element ) {
-                        return null;
-                    }
-
-                    const { x, y, width, height, bottom } =
-                        element.getBoundingClientRect();
-                    return { x, y, width, height, bottom };
-                };
-                const legalLinks = document
-                    .querySelector( 'a[href*="disclaimer"]' )
-                    ?.closest( '.wp-block-group' );
-                const content = document.querySelector( '.entry-content' );
-
-                return {
-                    content: bounds( content ),
-                    lastChildren: Array.from( content?.children ?? [] )
-                        .slice( -8 )
-                        .map( ( element ) => ( {
-                            tag: element.tagName,
-                            className: element.className,
-                            text: element.textContent?.trim().slice( 0, 100 ),
-                            bounds: bounds( element ),
-                        } ) ),
-                    legalLinks: legalLinks
-                        ? {
-                              bounds: bounds( legalLinks ),
-                              paddingBottom:
-                                  getComputedStyle( legalLinks ).paddingBottom,
-                              spacing50: getComputedStyle(
-                                  document.documentElement
-                              )
-                                  .getPropertyValue(
-                                      '--wp--preset--spacing--50'
-                                  )
-                                  .trim(),
-                          }
-                        : null,
-                    fontsStatus: document.fonts.status,
-                    images: Array.from( document.images ).map( ( image ) => ( {
-                        src: image.currentSrc || image.src,
-                        complete: image.complete,
-                        naturalWidth: image.naturalWidth,
-                        naturalHeight: image.naturalHeight,
-                    } ) ),
-                    stylesheets: Array.from(
-                        document.querySelectorAll( 'link[rel="stylesheet"]' )
-                    ).map( ( link ) => ( {
-                        href: ( link as HTMLLinkElement ).href,
-                        loaded: !! ( link as HTMLLinkElement ).sheet,
-                    } ) ),
-                };
-            } );
-
-        const before = await sampleLayout();
-        await previewPage.waitForTimeout( 250 );
-        const after = await sampleLayout();
-        const diagnostics = { before, after };
-        const diagnosticsJson = JSON.stringify( diagnostics, null, 2 );
-        diagnosticsMessage = `BASE_FOOTER_LAYOUT_DIAGNOSTICS ${ diagnosticsJson }`;
-
-        await test.info().attach( 'base-footer-layout-diagnostics', {
-            body: Buffer.from( diagnosticsJson ),
-            contentType: 'application/json',
-        } );
-    }
-
-    await expect( preview, diagnosticsMessage ).toHaveScreenshot();
+    await expect( preview ).toHaveScreenshot();
 };
 
 const EXCLUDED_STYLEBOOK_BLOCKS = new Set( [
@@ -368,29 +296,45 @@ const renderBlocksGrid = async ( blocks: any ): Promise< void > => {
             // (some blocks may not stabilize but are still renderable)
         }
 
-        // Ensure images in this preview are requested and decoded before capture.
+        // Add a brief wait for lazy-loaded images (galleries, etc) to paint.
+        // Timeouts quickly to prevent blocking; partial loads are acceptable.
         try {
-            await preview.evaluate( async ( previewElement: HTMLElement ) => {
-                await document.fonts.ready;
-                const images = Array.from(
-                    previewElement.querySelectorAll( 'img' )
-                ) as HTMLImageElement[];
+            await preview.evaluate(
+                ( previewElement ) => {
+                    const images = Array.from(
+                        previewElement.querySelectorAll( 'img' )
+                    );
 
-                images.forEach( ( image ) => {
-                    image.loading = 'eager';
-                } );
-
-                await Promise.race( [
-                    Promise.all(
-                        images.map( ( image ) =>
-                            image.decode().catch( () => undefined )
-                        )
-                    ),
-                    new Promise< void >( ( resolve ) =>
-                        setTimeout( resolve, 5000 )
-                    ),
-                ] );
-            } );
+                    return Promise.race( [
+                        Promise.all(
+                            images.map( ( image ) =>
+                                image.complete
+                                    ? Promise.resolve()
+                                    : new Promise< void >( ( resolve ) => {
+                                          image.addEventListener(
+                                              'load',
+                                              resolve,
+                                              {
+                                                  once: true,
+                                              }
+                                          );
+                                          image.addEventListener(
+                                              'error',
+                                              resolve,
+                                              {
+                                                  once: true,
+                                              }
+                                          );
+                                      } )
+                            )
+                        ),
+                        new Promise< void >( ( resolve ) =>
+                            setTimeout( resolve, 2000 )
+                        ),
+                    ] );
+                },
+                { timeout: 2500 }
+            );
         } catch {
             // Non-fatal timeout; proceed with screenshot anyway
         }
