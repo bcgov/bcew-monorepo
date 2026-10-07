@@ -158,14 +158,11 @@ jobs:
               if: github.event_name == 'push'
               run: pnpm nx run-many -t test-unit-js
 
-    affected-projects:
-        name: Find affected projects
+    test-e2e:
+        name: Test e2e (affected)
         runs-on: ubuntu-latest
-        timeout-minutes: 10
+        timeout-minutes: 15
         if: github.event_name == 'pull_request'
-        outputs:
-            e2e: ${{ steps.affected.outputs.e2e }}
-            screenshot: ${{ steps.affected.outputs.screenshot }}
         steps:
             - name: Checkout
               uses: actions/checkout@v7
@@ -185,33 +182,43 @@ jobs:
                   run_install: true
                   cache: true
 
-            - name: List affected projects
-              id: affected
-              env:
-                  BASE_REF: ${{ github.base_ref }}
-              run: |
-                  e2e=$(pnpm --silent nx show projects --affected --base="origin/$BASE_REF" --withTarget=test-e2e-docker --json)
-                  screenshot=$(pnpm --silent nx show projects --affected --base="origin/$BASE_REF" --withTarget=test-screenshot --json)
-                  echo "e2e=$e2e" >> "$GITHUB_OUTPUT"
-                  echo "screenshot=$screenshot" >> "$GITHUB_OUTPUT"
-                  echo "Affected e2e projects: $e2e"
-                  echo "Affected screenshot projects: $screenshot"
+            - name: Install Composer dependencies
+              run: composer i
 
-    test-e2e-project:
-        name: Test e2e (${{ matrix.project }})
-        needs: affected-projects
-        if: needs.affected-projects.outputs.e2e != '[]'
+            - name: Cache pnpm store
+              uses: actions/cache@v6.1.0
+              with:
+                  path: .pnpm-store
+                  key: pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+                  restore-keys: pnpm-store-
+
+            - name: Start playwright container
+              run: docker compose up -d playwright
+
+            - name: Run e2e tests
+              run: npx nx affected --base="origin/${{ github.base_ref }}" -t test-e2e-docker
+
+            - uses: actions/upload-artifact@v7.0.1
+              if: ${{ !cancelled() }}
+              with:
+                  name: playwright-e2e-report
+                  path: |
+                    plugins/*/artifacts/test-results/
+                    themes/*/artifacts/test-results/
+                  retention-days: 7
+
+    screenshot-projects:
+        name: Find screenshot projects (affected)
         runs-on: ubuntu-latest
-        timeout-minutes: 15
-        strategy:
-            # The first failing project cancels the rest.
-            fail-fast: true
-            matrix:
-                project: ${{ fromJSON(needs.affected-projects.outputs.e2e) }}
+        timeout-minutes: 10
+        if: github.event_name == 'pull_request'
+        outputs:
+            projects: ${{ steps.affected.outputs.projects }}
         steps:
             - name: Checkout
               uses: actions/checkout@v7
               with:
+                  fetch-depth: 0
                   ref: ${{ github.head_ref }}
 
             - name: Setup Node.js 24
@@ -226,50 +233,25 @@ jobs:
                   run_install: true
                   cache: true
 
-            - name: Start playwright container
-              run: docker compose up -d --wait playwright || { docker logs playwright; exit 1; }
-
-            - name: Run e2e tests
-              run: npx nx run "${{ matrix.project }}:test-e2e-docker" --playwrightArgs=--max-failures=1 --no-tui
-
-            - uses: actions/upload-artifact@v7.0.1
-              if: ${{ !cancelled() }}
-              with:
-                  name: playwright-e2e-report-${{ matrix.project }}
-                  path: |
-                    plugins/*/artifacts/test-results/
-                    themes/*/artifacts/test-results/
-                  if-no-files-found: ignore
-                  retention-days: 7
-
-    # Required status check; reports the matrix result under a stable name.
-    test-e2e:
-        name: Test e2e (affected)
-        needs:
-            - affected-projects
-            - test-e2e-project
-        if: ${{ always() && github.event_name == 'pull_request' }}
-        runs-on: ubuntu-latest
-        timeout-minutes: 5
-        steps:
-            - name: Check e2e results
+            - name: List affected screenshot projects
+              id: affected
               env:
-                  FIND_RESULT: ${{ needs.affected-projects.result }}
-                  TEST_RESULT: ${{ needs.test-e2e-project.result }}
+                  BASE_REF: ${{ github.base_ref }}
               run: |
-                  echo "Find projects: $FIND_RESULT; e2e tests: $TEST_RESULT"
-                  [[ "$FIND_RESULT" == success && "$TEST_RESULT" =~ ^(success|skipped)$ ]]
+                  projects=$(pnpm --silent nx show projects --affected --base="origin/$BASE_REF" --withTarget=test-screenshot --json)
+                  echo "projects=$projects" >> "$GITHUB_OUTPUT"
+                  echo "Affected screenshot projects: $projects"
 
     test-screenshot-project:
         name: Test screenshots (${{ matrix.project }})
-        needs: affected-projects
-        if: needs.affected-projects.outputs.screenshot != '[]'
+        needs: screenshot-projects
+        if: needs.screenshot-projects.outputs.projects != '[]'
         runs-on: ubuntu-latest
         timeout-minutes: 15
         strategy:
             fail-fast: false
             matrix:
-                project: ${{ fromJSON(needs.affected-projects.outputs.screenshot) }}
+                project: ${{ fromJSON(needs.screenshot-projects.outputs.projects) }}
         steps:
             - name: Checkout
               uses: actions/checkout@v7
@@ -288,8 +270,25 @@ jobs:
                   run_install: true
                   cache: true
 
-            - name: Start playwright container
-              run: docker compose up -d --wait playwright || { docker logs playwright; exit 1; }
+            - name: Cache pnpm store
+              uses: actions/cache@v6.1.0
+              with:
+                  path: .pnpm-store
+                  key: pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+                  restore-keys: pnpm-store-
+
+            - name: Install Composer dependencies and start playwright container
+              run: |
+                  docker compose up -d playwright
+                  composer i
+                  until [ "$(docker inspect --format='{{.State.Health.Status}}' playwright)" = healthy ]; do
+                    health_status=$(docker inspect --format='{{.State.Health.Status}}' playwright)
+                    if [ "$health_status" = unhealthy ]; then
+                      docker logs playwright
+                      exit 1
+                    fi
+                    sleep 2
+                  done
 
             - name: Run screenshot tests
               run: npx nx run "${{ matrix.project }}:test-screenshot" --playwrightArgs="--max-failures=1 --reporter=list,github" --no-tui
@@ -328,7 +327,7 @@ jobs:
     test-screenshot:
         name: Test screenshots (affected)
         needs:
-            - affected-projects
+            - screenshot-projects
             - test-screenshot-project
         if: ${{ always() && github.event_name == 'pull_request' }}
         runs-on: ubuntu-latest
@@ -336,7 +335,7 @@ jobs:
         steps:
             - name: Check screenshot results
               env:
-                  FIND_RESULT: ${{ needs.affected-projects.result }}
+                  FIND_RESULT: ${{ needs.screenshot-projects.result }}
                   TEST_RESULT: ${{ needs.test-screenshot-project.result }}
               run: |
                   echo "Find projects: $FIND_RESULT; screenshot tests: $TEST_RESULT"
