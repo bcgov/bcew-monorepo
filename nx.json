@@ -64,7 +64,7 @@
         "test-e2e-docker": {
             "executor": "nx:run-commands",
             "options": {
-                "command": "docker exec playwright sh -c \"cd {projectRoot} && npx wp-scripts test-playwright\""
+                "command": "docker exec playwright sh -c \"cd {projectRoot} && npx wp-scripts test-playwright {args.playwrightArgs}\""
             },
             "dependsOn": [
                 "composer-install",
@@ -101,9 +101,8 @@
         "wp-env-start": {
             "executor": "nx:run-commands",
             "options": {
-                "command": "wp-env start",
-                "cwd": "{projectRoot}",
-                "xdebug": "coverage"
+                "command": "wp-env start --xdebug=coverage || wp-env start --xdebug=coverage",
+                "cwd": "{projectRoot}"
             },
             "dependsOn": ["composer-install"]
         },

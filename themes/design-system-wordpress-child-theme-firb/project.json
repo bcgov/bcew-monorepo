@@ -1,0 +1,40 @@
+{
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "name": "design-system-wordpress-child-theme-firb",
+    "root": "themes/design-system-wordpress-child-theme-firb",
+    "sourceRoot": "themes/design-system-wordpress-child-theme-firb/src",
+    "projectType": "application",
+    "generators": {
+        "bcew-monorepo:theme": {
+            "name": "design-system-wordpress-child-theme-firb",
+            "slug": "design-system-wordpress-child-theme-firb"
+        }
+    },
+    "targets": {
+        "composer-install": {},
+        "build": {
+            "dependsOn": ["bcew-theme:build", "bcew-plugin:build"]
+        },
+        "start": {},
+        "start-playwright": {},
+        "test-screenshot": {},
+        "test-screenshot-generate": {},
+        "wp-env-start": {
+            "dependsOn": [
+                "composer-install",
+                "bcew-theme:build",
+                "bcew-plugin:composer-install",
+                "bcew-plugin:build",
+                "bcew-theme:composer-install"
+            ]
+        },
+        "wp-env-clean": {},
+        "wp-env-stop": {}
+    },
+    "implicitDependencies": [
+        "packages/phpunit-config/",
+        "bcew-theme",
+        "bcew-plugin"
+    ],
+    "tags": ["type:wp-theme"]
+}
