@@ -436,31 +436,6 @@ importers:
         specifier: 'catalog:'
         version: 1.61.1
 
-  themes/bcew-theme-2:
-    dependencies:
-      '@bcgov/bc-sans':
-        specifier: 'catalog:'
-        version: 2.1.0
-      '@bcgov/design-tokens':
-        specifier: 'catalog:'
-        version: 4.0.0
-    devDependencies:
-      '@bcew-monorepo/e2e':
-        specifier: workspace:*
-        version: link:../../packages/e2e
-      '@playwright/test':
-        specifier: 'catalog:'
-        version: 1.61.1
-
-  themes/bcew-ticorp:
-    devDependencies:
-      '@bcew-monorepo/e2e':
-        specifier: workspace:*
-        version: link:../../packages/e2e
-      '@playwright/test':
-        specifier: 'catalog:'
-        version: 1.61.1
-
   themes/design-system-wordpress-child-theme-firb:
     devDependencies:
       '@bcew-monorepo/e2e':
