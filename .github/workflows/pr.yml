@@ -158,16 +158,55 @@ jobs:
               if: github.event_name == 'push'
               run: pnpm nx run-many -t test-unit-js
 
-    test-e2e:
-        name: Test e2e (affected)
+    e2e-projects:
+        name: Find e2e projects (affected)
         runs-on: ubuntu-latest
-        timeout-minutes: 15
+        timeout-minutes: 10
         if: github.event_name == 'pull_request'
+        outputs:
+            projects: ${{ steps.affected.outputs.projects }}
         steps:
             - name: Checkout
               uses: actions/checkout@v7
               with:
                   fetch-depth: 0
+                  ref: ${{ github.head_ref }}
+
+            - name: Setup Node.js 24
+              uses: actions/setup-node@v6.4.0
+              with:
+                  node-version: 24
+
+            - name: Install pnpm
+              uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+              with:
+                  version: 10
+                  run_install: true
+                  cache: true
+
+            - name: List affected e2e projects
+              id: affected
+              env:
+                  BASE_REF: ${{ github.base_ref }}
+              run: |
+                  projects=$(pnpm --silent nx show projects --affected --base="origin/$BASE_REF" --withTarget=test-e2e-docker --json)
+                  echo "projects=$projects" >> "$GITHUB_OUTPUT"
+                  echo "Affected e2e projects: $projects"
+
+    test-e2e-project:
+        name: Test e2e (${{ matrix.project }})
+        needs: e2e-projects
+        if: needs.e2e-projects.outputs.projects != '[]'
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        strategy:
+            fail-fast: true
+            matrix:
+                project: ${{ fromJSON(needs.e2e-projects.outputs.projects) }}
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v7
+              with:
                   ref: ${{ github.head_ref }}
 
             - name: Setup Node.js 24
@@ -193,19 +232,37 @@ jobs:
                   restore-keys: pnpm-store-
 
             - name: Start playwright container
-              run: docker compose up -d playwright
+              run: docker compose up -d --wait playwright || { docker logs playwright; exit 1; }
 
             - name: Run e2e tests
-              run: npx nx affected --base="origin/${{ github.base_ref }}" -t test-e2e-docker
+              run: npx nx run "${{ matrix.project }}:test-e2e-docker" --playwrightArgs=--max-failures=1 --no-tui
 
             - uses: actions/upload-artifact@v7.0.1
               if: ${{ !cancelled() }}
               with:
-                  name: playwright-e2e-report
+                  name: playwright-e2e-report-${{ matrix.project }}
                   path: |
                     plugins/*/artifacts/test-results/
                     themes/*/artifacts/test-results/
+                  if-no-files-found: ignore
                   retention-days: 7
+
+    test-e2e:
+        name: Test e2e (affected)
+        needs:
+            - e2e-projects
+            - test-e2e-project
+        if: ${{ always() && github.event_name == 'pull_request' }}
+        runs-on: ubuntu-latest
+        timeout-minutes: 5
+        steps:
+            - name: Check e2e results
+              env:
+                  FIND_RESULT: ${{ needs.e2e-projects.result }}
+                  TEST_RESULT: ${{ needs.test-e2e-project.result }}
+              run: |
+                  echo "Find projects: $FIND_RESULT; e2e tests: $TEST_RESULT"
+                  [[ "$FIND_RESULT" == success && "$TEST_RESULT" =~ ^(success|skipped)$ ]]
 
     screenshot-projects:
         name: Find screenshot projects (affected)
