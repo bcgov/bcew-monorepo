@@ -158,8 +158,8 @@ jobs:
               if: github.event_name == 'push'
               run: pnpm nx run-many -t test-unit-js
 
-    e2e-projects:
-        name: Find e2e projects (affected)
+    affected-test-projects:
+        name: Find affected e2e and screenshot projects
         runs-on: ubuntu-latest
         timeout-minutes: 10
         if: github.event_name == 'pull_request'
@@ -184,25 +184,25 @@ jobs:
                   run_install: true
                   cache: true
 
-            - name: List affected e2e projects
+            - name: List affected e2e and screenshot projects
               id: affected
               env:
                   BASE_REF: ${{ github.base_ref }}
               run: |
-                  projects=$(pnpm --silent nx show projects --affected --base="origin/$BASE_REF" --withTarget=test-e2e-docker --json)
+                  projects=$(pnpm --silent nx show projects --affected --base="origin/$BASE_REF" --withTarget=test-e2e-docker --withTarget=test-screenshot --json)
                   echo "projects=$projects" >> "$GITHUB_OUTPUT"
-                  echo "Affected e2e projects: $projects"
+                  echo "Affected e2e and screenshot projects: $projects"
 
-    test-e2e-project:
-        name: Test e2e (${{ matrix.project }})
-        needs: e2e-projects
-        if: needs.e2e-projects.outputs.projects != '[]'
+    test-playwright-project:
+        name: Test e2e and screenshots (${{ matrix.project }})
+        needs: affected-test-projects
+        if: needs.affected-test-projects.outputs.projects != '[]'
         runs-on: ubuntu-latest
-        timeout-minutes: 15
+        timeout-minutes: 20
         strategy:
-            fail-fast: true
+            fail-fast: false
             matrix:
-                project: ${{ fromJSON(needs.e2e-projects.outputs.projects) }}
+                project: ${{ fromJSON(needs.affected-test-projects.outputs.projects) }}
         steps:
             - name: Checkout
               uses: actions/checkout@v7
@@ -224,131 +224,12 @@ jobs:
             - name: Install Composer dependencies
               run: composer i
 
-            - name: Cache pnpm store
-              uses: actions/cache@v6.1.0
-              with:
-                  path: .pnpm-store
-                  key: pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
-                  restore-keys: pnpm-store-
-
             - name: Start playwright container
               run: docker compose up -d --wait playwright || { docker logs playwright; exit 1; }
 
-            - name: Run e2e tests
-              run: npx nx run "${{ matrix.project }}:test-e2e-docker" --playwrightArgs=--max-failures=1 --no-tui
-
-            - uses: actions/upload-artifact@v7.0.1
-              if: ${{ !cancelled() }}
-              with:
-                  name: playwright-e2e-report-${{ matrix.project }}
-                  path: |
-                    plugins/*/artifacts/test-results/
-                    themes/*/artifacts/test-results/
-                  if-no-files-found: ignore
-                  retention-days: 7
-
-    test-e2e:
-        name: Test e2e (affected)
-        needs:
-            - e2e-projects
-            - test-e2e-project
-        if: ${{ always() && github.event_name == 'pull_request' }}
-        runs-on: ubuntu-latest
-        timeout-minutes: 5
-        steps:
-            - name: Check e2e results
-              env:
-                  FIND_RESULT: ${{ needs.e2e-projects.result }}
-                  TEST_RESULT: ${{ needs.test-e2e-project.result }}
-              run: |
-                  echo "Find projects: $FIND_RESULT; e2e tests: $TEST_RESULT"
-                  [[ "$FIND_RESULT" == success && "$TEST_RESULT" =~ ^(success|skipped)$ ]]
-
-    screenshot-projects:
-        name: Find screenshot projects (affected)
-        runs-on: ubuntu-latest
-        timeout-minutes: 10
-        if: github.event_name == 'pull_request'
-        outputs:
-            projects: ${{ steps.affected.outputs.projects }}
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v7
-              with:
-                  fetch-depth: 0
-                  ref: ${{ github.head_ref }}
-
-            - name: Setup Node.js 24
-              uses: actions/setup-node@v6.4.0
-              with:
-                  node-version: 24
-
-            - name: Install pnpm
-              uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
-              with:
-                  version: 10
-                  run_install: true
-                  cache: true
-
-            - name: List affected screenshot projects
-              id: affected
-              env:
-                  BASE_REF: ${{ github.base_ref }}
-              run: |
-                  projects=$(pnpm --silent nx show projects --affected --base="origin/$BASE_REF" --withTarget=test-screenshot --json)
-                  echo "projects=$projects" >> "$GITHUB_OUTPUT"
-                  echo "Affected screenshot projects: $projects"
-
-    test-screenshot-project:
-        name: Test screenshots (${{ matrix.project }})
-        needs: screenshot-projects
-        if: needs.screenshot-projects.outputs.projects != '[]'
-        runs-on: ubuntu-latest
-        timeout-minutes: 15
-        strategy:
-            fail-fast: false
-            matrix:
-                project: ${{ fromJSON(needs.screenshot-projects.outputs.projects) }}
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v7
-              with:
-                  ref: ${{ github.head_ref }}
-
-            - name: Setup Node.js 24
-              uses: actions/setup-node@v6.4.0
-              with:
-                  node-version: 24
-
-            - name: Install pnpm
-              uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
-              with:
-                  version: 10
-                  run_install: true
-                  cache: true
-
-            - name: Cache pnpm store
-              uses: actions/cache@v6.1.0
-              with:
-                  path: .pnpm-store
-                  key: pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
-                  restore-keys: pnpm-store-
-
-            - name: Install Composer dependencies and start playwright container
-              run: |
-                  docker compose up -d playwright
-                  composer i
-                  until [ "$(docker inspect --format='{{.State.Health.Status}}' playwright)" = healthy ]; do
-                    health_status=$(docker inspect --format='{{.State.Health.Status}}' playwright)
-                    if [ "$health_status" = unhealthy ]; then
-                      docker logs playwright
-                      exit 1
-                    fi
-                    sleep 2
-                  done
-
-            - name: Run screenshot tests
-              run: npx nx run "${{ matrix.project }}:test-screenshot" --playwrightArgs="--max-failures=1 --reporter=list,github" --no-tui
+            # run-many skips targets a project lacks; --parallel=1 avoids concurrent use of the shared wp-env and Playwright container.
+            - name: Run e2e and screenshot tests
+              run: npx nx run-many -t test-e2e-docker test-screenshot --projects="${{ matrix.project }}" --parallel=1 --playwrightArgs="--max-failures=1 --reporter=list,github" --no-tui
 
             - name: Summarize screenshot failures
               if: failure()
@@ -356,9 +237,9 @@ jobs:
                   PROJECT: ${{ matrix.project }}
               run: |
                   {
-                    echo "### Screenshot failures: $PROJECT"
+                    echo "### Playwright failures: $PROJECT"
                     echo
-                    echo "Download the \`playwright-screenshot-report-$PROJECT\` artifact for actual, expected, and diff images plus traces."
+                    echo "Download the \`playwright-report-$PROJECT\` artifact for actual, expected, and diff images plus traces."
                     echo
                     find plugins themes -path '*/artifacts/test-results/*' -name '*-diff.png' -print 2>/dev/null
                     find plugins themes -path '*/artifacts/test-results/*' -name 'error-context.md' 2>/dev/null | while read -r file; do
@@ -374,29 +255,29 @@ jobs:
             - uses: actions/upload-artifact@v7.0.1
               if: ${{ !cancelled() }}
               with:
-                  name: playwright-screenshot-report-${{ matrix.project }}
+                  name: playwright-report-${{ matrix.project }}
                   path: |
                     plugins/*/artifacts/test-results/
                     themes/*/artifacts/test-results/
                   if-no-files-found: ignore
                   retention-days: 7
 
-    test-screenshot:
-        name: Test screenshots (affected)
+    check-playwright-results:
+        name: Check e2e and screenshot results (affected)
         needs:
-            - screenshot-projects
-            - test-screenshot-project
+            - affected-test-projects
+            - test-playwright-project
         if: ${{ always() && github.event_name == 'pull_request' }}
         runs-on: ubuntu-latest
         timeout-minutes: 5
         steps:
-            - name: Check screenshot results
+            - name: Validate project discovery and test results
               env:
-                  FIND_RESULT: ${{ needs.screenshot-projects.result }}
-                  TEST_RESULT: ${{ needs.test-screenshot-project.result }}
+                  PROJECT_DISCOVERY_RESULT: ${{ needs.affected-test-projects.result }}
+                  TEST_MATRIX_RESULT: ${{ needs.test-playwright-project.result }}
               run: |
-                  echo "Find projects: $FIND_RESULT; screenshot tests: $TEST_RESULT"
-                  [[ "$FIND_RESULT" == success && "$TEST_RESULT" =~ ^(success|skipped)$ ]]
+                  echo "Project discovery: $PROJECT_DISCOVERY_RESULT; test matrix: $TEST_MATRIX_RESULT"
+                  [[ "$PROJECT_DISCOVERY_RESULT" == success && "$TEST_MATRIX_RESULT" =~ ^(success|skipped)$ ]]
 
     sonarqube:
       name: SonarQube
