@@ -1,0 +1,81 @@
+---
+id: 4c20ce03-0807-4ce3-8c8e-7af62a402d7b
+---
+%%{init: {"flowchart": {"htmlLabels": true, "wrappingWidth": 420, "padding": 16, "nodeSpacing": 22, "rankSpacing": 32}}}%%
+flowchart TB
+  subgraph theme ["bcew-theme-2"]
+    direction TB
+    subgraph rootfiles [" "]
+      direction LR
+      themejson["theme.json"]
+      fn["functions.php"]
+      themejson --> fn
+    end
+
+    subgraph styles ["styles"]
+      alternate["alternate.json"]
+    end
+
+    subgraph parts ["parts"]
+      direction LR
+      header["header.html"]
+      footer["footer.html"]
+      header --> footer
+    end
+
+    subgraph templates ["templates"]
+      direction LR
+      front["front-page.html"]
+      page["page.html"]
+      secondary["secondary.html"]
+      singular["singular.html"]
+      index["index.html"]
+      archive["archive.html"]
+      search["search.html"]
+      missing["404.html"]
+      front --> page --> secondary --> singular --> index --> archive --> search --> missing
+    end
+
+    subgraph patterns ["patterns"]
+      basic["basic-page.php"]
+    end
+
+    rootfiles --> styles
+    styles --> parts
+    parts --> templates
+    templates --> patterns
+  end
+
+  subgraph blocks ["bcew-blocks"]
+    direction LR
+    cards["cards/block.json"]
+    card["card/block.json"]
+    icon["icon/block.json"]
+    icontext["icon-text-block/block.json"]
+    mediatext["media-text-layout/block.json"]
+    cards --> card --> icon --> icontext --> mediatext
+  end
+
+  subgraph plugin ["bcew-plugin"]
+    direction LR
+    nav["Navigation/block.json"]
+    crumb["BreadCrumb/block.json"]
+    nav --> crumb
+  end
+
+  subgraph chefs ["bcew-chefs-embed"]
+    form["chefs-form/block.json"]
+  end
+
+  patterns --> blocks
+  blocks ~~~ plugin
+  plugin ~~~ chefs
+
+  linkStyle default stroke-width:0px,stroke:transparent
+  style rootfiles fill:none,stroke:none,color:transparent
+
+  classDef themeFile fill:#e7eef6,stroke:#003366,color:#003366
+  classDef pluginFile fill:#fff6dc,stroke:#8a6d1d,color:#313132
+
+  class themejson,fn,alternate,header,footer,front,page,secondary,singular,index,archive,search,missing,basic themeFile
+  class cards,card,icon,icontext,mediatext,nav,crumb,form pluginFile

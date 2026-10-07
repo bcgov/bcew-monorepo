@@ -81,81 +81,19 @@ add_filter( 'block_editor_settings_all', 'bcew_restrict_locking_unlocking_blocks
 
 
 /**
- * Determines whether the WordPress Search plugin is active.
+ * Register the catalog of full-page patterns.
  *
- * Detection is based on the plugin's block being registered, which is the most
- * reliable front-end signal (the plugin registers its blocks on `init`, before
- * blocks are rendered) and avoids loading wp-admin includes on the front end.
- *
- * @return bool True when the WordPress Search plugin is providing its blocks.
+ * @return void
  */
-function bcew_is_search_plugin_active() {
-	static $is_active = null;
-
-	if ( null === $is_active ) {
-		$is_active = WP_Block_Type_Registry::get_instance()->is_registered( 'wordpress-search/search-bar' );
-	}
-
-	return $is_active;
+function bcew_register_page_pattern_category() {
+	register_block_pattern_category(
+		'bcew-pages',
+		array(
+			'label' => __( 'BCEW pages', 'bcew-theme-2' ),
+		)
+	);
 }
-
-/**
- * Resolves a core search template-part slug to its plugin-powered counterpart.
- *
- * Mirrors the WordPress Search plugin's own mapping so the header search bar and
- * the search results content use the plugin's blocks when it is active.
- *
- * @param string $slug Template part slug attribute.
- * @param string $area Template part area attribute.
- *
- * @return string The (possibly swapped) template part slug.
- */
-function bcew_resolve_search_plugin_template_part_slug( $slug, $area ) {
-	if ( 'uncategorized' !== $area ) {
-		return $slug;
-	}
-
-	if ( 'search-bar' === $slug ) {
-		return 'search-bar-with-search-plugin';
-	}
-
-	if ( 'search' === $slug ) {
-		return 'search-with-search-plugin';
-	}
-
-	return $slug;
-}
-
-/**
- * Swaps the core search template parts for the plugin versions when the
- * WordPress Search plugin is active. When the plugin is disabled the core
- * search parts are used so the site keeps working without it.
- *
- * @param array $parsed_block The parsed block being rendered.
- *
- * @return array The parsed block, with its template-part slug swapped when applicable.
- */
-function bcew_swap_search_template_parts( $parsed_block ) {
-	if ( 'core/template-part' !== ( $parsed_block['blockName'] ?? '' ) ) {
-		return $parsed_block;
-	}
-
-	if ( ! bcew_is_search_plugin_active() ) {
-		return $parsed_block;
-	}
-
-	$attrs = $parsed_block['attrs'] ?? array();
-	$slug  = (string) ( $attrs['slug'] ?? '' );
-	$area  = (string) ( $attrs['area'] ?? '' );
-	$new   = bcew_resolve_search_plugin_template_part_slug( $slug, $area );
-
-	if ( $new !== $slug ) {
-		$parsed_block['attrs']['slug'] = $new;
-	}
-
-	return $parsed_block;
-}
-add_filter( 'render_block_data', 'bcew_swap_search_template_parts' );
+add_action( 'init', 'bcew_register_page_pattern_category' );
 
 /**
  * Registers the post title block styles (e.g. Underline).
