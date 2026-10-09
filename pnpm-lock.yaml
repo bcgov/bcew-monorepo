@@ -374,6 +374,8 @@ importers:
         specifier: 'catalog:'
         version: 31.8.0(@playwright/test@1.61.1)(@swc/core@1.15.47(@swc/helpers@0.5.23))(@types/node@20.19.9)(@types/react@18.3.31)(@types/webpack@4.41.40)(@wordpress/env@11.16.0(@types/node@20.19.9))(babel-plugin-macros@3.1.0)(esbuild@0.27.7)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint-scss@6.14.0(stylelint@16.26.1(typescript@5.3.3)))(type-fest@4.41.0)(typescript@5.3.3)(vite@7.3.7(@types/node@20.19.9)(sass@1.101.0)(terser@5.49.0)(yaml@2.9.1))
 
+  plugins/wordpress-search: {}
+
   themes/bcew-belleville-terminal:
     devDependencies:
       '@bcew-monorepo/e2e':
