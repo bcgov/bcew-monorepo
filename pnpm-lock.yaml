@@ -374,40 +374,6 @@ importers:
         specifier: 'catalog:'
         version: 31.8.0(@playwright/test@1.61.1)(@swc/core@1.15.47(@swc/helpers@0.5.23))(@types/node@20.19.9)(@types/react@18.3.31)(@types/webpack@4.41.40)(@wordpress/env@11.16.0(@types/node@20.19.9))(babel-plugin-macros@3.1.0)(esbuild@0.27.7)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint-scss@6.14.0(stylelint@16.26.1(typescript@5.3.3)))(type-fest@4.41.0)(typescript@5.3.3)(vite@7.3.7(@types/node@20.19.9)(sass@1.101.0)(terser@5.49.0)(yaml@2.9.1))
 
-  plugins/wordpress-search:
-    dependencies:
-      '@wordpress/api-fetch':
-        specifier: 'catalog:'
-        version: 7.8.2
-      '@wordpress/block-editor':
-        specifier: 'catalog:'
-        version: 14.3.16(@date-fns/tz@1.5.0)(@emotion/is-prop-valid@1.4.0)(@types/react-dom@18.3.7(@types/react@18.3.31))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@6.0.3))
-      '@wordpress/blocks':
-        specifier: 'catalog:'
-        version: 13.8.6(react@18.3.1)
-      '@wordpress/components':
-        specifier: 'catalog:'
-        version: 28.8.12(@emotion/is-prop-valid@1.4.0)(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@wordpress/data':
-        specifier: 'catalog:'
-        version: 10.8.4(@types/react@18.3.31)(react@18.3.1)
-      '@wordpress/element':
-        specifier: 'catalog:'
-        version: 6.8.1
-      '@wordpress/i18n':
-        specifier: 'catalog:'
-        version: 5.8.2
-    devDependencies:
-      '@playwright/test':
-        specifier: 'catalog:'
-        version: 1.61.1
-      '@wordpress/e2e-test-utils-playwright':
-        specifier: 'catalog:'
-        version: 1.8.1(@playwright/test@1.61.1)(encoding@0.1.13)(typescript@5.3.3)
-      '@wordpress/scripts':
-        specifier: 'catalog:'
-        version: 31.8.0(@playwright/test@1.61.1)(@swc/core@1.15.47(@swc/helpers@0.5.23))(@types/node@20.19.9)(@types/react@18.3.31)(@types/webpack@4.41.40)(@wordpress/env@11.16.0(@types/node@20.19.9))(babel-plugin-macros@3.1.0)(esbuild@0.27.7)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint-scss@6.14.0(stylelint@16.26.1(typescript@5.3.3)))(type-fest@4.41.0)(typescript@5.3.3)(vite@7.3.7(@types/node@20.19.9)(sass@1.101.0)(terser@5.49.0)(yaml@2.9.1))
-
   themes/bcew-belleville-terminal:
     devDependencies:
       '@bcew-monorepo/e2e':
