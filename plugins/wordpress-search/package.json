@@ -1,0 +1,60 @@
+{
+  "name": "wordpress-search",
+  "version": "1.2.0",
+  "description": "Wordpress Search Plugin",
+  "author": "govwordpress@gov.bc.ca",
+  "license": "GPL-2.0-or-later",
+  "keywords": [
+    "WordPress",
+    "Block Theme",
+    "BCGov",
+    "Plugin",
+    "Gutenberg"
+  ],
+  "homepage": "https://github.com/bcgov/wordpress-search#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bcgov/wordpress-search.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bcgov/wordpress-search#readme",
+    "email": "govwordpress@gov.bc.ca"
+  },
+  "engines": {
+    "npm": ">= 10.9.2",
+    "node": ">=22.16.0"
+  },
+  "main": "index.js",
+  "type": "module",
+  "devDependencies": {
+    "@bcgov/wordpress-eslint": "git+https://github.com/bcgov/wordpress-eslint.git#semver:1.x",
+    "@bcgov/wordpress-stylelintrc": "git+https://github.com/bcgov/wordpress-stylelintrc.git#semver:1.x",
+    "@playwright/test": "1.57.0",
+    "@wordpress/e2e-test-utils-playwright": "^1.37.0",
+    "@wordpress/env": "^10.37.0",
+    "@wordpress/scripts": "^31.2.0",
+    "ajv": "^8.17.1"
+  },
+  "dependencies": {
+    "npm": "^11.4.1"
+  },
+  "scripts": {
+    "start": "wp-scripts start",
+    "build": "wp-scripts build",
+    "lint:css": "wp-scripts lint-style 'src/**/*.scss' --allow-empty-input",
+    "fix:css": "wp-scripts lint-style 'src/**/*.scss' --fix --allow-empty-input",
+    "lint:js": "wp-scripts lint-js 'src/**/*.js'",
+    "fix:js": "wp-scripts lint-js 'src/**/*.js' --fix",
+    "test": "npm run test:unit:js",
+    "test:unit:js": "wp-scripts test-unit-js --passWithNoTests",
+    "test:e2e": "wp-scripts test-playwright",
+    "test:e2e:help": "wp-scripts test-playwright --help",
+    "test:e2e:debug": "wp-scripts test-playwright --debug",
+    "test:e2e:headed": "wp-scripts test-playwright --headed",
+    "test:screenshot": "npx playwright test --config=tests/screenshot",
+    "test:screenshot:update": "npx playwright test --config=tests/screenshot --update-snapshots",
+    "test:unit:php": "wp-env run tests-cli --env-cwd=wp-content/plugins/wordpress-search composer run test",
+    "test:unit:php:coverage": "wp-env run tests-cli --env-cwd=wp-content/plugins/wordpress-search composer run coverage",
+    "wp-env": "wp-env"
+  }
+}

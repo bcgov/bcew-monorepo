@@ -1,0 +1,397 @@
+/**
+ * Search Modal Block Frontend Styles
+ *
+ * Styles for the modal block on the frontend.
+ * Includes modal functionality, animations, and responsive design.
+ */
+
+.wp-block-wordpress-search-search-modal {
+	display: block;
+	width: 100%;
+
+	// Default fallback breakpoint if CSS variable not set
+	--mobile-breakpoint: 768px;
+
+	// Responsive content visibility (controlled by JavaScript)
+	.dswp-search-modal__inline-content {
+		display: none; // Hide inline content by default (mobile/tablet)
+		width: 100%;
+
+		// This class will be added by JavaScript on desktop
+		&.dswp-search-modal--show-desktop {
+			display: block;
+		}
+	}
+
+	// Modal Trigger Link (styled as button)
+	.dswp-search-modal__trigger {
+		// Base styles
+		padding: 0.75rem 1.5rem;
+		border-radius: 6px;
+		border: none;
+		cursor: pointer;
+		font-weight: 500;
+		font-size: 16px;
+		transition: all 0.3s ease;
+		align-items: center;
+		gap: 8px;
+		text-decoration: none;
+
+		// Responsive display (controlled by JavaScript)
+		display: inline-flex; // Show trigger by default (mobile/tablet)
+
+		// This class will be added by JavaScript on desktop
+		&.dswp-search-modal--hide-desktop {
+			display: none;
+		}
+
+		// Remove default link styling
+		&:link,
+		&:visited {
+			text-decoration: none;
+		}
+
+		&:hover {
+			text-decoration: none;
+		}
+
+		&:focus {
+			outline: 2px solid #007cba;
+			outline-offset: 2px;
+		}
+
+		// Button Style Variations
+		&--primary,
+		&--fill {
+			background-color: var(--dswp-surface-color-primary-button-default);
+			color: var(--dswp-color-text-on-secondary-button, #fff);
+			border: none;
+
+			&:hover:not(:disabled) {
+				filter: brightness(0.9);
+				transform: translateY(-1px);
+			}
+		}
+
+		&--secondary,
+		&--outline {
+			background-color: var(--dswp-surface-color-secondary-button-default);
+			color: currentcolor;
+			border: 1px solid var(--dswp-surface-color-border-dark);
+
+			&:hover:not(:disabled) {
+				filter: brightness(0.95);
+				transform: translateY(-1px);
+			}
+		}
+
+		&:disabled {
+			opacity: 0.6;
+			cursor: not-allowed;
+		}
+	}
+
+	// Mobile-only behavior
+	&.dswp-search-modal--mobile-only {
+
+		.dswp-search-modal__trigger {
+			display: none;
+
+			@media (max-width: 768px) {
+				display: inline-flex;
+			}
+		}
+	}
+}
+
+// Modal Container
+.dswp-search-modal__container {
+	width: 100%;
+	max-width: 90vw; // More flexible width
+	max-height: calc(100vh - 2.5rem);
+	position: relative;
+	display: flex;
+}
+
+// Modal Content
+.dswp-search-modal__content {
+	background: #fff;
+	border-radius: 12px;
+	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+	width: 100%;
+	height: min(90vh, calc(100dvh - 2.5rem));
+	max-height: calc(100vh - 2.5rem);
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+
+	// Animation states
+	transform: scale(0.9) translateY(-20px);
+	opacity: 0;
+	transition: all 0.3s ease;
+}
+
+// Modal Overlay (only visible on mobile/tablet)
+.dswp-search-modal__overlay {
+	// Show modal functionality on mobile/tablet by default
+	display: flex;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.75);
+	z-index: 999999;
+	align-items: center;
+	justify-content: center;
+	padding: 1.25rem;
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
+
+	// Hidden by default
+	opacity: 0;
+	visibility: hidden;
+	transition: all 0.3s ease;
+
+	// Open state
+	&.dswp-search-modal--open {
+		opacity: 1;
+		visibility: visible;
+
+		.dswp-search-modal__content {
+			transform: scale(1) translateY(0);
+			opacity: 1;
+		}
+	}
+
+	// This class will be added by JavaScript on desktop
+	&.dswp-search-modal--hide-desktop {
+		display: none !important;
+	}
+}
+
+// Modal Header
+.dswp-search-modal__header {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	display: flex;
+	justify-content: flex-end;
+	align-items: flex-start;
+	padding: 0 1.625rem 0 1rem;
+	border-bottom: none;
+	background: transparent;
+	flex-shrink: 0;
+	pointer-events: none;
+}
+
+.dswp-search-modal__close {
+	position: relative;
+	background: none;
+	border: none;
+	cursor: pointer;
+	padding: 0;
+	border-radius: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.2s ease;
+	color: #2d2d2d;
+	box-shadow: none;
+	pointer-events: auto;
+
+	&:hover {
+		background: none;
+		color: #2d2d2d;
+		box-shadow: none;
+	}
+
+	&:focus {
+		outline: 2px solid #007cba;
+		outline-offset: 2px;
+	}
+
+	svg {
+		width: 1.75rem;
+		height: 1.75rem;
+		z-index: 99;
+		background: #fff;
+		padding-top: 1rem;
+	}
+}
+
+// Modal Body
+.dswp-search-modal__body {
+	padding: 3.5rem 1.625rem 0 1rem; // Keep sticky action flush with modal bottom
+	overflow-y: auto;
+	flex-grow: 1;
+	min-height: 0;
+	overscroll-behavior: contain;
+	-webkit-overflow-scrolling: touch;
+
+	// Style inner blocks appropriately
+	> * {
+		margin-bottom: 1rem;
+		margin-inline: 0;
+		max-width: none;
+		width: 100%;
+
+		&:last-child {
+			margin-bottom: 0;
+		}
+	}
+
+	// Let form elements maintain their natural width
+	input,
+	textarea,
+	select {
+		max-width: 100%; // Prevent overflow but allow natural width
+	}
+
+	// Handle WordPress block spacing
+	.wp-block {
+		margin-bottom: 1rem;
+		margin-inline: 0;
+		max-width: none;
+		width: 100%;
+
+		&:last-child {
+			margin-bottom: 0;
+		}
+	}
+
+	// Keep taxonomy filters full-width inside modal sidebars.
+	.wp-block-wordpress-search-taxonomy-filter {
+		width: 100%;
+
+		.search-taxonomy-filter__container {
+			width: 100%;
+			max-width: none;
+		}
+
+		.taxonomy-filter {
+			min-width: 0;
+		}
+
+		.taxonomy-filter__options {
+			display: flex;
+			flex-direction: column;
+			flex-wrap: nowrap;
+			gap: 1rem;
+			padding: 1rem 0;
+		}
+
+		.taxonomy-filter__option,
+		.components-checkbox-control {
+			width: 100%;
+			flex: 0 0 auto;
+			margin: 0;
+		}
+
+		.taxonomy-filter__view-all-link {
+			padding-inline-start: 1rem;
+		}
+
+	}
+
+	// Keep post type filter behavior as previously configured.
+	.wp-block-wordpress-search-search-post-type-filter {
+		width: auto;
+
+		.dswp-search-post-filter {
+			width: auto;
+			max-width: none;
+		}
+	}
+}
+
+// Body modifications when modal is open
+body.dswp-search-modal-open {
+	overflow: hidden;
+
+	// Prevent scrollbar jump
+	padding-right: var(--scrollbar-width, 0);
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+
+	.dswp-search-modal__overlay {
+		padding: 0.625rem;
+	}
+
+	.dswp-search-modal__container {
+		max-width: 100%;
+	}
+
+	.dswp-search-modal__content {
+		border-radius: 8px;
+		height: min(95vh, calc(100dvh - 1.25rem));
+		max-height: 95vh;
+	}
+
+	.dswp-search-modal__body {
+		padding: 1rem 1.625rem 0 1rem;
+
+		// On mobile, stack checkboxes vertically for better touch targets
+		.wp-block-wordpress-search-taxonomy-filter {
+
+			.taxonomy-filter__options {
+				flex-direction: column;
+				gap: 1rem;
+				padding: 1rem 0;
+			}
+
+			.taxonomy-filter__option,
+			.components-checkbox-control {
+				width: 100%;
+				justify-content: flex-start;
+			}
+		}
+
+		// Give select dropdowns more space on mobile
+		select {
+			min-width: 140px;
+		}
+	}
+
+}
+
+@media (max-width: 480px) {
+
+	.dswp-search-modal__body {
+		padding: 1rem 1.625rem 0 1rem;
+	}
+}
+
+// High contrast mode support
+@media (prefers-contrast: high) {
+
+	.dswp-search-modal__overlay {
+		background: rgba(0, 0, 0, 0.9);
+	}
+
+	.dswp-search-modal__content {
+		border: 2px solid #000;
+	}
+
+	.dswp-search-modal__trigger--outline {
+		border-width: 3px;
+	}
+}
+
+// Reduced motion support
+@media (prefers-reduced-motion: reduce) {
+
+	.dswp-search-modal__overlay,
+	.dswp-search-modal__content,
+	.dswp-search-modal__trigger {
+		transition: none;
+	}
+
+	.dswp-search-modal__content {
+		transform: none;
+	}
+}
