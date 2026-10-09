@@ -101,6 +101,21 @@ jobs:
             - name: Install Composer dependencies
               run: composer i
 
+            # wp-env pulls these from Docker Hub. Anonymous pulls from
+            # GitHub-hosted runners time out once every project starts at once.
+            # Tag the mirror copies with the names wp-env already uses.
+            - name: Load WordPress images from the Docker Hub mirror
+              run: |
+                  set -euo pipefail
+                  pull() {
+                    local image="$1"
+                    docker pull "mirror.gcr.io/library/${image}"
+                    docker tag "mirror.gcr.io/library/${image}" "${image}"
+                  }
+                  pull mariadb:lts
+                  pull wordpress:php7.4
+                  pull wordpress:cli-php7.4
+
             - name: Run affected PHP integration tests
               if: github.event_name == 'pull_request'
               run: pnpm nx affected --base="origin/${{ github.base_ref }}" -t test-integration
@@ -223,6 +238,19 @@ jobs:
 
             - name: Install Composer dependencies
               run: composer i
+
+            # Same images as the integration job. Load them before wp-env starts.
+            - name: Load WordPress images from the Docker Hub mirror
+              run: |
+                  set -euo pipefail
+                  pull() {
+                    local image="$1"
+                    docker pull "mirror.gcr.io/library/${image}"
+                    docker tag "mirror.gcr.io/library/${image}" "${image}"
+                  }
+                  pull mariadb:lts
+                  pull wordpress:php7.4
+                  pull wordpress:cli-php7.4
 
             - name: Start playwright container
               run: docker compose up -d --wait playwright || { docker logs playwright; exit 1; }
