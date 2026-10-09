@@ -10,11 +10,16 @@ Runs on every new commit in a PR. Features:
 - **Affected projects** — Changed files are analyzed with **`nx affected`** (base = target branch, usually `origin/main`). Only affected projects run `build`, `test-e2e`, and `test-integration`.
 - **Lint** — Full monorepo lint (PHP, JS, CSS, Markdown, `package.json`) runs on every PR.
 
+## PR title (`pr-title.yml`)
+
+Checks that the pull request title follows Conventional Commits. It reruns on title edits independently of the lint and test workflow. It does not block merges until a repository admin enables squash merging only, sets the squash commit message default to the PR title, and requires `Validate PR title` in the `main` branch ruleset or protection settings (see DSWP-1264). See the [PR title cheat sheet](../../docs/contributing-workflow.md#pr-title-conventional-commits).
+
 ## Tag and release (`tag.yml`)
 
 Manual workflow. Pick a project. Alpha is ticked by default; untick it for a real release. The version is not typed in. A script reads existing `{project}/v*` tags and applies the house rules (alphas count up on the same `X.Y.Z`; a real release is that `X.Y.Z` if it is missing; after a real release the next series is the next minor).
 
 What this workflow does:
+
 1. Nx Release writes the version into the project's `package.json` and `CHANGELOG.md`, commits those files, and tags `{project}/v{version}`.
 2. Plugin PHP files and theme `style.css` in git are not edited.
 3. Builds the project and creates a zip named `<project>-<version>.zip`. The zip's `Version:` header is set to that version, including alphas.

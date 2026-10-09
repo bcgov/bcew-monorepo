@@ -25,6 +25,10 @@ All workflows live under [`.github/workflows/`](https://github.com/bcgov/bcew-mo
 
 The PR workflow compares the PR head to `origin/<github.base_ref>` (the target branch, usually `main`). Any project touched or implied by the Nx graph runs the expensive targets.
 
+## PR title (`pr-title.yml`)
+
+The workflow checks whether a PR title follows Conventional Commits when a PR opens, changes, or is updated. Editing a title reruns this check without rerunning lint and tests. **The check does not block merges until a repository admin configures the GitHub settings from DSWP-1264:** enable squash merging only, set the squash commit message default to the PR title, and require `Validate PR title` in the `main` branch ruleset or protection settings. Until then, the check may report failure but is not a required merge gate. See the [PR title cheat sheet](./contributing-workflow.md#pr-title-conventional-commits).
+
 ## Merges to `main`
 
 - **Docs:** Pushes to `main` that touch `docs/**`, package `docs/**`, sync script, or docs workflow deploy the VitePress site via `deploy-docs.yml` (see [Documentation site](./documentation-site.md)).
