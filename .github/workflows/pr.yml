@@ -79,6 +79,8 @@ jobs:
         name: Test integration
         runs-on: ubuntu-latest
         timeout-minutes: 15
+        outputs:
+            has-coverage: ${{ steps.coverage.outputs.has-coverage }}
         steps:
             - name: Checkout
               uses: actions/checkout@v7
@@ -133,7 +135,17 @@ jobs:
                   sed -i 's#/var/www/html/wp-content/##g' "$f"
                 done
 
+            - name: Check for coverage files
+              id: coverage
+              run: |
+                if find plugins themes -type f -name coverage.xml | grep -q .; then
+                  echo "has-coverage=true" >> "$GITHUB_OUTPUT"
+                else
+                  echo "has-coverage=false" >> "$GITHUB_OUTPUT"
+                fi
+
             - name: Upload coverage
+              if: steps.coverage.outputs.has-coverage == 'true'
               uses: actions/upload-artifact@v7.0.1
               with:
                 name: php-coverage
@@ -322,6 +334,7 @@ jobs:
         # Extract php-coverage directly into sonar-artifacts/ so paths match
         # sonar.php.coverage.reportPaths (sonar-artifacts/plugins/*/coverage.xml).
         - uses: actions/download-artifact@v8.0.1
+          if: needs.test-integration.outputs.has-coverage == 'true'
           with:
             name: php-coverage
             path: sonar-artifacts
