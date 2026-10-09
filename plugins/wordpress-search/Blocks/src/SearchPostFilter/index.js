@@ -17,6 +17,6 @@ import './style.scss';
  * returns null while the frontend is handled by render.php.
  */
 registerBlockType( 'wordpress-search/search-post-type-filter', {
-	edit: Edit,
-	save: () => null,
+    edit: Edit,
+    save: () => null,
 } );

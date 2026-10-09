@@ -1,9 +1,9 @@
-import {defineConfig} from '@playwright/test';
+import { defineConfig } from '@playwright/test';
 import baseConfig from '@wordpress/scripts/config/playwright.config.js';
 
-const config = defineConfig({
+const config = defineConfig( {
     ...baseConfig,
     testDir: 'tests/e2e',
-});
+} );
 
 export default config;

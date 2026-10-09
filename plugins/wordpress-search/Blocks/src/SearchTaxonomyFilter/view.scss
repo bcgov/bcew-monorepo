@@ -10,8 +10,7 @@
 	}
 
 	.taxonomy-filter {
-		background-color:
- var(--wp--custom--dswp--surface-color-background-teritiary, var(--wp--custom--bcew--surface--color--background--primary));
+		background-color: var(--wp--custom--dswp--surface-color-background-teritiary, var(--wp--custom--bcew--surface--color--background--primary));
 		overflow: hidden;
 		min-width: 11.875rem;
 		margin-inline: 0;
@@ -21,8 +20,7 @@
 
 	.taxonomy-filter__header {
 		align-items: center;
-		background-color:
- var(--wp--custom--dswp--surface-color-background-primary, var(--wp--custom--bcew--surface--color--background--secondary));
+		background-color: var(--wp--custom--dswp--surface-color-background-primary, var(--wp--custom--bcew--surface--color--background--secondary));
 		cursor: pointer;
 		display: flex;
 		justify-content: space-between;
@@ -32,8 +30,7 @@
 		min-height: 2.69rem;
 
 		&:hover {
-			background-color:
- var(--wp--custom--dswp--surface-color-menus-hover, var(--wp--custom--bcew--surface--color--menus--hover));
+			background-color: var(--wp--custom--dswp--surface-color-menus-hover, var(--wp--custom--bcew--surface--color--menus--hover));
 		}
 	}
 
@@ -153,8 +150,7 @@
 		appearance: none;
 		background: none;
 		border: none;
-		color:
- var(--wp--custom--dswp--typography-color-link-default, var(--wp--custom--bcew--typography--color--link--default));
+		color: var(--wp--custom--dswp--typography-color-link-default, var(--wp--custom--bcew--typography--color--link--default));
 		cursor: pointer;
 		display: block;
 		font-family: inherit;
@@ -167,20 +163,17 @@
 		width: 100%;
 
 		&:hover {
-			color:
- var(--wp--custom--dswp--typography-color-link-hover, var(--wp--custom--bcew--typography--color--link--hover));
+			color: var(--wp--custom--dswp--typography-color-link-hover, var(--wp--custom--bcew--typography--color--link--hover));
 		}
 
 		&:focus {
-			outline:
- 2px solid var(--wp--custom--dswp--surface-color-border-dark, var(--wp--custom--bcew--surface--color--border--active));
+			outline: 2px solid var(--wp--custom--dswp--surface-color-border-dark, var(--wp--custom--bcew--surface--color--border--active));
 			outline-offset: 2px;
 			border-radius: 2px;
 		}
 
 		&:focus-visible {
-			outline:
- 2px solid var(--wp--custom--dswp--surface-color-border-dark, var(--wp--custom--bcew--surface--color--border--active));
+			outline: 2px solid var(--wp--custom--dswp--surface-color-border-dark, var(--wp--custom--bcew--surface--color--border--active));
 			outline-offset: 2px;
 			border-radius: 2px;
 		}
@@ -196,8 +189,7 @@
 }
 
 .taxonomy-filter-apply {
-	background-color:
- var(--wp--custom--dswp--surface-color-background-teritiary, var(--wp--custom--bcew--surface--color--background--primary));
+	background-color: var(--wp--custom--dswp--surface-color-background-teritiary, var(--wp--custom--bcew--surface--color--background--primary));
 	bottom: 0;
 	margin-top: 0;
 	padding: 1rem 0;
@@ -205,12 +197,10 @@
 	z-index: 10;
 
 	.taxonomy-filter-apply__button {
-		background-color:
- var(--wp--custom--dswp--surface-color-primary-button-default, var(--wp--custom--bcew--surface--color--primary--button--default));
+		background-color: var(--wp--custom--dswp--surface-color-primary-button-default, var(--wp--custom--bcew--surface--color--primary--button--default));
 		border: none;
 		border-radius: 4px;
-		color:
- var(--wp--custom--dswp--typography-color-button-primary-default, var(--wp--custom--bcew--typography--color--button--primary--default));
+		color: var(--wp--custom--dswp--typography-color-button-primary-default, var(--wp--custom--bcew--typography--color--button--primary--default));
 		cursor: pointer;
 		font-family: inherit;
 		font-size: 14px;
@@ -220,13 +210,11 @@
 		width: 100%;
 
 		&:hover {
-			background-color:
- var(--wp--custom--dswp--surface-color-primary-button-hover, var(--wp--custom--bcew--surface--color--primary--button--hover));
+			background-color: var(--wp--custom--dswp--surface-color-primary-button-hover, var(--wp--custom--bcew--surface--color--primary--button--hover));
 		}
 
 		&:focus {
-			outline:
- 2px solid var(--wp--custom--dswp--surface-color-border-dark, var(--wp--custom--bcew--surface--color--border--active));
+			outline: 2px solid var(--wp--custom--dswp--surface-color-border-dark, var(--wp--custom--bcew--surface--color--border--active));
 			outline-offset: 2px;
 		}
 	}

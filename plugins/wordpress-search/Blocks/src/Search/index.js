@@ -26,16 +26,16 @@ import Edit from './edit';
  * @see /render.php for frontend output
  */
 registerBlockType( 'wordpress-search/search-bar', {
-	/**
-	 * Edit Component
-	 * Provides the editor interface for the block
-	 */
-	edit: Edit,
+    /**
+     * Edit Component
+     * Provides the editor interface for the block
+     */
+    edit: Edit,
 
-	/**
-	 * Save Component
-	 * Returns null as we're using dynamic (PHP) rendering
-	 * @return {null} No static markup is saved
-	 */
-	save: () => null,
+    /**
+     * Save Component
+     * Returns null as we're using dynamic (PHP) rendering
+     * @return {null} No static markup is saved
+     */
+    save: () => null,
 } );

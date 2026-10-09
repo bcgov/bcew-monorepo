@@ -25,6 +25,20 @@
   },
   "type": "module",
   "main": "index.js",
+  "dependencies": {
+    "@wordpress/api-fetch": "catalog:",
+    "@wordpress/block-editor": "catalog:",
+    "@wordpress/blocks": "catalog:",
+    "@wordpress/components": "catalog:",
+    "@wordpress/data": "catalog:",
+    "@wordpress/element": "catalog:",
+    "@wordpress/i18n": "catalog:"
+  },
+  "devDependencies": {
+    "@playwright/test": "catalog:",
+    "@wordpress/e2e-test-utils-playwright": "catalog:",
+    "@wordpress/scripts": "catalog:"
+  },
   "scripts": {
     "start": "wp-scripts start",
     "build": "wp-scripts build",

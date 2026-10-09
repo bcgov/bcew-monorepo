@@ -30,16 +30,16 @@ import './style.scss';
  * @see /render.php for frontend output
  */
 registerBlockType( 'wordpress-search/search-modal', {
-	/**
-	 * Edit Component
-	 * Provides the editor interface for the block
-	 */
-	edit: Edit,
+    /**
+     * Edit Component
+     * Provides the editor interface for the block
+     */
+    edit: Edit,
 
-	/**
-	 * Save Component
-	 * Outputs the complete modal HTML structure with InnerBlocks content
-	 * This allows for proper JavaScript functionality and security
-	 */
-	save: Save,
+    /**
+     * Save Component
+     * Outputs the complete modal HTML structure with InnerBlocks content
+     * This allows for proper JavaScript functionality and security
+     */
+    save: Save,
 } );

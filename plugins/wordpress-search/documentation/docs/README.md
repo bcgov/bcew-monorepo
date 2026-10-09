@@ -2,10 +2,13 @@
 
 A WordPress plugin that provides advanced search functionality with a comprehensive suite of custom blocks for building flexible, accessible search experiences.
 
-## Key features:
+## Key features
+
 ### Blocks
+
 The following search-related blocks are available for use in the page editor.
 See the individual page for each block to learn more about them:
+
 - [Search Bar](guide/Blocks/Search): Main search interface for querying documents and posts.
 - [Search Active Filters](guide/Blocks/SearchActiveFilters): Show currently applied filters and allow users to clear them.
 - [Search Modal](guide/Blocks/SearchModal): Modal-based search overlay for compact implementations.

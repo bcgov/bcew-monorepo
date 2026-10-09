@@ -17,43 +17,43 @@ import './view.scss';
  */
 
 // Wait for the DOM to be fully loaded
-document.addEventListener( 'DOMContentLoaded', function () {
-	// Find all search forms
-	const searchForms = document.querySelectorAll( '.dswp-search-bar__form' );
+document.addEventListener( 'DOMContentLoaded', () => {
+    // Find all search forms
+    const searchForms = document.querySelectorAll( '.dswp-search-bar__form' );
 
-	searchForms.forEach( ( form ) => {
-		const input = form.querySelector( '.dswp-search-bar__input' );
-		const clearButton = form.querySelector(
-			'.dswp-search-bar__clear-button'
-		);
+    searchForms.forEach( ( form ) => {
+        const input = form.querySelector( '.dswp-search-bar__input' );
+        const clearButton = form.querySelector(
+            '.dswp-search-bar__clear-button'
+        );
 
-		if ( input && clearButton ) {
-			// Show/hide clear button based on input content
-			const toggleClearButton = () => {
-				clearButton.style.display = input.value ? 'flex' : 'none';
-			};
+        if ( input && clearButton ) {
+            // Show/hide clear button based on input content
+            const toggleClearButton = () => {
+                clearButton.style.display = input.value ? 'flex' : 'none';
+            };
 
-			// Function to clear input and submit form with empty search term
-			// Filters are automatically preserved by the PHP backend hidden inputs
-			const clearAndSearch = () => {
-				// Clear the search input
-				input.value = '';
+            // Function to clear input and submit form with empty search term
+            // Filters are automatically preserved by the PHP backend hidden inputs
+            const clearAndSearch = () => {
+                // Clear the search input
+                input.value = '';
 
-				// Hide the clear button
-				toggleClearButton();
+                // Hide the clear button
+                toggleClearButton();
 
-				// Submit the form - PHP backend handles filter persistence
-				form.submit();
-			};
+                // Submit the form - PHP backend handles filter persistence
+                form.submit();
+            };
 
-			// Initial state
-			toggleClearButton();
+            // Initial state
+            toggleClearButton();
 
-			// Handle input changes
-			input.addEventListener( 'input', toggleClearButton );
+            // Handle input changes
+            input.addEventListener( 'input', toggleClearButton );
 
-			// Handle clear button click - clear text and submit form
-			clearButton.addEventListener( 'click', clearAndSearch );
-		}
-	} );
+            // Handle clear button click - clear text and submit form
+            clearButton.addEventListener( 'click', clearAndSearch );
+        }
+    } );
 } );

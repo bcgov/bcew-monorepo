@@ -6,6 +6,12 @@
  * content-focused appearance.
  */
 
+// InspectorControls lives outside the block wrapper in the editor DOM,
+// so this rule covers the sidebar. The nested copy below covers the canvas.
+.dswp-search-modal__style-control {
+	margin-bottom: 24px;
+}
+
 .wp-block-wordpress-search-search-modal {
 	border: 1px solid #e0e0e0;
 	border-radius: 4px;
@@ -145,10 +151,4 @@
 	}
 
 
-}
-
-// InspectorControls lives outside the block wrapper in the editor DOM,
-// so ensure spacing applies in the sidebar too.
-.dswp-search-modal__style-control {
-	margin-bottom: 24px;
 }

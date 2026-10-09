@@ -1,9 +1,9 @@
-import {defineConfig} from '@playwright/test';
+import { defineConfig } from '@playwright/test';
 import baseConfig from '../../playwright.config';
 
-const config = defineConfig({
+const config = defineConfig( {
     ...baseConfig,
     testDir: './',
-});
+} );
 
 export default config;

@@ -26,16 +26,19 @@ The WordPress Search plugin provides an enhanced search experience for WordPress
 ### Building from Source
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/bcgov/wordpress-search.git
    ```
 
 2. Install dependencies:
+
    ```bash
    npm install
    ```
 
 3. Build the plugin:
+
    ```bash
    npm run build
    ```
@@ -55,8 +58,9 @@ This project is licensed under the Apache License Version 2.0 - see the [LICENSE
 ## Support
 
 For support, please:
+
 - Open an issue in the GitHub repository
-- Contact the development team at govwordpress@gov.bc.ca
+- Contact the development team at <govwordpress@gov.bc.ca>
 
 ## Credits
 
