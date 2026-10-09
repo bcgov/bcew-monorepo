@@ -56,6 +56,7 @@ class SkipNavigationTest extends \WP_UnitTestCase {
 
 		// Verify skip navigation HTML is present.
 		$this->assertStringContainsString( 'dswp-skip-nav-list', $output, 'Skip navigation list should be present' );
+		$this->assertSame( 1, substr_count( $output, 'dswp-skip-nav-list' ), 'Skip navigation list should render once' );
 		$this->assertStringContainsString( 'dswp-skip-nav', $output, 'Skip navigation links should be present' );
 		$this->assertStringContainsString( 'Skip to main content', $output, 'Main content skip link should be present' );
 		$this->assertStringContainsString( 'Skip to main navigation', $output, 'Main navigation skip link should be present' );
