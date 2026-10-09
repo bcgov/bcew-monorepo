@@ -1,0 +1,80 @@
+{
+	"name": "wordpress-search-blocks",
+	"version": "1.0.0",
+	"description": "Wordpress Search Blocks",
+	"author": "govwordpress@gov.bc.ca",
+	"license": "GPL-2.0-or-later",
+	"keywords": [
+		"WordPress",
+		"Block Theme",
+		"BCGov",
+		"Plugin",
+		"Gutenberg"
+	],
+	"homepage": "https://github.com/bcgov/wordpress-search#readme",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/bcgov/wordpress-search.git"
+	},
+	"bugs": {
+		"url": "https://github.com/bcgov/wordpress-search#readme",
+		"email": "govwordpress@gov.bc.ca"
+	},
+	"engines": {
+		"npm": ">= 10.9.2",
+		"node": ">=22.16.0"
+	},
+	"main": "build/index.js",
+	"dependencies": {
+		"@wordpress/api-fetch": "",
+		"@wordpress/base-styles": "^6.13.0",
+		"@wordpress/block-editor": "^15.0.0",
+		"@wordpress/blocks": "^15.10.0",
+		"@wordpress/components": "^31.0.0",
+		"@wordpress/core-data": "",
+		"@wordpress/data": "",
+		"@wordpress/element": "",
+		"@wordpress/i18n": ""
+	},
+	"devDependencies": {
+		"@bcgov/wordpress-eslint": "git+https://github.com/bcgov/wordpress-eslint.git#semver:1.x",
+		"@bcgov/wordpress-stylelintrc": "git+https://github.com/bcgov/wordpress-stylelintrc.git#semver:1.x",
+		"@wordpress/scripts": "^31.2.0",
+		"ajv": "^8.17.1",
+		"ajv-keywords": "^5.1.0",
+		"prettier": "^2.2.0"
+	},
+	"scripts": {
+		"build:production": "npm ci && npm run fix:js && npm run fix:css && npm run fix:md && npm run test:unit && npm run build",
+		"build:search": "wp-scripts build --webpack-src-dir=src/Search --output-path=build/Search",
+		"build:searchpostfilter": "wp-scripts build --webpack-src-dir=src/SearchPostFilter --output-path=build/SearchPostFilter",
+		"build:searchtaxonomyfilter": "wp-scripts build --webpack-src-dir=src/SearchTaxonomyFilter --output-path=build/SearchTaxonomyFilter",
+		"build:searchresultspostmetadatadisplay": "wp-scripts build --webpack-src-dir=src/SearchResultsPostMetadataDisplay --output-path=build/SearchResultsPostMetadataDisplay",
+		"build:searchactivefilters": "wp-scripts build --webpack-src-dir=src/SearchActiveFilters --output-path=build/SearchActiveFilters",
+		"build:searchresultssort": "wp-scripts build --webpack-src-dir=src/SearchResultsSort --output-path=build/SearchResultsSort",
+		"build:searchresultcount": "wp-scripts build --webpack-src-dir=src/SearchResultCount --output-path=build/SearchResultCount",
+		"build:searchmodal": "wp-scripts build --webpack-src-dir=src/SearchModal --output-path=build/SearchModal",
+		"build": "wp-scripts build",
+		"format": "wp-scripts format",
+		"lint:css": "wp-scripts lint-style 'src/**/*.{css,scss}' --allow-empty-input",
+		"lint:js": "wp-scripts lint-js 'src/**/*.{js,jsx,ts,tsx}'",
+		"packages-update": "wp-scripts packages-update",
+		"plugin-zip": "wp-scripts plugin-zip",
+		"start": "wp-scripts start",
+		"start:search": "wp-scripts start --webpack-src-dir=src/Search --output-path=build/Search",
+		"start:searchpostfilter": "wp-scripts start --webpack-src-dir=src/SearchPostFilter --output-path=build/SearchPostFilter",
+		"start:searchtaxonomyfilter": "wp-scripts start --webpack-src-dir=src/SearchTaxonomyFilter --output-path=build/SearchTaxonomyFilter",
+		"start:searchresultspostmetadatadisplay": "wp-scripts start --webpack-src-dir=src/SearchResultsPostMetadataDisplay --output-path=build/SearchResultsPostMetadataDisplay",
+		"start:searchactivefilters": "wp-scripts start --webpack-src-dir=src/SearchActiveFilters --output-path=build/SearchActiveFilters",
+		"start:searchresultssort": "wp-scripts start --webpack-src-dir=src/SearchResultsSort --output-path=build/SearchResultsSort",
+		"start:searchresultcount": "wp-scripts start --webpack-src-dir=src/SearchResultCount --output-path=build/SearchResultCount",
+		"start:searchmodal": "wp-scripts start --webpack-src-dir=src/SearchModal --output-path=build/SearchModal",
+		"fix:css": "wp-scripts lint-style 'src/**/*.{css,scss}' --fix --allow-empty-input",
+		"fix:js": "wp-scripts lint-js 'src/**/*.{js,jsx,ts,tsx}' --fix",
+		"fix:md": "wp-scripts lint-md-docs --fix",
+		"lint:pkg-json": "wp-scripts lint-pkg-json",
+		"test:e2e": "wp-scripts test-e2e --passWithNoTests",
+		"test:unit": "wp-scripts test-unit-js --passWithNoTests",
+		"test": "npm run test:unit"
+	}
+}

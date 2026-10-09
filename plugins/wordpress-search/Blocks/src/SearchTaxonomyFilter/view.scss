@@ -1,0 +1,221 @@
+.wp-block-wordpress-search-taxonomy-filter {
+	margin: 0;
+
+	.search-taxonomy-filter__container {
+		display: block;
+	}
+
+	.taxonomy-filter-form {
+		width: 100%;
+	}
+
+	.taxonomy-filter {
+		background-color: var(--wp--custom--dswp--surface-color-background-teritiary, var(--wp--custom--bcew--surface--color--background--primary));
+		overflow: hidden;
+		min-width: 11.875rem;
+		margin-inline: 0;
+		padding: 0;
+		--taxonomy-filter-inline-start-padding: 1rem;
+	}
+
+	.taxonomy-filter__header {
+		align-items: center;
+		background-color: var(--wp--custom--dswp--surface-color-background-primary, var(--wp--custom--bcew--surface--color--background--secondary));
+		cursor: pointer;
+		display: flex;
+		justify-content: space-between;
+		transition: background-color 0.2s ease;
+		margin-bottom: 0;
+		padding-block: 0;
+		min-height: 2.69rem;
+
+		&:hover {
+			background-color: var(--wp--custom--dswp--surface-color-menus-hover, var(--wp--custom--bcew--surface--color--menus--hover));
+		}
+	}
+
+	// Prevent double border at section seams: only first header keeps top border.
+	.taxonomy-filter-section + .taxonomy-filter-section .dswp-border-frame {
+		border-top: 0;
+	}
+
+	.taxonomy-filter__label {
+		flex: 1;
+		font-size: 1rem;
+		font-weight: 600;
+		margin: 0;
+		padding-inline-start: var(--taxonomy-filter-inline-start-padding);
+	}
+
+	.taxonomy-filter__toggle {
+		width: 32px;
+		height: 32px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: inherit;
+
+		&::after {
+			content: "";
+			width: 8px;
+			height: 8px;
+			border-right: 2px solid currentcolor;
+			border-bottom: 2px solid currentcolor;
+			transform: rotate(45deg);
+			transition: transform 0.3s ease;
+		}
+
+		&.collapsed::after {
+			transform: rotate(-135deg);
+		}
+	}
+
+	.taxonomy-filter__content {
+		transition: all 0.3s ease;
+
+		&.collapsed {
+			display: none;
+		}
+	}
+
+	.taxonomy-filter__options {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		margin-bottom: 0;
+		padding: 1rem 0;
+	}
+
+	.taxonomy-filter__option--hidden,
+	.components-checkbox-control.taxonomy-filter__option--hidden {
+		display: none !important;
+		opacity: 0;
+		transition: opacity 0.2s ease, display 0.2s ease;
+	}
+
+	.taxonomy-filter__option {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		padding: 0;
+		padding-inline-start: var(--taxonomy-filter-inline-start-padding);
+		padding-inline-end: 1rem;
+		background: transparent;
+		border: none;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.taxonomy-filter__option-label {
+		font-size: 0.875rem;
+		color: inherit;
+		flex: 1;
+		line-height: 1.4;
+	}
+
+	.components-checkbox-control {
+
+		&.taxonomy-filter__option {
+			display: flex;
+			align-items: center;
+			gap: 1rem;
+			padding: 0;
+			padding-inline-start: var(--taxonomy-filter-inline-start-padding);
+			padding-inline-end: 1rem;
+			background: transparent;
+			border: none;
+			cursor: pointer;
+			transition: all 0.2s ease;
+		}
+
+		.components-checkbox-control__label {
+			font-size: 0.875rem;
+			color: inherit;
+			flex: 1;
+			line-height: 1.4;
+			margin: 0;
+			cursor: pointer;
+		}
+
+		.components-checkbox-control__input {
+			width: 16px;
+			height: 16px;
+			margin: 0;
+			cursor: pointer;
+		}
+	}
+
+	// <button> in markup — reset native button chrome so it reads as a text link.
+	.taxonomy-filter__view-all-link {
+		appearance: none;
+		background: none;
+		border: none;
+		color: var(--wp--custom--dswp--typography-color-link-default, var(--wp--custom--bcew--typography--color--link--default));
+		cursor: pointer;
+		display: block;
+		font-family: inherit;
+		font-size: 0.875rem;
+		padding-inline-start: 1rem;
+		padding-inline-end: 1rem;
+		text-align: left;
+		text-decoration: underline;
+		transition: color 0.2s ease;
+		width: 100%;
+
+		&:hover {
+			color: var(--wp--custom--dswp--typography-color-link-hover, var(--wp--custom--bcew--typography--color--link--hover));
+		}
+
+		&:focus {
+			outline: 2px solid var(--wp--custom--dswp--surface-color-border-dark, var(--wp--custom--bcew--surface--color--border--active));
+			outline-offset: 2px;
+			border-radius: 2px;
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--wp--custom--dswp--surface-color-border-dark, var(--wp--custom--bcew--surface--color--border--active));
+			outline-offset: 2px;
+			border-radius: 2px;
+		}
+	}
+
+	.taxonomy-filter__view-all-text {
+		text-decoration: underline;
+	}
+
+	.taxonomy-filter__view-all-count {
+		margin-left: 0.25rem;
+	}
+}
+
+.taxonomy-filter-apply {
+	background-color: var(--wp--custom--dswp--surface-color-background-teritiary, var(--wp--custom--bcew--surface--color--background--primary));
+	bottom: 0;
+	margin-top: 0;
+	padding: 1rem 0;
+	position: sticky;
+	z-index: 10;
+
+	.taxonomy-filter-apply__button {
+		background-color: var(--wp--custom--dswp--surface-color-primary-button-default, var(--wp--custom--bcew--surface--color--primary--button--default));
+		border: none;
+		border-radius: 4px;
+		color: var(--wp--custom--dswp--typography-color-button-primary-default, var(--wp--custom--bcew--typography--color--button--primary--default));
+		cursor: pointer;
+		font-family: inherit;
+		font-size: 14px;
+		font-weight: 500;
+		padding: 0.75rem;
+		transition: background-color 0.2s ease;
+		width: 100%;
+
+		&:hover {
+			background-color: var(--wp--custom--dswp--surface-color-primary-button-hover, var(--wp--custom--bcew--surface--color--primary--button--hover));
+		}
+
+		&:focus {
+			outline: 2px solid var(--wp--custom--dswp--surface-color-border-dark, var(--wp--custom--bcew--surface--color--border--active));
+			outline-offset: 2px;
+		}
+	}
+}
