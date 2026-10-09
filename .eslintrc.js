@@ -1,5 +1,3 @@
-const path = require( 'path' );
-
 /**
  * The "global" error severity level. The user can specify that they only want to be
  * warned of linter issues.
@@ -68,27 +66,5 @@ module.exports = {
         '**/coverage/**',
         'tools/monorepo/src/generators/**/files/**',
         'tools/monorepo/src/generators/block/templates/**',
-    ],
-    overrides: [
-        {
-            /*
-             * Search is not a workspace package, so its WordPress imports are not
-             * linked into its own node_modules. Resolve them from the packages
-             * the rest of the repo already installed.
-             */
-            files: [ 'plugins/wordpress-search/**/*.{js,jsx,ts,tsx}' ],
-            settings: {
-                'import/resolver': {
-                    node: {
-                        paths: [
-                            path.resolve(
-                                __dirname,
-                                'node_modules/.pnpm/node_modules'
-                            ),
-                        ],
-                    },
-                },
-            },
-        },
     ],
 };

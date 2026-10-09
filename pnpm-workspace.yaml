@@ -1,9 +1,6 @@
 packages:
   - 'themes/*'
   - 'plugins/*'
-  # Leave search out until it can join without a lockfile change. Any
-  # pnpm-lock.yaml change makes Nx run every project's Docker tests.
-  - '!plugins/wordpress-search'
   - 'packages/*'
   - 'tools/*'
 allowBuilds:
