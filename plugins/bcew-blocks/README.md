@@ -5,7 +5,7 @@ Plugin containing blocks intended to be used with the Design System WordPress Th
 ## Notes
 
 - Provides custom Gutenberg blocks for Design System WordPress implementations.
-- Current block docs are available in `./docs/index.md`.
+- Plugin docs: [`docs/index.md`](./docs/index.md). Guides: [User docs](./docs/user-docs.md), [Developer docs](./docs/developer-docs.md).
 - This plugin is intended for sites using the Design System WordPress Theme suite.
 - Operational and monorepo workflow instructions are maintained centrally in `tools/monorepo/README.md`.
 
