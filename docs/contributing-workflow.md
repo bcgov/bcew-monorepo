@@ -4,8 +4,32 @@
 
 1. Branch from `main` using [branch naming](./versioning.md#branch-naming).
 2. Make changes; keep docs and `.github/labeler.yml` in sync when you add projects or change conventions.
-3. Open a pull request; CI runs monorepo lint and **`nx affected`** build and tests (see [CI/CD](./ci-cd.md)).
+3. Open a pull request; CI runs monorepo lint and **`nx affected`** build and tests (see [CI/CD](./ci-cd.md)). Use a [Conventional Commits title](#pr-title-conventional-commits).
 4. After merge, releases are driven by **tags**, not by committing build artifacts to `main`.
+
+### PR title (Conventional Commits)
+
+Use `type(optional-scope): description`. The scope is optional. Mark breaking changes with `!` in the PR title, for example `feat!: description` or `feat(scope)!: description`. The squash commit uses only the PR title, so a `BREAKING CHANGE:` footer in the PR description will not be included. See the [Conventional Commits specification](https://www.conventionalcommits.org/en/v1.0.0/).
+
+| Type | Meaning | Example |
+| --- | --- | --- |
+| `feat` | Add a feature | `feat(theme): add event filters` |
+| `fix` | Fix a bug | `fix(plugin): handle empty response` |
+| `perf` | Improve performance | `perf(blocks): reduce render work` |
+| `revert` | Revert a change | `revert: remove event filters` |
+| `docs` | Documentation only | `docs: clarify local setup` |
+| `style` | Formatting or style change | `style: normalize spacing` |
+| `refactor` | Restructure code without behavior change | `refactor(plugin): simplify query setup` |
+| `test` | Add or update tests | `test(theme): cover event filters` |
+| `build` | Build system or dependency change | `build: update build tooling` |
+| `ci` | CI configuration or scripts | `ci: validate pull request titles` |
+| `chore` | Maintenance tasks | `chore: update development dependencies` |
+
+When opening a PR:
+
+- Treat the prefilled title as a draft and edit it to match the change.
+- Fix the title on the PR page; do not add a commit just to change it.
+- Once the repository admin configures squash merging to use the PR title, that title becomes the commit message on `main`. The title check does not block merging until `Validate PR title` is required in the `main` branch ruleset or protection settings (see [CI/CD](./ci-cd.md)).
 
 ## After checking out a branch
 
