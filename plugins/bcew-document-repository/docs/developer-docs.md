@@ -35,7 +35,7 @@ Metadata fields (text, date, taxonomy) are defined in Metadata Settings. Taxonom
 
 Namespace comes from `RepositoryConfig::get_api_namespace` in `src/RepositoryConfig.php` (default: `bcew-document-repository/v1`).
 
-- GET `/{namespace}/documents` — query `status` may be `publish`, `draft`, `trash`, `any`, or `all`.
+- GET `/{namespace}/documents` — the REST default is `publish`, but only `trash` selects a distinct result set. `trash` returns trashed documents; `publish`, `draft`, `any`, `all`, and other values return all non-trashed documents (`publish`, `draft`, `pending`, and `private`).
 - POST `/{namespace}/documents` — uploads a PDF and creates a document post with metadata.
 - GET `/{namespace}/documents/check-duplicate?search_name={filename}` — checks duplicate original filenames.
 - GET `/{namespace}/documents/{id}` — fetches a single document.
@@ -48,11 +48,11 @@ Files are stored under `/uploads/documents`; `DocumentUploader::custom_upload_di
 
 ## Requirements and development setup
 
-- WordPress 6.4.4+
+- WordPress 6.7+
 - PHP 7.4+
 - Composer
-- Node 22.16.0
-- npm 10.9.2+
+- Node.js `^24.12.0`
+- pnpm (the monorepo package manager)
 
 From the monorepo root:
 

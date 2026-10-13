@@ -10,7 +10,7 @@ This guide explains how administrators and authorized users can upload, organize
 
 - Document Repository plugin installed and enabled.
 - WordPress Search plugin installed and enabled to search document metadata.
-- Admins or users with edit capability can upload, edit, and delete documents.
+- Admins and users with the configured Document Repository capability can upload, edit, and delete documents. The default capability is `upload_files`.
 
 ### Where to find it
 
@@ -96,7 +96,7 @@ Metadata Settings defines custom fields displayed on documents and used for sear
 
 ### Access and fields
 
-In WordPress Admin, go to **Document Repository → Metadata Settings**. Admins or users with edit capability can manage fields.
+In WordPress Admin, go to **Document Repository → Metadata Settings**. Admins and users with the configured Document Repository capability can manage fields. The default capability is `upload_files`.
 
 ![Where To Find Metadata Settings](./images/where-to-find-metadata-settings.jpg)
 
@@ -117,7 +117,7 @@ Field type cannot be changed after creation. Text and Date values may be empty; 
 
 ### Edit or delete a field
 
-Click **Edit** beside a field to update its label, description, or taxonomy terms. Type is locked after creation. Keep at least one taxonomy term. Existing documents retain their prior values until edited.
+Click **Edit** beside a field to update its label, description, or taxonomy terms. Type is locked after creation. Keep at least one taxonomy term. Removing a term immediately removes that term assignment from every document that used it; adding a term does not assign it to existing documents.
 
 Click **Delete** and confirm to permanently remove the field and all its values. The field disappears from both views.
 
