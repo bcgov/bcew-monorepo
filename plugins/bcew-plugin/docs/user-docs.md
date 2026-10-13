@@ -27,12 +27,12 @@ Click Save Settings to apply changes, and see a preview below the Banner Preview
 
 - Enable/Disable the banner using the radio buttons.
 - The Banner Content textbox can accept plain text or HTML Markup, such as:
-        - <strong>strong (bold)</strong>
-        - <em>emphasis (italics)</em>
-        - <u>underline (use with caution; can confuse links)</u>
-        - <s>Strikethrough</s>
-        - <mark>Highlighted text</mark>
-        - <pre>preformatted text (preserves spaces and line breaks)</pre>
+    - <strong>strong (bold)</strong>
+    - <em>emphasis (italics)</em>
+    - <u>underline (use with caution; can confuse links)</u>
+    - <s>Strikethrough</s>
+    - <mark>Highlighted text</mark>
+    - <pre>preformatted text (preserves spaces and line breaks)</pre>
 - Other specialized text markup: `<abbr>`, `<code>`, `<kbd>`, `<var>`, `<sup>`, and `<sub>`.
 - List item markup: `<ul>`, `<ol>`, `<li>`, `<dl>`, `<dt>`, and `<dd>`.
 - Quotations and citations: `<blockquote>`, `<q>`, and `<cite>`.
