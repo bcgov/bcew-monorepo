@@ -22,6 +22,7 @@ Click Save Settings to apply changes, and see a preview below the Banner Preview
 
 ![Notification Banner HOWTO](./images/NOTIFICATION_BANNER_HOWTO.gif)
 
+<!-- markdownlint-disable MD033 -->
 ### How the banner tool works
 
 - Enable/Disable the banner using the radio buttons.
@@ -55,6 +56,7 @@ Click Save Settings to apply changes, and see a preview below the Banner Preview
     - Text: `Here are instructions for filling in this form...`
     - Background color: <span style="background-color:#053662; color: white; padding: 3px">Info</span>
 
+<!-- markdownlint-enable MD033 -->
 ### Notification Banner testing
 
 1. Save Settings.
