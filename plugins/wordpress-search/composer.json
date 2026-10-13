@@ -10,7 +10,7 @@
     }
   ],
   "require-dev": {
-    "bcgov/wordpress-utils": "2.7.0",
+    "bcgov/wordpress-utils": "3.0.0",
     "yoast/phpunit-polyfills": "^1.0",
     "composer/composer": "^2.9.3"
   },
