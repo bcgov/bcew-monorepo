@@ -171,23 +171,13 @@ function packageDocsSection(
       `/content/${dirName}/${name}`
     );
 
-    const pluginNestedItems = [...nestedItems];
-    const hasDevelopersSection = name === 'bcew-plugin' && !pluginNestedItems.some((item) => item.text === 'Developers');
-    if (hasDevelopersSection) {
-      pluginNestedItems.push({
-        text: 'Developers',
-        collapsed: true,
-        items: []
-      });
-    }
-
     return [
-      nestedItems.length > 0 || hasDevelopersSection
+      nestedItems.length > 0
         ? {
             text: displayName,
             link: `/content/${dirName}/${name}/`,
             collapsed: false,
-            items: pluginNestedItems
+            items: nestedItems
           }
         : { text: displayName, link: `/content/${dirName}/${name}/` }
     ];
