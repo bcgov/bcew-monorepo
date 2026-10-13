@@ -5,5 +5,5 @@ A WordPress plugin for uploading, organizing, and managing PDF documents with cu
 ## Notes
 
 - Plugin docs: [`docs/index.md`](./docs/index.md) (under **Plugins** on the monorepo docs site, same as `bcew-blocks`)
-- Feature guides: [Document Repository](./docs/bcew-document-repository-feature.md), [Metadata Settings](./docs/metadata-settings.md)
+- Guides: [User docs](./docs/user-docs.md), [Developer docs](./docs/developer-docs.md)
 - Operational and monorepo workflows are centralized — see `tools/monorepo/README.md`
