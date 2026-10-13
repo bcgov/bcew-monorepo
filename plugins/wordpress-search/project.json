@@ -14,14 +14,20 @@
         "composer-install": {},
         "build": {
             "options": {
-                "command": "sh -c 'wp-scripts build --output-path=build && wp-scripts build --webpack-src-dir=Blocks/src/Search --output-path=Blocks/build/Search && wp-scripts build --webpack-src-dir=Blocks/src/SearchPostFilter --output-path=Blocks/build/SearchPostFilter && wp-scripts build --webpack-src-dir=Blocks/src/SearchTaxonomyFilter --output-path=Blocks/build/SearchTaxonomyFilter && wp-scripts build --webpack-src-dir=Blocks/src/SearchResultsPostMetadataDisplay --output-path=Blocks/build/SearchResultsPostMetadataDisplay && wp-scripts build --webpack-src-dir=Blocks/src/SearchActiveFilters --output-path=Blocks/build/SearchActiveFilters && wp-scripts build --webpack-src-dir=Blocks/src/SearchResultsSort --output-path=Blocks/build/SearchResultsSort && wp-scripts build --webpack-src-dir=Blocks/src/SearchResultCount --output-path=Blocks/build/SearchResultCount && wp-scripts build --webpack-src-dir=Blocks/src/SearchModal --output-path=Blocks/build/SearchModal'"
+                "command": "npm run build",
+                "forwardAllArgs": false
             },
             "outputs": [
                 "{projectRoot}/build",
                 "{projectRoot}/Blocks/build"
             ]
         },
-        "start": {},
+        "start": {
+            "options": {
+                "command": "npm run start",
+                "forwardAllArgs": false
+            }
+        },
         "start-playwright": {},
         "test-e2e": {},
         "test-e2e-docker": {},
