@@ -8,7 +8,7 @@ export default defineUserConfig({
     base: '/bcew-plugin/',
     lang: 'en-US',
     title: 'BC Extended Web Plugin',
-    description: 'Developer Documentation for BC Extended Web Plugin',
+    description: 'User and developer documentation for BC Extended Web Plugin',
     bundler: viteBundler({}),
     theme: defaultTheme({
         logo: '/images/BCID_H_rgb_pos.png',
@@ -25,38 +25,8 @@ export default defineUserConfig({
             },
         ],
         sidebar: [
-            {
-                text: 'Site Editor',
-                collapsible: true,
-                children: [
-                    { text: 'CSP', link: '/guide/SiteEditor/CSP' },
-                    {
-                        text: 'Notification Banner',
-                        link: '/guide/SiteEditor/NotificationBanner',
-                    },
-                    {
-                        text: 'In Page Navigation',
-                        link: '/guide/SiteEditor/InPageNavigation',
-                    },
-                    {
-                        text: 'Navigation Block',
-                        link: '/guide/SiteEditor/NavigationBlock',
-                    },
-                    {
-                        text: 'Auto Anchor',
-                        link: '/guide/SiteEditor/AutoAnchor',
-                    },
-                    {
-                        text: 'BreadCrumb Block',
-                        link: '/guide/SiteEditor/BreadCrumbBlock',
-                    },
-                ],
-            },
-            {
-                text: 'Developers',
-                collapsible: true,
-                children: [],
-            },
+            { text: 'User docs', link: '/user-docs' },
+            { text: 'Developer docs', link: '/developer-docs' },
         ],
     }),
     plugins: [
