@@ -35,6 +35,7 @@
     "eslint-plugin-prefer-arrow": "catalog:",
     "js-beautify": "catalog:",
     "nx": "catalog:",
+    "stylelint-scss": "catalog:",
     "vitepress": "catalog:"
   },
   "devDependencies": {
