@@ -170,14 +170,17 @@ function packageDocsSection(
       docsDir,
       `/content/${dirName}/${name}`
     );
+    const sidebarItems = name === 'bcew-theme'
+      ? nestedItems.filter((item) => item.text === 'Developer Docs' || item.text === 'User Docs')
+      : nestedItems;
 
     return [
-      nestedItems.length > 0
+      sidebarItems.length > 0
         ? {
             text: displayName,
             link: `/content/${dirName}/${name}/`,
             collapsed: false,
-            items: nestedItems
+            items: sidebarItems
           }
         : { text: displayName, link: `/content/${dirName}/${name}/` }
     ];
