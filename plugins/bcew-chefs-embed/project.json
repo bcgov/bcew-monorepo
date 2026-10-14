@@ -20,6 +20,7 @@
         "test-screenshot": {},
         "test-screenshot-generate": {},
         "test-integration": {
+            "dependsOn": ["composer-install", "wp-env-start", "build"],
             "options": {
                 "command": "wp-env run tests-cli --env-cwd=wp-content/plugins/bcew-chefs-embed composer test"
             }

@@ -106,26 +106,13 @@ const selectSavedFormId = async ( page, formId ) => {
     await expect( formSelect ).toHaveValue( formId );
 };
 
-const mockChefsFormRoutes = async (
-    page,
-    { token, baseUrl, confirmation, loadError }
-) => {
-    const configBody = { token, baseUrl };
-    if ( confirmation ) {
-        configBody.confirmation = confirmation;
-    }
+const CHEFS_BASE_URL = 'https://submit.digital.gov.bc.ca/app';
+const E2E_TOKEN = 'e2e-test-token';
+
+// The token comes from the server-side E2eChefsMock; only the viewer script is stubbed.
+const mockChefsFormRoutes = async ( page, { loadError } = {} ) => {
     await page.route(
-        /bcew-chefs-embed(\/|%2F)v1(\/|%2F)embed-config/,
-        async ( route ) => {
-            await route.fulfill( {
-                status: 200,
-                contentType: 'application/json',
-                body: JSON.stringify( configBody ),
-            } );
-        }
-    );
-    await page.route(
-        `${ baseUrl }/embed/chefs-form-viewer.min.js`,
+        `${ CHEFS_BASE_URL }/embed/chefs-form-viewer.min.js`,
         async ( route ) => {
             await route.fulfill( {
                 status: 200,
@@ -176,15 +163,20 @@ const publishFormAndVisit = async (
     admin,
     editor,
     page,
-    { formId, apiKey, token, baseUrl, confirmation, loadError }
+    { formId, apiKey, confirmation, loadError }
 ) => {
     await addSavedForm( admin, page, formId, apiKey );
-    await mockChefsFormRoutes( page, {
-        token,
-        baseUrl,
-        confirmation,
-        loadError,
-    } );
+    if ( confirmation ) {
+        await page.getByRole( 'link', { name: 'Edit confirmation' } ).click();
+        await (
+            await getConfirmationMessageField( page )
+        ).fill( confirmation );
+        await page.getByRole( 'button', { name: 'Save confirmation' } ).click();
+        await expect( page.locator( '.notice-success' ) ).toContainText(
+            'Confirmation message saved.'
+        );
+    }
+    await mockChefsFormRoutes( page, { loadError } );
     const postId = await selectFormAndPublish( admin, editor, page, formId );
     await page.context().clearCookies();
     const response = await page.goto( `/?p=${ postId }` );
@@ -281,6 +273,8 @@ const getErrorNotice = async ( page ) => {
 };
 
 module.exports = {
+    CHEFS_BASE_URL,
+    E2E_TOKEN,
     BLOCK_NAME,
     addSavedForm,
     assertBlockVisible,

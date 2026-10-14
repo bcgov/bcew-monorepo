@@ -1,8 +1,8 @@
 /**
  * Frontend loader for CHEFS Form blocks on published pages.
  *
- * Reads data-form-id from the server-rendered markup, calls embed-config for a
- * short-lived token, then mounts the CHEFS web component (editable — not read-only).
+ * The server renders the CHEFS web component with a short-lived token already
+ * set. This script loads the component script and wires up submit/error events.
  * On successful submit, replaces the viewer with a static success message
  * (DSWP-1149 generic, DSWP-1150 custom confirmation).
  * On CHEFS submit/load HTTP errors, shows title, status, and detail above
@@ -211,7 +211,7 @@ const GENERIC_SUCCESS_MESSAGE = 'Your form has been submitted successfully';
  * Inline (not a modal): not dismissible; cleared when the page is refreshed.
  *
  * @param {HTMLElement} mount         Mount element.
- * @param {string|null} customMessage Custom confirmation from embed-config.
+ * @param {string|null} customMessage Custom confirmation from the block markup.
  */
 const showSuccess = ( mount, customMessage ) => {
     /*
@@ -246,28 +246,37 @@ const showSuccess = ( mount, customMessage ) => {
 /**
  * Mount a CHEFS form viewer for one block root.
  *
- * @param {HTMLElement} root Block wrapper with data-form-id.
+ * @param {HTMLElement} root Block wrapper.
  * @return {Promise<void>}
  */
 const mountChefsForm = async ( root ) => {
     const viewer = root.querySelector( 'chefs-form-viewer' );
-    const baseUrl = viewer?.getAttribute( 'base-url' ) || '';
+    const mount = root.querySelector( '.bcew-chefs-form__mount' );
+
+    if ( ! viewer || ! mount ) {
+        return;
+    }
 
     try {
+        const baseUrl = viewer.getAttribute( 'base-url' ) || '';
         await ensureChefsFormViewerDefined( baseUrl );
+        viewer.endpoints = {
+            formioJs: `${ baseUrl }/webcomponents/v1/assets/formio.js`,
+        };
 
         /*
          * Submit success and CHEFS HTTP errors are separate events. Success
          * replaces the form. A CHEFS error is shown above it and the form stays.
          */
         viewer.addEventListener( 'formio:submitDone', () => {
-            showSuccess( mount, config.confirmation );
+            showSuccess( mount, root.dataset.confirmation );
         } );
 
         viewer.addEventListener( 'formio:error', ( event ) => {
             showChefsError( root, readChefsError( event?.detail ) );
         } );
 
+        mount.removeAttribute( 'aria-busy' );
 
         if ( 'function' === typeof viewer.load ) {
             await viewer.load();

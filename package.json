@@ -39,8 +39,7 @@
     "vitepress": "catalog:"
   },
   "devDependencies": {
-    "@nx/playwright": "23.0.2",
-    "nx": "23.0.2"
+    "@nx/playwright": "catalog:"
   },
   "peerDependencies": {
     "@swc-node/register": "catalog:",

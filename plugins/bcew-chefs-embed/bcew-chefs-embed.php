@@ -21,9 +21,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
+use Bcgov\BcewChefsEmbed\ChefsClient;
 use Bcgov\BcewChefsEmbed\CredentialsManager;
 use Bcgov\BcewChefsEmbed\E2eChefsMock;
-use Bcgov\BcewChefsEmbed\ChefsClient;
 
 /**
  * Load Composer autoloader when present.
@@ -45,29 +45,40 @@ if ( defined( 'BCEW_CHEFS_E2E_MOCK' ) && BCEW_CHEFS_E2E_MOCK ) {
 	add_filter( 'pre_http_request', array( E2eChefsMock::class, 'pre_http_request' ), 10, 3 );
 }
 
+add_filter( 'render_block_data', 'bcew_chefs_embed_add_token_to_block_data' );
+
 /**
- * Obtain CHEFS auth token for use in the chefs-form blocks' render.php.
+ * Add a short-lived CHEFS token and confirmation message to the chefs-form block attributes.
+ *
+ * The token is fetched server-side only, so no public REST route is needed.
+ * The API key never leaves the server.
+ *
+ * @param array $parsed_block Parsed block data.
+ * @return array
  */
-add_filter(
-    'render_block_data',
-    function( $parsed_block ) {
-        if ( $parsed_block['blockName'] !== 'bcew-chefs-embed/chefs-form' ) {
-            return $parsed_block;
-        }
-        $form_id = $parsed_block['attrs']['formId'] ?? '';
-        $credentials = CredentialsManager::get_by_form_id( $form_id );
-        // Could not find credentials for the form ID, so we cannot fetch a token. Return the block as-is.
-        if ( ! $credentials ) {
-            return $parsed_block;
-        }
-        $parsed_block['attrs']['token'] =
-            ( new ChefsClient() )->authenticate(
-                $form_id,
-                $credentials['api_key']
-            )['token'] ?? '';
-        return $parsed_block;
-    }
-);
+function bcew_chefs_embed_add_token_to_block_data( $parsed_block ) {
+	if ( 'bcew-chefs-embed/chefs-form' !== ( $parsed_block['blockName'] ?? '' ) ) {
+		return $parsed_block;
+	}
+
+	$form_id     = sanitize_text_field( (string) ( $parsed_block['attrs']['formId'] ?? '' ) );
+	$credentials = '' === $form_id ? null : CredentialsManager::get_by_form_id( $form_id );
+
+	// Without saved credentials no token can be fetched; render.php shows an error.
+	if ( ! $credentials ) {
+		return $parsed_block;
+	}
+
+	$authentication = ( new ChefsClient() )->authenticate( $credentials['form_id'], $credentials['api_key'] );
+
+	if ( ! empty( $authentication['success'] ) && ! empty( $authentication['token'] ) ) {
+		$parsed_block['attrs']['token'] = $authentication['token'];
+	}
+
+	$parsed_block['attrs']['confirmation'] = (string) CredentialsManager::get_confirmation( $form_id );
+
+	return $parsed_block;
+}
 
 /**
  * Create or upgrade the credentials table.

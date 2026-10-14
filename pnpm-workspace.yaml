@@ -18,6 +18,7 @@ catalog:
   '@bcgov/design-tokens': ^4.0.0
   '@fortawesome/fontawesome-free': 7.2.0
   '@nx/devkit': ^23.2.1
+  '@nx/playwright': 23.2.1
   '@nx/plugin': ^23.2.1
   '@playwright/test': 1.61.1
   '@swc-node/register': ~1.11.1

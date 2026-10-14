@@ -127,24 +127,25 @@ server-to-server CHEFS token exchange.
 2. The stored CHEFS titles are displayed in the block sidebar.
 3. Selecting a title updates the persisted `formId` attribute with the UUID.
 4. If the selected Form ID is deleted by an administrator, the editor clears the stale selection.
-5. The editor preview uses the runtime configuration endpoint and CHEFS viewer used by the published block.
+5. The editor preview renders the block through the core block-renderer route (authenticated users only) and loads the same CHEFS viewer used by the published block.
 
-The editor preview is provided by `src/chefs-form/components/chefs-form-preview.js`. It uses the same runtime configuration endpoint as the published block and loads the CHEFS viewer through `src/chefs-form/utils/ensure-chefs-form-viewer.js`.
+The editor preview is provided by `src/chefs-form/components/chefs-form-preview.js`. It reads the token from the server-rendered block markup and loads the CHEFS viewer through `src/chefs-form/utils/ensure-chefs-form-viewer.js`.
 
 ### Frontend flow
 
-`src/chefs-form/render.php` sanitizes the Form ID and renders the block wrapper with a `data-form-id` attribute. It renders an empty-state message when no Form ID is selected. It does not render an API key or token.
+A `render_block_data` filter in `bcew-chefs-embed.php` runs on the server for each CHEFS Form block. It looks up the saved credentials for the block's Form ID, decrypts the API key, and exchanges it with CHEFS for a short-lived access token. The token and configured confirmation message are added to the block attributes for that render only. No public REST route is involved, so a visitor cannot request a token for an arbitrary Form ID.
+
+`src/chefs-form/render.php` sanitizes the Form ID and renders the block wrapper (with `data-form-id` and `data-confirmation` attributes) and a `chefs-form-viewer` element with the `auth-token` set. It renders an empty-state message when no Form ID is selected and a load error when no token could be obtained. It does not render an API key.
 
 `src/chefs-form/view.js` runs in the browser after the page loads. For each block, it:
 
-1. Finds the block wrapper and reads the Form ID from its `data-form-id` attribute.
-2. Requests `/wp-json/bcew-chefs-embed/v1/embed-config?formId=<form-id>`. This request goes to WordPress, where the plugin retrieves the encrypted API key and exchanges it with CHEFS for a short-lived access token. The API key is never sent to the browser.
-3. Loads the CHEFS form viewer web component from the CHEFS service if it is not already available on the page.
-4. Creates the viewer inside the block's mount element and passes it the short-lived token and CHEFS base URL returned by WordPress. The visitor can then interact with the live form.
-5. Listens for the viewer's `formio:submitDone` event. When submission succeeds, it removes the viewer and displays the configured confirmation message, or the generic success message when no custom message is configured.
-6. Listens for the viewer's `formio:error` event. When CHEFS reports a submission error, it displays the error above the form and keeps the form available so the visitor can try again.
+1. Loads the CHEFS form viewer web component script from the CHEFS service if it is not already available on the page.
+2. Listens for the viewer's `formio:submitDone` event. When submission succeeds, it removes the viewer and displays the configured confirmation message, or the generic success message when no custom message is configured.
+3. Listens for the viewer's `formio:error` event. When CHEFS reports a submission error, it displays the error above the form and keeps the form available so the visitor can try again.
 
-If the configuration request or viewer script fails before the form loads, the block displays a load error in place of the form.
+If the token could not be fetched or the viewer script fails to load, the block displays a load error in place of the form.
+
+Because the token is part of the rendered HTML, full-page caching can serve an expired token. Do not cache pages containing the block for longer than the token lifetime.
 
 ## REST API
 
@@ -163,23 +164,6 @@ form titles plus their IDs. Unauthorized requests receive a `403` response.
 The route is registered in `bcew-chefs-embed.php` and handled by
 `bcew_chefs_embed_get_saved_forms()`.
 
-### Get embed configuration
-
-```text
-GET /wp-json/bcew-chefs-embed/v1/embed-config?formId=<form-id>
-```
-
-The editor preview and published frontend use this route. It is public because an anonymous visitor must be able to load a published form. The route:
-
-1. Looks up the configured Form ID.
-2. Decrypts its stored API key on the server.
-3. Sends a server-to-server Basic Authentication request to CHEFS.
-4. Returns the short-lived token, CHEFS base URL, and configured confirmation message.
-
-The API key is not included in the response. Omitting the required `formId` parameter returns `400`; an unknown or undecryptable Form ID returns `404`. Failures contacting CHEFS or invalid CHEFS responses return an error response from the gateway/authentication path.
-
-The route is registered and handled by `src/EmbedConfigController.php`.
-
 ## Security and credentials
 
 The settings page requires the `manage_options` capability. Form save, deletion, and confirmation actions use WordPress admin-post handlers with nonce validation.
@@ -188,7 +172,7 @@ Each saved form is one row in `{prefix}bcew_chefs_credentials`, with the Form ID
 
 Implementation safeguard: do not decide whether a Form ID is new by calling `get_by_form_id()`. It returns `null` for both a missing row and an undecryptable key, while `save()` can still update an existing row. Use `CredentialsManager::form_exists()` to check for the row without decrypting the stored key. A valid replacement key for an existing row must preserve the saved form name and confirmation and report an update, even when the old key cannot be decrypted.
 
-During form rendering, the server decrypts the API key and uses it only for the CHEFS token exchange. Basic Authentication is server-to-server. The API key remains server-side and is not included in block attributes, rendered HTML, frontend source, or REST responses. The short-lived token is intentionally returned by `embed-config` and the frontend assigns it to the CHEFS viewer's `auth-token` attribute so the browser can load the form. The token is not stored in the block's persisted attributes.
+During form rendering, the server decrypts the API key and uses it only for the CHEFS token exchange. Basic Authentication is server-to-server. The API key remains server-side and is not included in block attributes, rendered HTML, frontend source, or REST responses. The short-lived token is intentionally written into the rendered `auth-token` attribute of the CHEFS viewer so the browser can load the form. The token is not stored in the block's persisted attributes.
 
 Do not commit API keys, add them to source code, or expose them in client-side code. Use the CHEFS settings page for configured credentials and use non-production credentials for local testing.
 
@@ -216,8 +200,8 @@ Use `test-screenshot-generate` when updating approved screenshot baselines. The 
 5. Confirm the saved Form ID appears in the block sidebar.
 6. Select the Form ID and confirm the editor preview loads when valid CHEFS credentials and network access are available.
 7. Publish the post and open it as an anonymous visitor.
-8. Confirm the form loads through `embed-config`.
-9. Verify that the CHEFS API key is not present in the page source, frontend code, or REST response. The REST response may contain the short-lived token used to load the form.
+8. Confirm the form loads and that no `embed-config` REST route exists.
+9. Verify that the CHEFS API key is not present in the page source or frontend code. The rendered HTML may contain the short-lived token used to load the form.
 
 The local WordPress environment can be started without live CHEFS credentials, but loading and submitting a real form on port `9012` requires valid credentials and access to the CHEFS service.
 
