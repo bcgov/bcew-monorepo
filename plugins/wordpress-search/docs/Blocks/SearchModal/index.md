@@ -1,7 +1,7 @@
 # Search Modal Block
 
 Provides a modal overlay for search, allowing nested blocks inside.
-![`Search Modal`:](/images/SEARCH_MODAL.png)
+![`Search Modal`:](./SEARCH_MODAL.png)
 
 ## Features
 

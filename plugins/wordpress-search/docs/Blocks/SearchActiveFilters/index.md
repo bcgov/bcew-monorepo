@@ -2,7 +2,7 @@
 
 Displays currently applied filters and allows users to clear them.
 
-![`Search Active Filters`:](/images/SEARCH_ACTIVE_FILTERS.png)
+![`Search Active Filters`:](./SEARCH_ACTIVE_FILTERS.png)
 
 ## Features
 

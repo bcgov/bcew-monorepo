@@ -23,6 +23,7 @@ const packageDisplayNames: Record<string, string> = {
   'bcew-blocks': 'BCEW Blocks',
   'bcew-chefs-embed': 'BCEW CHEFS Embed',
   'bcew-document-repository': 'BCEW Document Repository',
+  'wordpress-search': 'BCEW Search',
   'bcew-theme-2': 'BCEW Theme 2',
   'bcew-ticorp': 'BCEW TI Corp'
 };
@@ -121,15 +122,21 @@ function buildSidebarForDir(dirPath: string, urlPrefix: string): SidebarItem[] {
         );
         items.push(...guideItems);
       } else {
+        const subDirPath = resolve(dirPath, entry.name);
         const subItems = buildSidebarForDir(
-          resolve(dirPath, entry.name),
+          subDirPath,
           `${urlPrefix}/${entry.name}`
         );
-        if (subItems.length > 0) {
+        const indexPath = resolve(subDirPath, 'index.md');
+        if (subItems.length > 0 || existsSync(indexPath)) {
           items.push({
             text: formatDocTitle(entry.name),
-            collapsed: true,
-            items: subItems
+            ...(existsSync(indexPath)
+              ? { link: `${urlPrefix}/${entry.name}/` }
+              : {}),
+            ...(subItems.length > 0
+              ? { collapsed: true, items: subItems }
+              : {})
           });
         }
       }
@@ -172,6 +179,8 @@ function packageDocsSection(
     );
     const sidebarItems = name === 'bcew-theme'
       ? nestedItems.filter((item) => item.text === 'Developer Docs' || item.text === 'User Docs')
+      : name === 'wordpress-search'
+        ? nestedItems.filter((item) => item.text !== 'Blocks')
       : nestedItems;
 
     return [
