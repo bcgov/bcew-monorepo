@@ -25,6 +25,8 @@ use Bcgov\BcewChefsEmbed\ChefsClient;
 use Bcgov\BcewChefsEmbed\CredentialsManager;
 use Bcgov\BcewChefsEmbed\E2eChefsMock;
 
+const BCEW_CHEFS_EMBED_BLOCK_NAME = 'bcew-chefs-embed/chefs-form';
+
 /**
  * Load Composer autoloader when present.
  */
@@ -57,7 +59,7 @@ add_filter( 'render_block_data', 'bcew_chefs_embed_add_token_to_block_data' );
  * @return array
  */
 function bcew_chefs_embed_add_token_to_block_data( $parsed_block ) {
-	if ( 'bcew-chefs-embed/chefs-form' !== ( $parsed_block['blockName'] ?? '' ) ) {
+	if ( BCEW_CHEFS_EMBED_BLOCK_NAME !== ( $parsed_block['blockName'] ?? '' ) ) {
 		return $parsed_block;
 	}
 
@@ -135,7 +137,7 @@ function bcew_chefs_embed_init() {
 		wp_register_block_types_from_metadata_collection( __DIR__ . '/dist', __DIR__ . '/dist/blocks-manifest.php' );
 
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			$registered_block = \WP_Block_Type_Registry::get_instance()->is_registered( 'bcew-chefs-embed/chefs-form' );
+			$registered_block = \WP_Block_Type_Registry::get_instance()->is_registered( BCEW_CHEFS_EMBED_BLOCK_NAME );
 			error_log( sprintf( 'bcew-chefs-embed: metadata collection registration complete; chefs-form registered=%s', $registered_block ? 'yes' : 'no' ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 		}
 	} else {
@@ -161,7 +163,7 @@ function bcew_chefs_embed_init() {
 		}
 
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			$registered_block = \WP_Block_Type_Registry::get_instance()->is_registered( 'bcew-chefs-embed/chefs-form' );
+			$registered_block = \WP_Block_Type_Registry::get_instance()->is_registered( BCEW_CHEFS_EMBED_BLOCK_NAME );
 			error_log( sprintf( 'bcew-chefs-embed: fallback registration complete; chefs-form registered=%s', $registered_block ? 'yes' : 'no' ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 		}
 	}
@@ -190,7 +192,7 @@ function bcew_chefs_embed_register_editor_settings() {
 	}
 
 	// Resolve the registered block type so we can discover its editor script handle.
-	$block_type = \WP_Block_Type_Registry::get_instance()->get_registered( 'bcew-chefs-embed/chefs-form' );
+	$block_type = \WP_Block_Type_Registry::get_instance()->get_registered( BCEW_CHEFS_EMBED_BLOCK_NAME );
 
 	// If the block is not registered yet or has no editor script, there is nothing to attach.
 	if ( ! $block_type || empty( $block_type->editor_script_handles ) ) {
