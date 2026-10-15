@@ -172,9 +172,11 @@ const publishFormAndVisit = async (
             await getConfirmationMessageField( page )
         ).fill( confirmation );
         await page.getByRole( 'button', { name: 'Save confirmation' } ).click();
-        await expect( page.locator( '.notice-success' ) ).toContainText(
-            'Confirmation message saved.'
-        );
+        await expect(
+            page
+                .locator( '.notice-success' )
+                .filter( { hasText: 'Confirmation message saved.' } )
+        ).toBeVisible();
     }
     await mockChefsFormRoutes( page, { loadError } );
     const postId = await selectFormAndPublish( admin, editor, page, formId );
