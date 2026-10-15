@@ -421,7 +421,7 @@ importers:
         version: 1.61.1
       '@wordpress/e2e-test-utils-playwright':
         specifier: 'catalog:'
-        version: 1.8.1(@playwright/test@1.61.1)(encoding@0.1.13)(typescript@5.3.3)
+        version: 1.8.1(@playwright/test@1.61.1)(encoding@0.1.13)(typescript@6.0.3)
 
   themes/bcew-belleville-terminal:
     devDependencies:
