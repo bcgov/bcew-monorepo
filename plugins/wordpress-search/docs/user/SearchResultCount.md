@@ -1,5 +1,7 @@
 # Search Result Count Block
 
+![Search Result Count Block](./images/SEARCH_RESULT_COUNT.png)
+
 Displays the total number of search results.
 
 ## Features

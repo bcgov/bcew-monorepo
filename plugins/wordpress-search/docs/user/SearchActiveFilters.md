@@ -1,5 +1,7 @@
 # Search Active Filters Block
 
+![Search Active Filters Block](./images/SEARCH_ACTIVE_FILTERS.png)
+
 Displays currently applied filters and allows users to clear them.
 
 
