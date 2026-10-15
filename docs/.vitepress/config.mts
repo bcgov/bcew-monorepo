@@ -18,7 +18,7 @@ const repoRoot = resolve(__dirname, '..', '..');
 
 const packageDisplayNames: Record<string, string> = {
   'bcew-theme': 'BC Extended Web Theme',
-  'bcew-plugin': 'BC Extended Web Plugin',
+  'bcew-plugin': 'BCEW Plugin',
   'bcew-belleville-terminal': 'BCEW Belleville Terminal',
   'bcew-blocks': 'BCEW Blocks',
   'bcew-chefs-embed': 'BCEW CHEFS Embed',
