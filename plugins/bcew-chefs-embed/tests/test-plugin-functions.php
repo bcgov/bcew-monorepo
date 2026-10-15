@@ -14,23 +14,22 @@ use Bcgov\BcewChefsEmbed\Settings;
 /**
  * Tests for plugin functions.
  */
-class PluginFunctionsTest extends \WP_UnitTestCase
-{
+class PluginFunctionsTest extends \WP_UnitTestCase {
+
 
     /**
      * Set up test environment.
      *
      * @return void
      */
-    public function set_up()
-    {
+    public function set_up() {
         parent::set_up();
         CredentialsManager::install();
 
         global $wpdb;
         $table = CredentialsManager::table_name();
         // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Internal table name.
-        $wpdb->query("DELETE FROM `{$table}`");
+        $wpdb->query( "DELETE FROM `{$table}`" );
     }
 
     /**
@@ -38,16 +37,15 @@ class PluginFunctionsTest extends \WP_UnitTestCase
      *
      * @return void
      */
-    public function test_add_token_to_block_data_ignores_other_blocks()
-    {
+    public function test_add_token_to_block_data_ignores_other_blocks() {
         $block = array(
             'blockName' => 'core/paragraph',
             'attrs'     => array(),
         );
 
-        $result = bcew_chefs_embed_add_token_to_block_data($block);
+        $result = bcew_chefs_embed_add_token_to_block_data( $block );
 
-        $this->assertSame($block, $result);
+        $this->assertSame( $block, $result );
     }
 
     /**
@@ -55,15 +53,14 @@ class PluginFunctionsTest extends \WP_UnitTestCase
      *
      * @return void
      */
-    public function test_add_token_to_block_data_handles_missing_block_name()
-    {
+    public function test_add_token_to_block_data_handles_missing_block_name() {
         $block = array(
             'attrs' => array(),
         );
 
-        $result = bcew_chefs_embed_add_token_to_block_data($block);
+        $result = bcew_chefs_embed_add_token_to_block_data( $block );
 
-        $this->assertSame($block, $result);
+        $this->assertSame( $block, $result );
     }
 
     /**
@@ -71,16 +68,15 @@ class PluginFunctionsTest extends \WP_UnitTestCase
      *
      * @return void
      */
-    public function test_add_token_to_block_data_handles_missing_form_id()
-    {
+    public function test_add_token_to_block_data_handles_missing_form_id() {
         $block = array(
             'blockName' => 'bcew-chefs-embed/chefs-form',
             'attrs'     => array(),
         );
 
-        $result = bcew_chefs_embed_add_token_to_block_data($block);
+        $result = bcew_chefs_embed_add_token_to_block_data( $block );
 
-        $this->assertSame($block, $result);
+        $this->assertSame( $block, $result );
     }
 
     /**
@@ -88,8 +84,7 @@ class PluginFunctionsTest extends \WP_UnitTestCase
      *
      * @return void
      */
-    public function test_add_token_to_block_data_handles_empty_form_id()
-    {
+    public function test_add_token_to_block_data_handles_empty_form_id() {
         $block = array(
             'blockName' => 'bcew-chefs-embed/chefs-form',
             'attrs'     => array(
@@ -97,9 +92,9 @@ class PluginFunctionsTest extends \WP_UnitTestCase
             ),
         );
 
-        $result = bcew_chefs_embed_add_token_to_block_data($block);
+        $result = bcew_chefs_embed_add_token_to_block_data( $block );
 
-        $this->assertSame($block, $result);
+        $this->assertSame( $block, $result );
     }
 
     /**
@@ -107,8 +102,7 @@ class PluginFunctionsTest extends \WP_UnitTestCase
      *
      * @return void
      */
-    public function test_add_token_to_block_data_handles_missing_credentials()
-    {
+    public function test_add_token_to_block_data_handles_missing_credentials() {
         $block = array(
             'blockName' => 'bcew-chefs-embed/chefs-form',
             'attrs'     => array(
@@ -116,9 +110,9 @@ class PluginFunctionsTest extends \WP_UnitTestCase
             ),
         );
 
-        $result = bcew_chefs_embed_add_token_to_block_data($block);
+        $result = bcew_chefs_embed_add_token_to_block_data( $block );
 
-        $this->assertSame($block, $result);
+        $this->assertSame( $block, $result );
     }
 
     /**
@@ -126,10 +120,9 @@ class PluginFunctionsTest extends \WP_UnitTestCase
      *
      * @return void
      */
-    public function test_add_token_to_block_data_adds_confirmation()
-    {
-        CredentialsManager::save('test-form', 'test-key');
-        CredentialsManager::save_confirmation('test-form', 'Thanks for applying.');
+    public function test_add_token_to_block_data_adds_confirmation() {
+        CredentialsManager::save( 'test-form', 'test-key' );
+        CredentialsManager::save_confirmation( 'test-form', 'Thanks for applying.' );
 
         $block = array(
             'blockName' => 'bcew-chefs-embed/chefs-form',
@@ -138,9 +131,9 @@ class PluginFunctionsTest extends \WP_UnitTestCase
             ),
         );
 
-        $result = bcew_chefs_embed_add_token_to_block_data($block);
+        $result = bcew_chefs_embed_add_token_to_block_data( $block );
 
-        $this->assertSame('Thanks for applying.', $result['attrs']['confirmation']);
+        $this->assertSame( 'Thanks for applying.', $result['attrs']['confirmation'] );
     }
 
     /**
@@ -148,16 +141,15 @@ class PluginFunctionsTest extends \WP_UnitTestCase
      *
      * @return void
      */
-    public function test_admin_init_does_not_error()
-    {
-        if (! class_exists(Settings::class)) {
-            $this->markTestSkipped('Settings class not available.');
+    public function test_admin_init_does_not_error() {
+        if ( ! class_exists( Settings::class ) ) {
+            $this->markTestSkipped( 'Settings class not available.' );
         }
 
         // Call the function; it should complete without error.
         bcew_chefs_embed_admin_init();
 
-        $this->assertTrue(true, 'Function should complete without error.');
+        $this->assertTrue( true, 'Function should complete without error.' );
     }
 
     /**
@@ -165,17 +157,15 @@ class PluginFunctionsTest extends \WP_UnitTestCase
      *
      * @return void
      */
-    public function test_init_does_not_error()
-    {
+    public function test_init_does_not_error() {
         // The block is likely already registered from prior tests.
         // Calling init should gracefully handle this.
         // Suppress the "already registered" error by WordPress for this test.
-        $this->setExpectedIncorrectUsage('WP_Block_Type_Registry::register');
+        $this->setExpectedIncorrectUsage( 'WP_Block_Type_Registry::register' );
 
         bcew_chefs_embed_init();
 
         $registry = \WP_Block_Type_Registry::get_instance();
-        $this->assertTrue($registry->is_registered('bcew-chefs-embed/chefs-form'));
+        $this->assertTrue( $registry->is_registered( 'bcew-chefs-embed/chefs-form' ) );
     }
-
 }
