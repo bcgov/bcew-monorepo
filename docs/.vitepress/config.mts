@@ -129,14 +129,14 @@ function packageDocsSection(
     const link = `/content/${dirName}/${name}/`;
     const sidebarItems: SidebarItem[] = [];
 
-    if (existsSync(resolve(docsDir, 'user-docs.md'))) {
+    if (existsSync(resolve(docsDir, 'user'))) {
       // Put user-facing topics directly under the package.
       sidebarItems.push(
         ...buildSidebarForDir(resolve(docsDir, 'user'), `${link}user`)
       );
     }
 
-    if (existsSync(resolve(docsDir, 'developer-docs.md'))) {
+    if (existsSync(resolve(docsDir, 'developer'))) {
       // Keep developer-facing topics grouped under their audience label.
       sidebarItems.push({
         text: 'Developer Docs',
