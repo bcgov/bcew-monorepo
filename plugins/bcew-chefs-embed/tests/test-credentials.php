@@ -467,6 +467,59 @@ class CredentialsTest extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Render a saved form while mocking its CHEFS authentication response.
+	 *
+	 * @param mixed $response Mocked HTTP response.
+	 * @return array{html: string, calls: int}
+	 */
+	private function render_form_with_auth_response( $response ) {
+		$this->register_built_block();
+		CredentialsManager::install();
+		CredentialsManager::save( $this->form_id, 'test-api-key-value' );
+
+		$http_calls = 0;
+		$http_mock  = function ( $preempt, $parsed_args, $url ) use ( &$http_calls, $response ) {
+			++$http_calls;
+			$this->assertStringContainsString( '/auth/token/forms/' . rawurlencode( $this->form_id ), $url );
+			return $response;
+		};
+
+		$html = '';
+		$this->with_http_mock(
+			$http_mock,
+			function () use ( &$html ) {
+				$html = render_block(
+					array(
+						'blockName'    => 'bcew-chefs-embed/chefs-form',
+						'attrs'        => array( 'formId' => $this->form_id ),
+						'innerBlocks'  => array(),
+						'innerHTML'    => '',
+						'innerContent' => array(),
+					)
+				);
+			}
+		);
+
+		return array(
+			'html'  => $html,
+			'calls' => $http_calls,
+		);
+	}
+
+	/**
+	 * Failed authentication must not expose the viewer, token, or API key.
+	 *
+	 * @param string $html Rendered block HTML.
+	 * @return void
+	 */
+	private function assert_auth_failure_markup( $html ) {
+		$this->assertStringContainsString( 'bcew-chefs-form__error', $html );
+		$this->assertStringNotContainsString( '<chefs-form-viewer', $html );
+		$this->assertStringNotContainsString( 'auth-token', $html );
+		$this->assertStringNotContainsString( 'test-api-key-value', $html );
+	}
+
+	/**
 	 * The embed-config REST route no longer exists.
 	 *
 	 * @return void
@@ -544,6 +597,52 @@ class CredentialsTest extends \WP_UnitTestCase {
 		);
 
 		$this->assertSame( 0, $http_calls );
+	}
+
+	/**
+	 * A CHEFS transport error renders the generic load error without secrets.
+	 *
+	 * @return void
+	 */
+	public function test_block_render_transport_error_has_no_viewer_or_secrets() {
+		$result = $this->render_form_with_auth_response( new \WP_Error( 'http_request_failed', 'Connection failed' ) );
+
+		$this->assertSame( 1, $result['calls'] );
+		$this->assert_auth_failure_markup( $result['html'] );
+	}
+
+	/**
+	 * Rejected saved credentials render the generic load error without secrets.
+	 *
+	 * @return void
+	 */
+	public function test_block_render_rejected_credentials_has_no_viewer_or_secrets() {
+		$result = $this->render_form_with_auth_response(
+			array(
+				'body'     => wp_json_encode( array( 'detail' => 'Forbidden' ) ),
+				'response' => array( 'code' => 403 ),
+			)
+		);
+
+		$this->assertSame( 1, $result['calls'] );
+		$this->assert_auth_failure_markup( $result['html'] );
+	}
+
+	/**
+	 * A successful CHEFS response without a token renders the generic load error.
+	 *
+	 * @return void
+	 */
+	public function test_block_render_missing_token_has_no_viewer_or_secrets() {
+		$result = $this->render_form_with_auth_response(
+			array(
+				'body'     => wp_json_encode( array( 'message' => 'OK' ) ),
+				'response' => array( 'code' => 200 ),
+			)
+		);
+
+		$this->assertSame( 1, $result['calls'] );
+		$this->assert_auth_failure_markup( $result['html'] );
 	}
 
 	/**
