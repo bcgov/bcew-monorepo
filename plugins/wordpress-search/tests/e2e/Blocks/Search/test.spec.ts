@@ -219,10 +219,16 @@ test.describe( 'Search Block', () => {
         test( 'should preserve filter parameters when submitting search', async ( {
             page,
         } ) => {
-            // Navigate to a page with filter parameters
-            await page.goto(
-                `/?p=${ postId }&post_type[]=post&post_type[]=page`
-            );
+            /*
+             * Pretty permalinks send /?p=ID to the post URL, and WordPress
+             * removes post_type on that redirect. Open the post first, then
+             * add the filters to the URL that remains.
+             */
+            await page.goto( `/?p=${ postId }` );
+            const filteredUrl = new URL( page.url() );
+            filteredUrl.searchParams.append( 'post_type[]', 'post' );
+            filteredUrl.searchParams.append( 'post_type[]', 'page' );
+            await page.goto( filteredUrl.href );
 
             const form = page.locator( '.dswp-search-bar__form' );
             const searchInput = page.locator( '.dswp-search-bar__input' );

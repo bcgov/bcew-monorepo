@@ -1,6 +1,18 @@
 {
-    "core": "WordPress/WordPress#6.8",
-    "phpVersion": "7.4",
-    "plugins": [ "." ],
-    "themes": [ "WordPress/twentytwentyfour" ]
+	"core": "WordPress/WordPress#6.8",
+	"phpVersion": "7.4",
+	"plugins": [
+		"."
+	],
+	"themes": [
+		"WordPress/twentytwentyfour"
+	],
+	"config": {
+		"WP_AUTO_UPDATE_CORE": false
+	},
+	"port": 9022,
+	"testsPort": 9023,
+	"lifecycleScripts": {
+		"afterStart": "wp-env run tests-cli bash -c 'wp theme activate twentytwentyfour && wp plugin activate wordpress-search'"
+	}
 }
