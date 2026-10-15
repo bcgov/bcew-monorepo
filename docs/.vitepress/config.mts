@@ -140,7 +140,6 @@ function packageDocsSection(
       // Keep developer-facing topics grouped under their audience label.
       sidebarItems.push({
         text: 'Developer Docs',
-        link: `${link}developer-docs`,
         collapsed: true,
         items: buildSidebarForDir(
           resolve(docsDir, 'developer'),
