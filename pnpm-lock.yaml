@@ -388,6 +388,9 @@ importers:
       '@wordpress/api-fetch':
         specifier: 'catalog:'
         version: 7.8.2
+      '@wordpress/base-styles':
+        specifier: 'catalog:'
+        version: 5.8.3
       '@wordpress/block-editor':
         specifier: 'catalog:'
         version: 14.3.16(@date-fns/tz@1.5.0)(@emotion/is-prop-valid@1.4.0)(@types/react-dom@18.3.7(@types/react@18.3.31))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@6.0.3))
@@ -397,6 +400,9 @@ importers:
       '@wordpress/components':
         specifier: 'catalog:'
         version: 28.8.12(@emotion/is-prop-valid@1.4.0)(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@wordpress/core-data':
+        specifier: 'catalog:'
+        version: 7.8.16(@date-fns/tz@1.5.0)(@emotion/is-prop-valid@1.4.0)(@types/react-dom@18.3.7(@types/react@18.3.31))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint@16.26.1(typescript@6.0.3))
       '@wordpress/data':
         specifier: 'catalog:'
         version: 10.8.4(@types/react@18.3.31)(react@18.3.1)
@@ -407,15 +413,15 @@ importers:
         specifier: 'catalog:'
         version: 5.8.2
     devDependencies:
+      '@bcew-monorepo/e2e':
+        specifier: workspace:*
+        version: link:../../packages/e2e
       '@playwright/test':
         specifier: 'catalog:'
         version: 1.61.1
       '@wordpress/e2e-test-utils-playwright':
         specifier: 'catalog:'
-        version: 1.8.1(@playwright/test@1.61.1)(encoding@0.1.13)(typescript@6.0.3)
-      '@wordpress/scripts':
-        specifier: 'catalog:'
-        version: 31.8.0(@playwright/test@1.61.1)(@swc/core@1.15.47(@swc/helpers@0.5.23))(@types/node@26.6.4)(@types/react@18.3.31)(@types/webpack@4.41.40)(@wordpress/env@11.16.0(@types/node@26.6.4))(babel-plugin-macros@3.1.0)(esbuild@0.27.7)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(stylelint-scss@6.14.0(stylelint@16.26.1(typescript@6.0.3)))(type-fest@4.41.0)(typescript@6.0.3)(vite@7.3.7(@types/node@26.6.4)(sass@1.101.0)(terser@5.49.0)(yaml@2.9.1))
+        version: 1.8.1(@playwright/test@1.61.1)(encoding@0.1.13)(typescript@5.3.3)
 
   themes/bcew-belleville-terminal:
     devDependencies:
