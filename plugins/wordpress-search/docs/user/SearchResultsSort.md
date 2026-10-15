@@ -1,7 +1,6 @@
 # Search Results Sort Block
 
 Enables users to reorder search results by various fields and sort directions.
-![`Search Results Sort`:](./SEARCH_RESULTS_SORT.png)
 
 ## Features
 

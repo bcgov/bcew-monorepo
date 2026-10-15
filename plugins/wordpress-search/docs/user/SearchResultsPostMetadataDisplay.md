@@ -1,7 +1,6 @@
 # Search Results Post Metadata Display Block
 
 Displays custom metadata and taxonomy information for each search result.
-![`Search Results Post Metadata Display`:](./SEARCH_RESULTS_METADATA.png)
 
 ## Features
 

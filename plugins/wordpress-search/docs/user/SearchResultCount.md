@@ -1,7 +1,6 @@
 # Search Result Count Block
 
 Displays the total number of search results.
-![`Search Result Count`:](./SEARCH_RESULT_COUNT.png)
 
 ## Features
 

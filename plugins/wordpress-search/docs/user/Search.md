@@ -1,7 +1,6 @@
 # Search Block
 
 Provides a search input field for querying posts and documents.
-![`Search Bar`:](./SEARCH_BAR.png)
 
 ## Features
 

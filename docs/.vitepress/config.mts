@@ -148,18 +148,14 @@ function packageDocsSection(
         )
       });
     }
-    const visibleSidebarItems =
-      name === 'wordpress-search'
-        ? sidebarItems.filter((item) => item.text !== 'Blocks')
-        : sidebarItems;
 
     return [
-      visibleSidebarItems.length > 0
+      sidebarItems.length > 0
         ? {
             text: getPackageDisplayName(name),
             link,
             collapsed: true,
-            items: visibleSidebarItems
+            items: sidebarItems
           }
         : { text: getPackageDisplayName(name), link }
     ];

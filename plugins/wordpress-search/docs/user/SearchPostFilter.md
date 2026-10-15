@@ -1,7 +1,6 @@
 # Search Post Filter Block
 
 Enables filtering search results by post type and custom metadata.
-![`Search Post Filter`:](./SEARCH_POST_TYPE_FILTER.png)
 
 ## Features
 
