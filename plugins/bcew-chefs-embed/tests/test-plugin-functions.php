@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Integration tests for core plugin functions in bcew-chefs-embed.php.
  *
@@ -15,6 +14,7 @@ use Bcgov\BcewChefsEmbed\Settings;
  * Tests for plugin functions.
  */
 class PluginFunctionsTest extends \WP_UnitTestCase {
+
 
 
     /**
