@@ -431,19 +431,34 @@ class CredentialsTest extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Register the built chefs-form block with its real render template.
+	 * Register the CHEFS Form block with its source render template.
 	 *
-	 * Other tests replace the registration with a stub, so reset it here.
+	 * Rendering the built template from dist would not count toward source
+	 * coverage, which only includes the src directory.
 	 *
 	 * @return void
 	 */
-	private function register_built_block() {
+	private function register_source_render_block() {
 		$registry = \WP_Block_Type_Registry::get_instance();
 		if ( $registry->is_registered( 'bcew-chefs-embed/chefs-form' ) ) {
 			$registry->unregister( 'bcew-chefs-embed/chefs-form' );
 		}
 
-		register_block_type_from_metadata( dirname( __DIR__ ) . '/dist/chefs-form' );
+		register_block_type(
+			'bcew-chefs-embed/chefs-form',
+			array(
+				'attributes'      => array(
+					'formId'       => array( 'type' => 'string' ),
+					'token'        => array( 'type' => 'string' ),
+					'confirmation' => array( 'type' => 'string' ),
+				),
+				'render_callback' => static function ( $attributes, $content, $block ) {
+					ob_start();
+					require dirname( __DIR__ ) . '/src/chefs-form/render.php';
+					return (string) ob_get_clean();
+				},
+			)
+		);
 	}
 
 	/**
@@ -473,7 +488,7 @@ class CredentialsTest extends \WP_UnitTestCase {
 	 * @return array{html: string, calls: int}
 	 */
 	private function render_form_with_auth_response( $response ) {
-		$this->register_built_block();
+		$this->register_source_render_block();
 		CredentialsManager::install();
 		CredentialsManager::save( $this->form_id, 'test-api-key-value' );
 
@@ -538,7 +553,7 @@ class CredentialsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_block_render_adds_token_and_confirmation_without_exposing_api_key() {
-		$this->register_built_block();
+		$this->register_source_render_block();
 		$user_id = self::factory()->user->create( array( 'role' => 'author' ) );
 		CredentialsManager::install();
 		CredentialsManager::save( $this->form_id, 'test-api-key-value', $user_id );
@@ -571,7 +586,7 @@ class CredentialsTest extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_block_render_unknown_form_id_has_no_token() {
-		$this->register_built_block();
+		$this->register_source_render_block();
 		CredentialsManager::install();
 
 		$http_calls = 0;
