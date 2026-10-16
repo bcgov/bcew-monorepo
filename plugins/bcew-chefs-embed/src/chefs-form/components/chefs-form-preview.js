@@ -8,7 +8,7 @@ import ensureChefsFormViewerDefined from '../utils/ensure-chefs-form-viewer';
 /**
  * Editor preview for a selected CHEFS form.
  *
- * Fetches a short-lived token from embed-config, loads the CHEFS web component,
+ * Gets a short-lived token from the server-rendered block, loads the CHEFS web component,
  * and renders it read-only so the form cannot be submitted in the editor.
  *
  * @param {Object} props        Component props.
@@ -43,8 +43,12 @@ const ChefsFormPreview = ( { formId } ) => {
             }
 
             try {
-                const config = await apiFetch( {
-                    path: `/bcew-chefs-embed/v1/embed-config?formId=${ encodeURIComponent(
+                /*
+                 * The core block-renderer route (edit_posts only) runs the
+                 * block's render.php, where the token is added server-side.
+                 */
+                const { rendered } = await apiFetch( {
+                    path: `/wp/v2/block-renderer/bcew-chefs-embed/chefs-form?context=edit&attributes[formId]=${ encodeURIComponent(
                         formId
                     ) }`,
                 } );
@@ -53,10 +57,18 @@ const ChefsFormPreview = ( { formId } ) => {
                     return;
                 }
 
-                if ( ! config?.token || ! config?.baseUrl ) {
+                const renderedViewer = new DOMParser()
+                    .parseFromString( rendered, 'text/html' )
+                    .querySelector( 'chefs-form-viewer' );
+                const config = {
+                    token: renderedViewer?.getAttribute( 'auth-token' ),
+                    baseUrl: renderedViewer?.getAttribute( 'base-url' ),
+                };
+
+                if ( ! config.token || ! config.baseUrl ) {
                     throw new Error(
                         __(
-                            'CHEFS returned an invalid embed configuration.',
+                            'Unable to load the CHEFS form.',
                             'bcew-chefs-embed'
                         )
                     );
