@@ -14,6 +14,8 @@ import { resolve } from 'node:path';
  * - Deletes and recreates `docs/content/` on each run (prevents stale files).
  * - Copies all plugin/theme docs folders into namespaced output directories.
  * - Skips packages that do not contain a `docs/` folder.
+ * - Copies every file as-is, including topic pages under `user/` and `developer/`;
+ *   the VitePress config lists user topics directly and groups developer topics.
  */
 // Centralized docs output consumed by the root VitePress site.
 const repoRoot = resolve( import.meta.dirname, '..' );

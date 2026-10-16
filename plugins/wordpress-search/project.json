@@ -1,0 +1,48 @@
+{
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "name": "wordpress-search",
+    "root": "plugins/wordpress-search",
+    "sourceRoot": "plugins/wordpress-search/src",
+    "projectType": "application",
+    "generators": {
+        "bcew-monorepo:plugin": {
+            "name": "WordPress Search",
+            "description": "WordPress Search Plugin"
+        }
+    },
+    "targets": {
+        "composer-install": {},
+        "build": {
+            "options": {
+                "command": "npm run build",
+                "forwardAllArgs": false
+            },
+            "outputs": [
+                "{projectRoot}/build",
+                "{projectRoot}/Blocks/build"
+            ]
+        },
+        "start": {
+            "options": {
+                "command": "npm run start",
+                "forwardAllArgs": false
+            }
+        },
+        "start-playwright": {},
+        "test-e2e": {},
+        "test-e2e-docker": {},
+        "test-screenshot": {},
+        "test-screenshot-generate": {},
+        "test-integration": {
+            "dependsOn": ["composer-install", "build", "wp-env-start"],
+            "options": {
+                "command": "wp-env run tests-cli --env-cwd=wp-content/plugins/wordpress-search composer test"
+            }
+        },
+        "wp-env-start": {},
+        "wp-env-clean": {},
+        "wp-env-stop": {}
+    },
+    "implicitDependencies": ["packages/phpunit-config/"],
+    "tags": ["type:wp-plugin"]
+}

@@ -1,0 +1,17 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "bcew-blocks/header",
+    "version": "0.1.0",
+    "title": "Header",
+    "category": "theme",
+    "keywords": [ "header" ],
+    "icon": "admin-home",
+    "description": "Site header.",
+    "supports": {
+        "html": false,
+        "align": [ "wide", "full" ]
+    },
+    "textdomain": "bcew-blocks",
+    "editorScript": "file:./index.js"
+}

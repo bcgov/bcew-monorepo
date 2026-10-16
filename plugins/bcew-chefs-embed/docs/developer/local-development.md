@@ -1,0 +1,50 @@
+# Local development
+
+Run commands from the monorepo root.
+
+## Install dependencies
+
+```shell
+pnpm install
+npx nx run bcew-chefs-embed:composer-install
+```
+
+The Composer target installs the plugin's PHP development dependencies. The plugin requires PHP 7.4.
+
+## Build and start WordPress
+
+```shell
+npx nx run bcew-chefs-embed:build
+npx nx run bcew-chefs-embed:wp-env-start
+```
+
+The local site is available at `http://localhost:9012`. WordPress Admin is available at `http://localhost:9012/wp-admin`. The CHEFS settings page is available at `http://localhost:9012/wp-admin/admin.php?page=bcew-chefs-embed-settings`.
+The test environment uses port `9013` and is used by the Playwright targets. It is separate from the normal development site on port `9012`.
+
+The `wp-env` lifecycle script activates the plugin after the environment starts. Build the assets again after changing block JavaScript, styles, or metadata.
+
+## CHEFS authentication mock
+
+The package-local `wp-env` configuration enables `BCEW_CHEFS_E2E_MOCK` only for
+the Playwright test WordPress container on port `9013`. This installs a
+server-side `pre_http_request` filter for the CHEFS authentication endpoint, so
+automated tests do not call the live CHEFS service.
+
+The mock accepts only the explicit Form ID and API key pairs used by the E2E
+fixtures. An unknown Form ID returns a `404` `Bad formId` response, and a known
+Form ID with a different API key returns a `403` response. This is important
+for manual testing: arbitrary credentials must fail during the settings save,
+rather than being saved and failing later with an invalid gateway token in the
+block editor.
+
+The development WordPress site on port `9012` does not enable the mock, so
+developers can manually test real Form ID and API key combinations against
+CHEFS. The mock is also not enabled in production. Do not add real API keys to
+the fixture allowlist or commit them anywhere in the repository.
+
+## Stop or reset WordPress
+
+```shell
+npx nx run bcew-chefs-embed:wp-env-stop
+npx nx run bcew-chefs-embed:wp-env-clean
+```
