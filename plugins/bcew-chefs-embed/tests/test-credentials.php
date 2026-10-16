@@ -452,7 +452,8 @@ class CredentialsTest extends \WP_UnitTestCase {
 					'token'        => array( 'type' => 'string' ),
 					'confirmation' => array( 'type' => 'string' ),
 				),
-				'render_callback' => static function ( $attributes, $content, $block ) {
+				'render_callback' => static function ( ...$args ) {
+					$attributes = $args[0];
 					ob_start();
 					require dirname( __DIR__ ) . '/src/chefs-form/render.php';
 					return (string) ob_get_clean();
