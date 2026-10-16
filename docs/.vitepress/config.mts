@@ -1,4 +1,4 @@
-import { existsSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { defineConfig } from 'vitepress';
 
@@ -27,48 +27,7 @@ const packageDisplayNames: Record<string, string> = {
   'bcew-ticorp': 'BCEW TI Corp'
 };
 
-const docTitleOverrides: Record<string, string> = {
-  SiteEditor: 'Site Editor',
-  Developers: 'Developers',
-  Patterns: 'Patterns',
-  HowToUsePatterns: 'How to Use Patterns',
-  PatternsOverview: 'Patterns Overview',
-  DSWPCardWithHyperLinkList: 'Card with Hyperlink List',
-  DSWPDefaultHeading: 'Default Heading',
-  DSWPFooterWithTerritorialAcknowledgement: 'Footer with Territorial Acknowledgement',
-  DSWPHeadingWithParagraphs: 'Heading with Paragraphs',
-  DSWPHeroImageWithTitle: 'Hero Image with Title',
-  DSWPHorizontalCard: 'Horizontal Card',
-  DSWPHorizontalCardLargeImageLeft: 'Horizontal Card Large Image Left',
-  DSWPHorizontalCardLargeImageRight: 'Horizontal Card Large Image Right',
-  DSWPHorizontalCardNoShadow: 'Horizontal Card No Shadow',
-  DSWPIconWithExcerpt: 'Icon with Excerpt',
-  DSWPImageAndText: 'Image & Text',
-  DSWPImageAndTextFlipped: 'Image & Text Flipped',
-  DSWPInformationContactSocials: 'Information Contact Socials',
-  DSWPLinkWithArrow: 'Link with Arrow',
-  DSWPSecondaryHeroImageWithTitle: 'Secondary Hero Image with Title',
-  DSWPTeamPattern: 'Team Pattern',
-  DSWPVerticalCards: 'Vertical Cards',
-  DSWPVerticalCardsWithIcon: 'Vertical Cards with Icon',
-  PatternsTroubleShooting: 'Patterns Troubleshooting',
-  TemplateParts: 'Template Parts',
-  'user-docs': 'User Docs',
-  'developer-docs': 'Developer Docs',
-  'metadata-settings': 'Metadata Settings',
-  'bcew-document-repository-feature': 'Feature Overview',
-  icon: 'Icon',
-  'media-text-layout': 'Media & Text Layout',
-  overview: 'Overview'
-};
-
-const itemPriority: Record<string, number> = {
-  'Site Editor': 1,
-  'How to Use Patterns': 2,
-  'Patterns Overview': 3,
-  'Developers': 100
-};
-
+/** Returns the configured display name, or title-cases the package slug. */
 function getPackageDisplayName(name: string): string {
   if (packageDisplayNames[name]) {
     return packageDisplayNames[name];
@@ -79,75 +38,61 @@ function getPackageDisplayName(name: string): string {
     .join(' ');
 }
 
+/** Formats a markdown filename or folder name for display in the sidebar. */
 function formatDocTitle(key: string): string {
-  if (docTitleOverrides[key]) {
-    return docTitleOverrides[key];
-  }
   return key
     .replace(/^DSWP/, '')
     .replace(/([a-z])([A-Z])/g, '$1 $2')
     .replace(/-/g, ' ')
-    .replace(/\b\w/g, (l) => l.toUpperCase());
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
+/** Builds sidebar links for the markdown pages and folders beneath an audience. */
 function buildSidebarForDir(dirPath: string, urlPrefix: string): SidebarItem[] {
   if (!existsSync(dirPath)) {
     return [];
   }
 
-  const entries = readdirSync(dirPath, { withFileTypes: true });
+  // Keep topic navigation stable and alphabetical.
+  const entries = readdirSync(dirPath, { withFileTypes: true }).sort((a, b) =>
+    a.name.localeCompare(b.name)
+  );
   const items: SidebarItem[] = [];
 
   for (const entry of entries) {
     if (entry.isFile() && entry.name.endsWith('.md')) {
       const slug = entry.name.replace(/\.md$/, '');
-      if (slug === 'index' || slug === 'overview' || slug === 'README') {
+      if (slug === 'index' || slug === 'README') {
         continue;
       }
-      items.push({
-        text: formatDocTitle(slug),
-        link: `${urlPrefix}/${slug}`
-      });
+
+      const content = readFileSync(resolve(dirPath, entry.name), 'utf8');
+      const title = content.match(/^#\s+(.+)$/m)?.[1] ?? formatDocTitle(slug);
+      items.push({ text: title, link: `${urlPrefix}/${slug}` });
     } else if (
       entry.isDirectory() &&
       entry.name !== 'images' &&
       entry.name !== 'public' &&
       !entry.name.startsWith('.')
     ) {
-      if (entry.name === 'guide') {
-        const guideItems = buildSidebarForDir(
-          resolve(dirPath, 'guide'),
-          `${urlPrefix}/guide`
-        );
-        items.push(...guideItems);
-      } else {
-        const subItems = buildSidebarForDir(
-          resolve(dirPath, entry.name),
-          `${urlPrefix}/${entry.name}`
-        );
-        if (subItems.length > 0) {
-          items.push({
-            text: formatDocTitle(entry.name),
-            collapsed: true,
-            items: subItems
-          });
-        }
+      const subItems = buildSidebarForDir(
+        resolve(dirPath, entry.name),
+        `${urlPrefix}/${entry.name}`
+      );
+      if (subItems.length > 0) {
+        items.push({
+          text: formatDocTitle(entry.name),
+          collapsed: true,
+          items: subItems
+        });
       }
     }
   }
 
-  items.sort((a, b) => {
-    const priorityA = itemPriority[a.text] ?? 50;
-    const priorityB = itemPriority[b.text] ?? 50;
-    if (priorityA !== priorityB) {
-      return priorityA - priorityB;
-    }
-    return a.text.localeCompare(b.text);
-  });
-
   return items;
 }
 
+/** Builds a package sidebar with user topics at top level and grouped developer topics. */
 function packageDocsSection(
   dirName: 'plugins' | 'themes',
   sectionTitle: string
@@ -158,6 +103,7 @@ function packageDocsSection(
     .map((entry) => entry.name)
     .sort((a, b) => a.localeCompare(b));
 
+  // Build one sidebar item for each package that has an index page.
   const items = entries.flatMap((name) => {
     const docsIndex = resolve(baseDir, name, 'docs', 'index.md');
     if (!existsSync(docsIndex)) {
@@ -165,29 +111,44 @@ function packageDocsSection(
     }
 
     const docsDir = resolve(baseDir, name, 'docs');
-    const displayName = getPackageDisplayName(name);
-    const nestedItems = buildSidebarForDir(
-      docsDir,
-      `/content/${dirName}/${name}`
-    );
-    const sidebarItems = name === 'bcew-theme'
-      ? nestedItems.filter((item) => item.text === 'Developer Docs' || item.text === 'User Docs')
-      : nestedItems;
+    const link = `/content/${dirName}/${name}/`;
+    const sidebarItems: SidebarItem[] = [];
+
+    if (existsSync(resolve(docsDir, 'user-docs.md'))) {
+      // Put user-facing topics directly under the package.
+      sidebarItems.push(
+        ...buildSidebarForDir(resolve(docsDir, 'user'), `${link}user`)
+      );
+    }
+
+    if (existsSync(resolve(docsDir, 'developer-docs.md'))) {
+      // Keep developer-facing topics grouped under their audience label.
+      sidebarItems.push({
+        text: 'Developer Docs',
+        link: `${link}developer-docs`,
+        collapsed: true,
+        items: buildSidebarForDir(
+          resolve(docsDir, 'developer'),
+          `${link}developer`
+        )
+      });
+    }
 
     return [
       sidebarItems.length > 0
         ? {
-            text: displayName,
-            link: `/content/${dirName}/${name}/`,
-            collapsed: false,
+            text: getPackageDisplayName(name),
+            link,
+            collapsed: true,
             items: sidebarItems
           }
-        : { text: displayName, link: `/content/${dirName}/${name}/` }
+        : { text: getPackageDisplayName(name), link }
     ];
   });
 
   return {
     text: sectionTitle,
+    collapsed: true,
     items:
       items.length > 0
         ? items
@@ -201,7 +162,6 @@ function packageDocsSection(
 }
 
 const monorepoGuideItems = [
-  { text: 'Overview', link: '/' },
   { text: 'Getting started', link: '/getting-started' },
   { text: 'Documentation site', link: '/documentation-site' },
   { text: 'Architecture', link: '/architecture' },
@@ -227,9 +187,11 @@ export default defineConfig({
   srcExclude: ['**/README.md'],
   cleanUrls: true,
   markdown: {
+    /** Installs the custom Mermaid fence renderer while preserving others. */
     config(md) {
       const defaultFence = md.renderer.rules.fence;
 
+      // Render Mermaid fences as the site's MermaidDiagram component.
       md.renderer.rules.fence = (tokens, index, options, env, self) => {
         const token = tokens[index];
 
@@ -251,11 +213,12 @@ export default defineConfig({
     ],
     sidebar: [
       {
-        text: 'Monorepo',
+        text: 'Monorepo Guides',
+        collapsed: true,
         items: monorepoGuideItems
       },
-      packageDocsSection('plugins', 'Plugins'),
-      packageDocsSection('themes', 'Themes')
+      packageDocsSection('plugins', 'Plugins Guides'),
+      packageDocsSection('themes', 'Themes Guides')
     ],
     search: {
       provider: 'local'
