@@ -1,7 +1,8 @@
 # Search Taxonomy Filter Block
 
+![Search Taxonomy Filter Block](./images/SEARCH_TAXONOMY_FILTER.png)
+
 Enables filtering search results by WordPress taxonomies (categories, tags, custom taxonomies).
-![`Search Taxonomy Filter`:](/images/SEARCH_TAXONOMY_FILTER.png)
 
 ## Features
 
