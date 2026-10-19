@@ -18,11 +18,12 @@ const repoRoot = resolve(__dirname, '..', '..');
 
 const packageDisplayNames: Record<string, string> = {
   'bcew-theme': 'BC Extended Web Theme',
-  'bcew-plugin': 'BC Extended Web Plugin',
+  'bcew-plugin': 'BCEW Plugin',
   'bcew-belleville-terminal': 'BCEW Belleville Terminal',
   'bcew-blocks': 'BCEW Blocks',
   'bcew-chefs-embed': 'BCEW CHEFS Embed',
   'bcew-document-repository': 'BCEW Document Repository',
+  'wordpress-search': 'BCEW Search',
   'bcew-theme-2': 'BCEW Theme 2',
   'bcew-ticorp': 'BCEW TI Corp'
 };
@@ -75,16 +76,30 @@ function buildSidebarForDir(dirPath: string, urlPrefix: string): SidebarItem[] {
       entry.name !== 'public' &&
       !entry.name.startsWith('.')
     ) {
-      const subItems = buildSidebarForDir(
-        resolve(dirPath, entry.name),
-        `${urlPrefix}/${entry.name}`
-      );
-      if (subItems.length > 0) {
-        items.push({
-          text: formatDocTitle(entry.name),
-          collapsed: true,
-          items: subItems
-        });
+      if (entry.name === 'guide') {
+        const guideItems = buildSidebarForDir(
+          resolve(dirPath, 'guide'),
+          `${urlPrefix}/guide`
+        );
+        items.push(...guideItems);
+      } else {
+        const subDirPath = resolve(dirPath, entry.name);
+        const subItems = buildSidebarForDir(
+          subDirPath,
+          `${urlPrefix}/${entry.name}`
+        );
+        const indexPath = resolve(subDirPath, 'index.md');
+        if (subItems.length > 0 || existsSync(indexPath)) {
+          items.push({
+            text: formatDocTitle(entry.name),
+            ...(existsSync(indexPath)
+              ? { link: `${urlPrefix}/${entry.name}/` }
+              : {}),
+            ...(subItems.length > 0
+              ? { collapsed: true, items: subItems }
+              : {})
+          });
+        }
       }
     }
   }
@@ -114,18 +129,17 @@ function packageDocsSection(
     const link = `/content/${dirName}/${name}/`;
     const sidebarItems: SidebarItem[] = [];
 
-    if (existsSync(resolve(docsDir, 'user-docs.md'))) {
+    if (existsSync(resolve(docsDir, 'user'))) {
       // Put user-facing topics directly under the package.
       sidebarItems.push(
         ...buildSidebarForDir(resolve(docsDir, 'user'), `${link}user`)
       );
     }
 
-    if (existsSync(resolve(docsDir, 'developer-docs.md'))) {
+    if (existsSync(resolve(docsDir, 'developer'))) {
       // Keep developer-facing topics grouped under their audience label.
       sidebarItems.push({
         text: 'Developer Docs',
-        link: `${link}developer-docs`,
         collapsed: true,
         items: buildSidebarForDir(
           resolve(docsDir, 'developer'),
