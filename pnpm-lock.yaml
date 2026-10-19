@@ -494,7 +494,7 @@ importers:
         specifier: 'catalog:'
         version: 1.8.1(@playwright/test@1.61.1)(encoding@0.1.13)(supports-color@10.2.2)(typescript@5.3.3)
 
-  themes/design-system-wordpress-child-theme-hporoo:
+  themes/bcew-hporoo:
     devDependencies:
       '@bcew-monorepo/e2e':
         specifier: workspace:*
