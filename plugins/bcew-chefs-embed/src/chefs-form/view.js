@@ -246,7 +246,7 @@ const showSuccess = ( mount, customMessage ) => {
 /**
  * Mount a CHEFS form viewer for one block root.
  *
- * @param {HTMLElement} root Block wrapper.
+ * @param {HTMLElement} root Block wrapper with data-form-id.
  * @return {Promise<void>}
  */
 const mountChefsForm = async ( root ) => {
