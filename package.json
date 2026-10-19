@@ -39,7 +39,7 @@
     "vitepress": "catalog:"
   },
   "devDependencies": {
-    "@nx/playwright": "23.0.2",
+    "@nx/playwright": "23.3.0",
     "nx": "23.0.2"
   },
   "peerDependencies": {
