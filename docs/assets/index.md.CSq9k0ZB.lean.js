@@ -1,0 +1,1 @@
+import{_t as e,it as t,n,rt as r}from"./chunks/framework.DmGhRbf7.js";var i=JSON.parse(`{"title":"BCEW Monorepo Documentation","description":"","frontmatter":{},"headers":[],"relativePath":"index.md","filePath":"index.md"}`),a={name:`index.md`};function o(n,i,a,o,s,c){return e(),r(`div`,null,[...i[0]||=[t("",9)]])}var s=n(a,[[`render`,o]]);export{i as __pageData,s as default};
