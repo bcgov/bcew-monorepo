@@ -10,6 +10,8 @@ const {
     getFormSuccess,
     getFormViewer,
     mockChefsFormRoutes,
+    CHEFS_BASE_URL,
+    E2E_TOKEN,
     publishFormAndVisit,
     selectSavedFormId,
 } = require( './chefs-form-helpers' );
@@ -19,33 +21,28 @@ test.describe( 'CHEFS Form frontend', () => {
         await clearSavedForms( admin, page );
     } );
 
-    test( 'published page markup includes Form ID only and shows generic success after submit', async ( {
+    test( 'published page markup includes the server-fetched token and shows generic success after submit', async ( {
         admin,
         editor,
         page,
     } ) => {
         const formId = '77777777-7777-4777-8777-777777777777';
-        const mockBaseUrl = 'https://chefs-frontend.test/app';
-        const mockToken = 'frontend-token-secret';
         const response = await publishFormAndVisit( admin, editor, page, {
             formId,
             apiKey: 'frontend-test-api-key',
-            token: mockToken,
-            baseUrl: mockBaseUrl,
         } );
         const serverHtml = await response.text();
         expect( serverHtml ).toContain( `data-form-id="${ formId }"` );
         expect( serverHtml ).not.toContain( 'frontend-test-api-key' );
-        expect( serverHtml ).not.toContain( mockToken );
-        expect( serverHtml ).not.toContain( 'auth-token' );
+        expect( serverHtml ).toContain( `auth-token="${ E2E_TOKEN }"` );
         expect( serverHtml ).not.toContain( 'api-key' );
         const block = await getFormBlock( page );
         await expect( block ).toHaveAttribute( 'data-form-id', formId );
         const viewer = await getFormViewer( page );
         await expect( viewer ).toBeAttached();
         await expect( viewer ).toHaveAttribute( 'form-id', formId );
-        await expect( viewer ).toHaveAttribute( 'auth-token', mockToken );
-        await expect( viewer ).toHaveAttribute( 'base-url', mockBaseUrl );
+        await expect( viewer ).toHaveAttribute( 'auth-token', E2E_TOKEN );
+        await expect( viewer ).toHaveAttribute( 'base-url', CHEFS_BASE_URL );
         await expect( viewer ).not.toHaveAttribute( 'read-only' );
         await expect( viewer ).toHaveAttribute(
             'auto-reload-on-submit',
@@ -74,8 +71,6 @@ test.describe( 'CHEFS Form frontend', () => {
         await publishFormAndVisit( admin, editor, page, {
             formId: 'cccccccc-dddd-4eee-8fff-111111111111',
             apiKey: 'frontend-error-handler-key',
-            token: 'frontend-error-handler-token',
-            baseUrl: 'https://chefs-frontend.test/app',
             loadError: {
                 error: {
                     title: 'Bad Request',
@@ -123,8 +118,6 @@ test.describe( 'CHEFS Form frontend', () => {
         await publishFormAndVisit( admin, editor, page, {
             formId: 'cccccccc-dddd-4eee-8fff-000000000000',
             apiKey: 'frontend-custom-api-key',
-            token: 'frontend-custom-success-token',
-            baseUrl: 'https://chefs-frontend.test/app',
             confirmation: customMessage,
         } );
         const viewer = page.locator( 'chefs-form-viewer' );
@@ -148,12 +141,8 @@ test.describe( 'CHEFS Form frontend', () => {
     } ) => {
         const formId = '99999999-9999-4999-8999-999999999999';
         const formUrl = `https://submit.digital.gov.bc.ca/app/form/submit?f=${ formId }`;
-        const mockBaseUrl = 'https://chefs-frontend.test/app';
         await addSavedForm( admin, page, formUrl, 'frontend-url-api-key' );
-        await mockChefsFormRoutes( page, {
-            token: 'frontend-url-token',
-            baseUrl: mockBaseUrl,
-        } );
+        await mockChefsFormRoutes( page );
         await admin.createNewPost();
         await editor.insertBlock( { name: BLOCK_NAME } );
         await ensureBlockSettingsVisible( editor, page );
@@ -174,41 +163,6 @@ test.describe( 'CHEFS Form frontend', () => {
         await expect( block ).not.toHaveAttribute( 'data-form-id', formUrl );
         const viewer = await getFormViewer( page );
         await expect( viewer ).toHaveAttribute( 'form-id', formId );
-        await expect( viewer ).toHaveAttribute( 'base-url', mockBaseUrl );
-    } );
-
-    test( 'published page shows an error when embed-config fails', async ( {
-        admin,
-        editor,
-        page,
-    } ) => {
-        const formId = '88888888-8888-4888-8888-888888888888';
-        await addSavedForm( admin, page, formId, 'frontend-error-api-key' );
-        await page.route(
-            /bcew-chefs-embed(\/|%2F)v1(\/|%2F)embed-config/,
-            async ( route ) => {
-                await route.fulfill( {
-                    status: 404,
-                    contentType: 'application/json',
-                    body: JSON.stringify( {
-                        code: 'chefs_form_not_configured',
-                        message: 'Unable to load the CHEFS form configuration.',
-                    } ),
-                } );
-            }
-        );
-        await admin.createNewPost();
-        await editor.insertBlock( { name: BLOCK_NAME } );
-        await ensureBlockSettingsVisible( editor, page );
-        await selectSavedFormId( page, formId );
-        const postId = await editor.publishPost();
-        expect( postId ).not.toBeNull();
-        await page.context().clearCookies();
-        await page.goto( `/?p=${ postId }` );
-        await expect(
-            page.getByRole( 'alert' ).filter( {
-                hasText: 'Unable to load the CHEFS form configuration.',
-            } )
-        ).toBeVisible();
+        await expect( viewer ).toHaveAttribute( 'base-url', CHEFS_BASE_URL );
     } );
 } );

@@ -10,7 +10,7 @@ The CHEFS Form block embeds a BC Government CHEFS form on the page. In the edito
 
 - It depends on an external service (CHEFS) and does not render all content from static block attributes alone.
 - Form credentials are managed in plugin settings by administrators, not entered by content authors in the block.
-- Runtime authentication is handled through a REST endpoint that exchanges the saved credentials for a short-lived token.
+- Runtime authentication happens server-side while the block renders: the saved credentials are exchanged for a short-lived token, with no public REST endpoint.
 - It is a dynamic integration block: the final form experience is mounted by external viewer logic at runtime rather than being purely saved markup.
 
 

@@ -21,9 +21,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
+use Bcgov\BcewChefsEmbed\ChefsClient;
 use Bcgov\BcewChefsEmbed\CredentialsManager;
-use Bcgov\BcewChefsEmbed\EmbedConfigController;
 use Bcgov\BcewChefsEmbed\E2eChefsMock;
+
+const BCEW_CHEFS_EMBED_BLOCK_NAME = 'bcew-chefs-embed/chefs-form';
 
 /**
  * Load Composer autoloader when present.
@@ -39,12 +41,45 @@ add_action( 'rest_api_init', 'bcew_chefs_embed_register_rest_routes' );
 // Ensure the credentials table exists even if activation ran before Composer autoload was available.
 add_action( 'plugins_loaded', 'bcew_chefs_embed_maybe_install_credentials_table' );
 
-add_action( 'rest_api_init', array( EmbedConfigController::class, 'register_routes' ) );
-
 // E2E tests run against a local wp-env and must not depend on the live CHEFS
 // service. The mock is enabled only by the test environment.
 if ( defined( 'BCEW_CHEFS_E2E_MOCK' ) && BCEW_CHEFS_E2E_MOCK ) {
 	add_filter( 'pre_http_request', array( E2eChefsMock::class, 'pre_http_request' ), 10, 3 );
+}
+
+add_filter( 'render_block_data', 'bcew_chefs_embed_add_token_to_block_data' );
+
+/**
+ * Add a short-lived CHEFS token and confirmation message to the chefs-form block attributes.
+ *
+ * The token is fetched server-side only, so no public REST route is needed.
+ * The API key never leaves the server.
+ *
+ * @param array $parsed_block Parsed block data.
+ * @return array
+ */
+function bcew_chefs_embed_add_token_to_block_data( $parsed_block ) {
+	if ( BCEW_CHEFS_EMBED_BLOCK_NAME !== ( $parsed_block['blockName'] ?? '' ) ) {
+		return $parsed_block;
+	}
+
+	$form_id     = sanitize_text_field( (string) ( $parsed_block['attrs']['formId'] ?? '' ) );
+	$credentials = '' === $form_id ? null : CredentialsManager::get_by_form_id( $form_id );
+
+	// Without saved credentials no token can be fetched; render.php shows an error.
+	if ( ! $credentials ) {
+		return $parsed_block;
+	}
+
+	$authentication = ( new ChefsClient() )->authenticate( $credentials['form_id'], $credentials['api_key'] );
+
+	if ( ! empty( $authentication['success'] ) && ! empty( $authentication['token'] ) ) {
+		$parsed_block['attrs']['token'] = $authentication['token'];
+	}
+
+	$parsed_block['attrs']['confirmation'] = (string) CredentialsManager::get_confirmation( $form_id );
+
+	return $parsed_block;
 }
 
 /**
@@ -102,7 +137,7 @@ function bcew_chefs_embed_init() {
 		wp_register_block_types_from_metadata_collection( __DIR__ . '/dist', __DIR__ . '/dist/blocks-manifest.php' );
 
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			$registered_block = \WP_Block_Type_Registry::get_instance()->is_registered( 'bcew-chefs-embed/chefs-form' );
+			$registered_block = \WP_Block_Type_Registry::get_instance()->is_registered( BCEW_CHEFS_EMBED_BLOCK_NAME );
 			error_log( sprintf( 'bcew-chefs-embed: metadata collection registration complete; chefs-form registered=%s', $registered_block ? 'yes' : 'no' ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 		}
 	} else {
@@ -128,7 +163,7 @@ function bcew_chefs_embed_init() {
 		}
 
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			$registered_block = \WP_Block_Type_Registry::get_instance()->is_registered( 'bcew-chefs-embed/chefs-form' );
+			$registered_block = \WP_Block_Type_Registry::get_instance()->is_registered( BCEW_CHEFS_EMBED_BLOCK_NAME );
 			error_log( sprintf( 'bcew-chefs-embed: fallback registration complete; chefs-form registered=%s', $registered_block ? 'yes' : 'no' ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 		}
 	}
@@ -157,7 +192,7 @@ function bcew_chefs_embed_register_editor_settings() {
 	}
 
 	// Resolve the registered block type so we can discover its editor script handle.
-	$block_type = \WP_Block_Type_Registry::get_instance()->get_registered( 'bcew-chefs-embed/chefs-form' );
+	$block_type = \WP_Block_Type_Registry::get_instance()->get_registered( BCEW_CHEFS_EMBED_BLOCK_NAME );
 
 	// If the block is not registered yet or has no editor script, there is nothing to attach.
 	if ( ! $block_type || empty( $block_type->editor_script_handles ) ) {
@@ -199,8 +234,6 @@ function bcew_chefs_embed_register_rest_routes() {
 			],
 		]
 	);
-
-	// The embed-config route is registered by EmbedConfigController::register_routes().
 }
 
 /**
