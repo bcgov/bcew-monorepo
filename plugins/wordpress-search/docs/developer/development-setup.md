@@ -7,8 +7,8 @@ This guide covers the source layout and local development commands for `bcew-sea
 Run commands from the monorepo root. Install workspace dependencies once with `pnpm install`.
 
 ```bash
-pnpm --filter wordpress-search build
-pnpm --filter wordpress-search start
+pnpm --filter bcew-search build
+pnpm --filter bcew-search start
 ```
 
 ## Local WordPress environment
@@ -16,6 +16,6 @@ pnpm --filter wordpress-search start
 To start or stop the local WordPress environment:
 
 ```bash
-pnpm exec nx run wordpress-search:wp-env-start
-pnpm exec nx run wordpress-search:wp-env-stop
+pnpm exec nx run bcew-search:wp-env-start
+pnpm exec nx run bcew-search:wp-env-stop
 ```
