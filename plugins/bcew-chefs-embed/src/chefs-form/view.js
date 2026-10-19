@@ -211,7 +211,7 @@ const GENERIC_SUCCESS_MESSAGE = 'Your form has been submitted successfully';
  * Inline (not a modal): not dismissible; cleared when the page is refreshed.
  *
  * @param {HTMLElement} mount         Mount element.
- * @param {string|null} customMessage Custom confirmation from the block markup.
+ * @param {string|null} customMessage Custom confirmation from embed-config.
  */
 const showSuccess = ( mount, customMessage ) => {
     /*
