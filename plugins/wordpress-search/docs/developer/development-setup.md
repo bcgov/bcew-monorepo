@@ -16,6 +16,6 @@ pnpm --filter wordpress-search start
 To start or stop the local WordPress environment:
 
 ```bash
-pnpm --filter wordpress-search run wp-env start
-pnpm --filter wordpress-search run wp-env stop
+pnpm exec nx run wordpress-search:wp-env-start
+pnpm exec nx run wordpress-search:wp-env-stop
 ```

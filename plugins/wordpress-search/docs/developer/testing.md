@@ -2,15 +2,12 @@
 
 Run test commands from the monorepo root.
 
-## Unit tests
+## PHP integration tests
 
-```bash
-pnpm --filter wordpress-search run test:unit:js
-pnpm --filter wordpress-search run test:unit:php
-```
+    pnpm exec nx run wordpress-search:test-integration
 
 ## End-to-end tests
 
 ```bash
-pnpm --filter wordpress-search run test:e2e
+pnpm exec nx run wordpress-search:test-e2e
 ```
