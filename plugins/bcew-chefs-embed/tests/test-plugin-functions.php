@@ -158,14 +158,14 @@ class PluginFunctionsTest extends \WP_UnitTestCase {
      * @return void
      */
     public function test_init_does_not_error() {
-        // The block is likely already registered from prior tests.
-        // Calling init should gracefully handle this.
-        // Suppress the "already registered" error by WordPress for this test.
-        $this->setExpectedIncorrectUsage( 'WP_Block_Type_Registry::register' );
+        // Other tests register or unregister this block, so start from a known state.
+        $registry = \WP_Block_Type_Registry::get_instance();
+        if ( $registry->is_registered( 'bcew-chefs-embed/chefs-form' ) ) {
+            $registry->unregister( 'bcew-chefs-embed/chefs-form' );
+        }
 
         bcew_chefs_embed_init();
 
-        $registry = \WP_Block_Type_Registry::get_instance();
         $this->assertTrue( $registry->is_registered( 'bcew-chefs-embed/chefs-form' ) );
     }
 }
