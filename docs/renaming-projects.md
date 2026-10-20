@@ -158,7 +158,9 @@ git commit -m "Add <new-slug> pre-release for rename testing"
 
 **4.** Push to `development` (or open a PR to `development` and merge). Wait for deploy to test.
 
-**5.** Log in to `test.vanity.blog.gov.bc.ca/wp-admin`:
+**5.** Log in to `test.vanity.blog.gov.bc.ca/wp-admin`.
+
+**Theme only:** first network-enable it at [Network Admin → Themes](https://test.vanity.blog.gov.bc.ca/wp-admin/network/themes.php). Until it is network-enabled, it cannot be selected in a site's wp-admin on test.
 
 - **Plugin:** Plugins → deactivate `<old-slug>` → activate `<new-slug>`
 - **Theme:** Appearance → Themes → activate `<new-slug>`
