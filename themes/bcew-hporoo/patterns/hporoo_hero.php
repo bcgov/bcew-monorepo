@@ -1,7 +1,7 @@
 <?php
 /**
  * Title: HPOROO Hero Image with Title
- * Slug: bcew-hporoo/hporoo-hero
+ * Slug: design-system-wordpress-child-theme-hporoo/hporoo-hero
  * Categories: uncategorized
  *
  * @package Design-System-WordPress-Theme

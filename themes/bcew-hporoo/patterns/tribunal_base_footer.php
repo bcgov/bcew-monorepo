@@ -1,7 +1,7 @@
 <?php
 /**
  * Title: Tribunal Base Footer
- * Slug: bcew-hporoo/tribunal-base-footer
+ * Slug: design-system-wordpress-child-theme-hporoo/tribunal-base-footer
  * Categories: footer
  *
  * @package Design-System-WordPress-Theme

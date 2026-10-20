@@ -1,7 +1,7 @@
 <?php
 /**
  * Title: HPOROO Base Footer
- * Slug: bcew-hporoo/hporoo-base-footer
+ * Slug: design-system-wordpress-child-theme-hporoo/hporoo-base-footer
  * Categories: footer
  *
  * @package Design-System-WordPress-Theme
