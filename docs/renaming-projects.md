@@ -55,6 +55,11 @@ After the folder rename, find the old name again inside `plugins/<new-slug>/` or
 
 Search again for the old slug in `.php`, `.js`, `.jsx`, `.ts`, `.tsx`, `.scss`, and `.css` files inside this project.
 
+**For themes:** Also check:
+
+- `Text Domain:` in `style.css` — leave unset if it is not currently set (do not introduce one just to rename)
+- `textDomain` in `theme.json` — leave unset if it is not currently set
+
 **Change these together** — if you rename a CSS class, update the matching rule in SCSS/CSS, the `className` in JS, and any HTML or PHP that outputs it in the same edit:
 
 | Kind                                   | Change                                                                                                     |
@@ -75,12 +80,24 @@ See step 5 before changing any string that might already be saved on a live site
 | `.github/labeler.yml`       | Rename the project key and path to `plugins/<new-slug>/**` or `themes/<new-slug>/**` (or add if new) |
 | `.github/workflows/tag.yml` | **Add** `<new-slug>` to the project dropdown (imported standalones were never listed here)           |
 
-**Child theme using this as parent** (only other project you may touch):
+**Important:** Step 4 must be done **before testing on the blog repo** (step 7). The new slug must be in `tag.yml` or the release workflow will fail.
 
-| File           | Change                                    |
-| -------------- | ----------------------------------------- |
-| `style.css`    | `Template:` → `<new-slug>`                |
-| `.wp-env.json` | parent path → `"../../themes/<new-slug>"` |
+**For child themes:** Also check `<new-slug>` for parent theme references that might need updating:
+
+| File           | Change                                                                  |
+| -------------- | ----------------------------------------------------------------------- |
+| `style.css`    | `Template:` → `<new-slug>` (if this theme is a child of `<new-slug>`)   |
+| `.wp-env.json` | parent path → `"../../themes/<new-slug>"` (if applicable)               |
+
+**For themes with template parts or block patterns:** After you rename the folder and update `project.json`, also check these files:
+
+| File | Change |
+| ---- | ------ |
+| Template part `theme` attribute in `parts/*.html`, `templates/*.html` | Update `"theme":"<old-slug>"` → `"theme":"<new-slug>"` *(the slug must match the active theme slug)* |
+| Pattern slug references in `patterns/*.php` and template files | Update `"theme":"<old-slug>"` in `wp:pattern` references and template-part blocks to `"theme":"<new-slug>"` *(the slug must match the active theme slug)* |
+| Screenshot/Playwright tests | If the theme has visual regression tests (e.g. `patterns.spec.js`), update the theme slug in test files. Pattern slugs themselves keep the old prefix (stored data). |
+
+See step 5 before changing pattern or template slugs that might be saved on a live site.
 
 ## 5. Do not change stored names
 
@@ -98,6 +115,12 @@ Rename the **package** (folder, Composer name, plugin header). Do not rename **d
 | Post content, patterns, or upload folder paths               | CSS classes in saved HTML, media URL paths              |
 | `__( '…', 'text-domain' )` owned by another package          | Shared text domains (for example `bcgov-design-system`) |
 | Composer `autoload` `psr-4`                                  | PHP namespace (unless the ticket says to change it)     |
+| Template part names (`wp:template-part` `name` field)        | Template part slugs (internal identifiers)              |
+| Pattern slug prefix in headers and pattern references        | Prefixed pattern slugs (e.g. `<old-slug>/pattern-name`) |
+
+**For themes with template parts:** The `theme` attribute in `wp:template-part` blocks *must* match the active theme slug. Change the `theme` attribute to the new slug, but do not change the `slug` (name) of the template part itself.
+
+**For themes with block patterns:** Prefixed pattern slugs (e.g. `<old-slug>/pattern-name`) are stored data in blocks. Do not change the prefix — it keeps patterns accessible when the theme is updated. Only change the `theme` attribute in template-part references to match the new theme slug.
 
 When in doubt, leave it and note it on the ticket.
 
@@ -113,6 +136,16 @@ pnpm lint
 ```
 
 Run this project’s tests. Click through admin, the front end, and the main feature.
+
+**For themes with screenshot tests:** If snapshots render the theme slug (for example, the site title), regenerate them:
+
+```bash
+npx nx run <new-slug>:test-screenshot-generate
+```
+
+Review the diff — only snapshots that display the slug should change. Pure renames and path changes should be handled by git.
+
+**Final sweep:** Check that `git status` shows renames (`R`), not delete+add, for unchanged files. This confirms `git mv` worked correctly.
 
 ```bash
 npx nx run <new-slug>:wp-env-stop
@@ -132,7 +165,7 @@ Blog repo: [blog_gov_bc_ca](https://bitbucket.org/bc-gov/blog_gov_bc_ca) on Bitb
 2. GitHub → **bcew-monorepo → Actions → Release Subproject and Update packages.json → Run workflow**.
 3. **Use workflow from:** your rename feature branch — not `main`. The rename is not merged yet, so `main` does not have `<new-slug>` in `tag.yml` and would release the wrong project or fail.
 4. **Project to release:** `<new-slug>`
-5. Leave **Alpha** ticked. A new name has no `{project}/v*` tags, so the workflow releases `1.0.0-alpha.1`.
+5. Leave **Alpha** ticked. A new name has no `{project}/v*` tags, so the workflow releases `1.0.0-alpha.1`. Each run will push a `chore(release): publish` commit with version bumps to your branch, so use `git pull --rebase` before pushing later changes.
 6. Run it. Wait for green. The log prints the version. This publishes a zip to GitHub Releases and adds `bcgov-plugin/<new-slug>` or `bcgov-theme/<new-slug>` to [packages.json](https://bcgov.github.io/bcew-monorepo/).
 
 ### Blog repo: install the pre-release on test
@@ -160,20 +193,55 @@ git commit -m "Add <new-slug> pre-release for rename testing"
 
 **5.** Log in to `test.vanity.blog.gov.bc.ca/wp-admin`.
 
-**Theme only:** first network-enable it at [Network Admin → Themes](https://test.vanity.blog.gov.bc.ca/wp-admin/network/themes.php). Until it is network-enabled, it cannot be selected in a site's wp-admin on test.
+**Theme only:** Before activating the new theme, first network-enable it at [Network Admin → Themes](https://test.vanity.blog.gov.bc.ca/wp-admin/network/themes.php). Until it is network-enabled, it cannot be selected in a site's wp-admin on test.
+
+**6.** Activate the new name and deactivate the old:
 
 - **Plugin:** Plugins → deactivate `<old-slug>` → activate `<new-slug>`
-- **Theme:** Appearance → Themes → activate `<new-slug>`
+- **Theme:** Appearance → Themes → deactivate `<old-slug>` → activate `<new-slug>`
 
-**6.** Click through admin, front end, and the main feature — same checks as step 6.
+The old name must be **off** and the new name **on** for testing.
 
-Record the test result in the monorepo PR. Confirm the new theme is active and wp-admin loads, then verify the front page, pages, single entries, search results, 404, project-specific templates, navigation, header, footer, and page layouts. List any issues found, or explicitly state that no issues were found.
+**7.** Click through admin, front end, and the main feature — same checks as step 6 (locally). For themes, verify:
 
-The old name must be **off** and the new name **on**. Then open the monorepo PR.
+- Admin interface loads without errors
+- Front page, pages, and single entries render correctly
+- Search results, 404 page, and project-specific templates display properly
+- Navigation, header, footer, and page layouts are correct
+- Any theme-specific features (patterns, parts, custom templates) work as expected
+
+**8.** Record the test result in the monorepo PR:
+
+- Confirm the new package (`<new-slug>`) is active on TEST
+- Record which features were tested and whether any issues were found
+- If no issues were found, explicitly state that
+
+Then open the monorepo PR.
 
 ## 8. Open the PR
 
-Open the monorepo pull request when test runs the **new slug**.
+**Do not open the PR until test runs the new slug** (step 7).
+
+When opening, include in the PR body:
+
+- Old and new names/slugs
+- Summary of what was changed (folder rename, metadata, pattern slug references, etc.)
+- What was intentionally left unchanged (pattern slug prefixes, PHP namespaces, etc.)
+- If a theme: note about regenerated screenshot snapshots (only display-name snapshots should change)
+- TEST validation results: what was tested and any issues found (or explicit statement that none were found)
+- Commit message reference: note if the bot added version/CHANGELOG commits (this is normal)
+
+**Plugin example title:**
+
+```text
+refactor(plugin-name): rename to new name
+```
+
+**Theme example title:**
+
+```text
+refactor(theme-name): rename theme to New Display Name
+```
 
 ## 9. Production (later)
 
