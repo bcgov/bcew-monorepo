@@ -167,6 +167,8 @@ git commit -m "Add <new-slug> pre-release for rename testing"
 
 **6.** Click through admin, front end, and the main feature — same checks as step 6.
 
+Record the test result in the monorepo PR. Confirm the new theme is active and wp-admin loads, then verify the front page, pages, single entries, search results, 404, project-specific templates, navigation, header, footer, and page layouts. List any issues found, or explicitly state that no issues were found.
+
 The old name must be **off** and the new name **on**. Then open the monorepo PR.
 
 ## 8. Open the PR
