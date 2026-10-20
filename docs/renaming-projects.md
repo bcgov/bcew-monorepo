@@ -130,7 +130,7 @@ Blog repo: [blog_gov_bc_ca](https://bitbucket.org/bc-gov/blog_gov_bc_ca) on Bitb
 
 1. Push your monorepo branch.
 2. GitHub → **bcew-monorepo → Actions → Release Subproject and Update packages.json → Run workflow**.
-3. **Use workflow from:** your branch
+3. **Use workflow from:** your rename feature branch — not `main`. The rename is not merged yet, so `main` does not have `<new-slug>` in `tag.yml` and would release the wrong project or fail.
 4. **Project to release:** `<new-slug>`
 5. Leave **Alpha** ticked. A new name has no `{project}/v*` tags, so the workflow releases `1.0.0-alpha.1`.
 6. Run it. Wait for green. The log prints the version. This publishes a zip to GitHub Releases and adds `bcgov-plugin/<new-slug>` or `bcgov-theme/<new-slug>` to [packages.json](https://bcgov.github.io/bcew-monorepo/).
