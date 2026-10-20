@@ -1,7 +1,7 @@
 {
     "$schema": "https://schemas.wp.org/trunk/theme.json",
     "version": 3,
-    "title": "HPOROO Child Theme",
+    "title": "BC Extended Web HPOROO",
     "templateParts": [
         {
             "area": "footer",

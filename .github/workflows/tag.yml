@@ -29,7 +29,7 @@ on:
           - bcew-chefs-embed
           - bcew-theme
           - bcew-plugin
-          - design-system-wordpress-child-theme-hporoo
+          - bcew-hporoo
           - design-system-wordpress-child-theme-firb
       alpha:
         description: 'Alpha'

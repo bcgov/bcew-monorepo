@@ -1,13 +1,13 @@
 {
     "$schema": "../../node_modules/nx/schemas/project-schema.json",
-    "name": "design-system-wordpress-child-theme-hporoo",
-    "root": "themes/design-system-wordpress-child-theme-hporoo",
-    "sourceRoot": "themes/design-system-wordpress-child-theme-hporoo/src",
+    "name": "bcew-hporoo",
+    "root": "themes/bcew-hporoo",
+    "sourceRoot": "themes/bcew-hporoo/src",
     "projectType": "application",
     "generators": {
         "bcew-monorepo:theme": {
-            "name": "design-system-wordpress-child-theme-hporoo",
-            "slug": "design-system-wordpress-child-theme-hporoo"
+            "name": "BC Extended Web HPOROO",
+            "slug": "bcew-hporoo"
         }
     },
     "targets": {

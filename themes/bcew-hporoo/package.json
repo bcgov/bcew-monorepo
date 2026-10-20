@@ -1,0 +1,29 @@
+{
+    "name": "bcew-hporoo",
+    "version": "1.0.0-alpha.2",
+    "description": "BC Extended Web HPOROO",
+    "author": "govwordpress@gov.bc.ca",
+    "license": "GPL-2.0-or-later",
+    "keywords": [
+        "WordPress",
+        "Block Theme",
+        "BCGov",
+        "DesignSystem",
+        "Gutenberg"
+    ],
+    "homepage": "https://github.com/bcgov/bcew-monorepo/tree/main/themes/bcew-hporoo",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/bcgov/bcew-monorepo.git",
+        "directory": "themes/bcew-hporoo"
+    },
+    "bugs": {
+        "url": "https://github.com/bcgov/bcew-monorepo/issues",
+        "email": "govwordpress@gov.bc.ca"
+    },
+    "main": "src/index.js",
+    "devDependencies": {
+        "@bcew-monorepo/e2e": "workspace:*",
+        "@playwright/test": "catalog:"
+    }
+}

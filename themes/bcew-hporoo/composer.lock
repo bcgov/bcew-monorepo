@@ -4,12 +4,12 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8f90b663c36904e0f1283d732ef40b75",
+    "content-hash": "9274faf17087f91d79f6b9a32d7c25e4",
     "packages": [],
     "packages-dev": [
         {
             "name": "bcew-monorepo/phpunit-config",
-            "version": "dev-chore/dswp-1089-align-hporoo-structure",
+            "version": "dev-main",
             "dist": {
                 "type": "path",
                 "url": "../../packages/phpunit-config",

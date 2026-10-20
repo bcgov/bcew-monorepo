@@ -1,6 +1,6 @@
 {
-    "name": "bcgov-theme/design-system-wordpress-child-theme-hporoo",
-    "description": "Design System WordPress HPOROO Child Theme",
+    "name": "bcgov-theme/bcew-hporoo",
+    "description": "BC Extended Web HPOROO",
     "type": "wordpress-theme",
     "license": "Apache-2.0",
     "repositories": [

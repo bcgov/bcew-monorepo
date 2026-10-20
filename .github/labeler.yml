@@ -47,9 +47,9 @@ themes/bcew-theme:
     - changed-files:
         - any-glob-to-any-file: 'themes/bcew-theme/**'
 
-themes/design-system-wordpress-child-theme-hporoo:
+themes/bcew-hporoo:
     - changed-files:
-        - any-glob-to-any-file: 'themes/design-system-wordpress-child-theme-hporoo/**'
+        - any-glob-to-any-file: 'themes/bcew-hporoo/**'
 
 themes/design-system-wordpress-child-theme-firb:
     - changed-files:

@@ -426,10 +426,15 @@ export const createStylebookTests = () => {
 /**
  * Creates a test suite that renders each pattern for visual regression testing.
  *
- * @param {string}   themeSlug Theme slug to use as prefix for patterns.
- * @param {string[]} patterns  Array of pattern names to test.
+ * @param {string}   themeSlug        Theme slug; also the default pattern prefix.
+ * @param {string[]} patterns         Array of pattern names to test.
+ * @param {string}   patternNamespace Pattern slug prefix, when it differs from the theme slug (for example after a rename).
  */
-export const createPatternTests = ( themeSlug: string, patterns: string[] ) => {
+export const createPatternTests = (
+    themeSlug: string,
+    patterns: string[],
+    patternNamespace: string = themeSlug
+) => {
     test.describe( 'pattern', () => {
         test.beforeEach( async ( { admin } ) => {
             await admin.createNewPost();
@@ -437,7 +442,10 @@ export const createPatternTests = ( themeSlug: string, patterns: string[] ) => {
 
         for ( const pattern of patterns ) {
             test( pattern, async ( { editor } ) => {
-                await renderPattern( editor, `${ themeSlug }/${ pattern }` );
+                await renderPattern(
+                    editor,
+                    `${ patternNamespace }/${ pattern }`
+                );
             } );
         }
     } );

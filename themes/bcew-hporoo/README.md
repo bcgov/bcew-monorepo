@@ -1,4 +1,4 @@
-# Design System WordPress Theme Child Theme: HPOROO
+# BC Extended Web HPOROO
 
 HPOROO is a BCEW child theme. Its parent theme is `bcew-theme`.
 
@@ -9,13 +9,13 @@ Development environment setup and shared monorepo workflows are documented in [G
 Run commands from the monorepo root:
 
 ```bash
-npx nx run design-system-wordpress-child-theme-hporoo:build
+npx nx run bcew-hporoo:build
 ```
 
 For watch mode:
 
 ```bash
-npx nx run design-system-wordpress-child-theme-hporoo:start
+npx nx run bcew-hporoo:start
 ```
 
 ## Visual Regression Testing
@@ -25,19 +25,19 @@ Screenshot tests are in `tests/screenshot/`.
 Start the local WordPress environment when needed:
 
 ```bash
-npx nx run design-system-wordpress-child-theme-hporoo:wp-env-start
+npx nx run bcew-hporoo:wp-env-start
 ```
 
 Run screenshot regression tests:
 
 ```bash
-npx nx run design-system-wordpress-child-theme-hporoo:test-screenshot
+npx nx run bcew-hporoo:test-screenshot
 ```
 
 Generate updated snapshots for intentional visual changes:
 
 ```bash
-npx nx run design-system-wordpress-child-theme-hporoo:test-screenshot-generate
+npx nx run bcew-hporoo:test-screenshot-generate
 ```
 
 The screenshot suite is defined in `tests/screenshot/style-book.spec.ts` and

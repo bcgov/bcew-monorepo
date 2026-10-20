@@ -130,7 +130,7 @@ Blog repo: [blog_gov_bc_ca](https://bitbucket.org/bc-gov/blog_gov_bc_ca) on Bitb
 
 1. Push your monorepo branch.
 2. GitHub → **bcew-monorepo → Actions → Release Subproject and Update packages.json → Run workflow**.
-3. **Use workflow from:** your branch
+3. **Use workflow from:** your rename feature branch — not `main`. The rename is not merged yet, so `main` does not have `<new-slug>` in `tag.yml` and would release the wrong project or fail.
 4. **Project to release:** `<new-slug>`
 5. Leave **Alpha** ticked. A new name has no `{project}/v*` tags, so the workflow releases `1.0.0-alpha.1`.
 6. Run it. Wait for green. The log prints the version. This publishes a zip to GitHub Releases and adds `bcgov-plugin/<new-slug>` or `bcgov-theme/<new-slug>` to [packages.json](https://bcgov.github.io/bcew-monorepo/).
@@ -158,12 +158,16 @@ git commit -m "Add <new-slug> pre-release for rename testing"
 
 **4.** Push to `development` (or open a PR to `development` and merge). Wait for deploy to test.
 
-**5.** Log in to `test.vanity.blog.gov.bc.ca/wp-admin`:
+**5.** Log in to `test.vanity.blog.gov.bc.ca/wp-admin`.
+
+**Theme only:** first network-enable it at [Network Admin → Themes](https://test.vanity.blog.gov.bc.ca/wp-admin/network/themes.php). Until it is network-enabled, it cannot be selected in a site's wp-admin on test.
 
 - **Plugin:** Plugins → deactivate `<old-slug>` → activate `<new-slug>`
 - **Theme:** Appearance → Themes → activate `<new-slug>`
 
 **6.** Click through admin, front end, and the main feature — same checks as step 6.
+
+Record the test result in the monorepo PR. Confirm the new theme is active and wp-admin loads, then verify the front page, pages, single entries, search results, 404, project-specific templates, navigation, header, footer, and page layouts. List any issues found, or explicitly state that no issues were found.
 
 The old name must be **off** and the new name **on**. Then open the monorepo PR.
 
