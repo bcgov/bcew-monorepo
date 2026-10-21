@@ -58,6 +58,15 @@ add_filter(
 		);
 		$found_font_src = false;
 		$policy         = explode( ';', $headers['Content-Security-Policy'] );
+		$default_sources = array();
+
+		foreach ( $policy as $directive ) {
+			$parts = preg_split( '/\s+/', trim( $directive ) );
+			if ( 'default-src' === array_shift( $parts ) ) {
+				$default_sources = $parts;
+				break;
+			}
+		}
 
 		foreach ( $policy as &$directive ) {
 			$parts = preg_split( '/\s+/', trim( $directive ) );
@@ -79,6 +88,18 @@ add_filter(
 			$directive = implode( ' ', array_merge( array( $name ), $parts ) );
 		}
 		unset( $directive );
+
+		if ( ! empty( $default_sources ) ) {
+			foreach ( array( 'script-src', 'style-src' ) as $name ) {
+				if ( isset( $found[ $name ] ) ) {
+					continue;
+				}
+
+				$inherited_sources = array_diff( $default_sources, array( "'none'" ) );
+				$directive_sources = array_unique( array_merge( $inherited_sources, $sources[ $name ] ) );
+				$policy[]          = $name . ' ' . implode( ' ', $directive_sources );
+			}
+		}
 
 		if ( ! $found_font_src ) {
 			$policy[] = 'font-src *.gov.bc.ca';

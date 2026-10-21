@@ -164,6 +164,45 @@ class PluginBootstrapTest extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Missing script and style directives inherit the policy's default sources.
+	 *
+	 * @return void
+	 */
+	public function test_wp_headers_create_script_and_style_sources_from_default() {
+		$headers = apply_filters(
+			'wp_headers',
+			array(
+				'Content-Security-Policy' => "default-src 'self'",
+			)
+		);
+
+		$csp = $headers['Content-Security-Policy'];
+
+		$this->assertStringContainsString( "default-src 'self'", $csp );
+		$this->assertStringContainsString( "script-src 'self' cdn.form.io", $csp );
+		$this->assertStringContainsString( "style-src 'self' *.gov.bc.ca cdn.form.io fonts.googleapis.com", $csp );
+	}
+
+	/**
+	 * Missing script and style directives are not created without a default-src directive.
+	 *
+	 * @return void
+	 */
+	public function test_wp_headers_do_not_create_script_or_style_sources_without_default() {
+		$headers = apply_filters(
+			'wp_headers',
+			array(
+				'Content-Security-Policy' => "img-src 'self'",
+			)
+		);
+
+		$csp = $headers['Content-Security-Policy'];
+
+		$this->assertStringNotContainsString( 'script-src ', $csp );
+		$this->assertStringNotContainsString( 'style-src ', $csp );
+	}
+
+	/**
 	 * Script and style element directives are extended without changing attribute directives.
 	 *
 	 * @return void
