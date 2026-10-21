@@ -100,7 +100,7 @@ jobs:
         run: |
           set -euo pipefail
           if [[ -n "${STARTVERSION:-}" ]]; then
-            VERSION="${STARTVERSION}"
+            VERSION="$STARTVERSION"
           else
             VERSION="$(node .github/scripts/next-release-version-cli.mjs "${NAME}" "${ALPHA}")"
           fi
