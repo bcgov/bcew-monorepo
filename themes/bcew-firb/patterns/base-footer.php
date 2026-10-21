@@ -405,6 +405,6 @@
         <!-- /wp:columns -->
     </div>
     <!-- /wp:group -->
-    <!-- wp:template-part {"slug":"secondary-footer","theme":"design-system-wordpress-child-theme-firb","area":"uncategorized"} /-->
+    <!-- wp:template-part {"slug":"secondary-footer","theme":"bcew-firb","area":"uncategorized"} /-->
 </div>
 <!-- /wp:group -->

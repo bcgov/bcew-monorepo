@@ -51,9 +51,9 @@ themes/bcew-hporoo:
     - changed-files:
         - any-glob-to-any-file: 'themes/bcew-hporoo/**'
 
-themes/design-system-wordpress-child-theme-firb:
+themes/bcew-firb:
     - changed-files:
-        - any-glob-to-any-file: 'themes/design-system-wordpress-child-theme-firb/**'
+        - any-glob-to-any-file: 'themes/bcew-firb/**'
 
 plugins/wordpress-search:
     - changed-files:

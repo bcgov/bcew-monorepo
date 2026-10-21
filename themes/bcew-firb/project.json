@@ -1,13 +1,13 @@
 {
     "$schema": "../../node_modules/nx/schemas/project-schema.json",
-    "name": "design-system-wordpress-child-theme-firb",
-    "root": "themes/design-system-wordpress-child-theme-firb",
-    "sourceRoot": "themes/design-system-wordpress-child-theme-firb/src",
+    "name": "bcew-firb",
+    "root": "themes/bcew-firb",
+    "sourceRoot": "themes/bcew-firb/src",
     "projectType": "application",
     "generators": {
         "bcew-monorepo:theme": {
-            "name": "design-system-wordpress-child-theme-firb",
-            "slug": "design-system-wordpress-child-theme-firb"
+            "name": "BC Extended Web FIRB",
+            "slug": "bcew-firb"
         }
     },
     "targets": {

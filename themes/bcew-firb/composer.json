@@ -1,6 +1,6 @@
 {
-  "name": "bcgov-theme/design-system-wordpress-child-theme-firb",
-  "description": "Design System WordPress Child Theme FIRB",
+  "name": "bcgov-theme/bcew-firb",
+  "description": "BC Extended Web FIRB",
   "type": "wordpress-theme",
   "license": "Apache-2.0",
   "repositories": [
