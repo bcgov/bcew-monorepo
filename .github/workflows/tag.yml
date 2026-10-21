@@ -37,7 +37,6 @@ on:
         default: true
       start_version:
         description: 'Start Version (leave blank, if unsure) example 1.0.0-alpha.1'
-        default: ""
         type: string
 
 # Share the lock with tag-delete.yml so packages.json is not written by two jobs at once.
@@ -96,7 +95,7 @@ jobs:
           PACKAGES_JSON_URL: https://${{ github.repository_owner }}.github.io/bcew-monorepo/packages.json
           NAME: ${{ inputs.name }}
           ALPHA: ${{ inputs.alpha }}
-          STARTVERSION: $${{ inputs.start_version }}
+          STARTVERSION: ${{ inputs.start_version }}
         run: |
           set -euo pipefail
           if [[ -n "${STARTVERSION:-}" ]]; then
