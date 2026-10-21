@@ -49,15 +49,15 @@ add_filter(
 			return $headers;
 		}
 
-		$sources = array(
+		$sources         = array(
 			'script-src'      => array( 'cdn.form.io' ),
 			'script-src-elem' => array( 'cdn.form.io' ),
 			'style-src'       => array( '*.gov.bc.ca', 'cdn.form.io', 'fonts.googleapis.com' ),
 			'style-src-elem'  => array( '*.gov.bc.ca', 'cdn.form.io', 'fonts.googleapis.com' ),
 			'font-src'        => array( '*.gov.bc.ca' ),
 		);
-		$found_font_src = false;
-		$policy         = explode( ';', $headers['Content-Security-Policy'] );
+		$found_font_src  = false;
+		$policy          = explode( ';', $headers['Content-Security-Policy'] );
 		$default_sources = array();
 
 		foreach ( $policy as $directive ) {
@@ -75,6 +75,7 @@ add_filter(
 				continue;
 			}
 
+			$found[ $name ] = true;
 			if ( 'font-src' === $name ) {
 				$found_font_src = true;
 			}
