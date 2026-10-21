@@ -18,8 +18,6 @@
     <coverage>
         <include>
             <directory>../../../src</directory>
-            <!-- Plugin entry file; PHPUnit skips it when a package has no such file. -->
-            <file>../../../bcew-chefs-embed.php</file>
         </include>
         <exclude>
             <directory>../../../tests/</directory>
