@@ -30,7 +30,7 @@ on:
           - bcew-theme
           - bcew-plugin
           - bcew-hporoo
-          - design-system-wordpress-child-theme-firb
+          - bcew-firb
       alpha:
         description: 'Alpha'
         type: boolean

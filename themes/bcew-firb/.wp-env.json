@@ -14,6 +14,6 @@
 	"port": 9020,
 	"testsPort": 9021,
 	"lifecycleScripts": {
-		"afterStart": "wp-env run cli bash -c 'wp theme activate design-system-wordpress-child-theme-firb && wp plugin activate bcew-plugin' && wp-env run tests-cli bash -c 'wp theme activate design-system-wordpress-child-theme-firb && wp plugin activate bcew-plugin'"
+		"afterStart": "wp-env run cli bash -c 'wp theme activate bcew-firb && wp plugin activate bcew-plugin' && wp-env run tests-cli bash -c 'wp theme activate bcew-firb && wp plugin activate bcew-plugin'"
 	}
 }
