@@ -62,7 +62,6 @@ function bcew_chefs_embed_extend_csp_header( $headers ) {
 		'style-src-elem'  => array( '*.gov.bc.ca', 'cdn.form.io', 'fonts.googleapis.com' ),
 		'font-src'        => array( '*.gov.bc.ca' ),
 	);
-	$found_font_src  = false;
 	$found           = array();
 	$policy          = explode( ';', $headers['Content-Security-Policy'] );
 	$default_sources = array();
@@ -83,10 +82,6 @@ function bcew_chefs_embed_extend_csp_header( $headers ) {
 		}
 
 		$found[ $name ] = true;
-		if ( 'font-src' === $name ) {
-			$found_font_src = true;
-		}
-
 		foreach ( $sources[ $name ] as $source ) {
 			if ( ! in_array( $source, $parts, true ) ) {
 				$parts[] = $source;
@@ -97,8 +92,10 @@ function bcew_chefs_embed_extend_csp_header( $headers ) {
 	}
 	unset( $directive );
 
+	// A missing directive falls back to default-src, so copy those sources before adding ours.
+	// Without a default-src nothing is restricted, so we must not introduce a restriction.
 	if ( ! empty( $default_sources ) ) {
-		foreach ( array( 'script-src', 'style-src' ) as $name ) {
+		foreach ( array( 'script-src', 'style-src', 'font-src' ) as $name ) {
 			if ( isset( $found[ $name ] ) ) {
 				continue;
 			}
@@ -107,10 +104,6 @@ function bcew_chefs_embed_extend_csp_header( $headers ) {
 			$directive_sources = array_unique( array_merge( $inherited_sources, $sources[ $name ] ) );
 			$policy[]          = $name . ' ' . implode( ' ', $directive_sources );
 		}
-	}
-
-	if ( ! $found_font_src ) {
-		$policy[] = 'font-src *.gov.bc.ca';
 	}
 
 	$headers['Content-Security-Policy'] = implode( ';', $policy );

@@ -148,19 +148,19 @@ class PluginBootstrapTest extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * A font-src directive is added when the existing policy does not define one.
+	 * A missing font-src keeps the fonts inherited from default-src.
 	 *
 	 * @return void
 	 */
-	public function test_wp_headers_add_font_source_when_missing() {
+	public function test_wp_headers_font_source_keeps_inherited_sources() {
 		$headers = apply_filters(
 			'wp_headers',
 			array(
-				'Content-Security-Policy' => "default-src 'self'; script-src 'self'; style-src 'self'",
+				'Content-Security-Policy' => "default-src 'self' data:; script-src 'self'; style-src 'self'",
 			)
 		);
 
-		$this->assertStringContainsString( 'font-src *.gov.bc.ca', $headers['Content-Security-Policy'] );
+		$this->assertStringContainsString( "font-src 'self' data: *.gov.bc.ca", $headers['Content-Security-Policy'] );
 	}
 
 	/**
@@ -200,6 +200,7 @@ class PluginBootstrapTest extends \WP_UnitTestCase {
 
 		$this->assertStringNotContainsString( 'script-src ', $csp );
 		$this->assertStringNotContainsString( 'style-src ', $csp );
+		$this->assertStringNotContainsString( 'font-src ', $csp );
 	}
 
 	/**
