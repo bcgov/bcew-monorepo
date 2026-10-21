@@ -43,12 +43,13 @@ tsconfig.tsbuildinfo
 .nx/cache
 .nx/workspace-data
 
-# AI agent config (tools require these exact locations, so they can't move)
+# AI agent files
+# Config: tools require these exact locations, so they can't move
 AGENTS.md
 .github/skills/
 .github/prompts/
 .github/agents/*.md
-.playwright-mcp/
-
 # Planning and assessment docs: put them all in .plans/
 .plans/
+# Playwright MCP session output
+.playwright-mcp/
