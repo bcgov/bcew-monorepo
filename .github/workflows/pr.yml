@@ -16,6 +16,9 @@ permissions:
 
 env:
     NX_DEFAULT_OUTPUT_STYLE: static
+    # wp-env pins Xdebug 3.1.6 for PHP 7, which PECL no longer serves.
+    # Use PHP 8.2 for CI wp-env tests; project-local PHP settings stay unchanged.
+    WP_ENV_PHP_VERSION: '8.2'
 
 jobs:
     labeler:
@@ -115,8 +118,8 @@ jobs:
                     docker tag "mirror.gcr.io/library/${image}" "${image}"
                   }
                   pull mariadb:lts
-                  pull wordpress:php7.4
-                  pull wordpress:cli-php7.4
+                  pull wordpress:php8.2
+                  pull wordpress:cli-php8.2
 
             - name: Run affected PHP integration tests
               if: github.event_name == 'pull_request'
@@ -261,8 +264,8 @@ jobs:
                     docker tag "mirror.gcr.io/library/${image}" "${image}"
                   }
                   pull mariadb:lts
-                  pull wordpress:php7.4
-                  pull wordpress:cli-php7.4
+                  pull wordpress:php8.2
+                  pull wordpress:cli-php8.2
 
             - name: Start playwright container
               run: docker compose up -d --wait playwright || { docker logs playwright; exit 1; }
