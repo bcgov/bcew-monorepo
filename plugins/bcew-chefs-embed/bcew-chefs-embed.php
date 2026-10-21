@@ -49,27 +49,42 @@ add_filter(
 			return $headers;
 		}
 
-		$headers['Content-Security-Policy'] = str_replace(
-			'script-src',
-			'script-src cdn.form.io',
-			$headers['Content-Security-Policy']
+		$sources = array(
+			'script-src'      => array( 'cdn.form.io' ),
+			'script-src-elem' => array( 'cdn.form.io' ),
+			'style-src'       => array( '*.gov.bc.ca', 'cdn.form.io', 'fonts.googleapis.com' ),
+			'style-src-elem'  => array( '*.gov.bc.ca', 'cdn.form.io', 'fonts.googleapis.com' ),
+			'font-src'        => array( '*.gov.bc.ca' ),
 		);
-		$headers['Content-Security-Policy'] = str_replace(
-			'style-src',
-			'style-src *.gov.bc.ca cdn.form.io fonts.googleapis.com',
-			$headers['Content-Security-Policy']
-		);
+		$found_font_src = false;
+		$policy         = explode( ';', $headers['Content-Security-Policy'] );
 
-        // Add font-src (for BC Sans from *.gov.bc.ca) if not already present.
-		if ( false !== strpos( $headers['Content-Security-Policy'], 'font-src' ) ) {
-			$headers['Content-Security-Policy'] = str_replace(
-				'font-src',
-				'font-src *.gov.bc.ca',
-				$headers['Content-Security-Policy']
-			);
-		} else {
-			$headers['Content-Security-Policy'] .= '; font-src *.gov.bc.ca';
+		foreach ( $policy as &$directive ) {
+			$parts = preg_split( '/\s+/', trim( $directive ) );
+			$name  = array_shift( $parts );
+			if ( ! isset( $sources[ $name ] ) ) {
+				continue;
+			}
+
+			if ( 'font-src' === $name ) {
+				$found_font_src = true;
+			}
+
+			foreach ( $sources[ $name ] as $source ) {
+				if ( ! in_array( $source, $parts, true ) ) {
+					$parts[] = $source;
+				}
+			}
+
+			$directive = implode( ' ', array_merge( array( $name ), $parts ) );
 		}
+		unset( $directive );
+
+		if ( ! $found_font_src ) {
+			$policy[] = 'font-src *.gov.bc.ca';
+		}
+
+		$headers['Content-Security-Policy'] = implode( ';', $policy );
 
 		return $headers;
 	},

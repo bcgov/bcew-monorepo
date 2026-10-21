@@ -142,11 +142,9 @@ class PluginBootstrapTest extends \WP_UnitTestCase {
 
 		$csp = $headers['Content-Security-Policy'];
 
-		$this->assertStringContainsString( 'script-src cdn.form.io', $csp );
-		$this->assertStringContainsString( 'style-src *.gov.bc.ca', $csp );
-		$this->assertStringContainsString( 'cdn.form.io', $csp );
-		$this->assertStringContainsString( 'fonts.googleapis.com', $csp );
-		$this->assertStringContainsString( 'font-src *.gov.bc.ca', $csp );
+		$this->assertStringContainsString( "script-src 'self' cdn.form.io", $csp );
+		$this->assertStringContainsString( "style-src 'self' *.gov.bc.ca cdn.form.io fonts.googleapis.com", $csp );
+		$this->assertStringContainsString( "font-src 'self' *.gov.bc.ca", $csp );
 	}
 
 	/**
@@ -163,6 +161,29 @@ class PluginBootstrapTest extends \WP_UnitTestCase {
 		);
 
 		$this->assertStringContainsString( 'font-src *.gov.bc.ca', $headers['Content-Security-Policy'] );
+	}
+
+	/**
+	 * Script and style element directives are extended without changing attribute directives.
+	 *
+	 * @return void
+	 */
+	public function test_wp_headers_preserve_csp_attribute_directives() {
+		$headers = apply_filters(
+			'wp_headers',
+			array(
+				'Content-Security-Policy' => "script-src 'self'; script-src-elem 'self'; script-src-attr 'none'; style-src 'self'; style-src-elem 'self'; style-src-attr 'none'",
+			)
+		);
+
+		$csp = $headers['Content-Security-Policy'];
+
+		$this->assertStringContainsString( "script-src 'self' cdn.form.io", $csp );
+		$this->assertStringContainsString( "script-src-elem 'self' cdn.form.io", $csp );
+		$this->assertStringContainsString( "script-src-attr 'none'", $csp );
+		$this->assertStringContainsString( "style-src 'self' *.gov.bc.ca cdn.form.io fonts.googleapis.com", $csp );
+		$this->assertStringContainsString( "style-src-elem 'self' *.gov.bc.ca cdn.form.io fonts.googleapis.com", $csp );
+		$this->assertStringContainsString( "style-src-attr 'none'", $csp );
 	}
 
 	/**
