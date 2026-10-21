@@ -36,7 +36,7 @@ on:
         type: boolean
         default: true
       start_version:
-        description: 'Start Version (leave blank, if unsure)'
+        description: 'Start Version (leave blank, if unsure) example 1.0.0-alpha.1'
         default: ""
         type: string
 
@@ -99,7 +99,11 @@ jobs:
           STARTVERSION: $${{ inputs.start_version }}
         run: |
           set -euo pipefail
-          VERSION="$(node .github/scripts/next-release-version-cli.mjs "${NAME}" "${ALPHA}" "${STARTVERSION}" )"
+          if [[ -n "${STARTVERSION:-}" ]]; then
+            VERSION="${STARTVERSION}"
+          else
+            VERSION="$(node .github/scripts/next-release-version-cli.mjs "${NAME}" "${ALPHA}")"
+          fi
           # specifier is positional: `nx release 1.1.0-alpha.1`, not --specifier=.
           ARGS=(release "${VERSION}" --projects="${NAME}" --yes)
           # No tags yet: tell Nx to use package.json as the current version.
