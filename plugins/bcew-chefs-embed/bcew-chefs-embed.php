@@ -41,6 +41,41 @@ add_action( 'rest_api_init', 'bcew_chefs_embed_register_rest_routes' );
 // Ensure the credentials table exists even if activation ran before Composer autoload was available.
 add_action( 'plugins_loaded', 'bcew_chefs_embed_maybe_install_credentials_table' );
 
+// Add CHEFS resource origins to an existing Content Security Policy header.
+add_filter(
+	'wp_headers',
+	function ( $headers ) {
+		if ( empty( $headers['Content-Security-Policy'] ) ) {
+			return $headers;
+		}
+
+		$headers['Content-Security-Policy'] = str_replace(
+			'script-src',
+			'script-src cdn.form.io',
+			$headers['Content-Security-Policy']
+		);
+		$headers['Content-Security-Policy'] = str_replace(
+			'style-src',
+			'style-src *.gov.bc.ca cdn.form.io fonts.googleapis.com',
+			$headers['Content-Security-Policy']
+		);
+
+        // Add font-src (for BC Sans from *.gov.bc.ca) if not already present.
+		if ( false !== strpos( $headers['Content-Security-Policy'], 'font-src' ) ) {
+			$headers['Content-Security-Policy'] = str_replace(
+				'font-src',
+				'font-src *.gov.bc.ca',
+				$headers['Content-Security-Policy']
+			);
+		} else {
+			$headers['Content-Security-Policy'] .= '; font-src *.gov.bc.ca';
+		}
+
+		return $headers;
+	},
+	1000
+);
+
 // E2E tests run against a local wp-env and must not depend on the live CHEFS
 // service. The mock is enabled only by the test environment.
 if ( defined( 'BCEW_CHEFS_E2E_MOCK' ) && BCEW_CHEFS_E2E_MOCK ) {

@@ -126,4 +126,53 @@ class PluginBootstrapTest extends \WP_UnitTestCase {
 
 		$this->assertArrayHasKey( '/bcew-chefs-embed/v1/forms', $routes );
 	}
+
+	/**
+	 * The CHEFS resource origins are added to an existing CSP header.
+	 *
+	 * @return void
+	 */
+	public function test_wp_headers_allow_chefs_resources_in_csp() {
+		$headers = apply_filters(
+			'wp_headers',
+			array(
+				'Content-Security-Policy' => "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'",
+			)
+		);
+
+		$csp = $headers['Content-Security-Policy'];
+
+		$this->assertStringContainsString( 'script-src cdn.form.io', $csp );
+		$this->assertStringContainsString( 'style-src *.gov.bc.ca', $csp );
+		$this->assertStringContainsString( 'cdn.form.io', $csp );
+		$this->assertStringContainsString( 'fonts.googleapis.com', $csp );
+		$this->assertStringContainsString( 'font-src *.gov.bc.ca', $csp );
+	}
+
+	/**
+	 * A font-src directive is added when the existing policy does not define one.
+	 *
+	 * @return void
+	 */
+	public function test_wp_headers_add_font_source_when_missing() {
+		$headers = apply_filters(
+			'wp_headers',
+			array(
+				'Content-Security-Policy' => "default-src 'self'; script-src 'self'; style-src 'self'",
+			)
+		);
+
+		$this->assertStringContainsString( 'font-src *.gov.bc.ca', $headers['Content-Security-Policy'] );
+	}
+
+	/**
+	 * The CHEFS CSP filter leaves headers without a CSP unchanged.
+	 *
+	 * @return void
+	 */
+	public function test_wp_headers_without_csp_are_unchanged() {
+		$headers = array( 'X-Test' => 'unchanged' );
+
+		$this->assertSame( $headers, apply_filters( 'wp_headers', $headers ) );
+	}
 }

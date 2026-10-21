@@ -52,3 +52,5 @@ AGENTS.md
 # Planning and assessment docs
 *-plan.md
 *-migration-plan.md
+.plans/
+.playwright-mcp/
