@@ -19,7 +19,6 @@ import { nextReleaseVersion } from './next-release-version.mjs';
 
 const project      = process.argv[ 2 ];
 const isAlpha      = process.argv[ 3 ] === 'true';
-const startVersion = process.argv[ 4 ] || "";
 
 if ( ! project ) {
 	console.error( 'Usage: next-release-version-cli.mjs <project-name> <true|false>' );
@@ -44,7 +43,6 @@ const tags = raw
 let version = nextReleaseVersion( tags, isAlpha );
 if ( 0 === tags.length ) {
 	console.error( `No ${ prefix }* tags; starting at ${ version }` );
-	version = startVersion;
 } else {
 	console.error( `Latest ${ project } tag version: ${ tags.join( ', ' ) } → ${ version }` );
 }
