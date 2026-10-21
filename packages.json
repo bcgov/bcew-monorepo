@@ -546,7 +546,7 @@
             }
         },
         "bcgov-theme/bcew-hporoo": {
-            "1.0.0-alpha.2": {
+            "1.0.0-alpha.1": {
                 "name": "bcgov-theme/bcew-hporoo",
                 "description": "BC Extended Web HPOROO",
                 "type": "wordpress-theme",
@@ -564,16 +564,16 @@
                         "dealerdirect/phpcodesniffer-composer-installer": true
                     }
                 },
-                "version": "1.0.0-alpha.2",
+                "version": "1.0.0-alpha.1",
                 "dist": {
-                    "url": "https://github.com/bcgov/bcew-monorepo/releases/download/bcew-hporoo/v1.0.0-alpha.2/bcew-hporoo-1.0.0-alpha.2.zip",
+                    "url": "https://github.com/bcgov/bcew-monorepo/releases/download/bcew-hporoo/v1.0.0-alpha.1/bcew-hporoo-1.0.0-alpha.1.zip",
                     "type": "zip",
-                    "reference": "bcew-hporoo/v1.0.0-alpha.2"
+                    "reference": "bcew-hporoo/v1.0.0-alpha.1"
                 },
                 "source": {
                     "type": "git",
                     "url": "https://github.com/bcgov/bcew-monorepo.git",
-                    "reference": "bcew-hporoo/v1.0.0-alpha.2"
+                    "reference": "bcew-hporoo/v1.0.0-alpha.1"
                 }
             }
         }
