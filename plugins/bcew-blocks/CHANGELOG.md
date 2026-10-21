@@ -1,3 +1,7 @@
+## 1.3.0-alpha.2 (2026-10-21)
+
+This was a version bump only for bcew-blocks to align it with other projects, there were no code changes.
+
 ## 1.3.0-alpha.1 (2026-10-21)
 
 ### 🚀 Features
