@@ -42,76 +42,81 @@ add_action( 'rest_api_init', 'bcew_chefs_embed_register_rest_routes' );
 add_action( 'plugins_loaded', 'bcew_chefs_embed_maybe_install_credentials_table' );
 
 // Add CHEFS resource origins to an existing Content Security Policy header.
-add_filter(
-	'wp_headers',
-	function ( $headers ) {
-		if ( empty( $headers['Content-Security-Policy'] ) ) {
-			return $headers;
+add_filter( 'wp_headers', 'bcew_chefs_embed_extend_csp_header', 1000 );
+
+/**
+ * Add CHEFS resource origins to an existing Content Security Policy header.
+ *
+ * @param array $headers Response headers.
+ * @return array
+ */
+function bcew_chefs_embed_extend_csp_header( $headers ) {
+	if ( empty( $headers['Content-Security-Policy'] ) ) {
+		return $headers;
+	}
+
+	$sources         = array(
+		'script-src'      => array( 'cdn.form.io' ),
+		'script-src-elem' => array( 'cdn.form.io' ),
+		'style-src'       => array( '*.gov.bc.ca', 'cdn.form.io', 'fonts.googleapis.com' ),
+		'style-src-elem'  => array( '*.gov.bc.ca', 'cdn.form.io', 'fonts.googleapis.com' ),
+		'font-src'        => array( '*.gov.bc.ca' ),
+	);
+	$found_font_src  = false;
+	$found           = array();
+	$policy          = explode( ';', $headers['Content-Security-Policy'] );
+	$default_sources = array();
+
+	foreach ( $policy as $directive ) {
+		$parts = preg_split( '/\s+/', trim( $directive ) );
+		if ( 'default-src' === array_shift( $parts ) ) {
+			$default_sources = $parts;
+			break;
+		}
+	}
+
+	foreach ( $policy as &$directive ) {
+		$parts = preg_split( '/\s+/', trim( $directive ) );
+		$name  = array_shift( $parts );
+		if ( ! isset( $sources[ $name ] ) ) {
+			continue;
 		}
 
-		$sources         = array(
-			'script-src'      => array( 'cdn.form.io' ),
-			'script-src-elem' => array( 'cdn.form.io' ),
-			'style-src'       => array( '*.gov.bc.ca', 'cdn.form.io', 'fonts.googleapis.com' ),
-			'style-src-elem'  => array( '*.gov.bc.ca', 'cdn.form.io', 'fonts.googleapis.com' ),
-			'font-src'        => array( '*.gov.bc.ca' ),
-		);
-		$found_font_src  = false;
-		$policy          = explode( ';', $headers['Content-Security-Policy'] );
-		$default_sources = array();
+		$found[ $name ] = true;
+		if ( 'font-src' === $name ) {
+			$found_font_src = true;
+		}
 
-		foreach ( $policy as $directive ) {
-			$parts = preg_split( '/\s+/', trim( $directive ) );
-			if ( 'default-src' === array_shift( $parts ) ) {
-				$default_sources = $parts;
-				break;
+		foreach ( $sources[ $name ] as $source ) {
+			if ( ! in_array( $source, $parts, true ) ) {
+				$parts[] = $source;
 			}
 		}
 
-		foreach ( $policy as &$directive ) {
-			$parts = preg_split( '/\s+/', trim( $directive ) );
-			$name  = array_shift( $parts );
-			if ( ! isset( $sources[ $name ] ) ) {
+		$directive = implode( ' ', array_merge( array( $name ), $parts ) );
+	}
+	unset( $directive );
+
+	if ( ! empty( $default_sources ) ) {
+		foreach ( array( 'script-src', 'style-src' ) as $name ) {
+			if ( isset( $found[ $name ] ) ) {
 				continue;
 			}
 
-			$found[ $name ] = true;
-			if ( 'font-src' === $name ) {
-				$found_font_src = true;
-			}
-
-			foreach ( $sources[ $name ] as $source ) {
-				if ( ! in_array( $source, $parts, true ) ) {
-					$parts[] = $source;
-				}
-			}
-
-			$directive = implode( ' ', array_merge( array( $name ), $parts ) );
+			$inherited_sources = array_diff( $default_sources, array( "'none'" ) );
+			$directive_sources = array_unique( array_merge( $inherited_sources, $sources[ $name ] ) );
+			$policy[]          = $name . ' ' . implode( ' ', $directive_sources );
 		}
-		unset( $directive );
+	}
 
-		if ( ! empty( $default_sources ) ) {
-			foreach ( array( 'script-src', 'style-src' ) as $name ) {
-				if ( isset( $found[ $name ] ) ) {
-					continue;
-				}
+	if ( ! $found_font_src ) {
+		$policy[] = 'font-src *.gov.bc.ca';
+	}
 
-				$inherited_sources = array_diff( $default_sources, array( "'none'" ) );
-				$directive_sources = array_unique( array_merge( $inherited_sources, $sources[ $name ] ) );
-				$policy[]          = $name . ' ' . implode( ' ', $directive_sources );
-			}
-		}
+	$headers['Content-Security-Policy'] = implode( ';', $policy );
 
-		if ( ! $found_font_src ) {
-			$policy[] = 'font-src *.gov.bc.ca';
-		}
-
-		$headers['Content-Security-Policy'] = implode( ';', $policy );
-
-		return $headers;
-	},
-	1000
-);
+	return $headers;
+}
 
 // E2E tests run against a local wp-env and must not depend on the live CHEFS
 // service. The mock is enabled only by the test environment.
