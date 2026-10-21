@@ -26,6 +26,7 @@ use Bcgov\BcewChefsEmbed\CredentialsManager;
 use Bcgov\BcewChefsEmbed\E2eChefsMock;
 
 const BCEW_CHEFS_EMBED_BLOCK_NAME = 'bcew-chefs-embed/chefs-form';
+const BCEW_CHEFS_EMBED_GOV_ORIGIN = '*.gov.bc.ca';
 
 /**
  * Load Composer autoloader when present.
@@ -45,7 +46,40 @@ add_action( 'plugins_loaded', 'bcew_chefs_embed_maybe_install_credentials_table'
 add_filter( 'wp_headers', 'bcew_chefs_embed_extend_csp_header', 1000 );
 
 /**
+ * Origins CHEFS needs, keyed by the CSP directive that must allow them.
+ *
+ * @return array<string, string[]>
+ */
+function bcew_chefs_embed_csp_sources() {
+	$styles = array( BCEW_CHEFS_EMBED_GOV_ORIGIN, 'cdn.form.io', 'fonts.googleapis.com' );
+
+	return array(
+		'script-src'      => array( 'cdn.form.io' ),
+		'script-src-elem' => array( 'cdn.form.io' ),
+		'style-src'       => $styles,
+		'style-src-elem'  => $styles,
+		'font-src'        => array( BCEW_CHEFS_EMBED_GOV_ORIGIN ),
+	);
+}
+
+/**
+ * Split a CSP directive into its name and source list.
+ *
+ * @param string $directive Single directive, e.g. "script-src 'self'".
+ * @return array{0: string, 1: string[]}
+ */
+function bcew_chefs_embed_parse_csp_directive( $directive ) {
+	$parts = preg_split( '/\s+/', trim( $directive ) );
+	$name  = array_shift( $parts );
+
+	return array( $name, $parts );
+}
+
+/**
  * Add CHEFS resource origins to an existing Content Security Policy header.
+ *
+ * Directive names are matched exactly so attribute directives such as
+ * script-src-attr are never rewritten.
  *
  * @param array $headers Response headers.
  * @return array
@@ -55,54 +89,34 @@ function bcew_chefs_embed_extend_csp_header( $headers ) {
 		return $headers;
 	}
 
-	$sources         = array(
-		'script-src'      => array( 'cdn.form.io' ),
-		'script-src-elem' => array( 'cdn.form.io' ),
-		'style-src'       => array( '*.gov.bc.ca', 'cdn.form.io', 'fonts.googleapis.com' ),
-		'style-src-elem'  => array( '*.gov.bc.ca', 'cdn.form.io', 'fonts.googleapis.com' ),
-		'font-src'        => array( '*.gov.bc.ca' ),
-	);
+	$sources         = bcew_chefs_embed_csp_sources();
 	$found           = array();
-	$policy          = explode( ';', $headers['Content-Security-Policy'] );
 	$default_sources = array();
-
-	foreach ( $policy as $directive ) {
-		$parts = preg_split( '/\s+/', trim( $directive ) );
-		if ( 'default-src' === array_shift( $parts ) ) {
-			$default_sources = $parts;
-			break;
-		}
-	}
+	$policy          = explode( ';', $headers['Content-Security-Policy'] );
 
 	foreach ( $policy as &$directive ) {
-		$parts = preg_split( '/\s+/', trim( $directive ) );
-		$name  = array_shift( $parts );
-		if ( ! isset( $sources[ $name ] ) ) {
-			continue;
+		list( $name, $parts ) = bcew_chefs_embed_parse_csp_directive( $directive );
+
+		if ( 'default-src' === $name ) {
+			$default_sources = $parts;
 		}
 
-		$found[ $name ] = true;
-		foreach ( $sources[ $name ] as $source ) {
-			if ( ! in_array( $source, $parts, true ) ) {
-				$parts[] = $source;
-			}
+		if ( isset( $sources[ $name ] ) ) {
+			$found[ $name ] = true;
+			$directive      = implode( ' ', array_merge( array( $name ), array_unique( array_merge( $parts, $sources[ $name ] ) ) ) );
 		}
-
-		$directive = implode( ' ', array_merge( array( $name ), $parts ) );
 	}
 	unset( $directive );
 
 	// A missing directive falls back to default-src, so copy those sources before adding ours.
 	// Without a default-src nothing is restricted, so we must not introduce a restriction.
 	if ( ! empty( $default_sources ) ) {
-		foreach ( array( 'script-src', 'style-src', 'font-src' ) as $name ) {
-			if ( isset( $found[ $name ] ) ) {
-				continue;
-			}
+		$inherited = array_diff( $default_sources, array( "'none'" ) );
 
-			$inherited_sources = array_diff( $default_sources, array( "'none'" ) );
-			$directive_sources = array_unique( array_merge( $inherited_sources, $sources[ $name ] ) );
-			$policy[]          = $name . ' ' . implode( ' ', $directive_sources );
+		foreach ( array( 'script-src', 'style-src', 'font-src' ) as $name ) {
+			if ( ! isset( $found[ $name ] ) ) {
+				$policy[] = $name . ' ' . implode( ' ', array_unique( array_merge( $inherited, $sources[ $name ] ) ) );
+			}
 		}
 	}
 
