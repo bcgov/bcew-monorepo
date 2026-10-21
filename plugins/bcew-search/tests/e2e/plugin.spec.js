@@ -4,7 +4,7 @@ test.describe( 'Plugin', () => {
     test( 'Plugin is active', async ( { admin, page } ) => {
         await admin.visitAdminPage( 'plugins.php' );
         await expect(
-            page.getByLabel( 'Deactivate WordPress Search' )
+            page.getByLabel( 'Deactivate BC Extended Web Search' )
         ).toContainText( 'Deactivate' );
     } );
 } );

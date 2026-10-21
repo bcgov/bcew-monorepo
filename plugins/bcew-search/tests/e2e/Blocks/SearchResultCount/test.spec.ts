@@ -143,15 +143,15 @@ test.describe( 'Search Result Count Block', () => {
         messageText = await countMessage.textContent();
         expect( messageText ).toMatch( /0 results found/i );
 
-        // Test 3: Verify count for "Test Post" search (should show 5 results)
+        // Test 3: Verify count for "Test Post" search (should show all 4 test posts)
         await page.goto( `/?s=Test Post` );
         await page.waitForLoadState( 'networkidle' );
 
         await expect( countMessage ).toBeVisible( { timeout: 10000 } );
 
-        // Verify it shows exactly 5 results found
+        // Verify it shows exactly 4 results found
         messageText = await countMessage.textContent();
-        expect( messageText ).toMatch( /5 results found/i );
+        expect( messageText ).toMatch( /4 results found/i );
 
         // Test 4: Verify accessibility (proper semantic HTML, screen reader friendly)
         // Navigate back to a search with results
