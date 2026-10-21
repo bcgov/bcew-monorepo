@@ -26,6 +26,7 @@ use Bcgov\BcewChefsEmbed\CredentialsManager;
 use Bcgov\BcewChefsEmbed\E2eChefsMock;
 
 const BCEW_CHEFS_EMBED_BLOCK_NAME = 'bcew-chefs-embed/chefs-form';
+const BCEW_CHEFS_EMBED_GOV_ORIGIN = '*.gov.bc.ca';
 
 /**
  * Load Composer autoloader when present.
@@ -40,6 +41,89 @@ add_action( 'wp_initialize_site', array( CredentialsManager::class, 'on_initiali
 add_action( 'rest_api_init', 'bcew_chefs_embed_register_rest_routes' );
 // Ensure the credentials table exists even if activation ran before Composer autoload was available.
 add_action( 'plugins_loaded', 'bcew_chefs_embed_maybe_install_credentials_table' );
+
+// Add CHEFS resource origins to an existing Content Security Policy header.
+add_filter( 'wp_headers', 'bcew_chefs_embed_extend_csp_header', 1000 );
+
+/**
+ * Origins CHEFS needs, keyed by the CSP directive that must allow them.
+ *
+ * @return array<string, string[]>
+ */
+function bcew_chefs_embed_csp_sources() {
+	$styles = array( BCEW_CHEFS_EMBED_GOV_ORIGIN, 'cdn.form.io', 'fonts.googleapis.com' );
+
+	return array(
+		'script-src'      => array( 'cdn.form.io' ),
+		'script-src-elem' => array( 'cdn.form.io' ),
+		'style-src'       => $styles,
+		'style-src-elem'  => $styles,
+		'font-src'        => array( BCEW_CHEFS_EMBED_GOV_ORIGIN ),
+	);
+}
+
+/**
+ * Split a CSP directive into its name and source list.
+ *
+ * @param string $directive Single directive, e.g. "script-src 'self'".
+ * @return array{0: string, 1: string[]}
+ */
+function bcew_chefs_embed_parse_csp_directive( $directive ) {
+	$parts = preg_split( '/\s+/', trim( $directive ) );
+	$name  = array_shift( $parts );
+
+	return array( $name, $parts );
+}
+
+/**
+ * Add CHEFS resource origins to an existing Content Security Policy header.
+ *
+ * Directive names are matched exactly so attribute directives such as
+ * script-src-attr are never rewritten.
+ *
+ * @param array $headers Response headers.
+ * @return array
+ */
+function bcew_chefs_embed_extend_csp_header( $headers ) {
+	if ( empty( $headers['Content-Security-Policy'] ) ) {
+		return $headers;
+	}
+
+	$sources         = bcew_chefs_embed_csp_sources();
+	$found           = array();
+	$default_sources = array();
+	$policy          = explode( ';', $headers['Content-Security-Policy'] );
+
+	foreach ( $policy as &$directive ) {
+		list( $name, $parts ) = bcew_chefs_embed_parse_csp_directive( $directive );
+
+		if ( 'default-src' === $name ) {
+			$default_sources = $parts;
+		}
+
+		if ( isset( $sources[ $name ] ) ) {
+			$found[ $name ] = true;
+			$directive      = implode( ' ', array_merge( array( $name ), array_unique( array_merge( $parts, $sources[ $name ] ) ) ) );
+		}
+	}
+	unset( $directive );
+
+	// A missing directive falls back to default-src, so copy those sources before adding ours.
+	// Without a default-src nothing is restricted, so we must not introduce a restriction.
+	if ( ! empty( $default_sources ) ) {
+		$inherited = array_diff( $default_sources, array( "'none'" ) );
+
+		foreach ( array( 'script-src', 'style-src', 'font-src' ) as $name ) {
+			if ( ! isset( $found[ $name ] ) ) {
+				$policy[] = $name . ' ' . implode( ' ', array_unique( array_merge( $inherited, $sources[ $name ] ) ) );
+			}
+		}
+	}
+
+	$headers['Content-Security-Policy'] = implode( ';', $policy );
+
+	return $headers;
+}
 
 // E2E tests run against a local wp-env and must not depend on the live CHEFS
 // service. The mock is enabled only by the test environment.
