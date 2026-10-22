@@ -7,12 +7,27 @@ import {
 
 test.describe( 'Search Result Count Block', () => {
     let testData: TestPostsData;
+    let searchTerm: string;
 
     test.beforeAll( async ( { requestUtils } ) => {
         // Create test posts and categories before all tests
         // This helper creates 4 posts: "Test Post 1", "Test Post 2", "Test Post 3", "Test Post 4"
         // and 3 categories: "Test Category A", "Test Category B", "Test Category C"
         testData = await createTestPosts( requestUtils );
+        searchTerm = `bcewcount${ Date.now() }`;
+        await Promise.all(
+            testData.postIds.map( ( id, index ) =>
+                requestUtils.rest( {
+                    method: 'PUT',
+                    path: `/wp/v2/posts/${ id }`,
+                    data: {
+                        title: `Search Result Count ${ searchTerm } ${
+                            index + 1
+                        }`,
+                    },
+                } )
+            )
+        );
     } );
 
     test.afterAll( async ( { requestUtils } ) => {
@@ -96,8 +111,8 @@ test.describe( 'Search Result Count Block', () => {
         }
 
         // Test 1: Display correct result count when search results are present
-        // Navigate to search results page - Search for "test" to get all test posts (should be 4 posts)
-        await page.goto( `/?s=test` );
+        // Search with a unique term so unrelated site content cannot affect the count.
+        await page.goto( `/?s=${ searchTerm }` );
         await page.waitForLoadState( 'networkidle' );
 
         // Check if block exists - if not, skip the test
@@ -143,8 +158,8 @@ test.describe( 'Search Result Count Block', () => {
         messageText = await countMessage.textContent();
         expect( messageText ).toMatch( /0 results found/i );
 
-        // Test 3: Verify count for "Test Post" search (should show all 4 test posts)
-        await page.goto( `/?s=Test Post` );
+        // Test 3: Verify the unique search returns all four test posts.
+        await page.goto( `/?s=${ searchTerm }` );
         await page.waitForLoadState( 'networkidle' );
 
         await expect( countMessage ).toBeVisible( { timeout: 10000 } );
@@ -155,7 +170,7 @@ test.describe( 'Search Result Count Block', () => {
 
         // Test 4: Verify accessibility (proper semantic HTML, screen reader friendly)
         // Navigate back to a search with results
-        await page.goto( `/?s=test` );
+        await page.goto( `/?s=${ searchTerm }` );
         await page.waitForLoadState( 'networkidle' );
 
         await expect( countMessage ).toBeVisible( { timeout: 10000 } );
