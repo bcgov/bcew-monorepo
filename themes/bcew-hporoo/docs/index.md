@@ -35,7 +35,7 @@ npx nx run bcew-hporoo:wp-env-stop
 
 ## Parent Theme
 
-This theme depends on `bcew-theme` as its parent. For core design system documentation and patterns, see [BC Extended Web Theme](../bcew-theme/).
+This theme depends on `bcew-theme` as its parent. For core design system documentation and patterns, see [BCEW Theme](../bcew-theme/).
 
 ## Dependencies
 
