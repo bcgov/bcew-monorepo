@@ -158,7 +158,11 @@ class PluginFunctionsTest extends \WP_UnitTestCase {
      * @return void
      */
     public function test_init_does_not_error() {
-        // dist/ is not built in CI, so registration itself is not asserted.
+        $block_registry = \WP_Block_Type_Registry::get_instance();
+        if ( $block_registry->is_registered( BCEW_CHEFS_EMBED_BLOCK_NAME ) ) {
+            $block_registry->unregister( BCEW_CHEFS_EMBED_BLOCK_NAME );
+        }
+
         $has_init_hook = has_action( 'init', 'bcew_chefs_embed_init' );
 
         bcew_chefs_embed_init();

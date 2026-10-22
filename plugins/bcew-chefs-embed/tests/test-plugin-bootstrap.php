@@ -126,4 +126,114 @@ class PluginBootstrapTest extends \WP_UnitTestCase {
 
 		$this->assertArrayHasKey( '/bcew-chefs-embed/v1/forms', $routes );
 	}
+
+	/**
+	 * The CHEFS resource origins are added to an existing CSP header.
+	 *
+	 * @return void
+	 */
+	public function test_wp_headers_allow_chefs_resources_in_csp() {
+		$headers = apply_filters(
+			'wp_headers',
+			array(
+				'Content-Security-Policy' => "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'",
+			)
+		);
+
+		$csp = $headers['Content-Security-Policy'];
+
+		$this->assertStringContainsString( "script-src 'self' cdn.form.io", $csp );
+		$this->assertStringContainsString( "style-src 'self' *.gov.bc.ca cdn.form.io fonts.googleapis.com", $csp );
+		$this->assertStringContainsString( "font-src 'self' *.gov.bc.ca", $csp );
+	}
+
+	/**
+	 * A missing font-src keeps the fonts inherited from default-src.
+	 *
+	 * @return void
+	 */
+	public function test_wp_headers_font_source_keeps_inherited_sources() {
+		$headers = apply_filters(
+			'wp_headers',
+			array(
+				'Content-Security-Policy' => "default-src 'self' data:; script-src 'self'; style-src 'self'",
+			)
+		);
+
+		$this->assertStringContainsString( "font-src 'self' data: *.gov.bc.ca", $headers['Content-Security-Policy'] );
+	}
+
+	/**
+	 * Missing script and style directives inherit the policy's default sources.
+	 *
+	 * @return void
+	 */
+	public function test_wp_headers_create_script_and_style_sources_from_default() {
+		$headers = apply_filters(
+			'wp_headers',
+			array(
+				'Content-Security-Policy' => "default-src 'self'",
+			)
+		);
+
+		$csp = $headers['Content-Security-Policy'];
+
+		$this->assertStringContainsString( "default-src 'self'", $csp );
+		$this->assertStringContainsString( "script-src 'self' cdn.form.io", $csp );
+		$this->assertStringContainsString( "style-src 'self' *.gov.bc.ca cdn.form.io fonts.googleapis.com", $csp );
+	}
+
+	/**
+	 * Missing script and style directives are not created without a default-src directive.
+	 *
+	 * @return void
+	 */
+	public function test_wp_headers_do_not_create_script_or_style_sources_without_default() {
+		$headers = apply_filters(
+			'wp_headers',
+			array(
+				'Content-Security-Policy' => "img-src 'self'",
+			)
+		);
+
+		$csp = $headers['Content-Security-Policy'];
+
+		$this->assertStringNotContainsString( 'script-src ', $csp );
+		$this->assertStringNotContainsString( 'style-src ', $csp );
+		$this->assertStringNotContainsString( 'font-src ', $csp );
+	}
+
+	/**
+	 * Script and style element directives are extended without changing attribute directives.
+	 *
+	 * @return void
+	 */
+	public function test_wp_headers_preserve_csp_attribute_directives() {
+		$headers = apply_filters(
+			'wp_headers',
+			array(
+				'Content-Security-Policy' => "script-src 'self'; script-src-elem 'self'; script-src-attr 'none'; style-src 'self'; style-src-elem 'self'; style-src-attr 'none'",
+			)
+		);
+
+		$csp = $headers['Content-Security-Policy'];
+
+		$this->assertStringContainsString( "script-src 'self' cdn.form.io", $csp );
+		$this->assertStringContainsString( "script-src-elem 'self' cdn.form.io", $csp );
+		$this->assertStringContainsString( "script-src-attr 'none'", $csp );
+		$this->assertStringContainsString( "style-src 'self' *.gov.bc.ca cdn.form.io fonts.googleapis.com", $csp );
+		$this->assertStringContainsString( "style-src-elem 'self' *.gov.bc.ca cdn.form.io fonts.googleapis.com", $csp );
+		$this->assertStringContainsString( "style-src-attr 'none'", $csp );
+	}
+
+	/**
+	 * The CHEFS CSP filter leaves headers without a CSP unchanged.
+	 *
+	 * @return void
+	 */
+	public function test_wp_headers_without_csp_are_unchanged() {
+		$headers = array( 'X-Test' => 'unchanged' );
+
+		$this->assertSame( $headers, apply_filters( 'wp_headers', $headers ) );
+	}
 }
