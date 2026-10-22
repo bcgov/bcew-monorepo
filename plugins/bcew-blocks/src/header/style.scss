@@ -1,0 +1,122 @@
+/**
+ * Layout for the header rows. WordPress loads this in the editor and on the front.
+ * The logo row is the site logo, then search, then the mobile menu.
+ * The logo, search, and mobile menu stay on one line, inside the theme content width.
+ * The logo shrinks
+ * as the screen gets narrower so the row does not wrap.
+ * At 600px and below the desktop links are hidden. From 601px up the mobile menu is hidden.
+ */
+
+/*
+ * The logo row, the menu, and the breadcrumb use the theme's content width.
+ * That is the same width the page content uses, so the header lines up with it.
+ */
+.wp-block-bcew-blocks-header .bcew-blocks-header__logo-row,
+.wp-block-bcew-blocks-header .bcew-blocks-header__desktop-menu,
+.wp-block-bcew-blocks-header .bcew-blocks-header__breadcrumb {
+	max-width: var(--wp--style--global--content-size);
+	margin-right: auto;
+	margin-left: auto;
+}
+
+.wp-block-group.bcew-blocks-header__logo-row {
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: center;
+	width: 100%;
+	gap: 1rem;
+	padding-top: 1rem;
+	padding-bottom: 1rem;
+}
+
+.bcew-blocks-header__logo-row .wp-block-site-logo {
+	flex: 0 0 auto;
+}
+
+.bcew-blocks-header__logo-row .wp-block-site-logo.is-default-size img {
+	width: clamp(3rem, 14vw, 7.5rem);
+	max-width: 100%;
+	height: auto;
+}
+
+.bcew-blocks-header__search {
+	flex: 1 1 auto;
+	min-width: 0;
+	margin-left: auto;
+	max-width: 32rem;
+}
+
+.bcew-blocks-header__mobile-menu {
+	flex: 0 0 auto;
+}
+
+.bcew-blocks-header__desktop-menu {
+	padding-top: 0.75rem;
+	padding-bottom: 0.75rem;
+	font-size: 16px;
+	width: 100%;
+	justify-content: flex-start;
+}
+
+/*
+ * WordPress copies this class onto the link list as well as the menu.
+ * The list is shorter than the menu, so the lines belong on the menu only.
+ */
+nav.bcew-blocks-header__desktop-menu {
+	border-top: 1px solid var(--wp--preset--color--border-default, #d8d8d8);
+	border-bottom: 1px solid var(--wp--preset--color--border-default, #d8d8d8);
+}
+
+.bcew-blocks-header__breadcrumb {
+	border-bottom: 1px solid var(--wp--preset--color--border-default);
+}
+
+/*
+ * The editor shows the mobile menu's page names as well as the icon.
+ * The front shows only the icon.
+ */
+.editor-styles-wrapper
+	.bcew-blocks-header__mobile-menu
+	.wp-block-navigation__container {
+	display: none;
+}
+
+/*
+ * The editor wraps each menu in its own block. Hiding the menu leaves that
+ * wrapper taking space, so hide the wrapper as well.
+ */
+@media (max-width: 600px) {
+	.bcew-blocks-header__desktop-menu {
+		display: none;
+	}
+}
+
+@media (min-width: 601px) {
+	.bcew-blocks-header__mobile-menu {
+		display: none;
+	}
+}
+
+/*
+ * The editor keeps each menu inside its own block, and that block stays
+ * visible after the menu is hidden.
+ */
+@media (max-width: 600px) {
+	.editor-styles-wrapper
+		.block-editor-block-list__block:is(
+			[data-type='core/navigation'],
+			[data-type='design-system-wordpress-plugin/navigation']
+		):has(.bcew-blocks-header__desktop-menu) {
+		display: none;
+	}
+}
+
+@media (min-width: 601px) {
+	.editor-styles-wrapper
+		.block-editor-block-list__block:is(
+			[data-type='core/navigation'],
+			[data-type='design-system-wordpress-plugin/navigation']
+		):has(.bcew-blocks-header__mobile-menu) {
+		display: none;
+	}
+}
