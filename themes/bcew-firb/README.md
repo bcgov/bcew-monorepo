@@ -1,4 +1,4 @@
-# BC Extended Web FIRB
+# BCEW FIRB
 
 FIRB is a BCEW child theme built on `bcew-theme`.
 

@@ -17,7 +17,7 @@ type Section = {
 const repoRoot = resolve(__dirname, '..', '..');
 
 const packageDisplayNames: Record<string, string> = {
-  'bcew-theme': 'BC Extended Web Theme',
+  'bcew-theme': 'BCEW Theme',
   'bcew-plugin': 'BCEW Plugin',
   'bcew-belleville-terminal': 'BCEW Belleville Terminal',
   'bcew-blocks': 'BCEW Blocks',

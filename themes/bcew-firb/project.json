@@ -6,7 +6,7 @@
     "projectType": "application",
     "generators": {
         "bcew-monorepo:theme": {
-            "name": "BC Extended Web FIRB",
+            "name": "BCEW FIRB",
             "slug": "bcew-firb"
         }
     },

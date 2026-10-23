@@ -76,7 +76,7 @@ function bcew_theme_register_plugin_required_notices() {
 /** Outputs the "plugin required" notice in the admin. */
 function bcew_theme_plugin_required_notice() {
     $msg = __( 'This theme will not work correctly without the BC Extended Web Plugin. Please enable it.', 'bcew-theme' );
-    echo '<div class="notice notice-warning is-dismissible"><p><strong>' . esc_html__( 'BC Extended Web Theme', 'bcew-theme' ) . ':</strong> ' . esc_html( $msg );
+    echo '<div class="notice notice-warning is-dismissible"><p><strong>' . esc_html__( 'BCEW', 'bcew-theme' ) . ':</strong> ' . esc_html( $msg );
     if ( current_user_can( 'activate_plugins' ) ) {
         echo ' <a href="' . esc_url( admin_url( 'plugins.php' ) ) . '">' . esc_html__( 'Go to Plugins', 'bcew-theme' ) . '</a>';
     }
@@ -235,7 +235,7 @@ add_action( 'init', 'bcew_theme_disable_default_block_patterns' );
 
 
 /**
- * Combines any child theme's color palette with the BC Extended Web Theme Color palette.
+ * Combines any child theme's color palette with the BCEW Theme Color palette.
  *
  * @param object $theme_json The theme.json schema.
  */

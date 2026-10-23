@@ -25,10 +25,10 @@ The `wp-env` lifecycle script activates the plugin after the environment starts.
 
 ## CHEFS authentication mock
 
-The package-local `wp-env` configuration enables `BCEW_CHEFS_E2E_MOCK` only for
-the Playwright test WordPress container on port `9013`. This installs a
-server-side `pre_http_request` filter for the CHEFS authentication endpoint, so
-automated tests do not call the live CHEFS service.
+The package-local `wp-env` setup enables `BCEW_CHEFS_E2E_MOCK` and installs a
+test-only MU-plugin in the Playwright WordPress container on port `9013`. The
+MU-plugin loads the mock from `tests/` and registers a server-side
+`pre_http_request` filter, so automated tests do not call the live CHEFS service.
 
 The mock accepts only the explicit Form ID and API key pairs used by the E2E
 fixtures. An unknown Form ID returns a `404` `Bad formId` response, and a known

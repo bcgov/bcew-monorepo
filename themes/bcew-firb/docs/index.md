@@ -1,4 +1,4 @@
-# BC Extended Web FIRB
+# BCEW FIRB
 
 `bcew-firb` is a BCEW child theme for FIRB. It uses `bcew-theme` as its parent and the shared monorepo tooling for development and visual regression testing.
 
