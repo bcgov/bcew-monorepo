@@ -1,4 +1,4 @@
-# BC Extended Web Theme
+# BCEW Theme
 
 ![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999)
 
@@ -67,7 +67,7 @@ npx playwright test themes/bcew-theme/tests/e2e/ --debug
 
 ## Visual Regression Testing
 
-This project uses Playwright to perform visual regression testing of patterns to help catch unintended changes.
+This project uses Playwright to perform visual regression testing of patterns and the Hero Image block to help catch unintended changes.
 
 ```bash
 npx nx run bcew-theme:wp-env-start
@@ -75,6 +75,12 @@ npx nx run bcew-theme:test-screenshot
 ```
 
 **Note**: When creating a new pattern it must be added to `themes/bcew-theme/tests/screenshot/patterns.spec.js` in order to be included in regression tests.
+
+The Hero Image block tests in `tests/screenshot/hero-variation.spec.ts` check its all-fields and title-only variations in the editor and at desktop and mobile frontend sizes. Run them separately with:
+
+```bash
+npx nx run bcew-theme:test-screenshot --playwrightArgs=hero-variation.spec.ts
+```
 
 ### Updating Screenshots
 
@@ -117,17 +123,6 @@ npx playwright test themes/bcew-theme/tests/e2e/css-props.spec.ts
 
 If a check fails, the test output will list the missing properties or incorrect values, indicating a potential mismatch between `theme.json` definitions and the compiled CSS or WordPress runtime state.
 
-#### Hero Image Block Tests (`tests/e2e/hero-variation.spec.ts`)
-
-Validates that the Hero Image block (cover block with inner content) renders correctly with various field combinations, including all-fields-filled and title-only variations, with visual regression snapshots for desktop and mobile viewports.
-
-**Run individually:**
-
-```bash
-npx nx run bcew-theme:wp-env-start
-npx playwright test themes/bcew-theme/tests/e2e/hero-variation.spec.ts
-```
-
 ## Child Themes
 
 ### Template Part Override Guidelines
@@ -149,4 +144,3 @@ To ensure child themes can properly override template parts, parent theme templa
 Run `pnpm lint-template-parts` from the monorepo root (or `npx nx run bcew-theme:lint-template-parts` for this theme only) to validate locally. This check also runs automatically on pull requests as part of the `Lint monorepo` workflow job.
 
 The validator lives at `tools/validate-template-parts.mjs` and is opt-in: a theme enables it by declaring the `lint-template-parts` target in its `project.json`. Child themes intentionally do not enable it, since nothing overrides their template parts.
-

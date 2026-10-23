@@ -1,6 +1,6 @@
 # Theme overview
 
-The BC Extended Web Theme is built for BC Government websites hosted on the Digital Engagement Solutions (GDX) platform. It implements the BC Government Design System to provide consistent branding and user experience.
+The BCEW Theme is built for BC Government websites hosted on the Digital Engagement Solutions (GDX) platform. It implements the BC Government Design System to provide consistent branding and user experience.
 
 The theme provides:
 
