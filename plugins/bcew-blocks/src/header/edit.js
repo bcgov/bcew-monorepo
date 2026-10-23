@@ -12,7 +12,9 @@ import { PanelBody, SelectControl } from '@wordpress/components';
 import { store as coreStore } from '@wordpress/core-data';
 import { select, useDispatch, useSelect } from '@wordpress/data';
 import { useMemo } from '@wordpress/element';
+import { addFilter } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
+import ServerSideRender from '@wordpress/server-side-render';
 
 const MENU_QUERY = { per_page: -1, status: [ 'publish', 'draft' ] };
 const BCEW_NAVIGATION = 'design-system-wordpress-plugin/navigation';
@@ -171,6 +173,33 @@ const menuIdFromBlocks = ( blocks ) => {
 };
 
 /**
+ * Search block for the plugins that are on right now.
+ *
+ * @return {string} Search block name.
+ */
+const searchBlockName = () =>
+    getBlockType( SEARCH_BAR ) ? SEARCH_BAR : 'core/search';
+
+/**
+ * Settings for the search block. The core search needs a label or it
+ * shows the word Search above the field and the row wraps.
+ *
+ * @param {string} name Search block name.
+ * @return {Object} Block settings.
+ */
+const searchBlockAttributes = ( name ) => {
+    const attributes = { className: 'bcew-blocks-header__search' };
+
+    if ( 'core/search' === name ) {
+        attributes.label = __( 'Search', 'bcew-blocks' );
+        attributes.showLabel = false;
+        attributes.buttonText = __( 'Search', 'bcew-blocks' );
+    }
+
+    return attributes;
+};
+
+/**
  * Writes the chosen menu onto every navigation block in the header.
  *
  * Called only when the dropdown changes. The header does not watch the
@@ -235,14 +264,14 @@ const Edit = ( { clientId } ) => {
      * hold, so the dropdown stays in step with them.
      */
     const { menus, menuId } = useSelect(
-        ( select ) => ( {
-            menus: select( coreStore ).getEntityRecords(
+        ( selectStore ) => ( {
+            menus: selectStore( coreStore ).getEntityRecords(
                 'postType',
                 'wp_navigation',
                 MENU_QUERY
             ),
             menuId: menuIdFromBlocks(
-                select( blockEditorStore ).getBlocks( clientId )
+                selectStore( blockEditorStore ).getBlocks( clientId )
             ),
         } ),
         [ clientId ]
@@ -283,5 +312,43 @@ const Edit = ( { clientId } ) => {
         </>
     );
 };
+
+/**
+ * The core search editor shows the words "Optional placeholder". The public
+ * page shows the search form. Draw that form in the header.
+ *
+ * @return {import('react').ReactElement} Editor element.
+ */
+const HeaderSearchPreview = () => {
+    const blockProps = useBlockProps();
+    const name = searchBlockName();
+
+    return (
+        <div { ...blockProps }>
+            <ServerSideRender
+                block={ name }
+                attributes={ searchBlockAttributes( name ) }
+                httpMethod="POST"
+            />
+        </div>
+    );
+};
+
+addFilter(
+    'editor.BlockEdit',
+    'bcew-blocks/header-search',
+    ( BlockEdit ) => ( props ) => {
+        const className = props.attributes?.className || '';
+        const isHeaderSearch =
+            ( 'core/search' === props.name || SEARCH_BAR === props.name ) &&
+            className.includes( 'bcew-blocks-header__search' );
+
+        if ( ! isHeaderSearch ) {
+            return <BlockEdit { ...props } />;
+        }
+
+        return <HeaderSearchPreview { ...props } />;
+    }
+);
 
 export default Edit;

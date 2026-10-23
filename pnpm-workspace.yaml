@@ -37,10 +37,12 @@ catalog:
   '@wordpress/editor': wp-6.7
   '@wordpress/element': wp-6.7
   '@wordpress/env': ^11.16.0
+  '@wordpress/hooks': wp-6.7
   '@wordpress/i18n': wp-6.7
   '@wordpress/icons': wp-6.7
   '@wordpress/plugins': wp-6.7
   '@wordpress/scripts': ^31.8.0
+  '@wordpress/server-side-render': wp-6.7
   '@wordpress/stylelint-config': ^23.0.1
   'stylelint-scss': ^6.4.0
   'beautiful-mermaid': 1.1.3

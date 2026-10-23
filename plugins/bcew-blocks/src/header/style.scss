@@ -8,11 +8,12 @@
  */
 
 /*
- * The logo row, the menu, and the breadcrumb use the theme's content width.
+ * The logo row and the breadcrumb use the theme's content width.
  * That is the same width the page content uses, so the header lines up with it.
+ * The desktop menu bar is wider. Its lines run the full width of the header.
+ * The links inside it stay at the content width.
  */
 .wp-block-bcew-blocks-header .bcew-blocks-header__logo-row,
-.wp-block-bcew-blocks-header .bcew-blocks-header__desktop-menu,
 .wp-block-bcew-blocks-header .bcew-blocks-header__breadcrumb {
 	max-width: var(--wp--style--global--content-size);
 	margin-right: auto;
@@ -46,6 +47,35 @@
 	max-width: 32rem;
 }
 
+/*
+ * The editor loads the button block stylesheet. That stylesheet breaks the
+ * word "Search" onto its own letters and rounds the button into a pill, so
+ * the button grows tall and covers the menu. The public page does not load
+ * that stylesheet.
+ */
+.editor-styles-wrapper .wp-block-bcew-blocks-header .dswp-search-bar__button {
+	flex-shrink: 0;
+	width: auto;
+	word-break: normal;
+	border-radius: 0;
+}
+
+/*
+ * The public core search button is a pill. The editor does not apply that
+ * radius to the form it draws for the header, so set the same radius here.
+ */
+.editor-styles-wrapper .bcew-blocks-header__search .wp-block-search__button {
+	border-radius: 3.125rem;
+}
+
+/*
+ * The form in the editor is the public form. Keep a click from leaving
+ * the editor.
+ */
+.editor-styles-wrapper .wp-block-bcew-blocks-header .dswp-search-bar__form {
+	pointer-events: none;
+}
+
 .bcew-blocks-header__mobile-menu {
 	flex: 0 0 auto;
 }
@@ -59,12 +89,38 @@
 }
 
 /*
- * WordPress copies this class onto the link list as well as the menu.
- * The list is shorter than the menu, so the lines belong on the menu only.
+ * The lines use the full header. The links start at the logo's left edge:
+ * the header's side padding, plus any space left when the content column
+ * is narrower than the header. The padding value is quoted so the build
+ * leaves max() for the browser. Its calculator drops the padding when
+ * max() sits inside calc().
+ * WordPress also copies the menu class onto the link list. The lines
+ * stay on the menu, which is the wider of the two.
  */
 nav.bcew-blocks-header__desktop-menu {
+	box-sizing: border-box;
+	width: calc(100% + (var(--wp--preset--spacing--50) * 2));
+	max-width: none;
+	margin-right: calc(var(--wp--preset--spacing--50) * -1);
+	margin-left: calc(var(--wp--preset--spacing--50) * -1);
+	padding-right: #{'max(var(--wp--preset--spacing--50), calc((100% - var(--wp--style--global--content-size)) / 2 + var(--wp--preset--spacing--50)))'};
+	padding-left: #{'max(var(--wp--preset--spacing--50), calc((100% - var(--wp--style--global--content-size)) / 2 + var(--wp--preset--spacing--50)))'};
 	border-top: 1px solid var(--wp--preset--color--border-default, #d8d8d8);
 	border-bottom: 1px solid var(--wp--preset--color--border-default, #d8d8d8);
+}
+
+nav.bcew-blocks-header__desktop-menu .dswp-block-navigation__container,
+nav.bcew-blocks-header__desktop-menu .wp-block-navigation__container {
+	width: 100%;
+	max-width: var(--wp--style--global--content-size);
+	margin-right: 0;
+	margin-left: 0;
+	justify-content: flex-start;
+}
+
+nav.bcew-blocks-header__desktop-menu .dswp-block-navigation__container > .wp-block-navigation-item:first-child > .wp-block-navigation-item__content,
+nav.bcew-blocks-header__desktop-menu .wp-block-navigation__container > .wp-block-navigation-item:first-child > .wp-block-navigation-item__content {
+	padding-left: 0;
 }
 
 .bcew-blocks-header__breadcrumb {
@@ -86,12 +142,14 @@ nav.bcew-blocks-header__desktop-menu {
  * wrapper taking space, so hide the wrapper as well.
  */
 @media (max-width: 600px) {
+
 	.bcew-blocks-header__desktop-menu {
 		display: none;
 	}
 }
 
 @media (min-width: 601px) {
+
 	.bcew-blocks-header__mobile-menu {
 		display: none;
 	}
@@ -102,6 +160,7 @@ nav.bcew-blocks-header__desktop-menu {
  * visible after the menu is hidden.
  */
 @media (max-width: 600px) {
+
 	.editor-styles-wrapper
 		.block-editor-block-list__block:is(
 			[data-type='core/navigation'],
@@ -112,6 +171,7 @@ nav.bcew-blocks-header__desktop-menu {
 }
 
 @media (min-width: 601px) {
+
 	.editor-styles-wrapper
 		.block-editor-block-list__block:is(
 			[data-type='core/navigation'],
