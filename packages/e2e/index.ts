@@ -4,9 +4,18 @@
  * Common helpers for e2e tests across themes and plugins.
  */
 
+import AxeBuilder from '@axe-core/playwright';
 import { expect, Page } from '@playwright/test';
-import { test } from '@wordpress/e2e-test-utils-playwright';
+import { test as baseTest } from '@wordpress/e2e-test-utils-playwright';
 import config from './playwright.config';
+
+const test = baseTest.extend< { axe: AxeBuilder } >( {
+    axe: async ( { page }, use ) => {
+        await use(
+            new AxeBuilder( { page } ).withTags( [ 'wcag2a', 'wcag2aa' ] )
+        );
+    },
+} );
 
 /**
  * Common page interactions.
@@ -451,4 +460,4 @@ export const createPatternTests = (
     } );
 };
 
-export { config };
+export { config, test };
