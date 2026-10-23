@@ -29,6 +29,7 @@ on:
           - bcew-chefs-embed
           - bcew-theme
           - bcew-plugin
+          - bcew-search
           - bcew-hporoo
           - bcew-firb
       alpha:

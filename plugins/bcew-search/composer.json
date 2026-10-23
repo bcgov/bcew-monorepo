@@ -1,6 +1,6 @@
 {
-    "name": "bcgov-plugin/wordpress-search",
-    "description": "WordPress Search Plugin",
+    "name": "bcgov-plugin/bcew-search",
+    "description": "BC Extended Web Search",
     "type": "wordpress-plugin",
     "license": "Apache-2.0",
     "repositories": [

@@ -1,13 +1,13 @@
 {
     "$schema": "../../node_modules/nx/schemas/project-schema.json",
-    "name": "wordpress-search",
-    "root": "plugins/wordpress-search",
-    "sourceRoot": "plugins/wordpress-search/src",
+    "name": "bcew-search",
+    "root": "plugins/bcew-search",
+    "sourceRoot": "plugins/bcew-search/src",
     "projectType": "application",
     "generators": {
         "bcew-monorepo:plugin": {
-            "name": "WordPress Search",
-            "description": "WordPress Search Plugin"
+            "name": "BC Extended Web Search",
+            "description": "BC Extended Web Search"
         }
     },
     "targets": {
@@ -36,7 +36,7 @@
         "test-integration": {
             "dependsOn": ["composer-install", "build", "wp-env-start"],
             "options": {
-                "command": "wp-env run tests-cli --env-cwd=wp-content/plugins/wordpress-search composer test"
+                "command": "wp-env run tests-cli --env-cwd=wp-content/plugins/bcew-search composer test"
             }
         },
         "wp-env-start": {},

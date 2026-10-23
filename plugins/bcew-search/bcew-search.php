@@ -1,10 +1,10 @@
 <?php
 /**
- * Plugin Name: WordPress Search
- * Plugin URI: https://github.com/bcgov/bcew-monorepo/tree/main/plugins/wordpress-search
+ * Plugin Name: BC Extended Web Search
+ * Plugin URI: https://github.com/bcgov/bcew-monorepo/tree/main/plugins/bcew-search
  * Author: govwordpress@gov.bc.ca
  * Author URI: https://citz-gdx.atlassian.net/browse/DSWP-114
- * Description: WordPress wordpress-search plugin is a plugin that adds custom functionality to your WordPress site dev1.0.1.
+ * Description: Adds customizable search blocks and enhanced search functionality to WordPress.
  * Requires at least: 6.4.4
  * Tested up to: 6.5
  * Requires PHP: 7.4
@@ -144,15 +144,15 @@ if ( file_exists( $local_composer ) ) {
 
 // Check if the required classes exist.
 if ( ! class_exists( 'Bcgov\\WordpressSearch\\TaxonomyFilter' ) ) {
-    wp_die( 'WordPress Search Plugin Error: The required class Bcgov\\WordpressSearch\\TaxonomyFilter could not be found. Please ensure the plugin is properly installed and all dependencies are loaded.' );
+    wp_die( 'BC Extended Web Search error: The required class Bcgov\\WordpressSearch\\TaxonomyFilter could not be found. Please ensure the plugin is properly installed and all dependencies are loaded.' );
 }
 
 if ( ! class_exists( 'Bcgov\\WordpressSearch\\MetadataTaxonomySearch' ) ) {
-    wp_die( 'WordPress Search Plugin Error: The required class Bcgov\\WordpressSearch\\MetadataTaxonomySearch could not be found. Please ensure the plugin is properly installed and all dependencies are loaded.' );
+    wp_die( 'BC Extended Web Search error: The required class Bcgov\\WordpressSearch\\MetadataTaxonomySearch could not be found. Please ensure the plugin is properly installed and all dependencies are loaded.' );
 }
 
 if ( ! class_exists( 'Bcgov\\WordpressSearch\\SearchHighlight' ) ) {
-    wp_die( 'WordPress Search Plugin Error: The required class Bcgov\\WordpressSearch\\SearchHighlight could not be found. Please ensure the plugin is properly installed and all dependencies are loaded.' );
+    wp_die( 'BC Extended Web Search error: The required class Bcgov\\WordpressSearch\\SearchHighlight could not be found. Please ensure the plugin is properly installed and all dependencies are loaded.' );
 }
 	/**
 	 * Initialize the plugin

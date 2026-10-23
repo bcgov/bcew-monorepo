@@ -55,6 +55,6 @@ themes/bcew-firb:
     - changed-files:
         - any-glob-to-any-file: 'themes/bcew-firb/**'
 
-plugins/wordpress-search:
+plugins/bcew-search:
     - changed-files:
-        - any-glob-to-any-file: 'plugins/wordpress-search/**'
+        - any-glob-to-any-file: 'plugins/bcew-search/**'

@@ -1,7 +1,7 @@
 {
-    "name": "wordpress-search",
-    "version": "1.2.0",
-    "description": "WordPress Search Plugin",
+    "name": "bcew-search",
+    "version": "1.3.0-alpha-1",
+    "description": "BC Extended Web Search",
     "author": "govwordpress@gov.bc.ca",
     "license": "GPL-2.0-or-later",
     "keywords": [
@@ -12,11 +12,11 @@
         "Gutenberg",
         "plugin"
     ],
-    "homepage": "https://github.com/bcgov/bcew-monorepo/plugins/wordpress-search",
+    "homepage": "https://github.com/bcgov/bcew-monorepo/tree/main/plugins/bcew-search",
     "repository": {
         "type": "git",
         "url": "https://github.com/bcgov/bcew-monorepo.git",
-        "directory": "plugins/wordpress-search"
+        "directory": "plugins/bcew-search"
     },
     "bugs": {
         "url": "https://github.com/bcgov/bcew-monorepo/issues",

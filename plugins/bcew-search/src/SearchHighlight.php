@@ -195,7 +195,7 @@ class SearchHighlight {
         }
 
         // Use the main plugin file to get the correct plugin URL.
-        $plugin_url = plugin_dir_url( dirname( __DIR__ ) . '/wordpress-search.php' );
+        $plugin_url = plugin_dir_url( dirname( __DIR__ ) . '/bcew-search.php' );
         $css_url    = $plugin_url . 'build/index.css';
         $js_url     = $plugin_url . 'build/index.js';
 
