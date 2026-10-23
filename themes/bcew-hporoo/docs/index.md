@@ -1,6 +1,6 @@
-# BC Extended Web HPOROO
+# BCEW HPOROO
 
-`bcew-hporoo` is a WordPress child theme built on top of `bcew-theme`, providing HPOROO-specific styles, patterns, and customizations for the BC Extended Web platform.
+`bcew-hporoo` is a WordPress child theme built on top of `bcew-theme`, providing HPOROO-specific styles, patterns, and customizations for the BCEW platform.
 
 ## Overview
 

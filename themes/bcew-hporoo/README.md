@@ -1,4 +1,4 @@
-# BC Extended Web HPOROO
+# BCEW HPOROO
 
 HPOROO is a BCEW child theme. Its parent theme is `bcew-theme`.
 
