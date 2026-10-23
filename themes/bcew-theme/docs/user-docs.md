@@ -1,6 +1,6 @@
 # User docs
 
-Site author guidance for activating the BC Extended Web Theme and using its existing Site Editor patterns.
+Site author guidance for activating the BCEW Theme and using its existing Site Editor patterns.
 
 ## Topics
 
