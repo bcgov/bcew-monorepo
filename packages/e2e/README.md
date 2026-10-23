@@ -19,3 +19,19 @@ import { PageHelpers } from '@bcew-monorepo/e2e';
 
 const helpers = new PageHelpers();
 ```
+
+Playwright tests can import the shared `test` fixture to scan the current page
+against WCAG 2.0 A and AA rules:
+
+```ts
+import { expect } from '@playwright/test';
+import { test } from '@bcew-monorepo/e2e';
+
+test( 'page has no accessibility violations', async ( { page, axe } ) => {
+    await page.goto( '/' );
+
+    const { violations } = await axe.analyze();
+
+    expect( violations ).toHaveLength( 0 );
+} );
+```

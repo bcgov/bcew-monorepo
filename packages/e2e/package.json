@@ -12,6 +12,7 @@
     "type": "module",
     "main": "index.ts",
     "peerDependencies": {
+        "@axe-core/playwright": "catalog:",
         "@playwright/test": "catalog:",
         "@wordpress/e2e-test-utils-playwright": "catalog:",
         "@wordpress/scripts": "catalog:"
