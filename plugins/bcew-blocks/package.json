@@ -30,7 +30,9 @@
         "@wordpress/core-data": "catalog:",
         "@wordpress/data": "catalog:",
         "@wordpress/element": "catalog:",
-        "@wordpress/i18n": "catalog:"
+        "@wordpress/hooks": "catalog:",
+        "@wordpress/i18n": "catalog:",
+        "@wordpress/server-side-render": "catalog:"
     },
     "devDependencies": {
         "@bcew-monorepo/e2e": "workspace:*",

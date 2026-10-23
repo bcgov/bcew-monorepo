@@ -24,7 +24,9 @@
                 "command": "wp-env run tests-cli --env-cwd=wp-content/plugins/bcew-blocks composer test ./"
             }
         },
-        "wp-env-start": {},
+        "wp-env-start": {
+            "dependsOn": ["composer-install", "bcew-search:composer-install"]
+        },
         "wp-env-clean": {},
         "wp-env-stop": {}
     },
