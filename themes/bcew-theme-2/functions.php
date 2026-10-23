@@ -81,13 +81,13 @@ add_filter( 'block_editor_settings_all', 'bcew_restrict_locking_unlocking_blocks
 
 
 /**
- * Determines whether the WordPress Search plugin is active.
+ * Determines whether the BC Extended Web Search plugin is active.
  *
  * Detection is based on the plugin's block being registered, which is the most
  * reliable front-end signal (the plugin registers its blocks on `init`, before
  * blocks are rendered) and avoids loading wp-admin includes on the front end.
  *
- * @return bool True when the WordPress Search plugin is providing its blocks.
+ * @return bool True when BC Extended Web Search is providing its blocks.
  */
 function bcew_is_search_plugin_active() {
 	static $is_active = null;
@@ -102,7 +102,7 @@ function bcew_is_search_plugin_active() {
 /**
  * Resolves a core search template-part slug to its plugin-powered counterpart.
  *
- * Mirrors the WordPress Search plugin's own mapping so the header search bar and
+ * Mirrors BC Extended Web Search's own mapping so the header search bar and
  * the search results content use the plugin's blocks when it is active.
  *
  * @param string $slug Template part slug attribute.
@@ -128,7 +128,7 @@ function bcew_resolve_search_plugin_template_part_slug( $slug, $area ) {
 
 /**
  * Swaps the core search template parts for the plugin versions when the
- * WordPress Search plugin is active. When the plugin is disabled the core
+ * BC Extended Web Search plugin is active. When the plugin is disabled the core
  * search parts are used so the site keeps working without it.
  *
  * @param array $parsed_block The parsed block being rendered.
