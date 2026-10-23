@@ -261,8 +261,8 @@ jobs:
                     docker tag "mirror.gcr.io/library/${image}" "${image}"
                   }
                   pull mariadb:lts
-                  pull wordpress:php7.4
-                  pull wordpress:cli-php7.4
+                  pull wordpress:php8.2
+                  pull wordpress:cli-php8.2
 
             - name: Start playwright container
               run: docker compose up -d --wait playwright || { docker logs playwright; exit 1; }

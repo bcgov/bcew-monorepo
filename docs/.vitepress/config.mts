@@ -23,7 +23,7 @@ const packageDisplayNames: Record<string, string> = {
   'bcew-blocks': 'BCEW Blocks',
   'bcew-chefs-embed': 'BCEW CHEFS Embed',
   'bcew-document-repository': 'BCEW Document Repository',
-  'wordpress-search': 'BCEW Search',
+  'bcew-search': 'BC Extended Web Search',
   'bcew-theme-2': 'BCEW Theme 2',
   'bcew-ticorp': 'BCEW TI Corp'
 };

@@ -13,6 +13,6 @@
 	"port": 9022,
 	"testsPort": 9023,
 	"lifecycleScripts": {
-		"afterStart": "wp-env run tests-cli bash -c 'wp theme activate twentytwentyfour && wp plugin activate wordpress-search'"
+		"afterStart": "wp-env run tests-cli bash -c 'wp theme activate twentytwentyfour && wp plugin activate bcew-search'"
 	}
 }
