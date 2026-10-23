@@ -23,7 +23,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use Bcgov\BcewChefsEmbed\ChefsClient;
 use Bcgov\BcewChefsEmbed\CredentialsManager;
-use Bcgov\BcewChefsEmbed\E2eChefsMock;
 
 const BCEW_CHEFS_EMBED_BLOCK_NAME = 'bcew-chefs-embed/chefs-form';
 const BCEW_CHEFS_EMBED_GOV_ORIGIN = '*.gov.bc.ca';
@@ -123,12 +122,6 @@ function bcew_chefs_embed_extend_csp_header( $headers ) {
 	$headers['Content-Security-Policy'] = implode( ';', $policy );
 
 	return $headers;
-}
-
-// E2E tests run against a local wp-env and must not depend on the live CHEFS
-// service. The mock is enabled only by the test environment.
-if ( defined( 'BCEW_CHEFS_E2E_MOCK' ) && BCEW_CHEFS_E2E_MOCK ) {
-	add_filter( 'pre_http_request', array( E2eChefsMock::class, 'pre_http_request' ), 10, 3 );
 }
 
 add_filter( 'render_block_data', 'bcew_chefs_embed_add_token_to_block_data' );
