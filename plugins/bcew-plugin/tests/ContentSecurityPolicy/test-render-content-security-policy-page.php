@@ -53,7 +53,7 @@ class ContentSecurityPolicyRenderPageTest extends \WP_UnitTestCase {
     }
 
     /**
-     * Ensure each CSP field renders with the saved value and falls back to the default when unset.
+     * Ensure each CSP field renders with the saved value and is empty when unset.
      *
      * @dataProvider cspSettingsProvider
      *
@@ -84,7 +84,11 @@ class ContentSecurityPolicyRenderPageTest extends \WP_UnitTestCase {
         $this->csp->render_content_security_policy_page();
         $output_default = ob_get_clean();
 
-        $this->assertStringContainsString( 'value="' . esc_attr( $default_value ) . '"', $output_default, 'Default value should render when option is unset' );
+        $this->assertMatchesRegularExpression(
+            '/<input\b[^>]*\bname="' . preg_quote( esc_attr( $option_name ), '/' ) . '"[^>]*\bvalue=""/',
+            $output_default,
+            'Input should be empty when option is unset'
+        );
     }
 
     /**
