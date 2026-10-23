@@ -26,7 +26,7 @@ catalog:
   '@swc/core': ~1.15.47
   '@swc/helpers': ~0.5.23
   '@types/jest': ^30.0.0
-  '@types/node': 20.19.9
+  '@types/node': 26.6.5
   '@wordpress/api-fetch': wp-6.7
   '@wordpress/base-styles': wp-6.7
   '@wordpress/block-editor': wp-6.7
