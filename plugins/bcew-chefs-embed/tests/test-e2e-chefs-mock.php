@@ -9,6 +9,8 @@ namespace Bcgov\BcewChefsEmbed\Test;
 
 use Bcgov\BcewChefsEmbed\E2eChefsMock;
 
+require_once __DIR__ . '/E2eChefsMock.php';
+
 /**
  * CHEFS E2E mock response handling.
  */

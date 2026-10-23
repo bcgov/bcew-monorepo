@@ -8,4 +8,4 @@ package-lock.json	            export-ignore
 package.json	                export-ignore
 README.md	                    export-ignore
 documentation                   export-ignore
-tests                           export-ignore
+tests/**                        export-ignore
