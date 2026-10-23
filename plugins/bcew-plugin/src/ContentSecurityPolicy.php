@@ -160,7 +160,7 @@ class ContentSecurityPolicy {
                     <input class="admin-form-inputs"
                         type="text"
                         name="<?php echo esc_attr( $option_name ); ?>"
-                        value="<?php echo esc_attr( get_option( $option_name, $setting['default'] ) ); ?>" />
+                        value="<?php echo esc_attr( get_option( $option_name ) ); ?>" />
                 <?php endforeach; ?>
                 <?php submit_button( __( 'Save Settings', 'dswp' ) ); ?>
             </form>
@@ -188,8 +188,9 @@ class ContentSecurityPolicy {
         ];
 
         foreach ( self::CSP_SETTINGS as $key => $value ) {
-            $option_value       = get_option( self::OPTION_PREFIX . $value['option'] );
-            $white_list[ $key ] = sprintf( '%s %s', $value['default'], $option_value );
+            $option_value       = (string) get_option( self::OPTION_PREFIX . $value['option'] );
+            $sources            = preg_split( '/\s+/', trim( $value['default'] . ' ' . $option_value ), -1, PREG_SPLIT_NO_EMPTY );
+            $white_list[ $key ] = implode( ' ', array_unique( $sources ) );
         }
 
         foreach ( $white_list as $white_list_item => $rule ) {

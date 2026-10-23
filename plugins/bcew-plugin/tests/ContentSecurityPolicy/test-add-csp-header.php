@@ -115,6 +115,26 @@ class ContentSecurityPolicyHeaderTest extends \WP_UnitTestCase {
     }
 
     /**
+     * Test: Previously saved base sources are not duplicated in the generated policy.
+     */
+    public function test_saved_base_sources_are_deduplicated() {
+        foreach ( ContentSecurityPolicy::CSP_SETTINGS as $setting ) {
+            update_option( 'dswp_csp_' . $setting['option'], $setting['default'] . ' custom.example.com' );
+        }
+
+        $headers = $this->csp->add_csp_header( [] );
+        $csp     = $headers['Content-Security-Policy'];
+
+        foreach ( ContentSecurityPolicy::CSP_SETTINGS as $directive => $setting ) {
+            preg_match( '/(?:^|;\s*)' . preg_quote( $directive, '/' ) . '\s+([^;]+)/', $csp, $matches );
+            $sources = preg_split( '/\s+/', trim( $matches[1] ) );
+
+            $this->assertCount( count( array_unique( $sources ) ), $sources, $directive . ' should not contain duplicate sources' );
+            $this->assertContains( 'custom.example.com', $sources, $directive . ' should retain saved additions' );
+        }
+    }
+
+    /**
      * Test: CSP directives are properly formatted.
      */
     public function test_csp_formatting() {
