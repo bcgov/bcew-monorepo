@@ -84,7 +84,11 @@ class ContentSecurityPolicyRenderPageTest extends \WP_UnitTestCase {
         $this->csp->render_content_security_policy_page();
         $output_default = ob_get_clean();
 
-        $this->assertStringContainsString( 'value=""', $output_default, 'Input should be empty when option is unset' );
+        $this->assertMatchesRegularExpression(
+            '/<input\b[^>]*\bname="' . preg_quote( esc_attr( $option_name ), '/' ) . '"[^>]*\bvalue=""/',
+            $output_default,
+            'Input should be empty when option is unset'
+        );
     }
 
     /**
