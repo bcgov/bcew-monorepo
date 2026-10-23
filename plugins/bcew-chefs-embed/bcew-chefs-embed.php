@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:       bcew-chefs-embed
+ * Plugin Name:       BCEW CHEFS Embed
  * Plugin URI:        https://github.com/bcgov/bcew-monorepo/plugins/bcew-chefs-embed
  * Documentation URI: https://bcgov.github.io/bcew-monorepo/docs/content/plugins/bcew-chefs-embed/
  * Description:       Embed BC Government Common Hosted Form Service (CHEFS) forms into WordPress pages and posts.
