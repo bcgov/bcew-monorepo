@@ -15,6 +15,7 @@
         "build": {},
         "start": {},
         "start-playwright": {},
+        "test-accessibility": {},
         "test-e2e": {},
         "test-e2e-docker": {},
         "test-integration": {},
@@ -22,7 +23,14 @@
         "test-screenshot": {},
         "test-screenshot-generate": {},
         "lint-template-parts": {},
-        "wp-env-start": {},
+        "wp-env-start": {
+            "dependsOn": [
+                "composer-install",
+                "build",
+                "bcew-plugin:composer-install",
+                "bcew-plugin:build"
+            ]
+        },
         "wp-env-clean": {},
         "wp-env-stop": {}
     },

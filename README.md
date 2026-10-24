@@ -44,8 +44,16 @@ Root `package.json` defines monorepo-wide commands. Common examples:
 | `pnpm build` | `nx run-many` → `build` on all projects that define it |
 | `pnpm composer-install` | Composer install for all projects with the target |
 | `pnpm lint` | JS, CSS, PHP, Markdown, and `package.json` lint |
+| `pnpm nx affected -t test-unit-js` | Run affected JavaScript unit tests |
+| `pnpm nx affected -t test-integration` | Run affected PHP integration tests |
+| `pnpm nx affected -t test-e2e-docker` | Run affected Playwright E2E tests |
+| `pnpm nx affected -t test-screenshot` | Run affected Playwright screenshot tests |
 | `pnpm wp-env-stop` | `wp-env stop` via Nx for applicable projects |
 | `pnpm wp-env-clean` | `wp-env clean` via Nx for applicable projects |
+
+Playwright suites share the configuration in `packages/e2e/playwright.config.js`. Each plugin and theme selects the `e2e`, `screenshot`, or `accessibility` project through its Nx target (`test-e2e`, `test-screenshot`, or `test-accessibility`); screenshot targets retain their separate compare and snapshot-generation commands.
+
+Run each test target separately rather than combining all test types across the monorepo in one `run-many` command. This limits simultaneous WordPress and Playwright workloads.
 
 Full tables and target semantics live in the **[docs site](https://bcgov.github.io/bcew-monorepo/docs/)** (architecture, shared tooling, CI/CD).
 
@@ -65,8 +73,8 @@ Use this checklist before pushing a PR:
 - [ ] I validated the changed project locally as needed
 - [ ] `pnpm lint` passes
 - [ ] `npx nx affected -t build` passes
+- [ ] `npx nx affected -t test-unit-js` passes
 - [ ] `npx nx affected -t test-integration` passes if applicable
-- [ ] `npx nx affected -t test-e2e` passes if applicable
 - [ ] `npx nx affected -t test-screenshot` passes if applicable
 - [ ] I updated docs if needed
 - [ ] I did not edit generated files under `docs/content/`

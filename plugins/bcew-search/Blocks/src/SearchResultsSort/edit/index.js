@@ -190,6 +190,7 @@ const Edit = ( { attributes, setAttributes } ) => {
         <>
             <InspectorControls>
                 <PanelBody
+                    className="bcew-search-results-sort__inspector"
                     title={ __( 'Sort Configuration', 'wordpress-search' ) }
                     initialOpen={ true }
                 >

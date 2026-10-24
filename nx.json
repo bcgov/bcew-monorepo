@@ -1,6 +1,7 @@
 {
     "$schema": "./node_modules/nx/schemas/nx-schema.json",
     "defaultBase": "origin/main",
+    "parallel": 3,
     "targetDefaults": {
         "composer-install": {
             "executor": "nx:run-commands",
@@ -56,7 +57,7 @@
         "test-e2e": {
             "executor": "nx:run-commands",
             "options": {
-                "command": "wp-scripts test-playwright",
+                "command": "wp-scripts test-playwright --project=e2e",
                 "cwd": "{projectRoot}"
             },
             "dependsOn": ["composer-install", "build", "wp-env-start"]
@@ -64,7 +65,7 @@
         "test-e2e-docker": {
             "executor": "nx:run-commands",
             "options": {
-                "command": "docker exec playwright sh -c \"cd {projectRoot} && npx wp-scripts test-playwright {args.playwrightArgs}\""
+                "command": "docker exec playwright sh -c \"cd {projectRoot} && npx wp-scripts test-playwright --project=e2e {args.playwrightArgs}\""
             },
             "dependsOn": [
                 "composer-install",
@@ -76,7 +77,7 @@
         "test-screenshot": {
             "executor": "nx:run-commands",
             "options": {
-                "command": "docker exec playwright sh -c \"cd {projectRoot} && npx wp-scripts test-playwright --config playwright.regression.config.js --update-snapshots none {args.playwrightArgs}\""
+                "command": "docker exec playwright sh -c \"cd {projectRoot} && npx wp-scripts test-playwright --project=screenshot --update-snapshots none {args.playwrightArgs}\""
             },
             "dependsOn": [
                 "composer-install",
@@ -88,7 +89,7 @@
         "test-screenshot-generate": {
             "executor": "nx:run-commands",
             "options": {
-                "command": "docker exec playwright sh -c \"cd {projectRoot} && npx wp-scripts test-playwright --config playwright.regression.config.js --update-snapshots all\""
+                "command": "docker exec playwright sh -c \"cd {projectRoot} && npx wp-scripts test-playwright --project=screenshot --update-snapshots all\""
             },
             "parallelism": false,
             "dependsOn": [
@@ -97,6 +98,14 @@
                 "build",
                 "wp-env-start"
             ]
+        },
+        "test-accessibility": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "wp-scripts test-playwright --project=accessibility",
+                "cwd": "{projectRoot}"
+            },
+            "dependsOn": ["composer-install", "build", "wp-env-start"]
         },
         "wp-env-start": {
             "executor": "nx:run-commands",
