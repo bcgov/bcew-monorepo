@@ -11,6 +11,11 @@ if ( ! $_tests_dir ) {
     $_tests_dir = rtrim( sys_get_temp_dir(), '/\\' ) . '/wordpress-tests-lib';
 }
 
+// Keep PHPUnit's drop-and-reinstall away from the wp_ tables the Playwright tests site uses.
+if ( false === getenv( 'WORDPRESS_TABLE_PREFIX' ) ) {
+    putenv( 'WORDPRESS_TABLE_PREFIX=wptests_' );
+}
+
 // Forward custom PHPUnit Polyfills configuration to PHPUnit bootstrap file.
 $_phpunit_polyfills_path = getenv( 'WP_TESTS_PHPUNIT_POLYFILLS_PATH' );
 if ( false === $_phpunit_polyfills_path ) {
