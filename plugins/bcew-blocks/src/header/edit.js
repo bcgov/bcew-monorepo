@@ -7,11 +7,11 @@ import {
     useInnerBlocksProps,
     store as blockEditorStore,
 } from '@wordpress/block-editor';
-import { getBlockType } from '@wordpress/blocks';
-import { PanelBody, SelectControl } from '@wordpress/components';
+import { createBlock, getBlockType } from '@wordpress/blocks';
+import { PanelBody, SelectControl, ToggleControl } from '@wordpress/components';
 import { store as coreStore } from '@wordpress/core-data';
 import { select, useDispatch, useSelect } from '@wordpress/data';
-import { useMemo } from '@wordpress/element';
+import { useEffect, useMemo } from '@wordpress/element';
 import { addFilter } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
 import ServerSideRender from '@wordpress/server-side-render';
@@ -101,10 +101,11 @@ const headerTemplate = () => {
           } );
 
     /*
-     * The logo row is a group so the logo, search, and mobile menu sit on
-     * one line. layout "default" keeps WordPress from constraining that row
-     * a second time. The desktop menu is its own block so its rules sit on
-     * the menu, not on a wrapper.
+     * The logo row is a group so the logo, the mobile menu, and the search
+     * sit on one line, in that order. That is the order of the theme header.
+     * layout "default" keeps WordPress from constraining that row a second
+     * time. The desktop menu is its own block so its rules sit on the menu,
+     * not on a wrapper.
      */
     const blocks = [
         innerBlock(
@@ -113,7 +114,7 @@ const headerTemplate = () => {
                 className: 'bcew-blocks-header__logo-row',
                 layout: { type: 'default' },
             },
-            [ innerBlock( 'core/site-logo' ), search, mobileMenu ]
+            [ innerBlock( 'core/site-logo' ), mobileMenu, search ]
         ),
         desktopMenu,
     ];
@@ -200,6 +201,77 @@ const searchBlockAttributes = ( name ) => {
 };
 
 /**
+ * A fresh search block for the plugins that are on right now.
+ *
+ * @return {Object} Search block.
+ */
+const createSearchBlock = () => {
+    const name = searchBlockName();
+    return createBlock( name, searchBlockAttributes( name ) );
+};
+
+/**
+ * The logo row is the group that holds the logo, the mobile menu, and the search.
+ *
+ * @param {Object} block Inner block.
+ * @return {boolean} Whether this block is the logo row.
+ */
+const isLogoRow = ( block ) =>
+    'core/group' === block.name &&
+    ( block.attributes?.className || '' ).includes(
+        'bcew-blocks-header__logo-row'
+    );
+
+/**
+ * Whether this block is the header search.
+ *
+ * @param {Object} block Inner block.
+ * @return {boolean} Whether this block is the search.
+ */
+const isHeaderSearchBlock = ( block ) =>
+    SEARCH_BAR === block.name || 'core/search' === block.name;
+
+/**
+ * Logo row with the search on or off, in the theme's order.
+ *
+ * The theme row is the logo, then the mobile menu, then the search. Turning
+ * the search off removes it from the saved header. Turning it back on adds
+ * a new search at the end of the row. Returns null when the row already
+ * matches, so the editor is not marked unsaved for no change.
+ *
+ * @param {Array}   children   Blocks inside the logo row.
+ * @param {boolean} showSearch Whether the search should be in the row.
+ * @return {Array|null} Next blocks, or null when unchanged.
+ */
+const nextLogoRowBlocks = ( children, showSearch ) => {
+    const logo = [];
+    const middle = [];
+    const search = [];
+
+    children.forEach( ( block ) => {
+        if ( 'core/site-logo' === block.name ) {
+            logo.push( block );
+        } else if ( isHeaderSearchBlock( block ) ) {
+            search.push( block );
+        } else {
+            middle.push( block );
+        }
+    } );
+
+    const next = [ ...logo, ...middle ];
+
+    if ( showSearch ) {
+        next.push( ...( search.length ? search : [ createSearchBlock() ] ) );
+    }
+
+    const unchanged =
+        next.length === children.length &&
+        next.every( ( block, index ) => block === children[ index ] );
+
+    return unchanged ? null : next;
+};
+
+/**
  * Writes the chosen menu onto every navigation block in the header.
  *
  * Called only when the dropdown changes. The header does not watch the
@@ -240,11 +312,14 @@ const applyMenu = ( blocks, menuId, update ) => {
  * Header editor. Alignment and colour come from the block toolbar.
  * One menu setting is shared by the mobile menu and the desktop menu.
  *
- * @param {Object} props          Block props.
- * @param {string} props.clientId Block client ID.
+ * @param {Object}   props               Block props.
+ * @param {string}   props.clientId      Block client ID.
+ * @param {Object}   props.attributes    Saved settings.
+ * @param {Function} props.setAttributes Updates saved settings.
  * @return {import('react').ReactElement} Editor element.
  */
-const Edit = ( { clientId } ) => {
+const Edit = ( { clientId, attributes, setAttributes } ) => {
+    const showSearch = false !== attributes.showSearch;
     /*
      * Build the starting blocks once. A new array each render would hand
      * the editor a new template, and WordPress would treat the header as
@@ -256,26 +331,54 @@ const Edit = ( { clientId } ) => {
         template,
         templateLock: 'all',
     } );
-    const { updateBlockAttributes } = useDispatch( blockEditorStore );
+    const { updateBlockAttributes, replaceInnerBlocks } =
+        useDispatch( blockEditorStore );
 
     /*
      * The menu list is the one WordPress already stores for navigation
      * blocks. The selected value is whatever menu id those blocks currently
      * hold, so the dropdown stays in step with them.
      */
-    const { menus, menuId } = useSelect(
-        ( selectStore ) => ( {
-            menus: selectStore( coreStore ).getEntityRecords(
-                'postType',
-                'wp_navigation',
-                MENU_QUERY
-            ),
-            menuId: menuIdFromBlocks(
-                selectStore( blockEditorStore ).getBlocks( clientId )
-            ),
-        } ),
+    const { menus, menuId, innerBlocks } = useSelect(
+        ( selectStore ) => {
+            const blocks =
+                selectStore( blockEditorStore ).getBlocks( clientId );
+
+            return {
+                menus: selectStore( coreStore ).getEntityRecords(
+                    'postType',
+                    'wp_navigation',
+                    MENU_QUERY
+                ),
+                menuId: menuIdFromBlocks( blocks ),
+                innerBlocks: blocks,
+            };
+        },
         [ clientId ]
     );
+
+    /*
+     * Keep the logo row in the theme's order, and drop the search when the
+     * switch is off. Wait until the logo is present so this does not run
+     * while WordPress is still inserting the starting blocks.
+     */
+    useEffect( () => {
+        const logoRow = innerBlocks.find( ( block ) => isLogoRow( block ) );
+
+        if (
+            ! logoRow?.innerBlocks?.some(
+                ( block ) => 'core/site-logo' === block.name
+            )
+        ) {
+            return;
+        }
+
+        const next = nextLogoRowBlocks( logoRow.innerBlocks, showSearch );
+
+        if ( next ) {
+            replaceInnerBlocks( logoRow.clientId, next, false );
+        }
+    }, [ showSearch, innerBlocks, replaceInnerBlocks ] );
 
     const menuOptions = [
         { label: __( 'Select a menu', 'bcew-blocks' ), value: 0 },
@@ -305,6 +408,16 @@ const Edit = ( { clientId } ) => {
                                 updateBlockAttributes
                             );
                         } }
+                    />
+                </PanelBody>
+                <PanelBody title={ __( 'Search', 'bcew-blocks' ) }>
+                    <ToggleControl
+                        __nextHasNoMarginBottom
+                        label={ __( 'Show search', 'bcew-blocks' ) }
+                        checked={ showSearch }
+                        onChange={ ( value ) =>
+                            setAttributes( { showSearch: value } )
+                        }
                     />
                 </PanelBody>
             </InspectorControls>
