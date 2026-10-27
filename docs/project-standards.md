@@ -42,6 +42,9 @@ A **valid** monorepo package in this repository is a workspace member that Nx ca
 6. **Documentation**
    - For sidebar inclusion in the published docs site, add `docs/index.md` under the package. Optional pages are additional Markdown files in the same `docs/` folder. See [Contributing docs](./contributing.md).
 
+7. **Release packaging**
+   - A `.gitattributes` containing the standard `export-ignore` list, enforced by `pnpm lint-gitattributes`. See [Shared tooling](./shared-tooling.md#release-packaging-with-gitattributes).
+
 ## Shared libraries (`packages/`)
 
 Libraries (for example `packages/phpunit-config`) use a minimal `project.json` and supply Composer or npm metadata as needed. They are referenced by path from application `composer.json` files when appropriate.
