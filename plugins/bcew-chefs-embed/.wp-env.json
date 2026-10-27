@@ -4,7 +4,9 @@
 	"plugins": ["."],
 	"themes": ["../../themes/bcew-theme"],
 	"config": {
-		"WP_AUTO_UPDATE_CORE": false
+		"WP_AUTO_UPDATE_CORE": false,
+		"WP_DEBUG": true,
+		"WP_DEBUG_LOG": true
 	},
 	"port": 9012,
 	"testsPort": 9013,

@@ -18,7 +18,7 @@ const ensureChefsFormViewerDefined = ( baseUrl ) => {
         );
     }
 
-    const src = `${ normalizedBaseUrl }/embed/chefs-form-viewer.min.js`;
+    const src = `${ normalizedBaseUrl }/embed/1.1.0/embed/chefs-form-viewer.min.js`;
 
     if ( pendingScripts.has( src ) ) {
         return pendingScripts.get( src );
@@ -56,9 +56,11 @@ const ensureChefsFormViewerDefined = ( baseUrl ) => {
             );
             return;
         }
-
         const script = document.createElement( 'script' );
         script.src = src;
+        // Currently this is not working, it might be due to CHEFS end, CHEFS team investigating.
+        //script.integrity ="sha384-rY3qdd4SrJB9vDTTTPvW69eTIxfNnPQMuP7ewM5VBAMbVH/ENwXKh5ePZEkdaEtY";
+        //script.crossorigin ="anonymous"
         script.async = true;
         script.onload = finish;
         script.onerror = () =>

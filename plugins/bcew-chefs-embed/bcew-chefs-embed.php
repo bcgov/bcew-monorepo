@@ -140,22 +140,21 @@ function bcew_chefs_embed_add_token_to_block_data( $parsed_block ) {
 		return $parsed_block;
 	}
 
-	$form_id     = sanitize_text_field( (string) ( $parsed_block['attrs']['formId'] ?? '' ) );
-	$credentials = '' === $form_id ? null : CredentialsManager::get_by_form_id( $form_id );
+	$form_id     = '12e01efd-9c5f-4e03-82bb-9799b6703cea';//sanitize_text_field( (string) ( $parsed_block['attrs']['formId'] ?? '' ) );
+	//$credentials = '' === $form_id ? null : CredentialsManager::get_by_form_id( $form_id );
 
 	// Without saved credentials no token can be fetched; render.php shows an error.
-	if ( ! $credentials ) {
-		return $parsed_block;
-	}
+	// if ( ! $credentials ) {
+	// 	return $parsed_block;
+	// }
 
-	$authentication = ( new ChefsClient() )->authenticate( $credentials['form_id'], $credentials['api_key'] );
+	// $authentication = ( new ChefsClient() )->authenticate( $credentials['form_id'], $credentials['api_key'] );
 
-	if ( ! empty( $authentication['success'] ) && ! empty( $authentication['token'] ) ) {
-		$parsed_block['attrs']['token'] = $authentication['token'];
-	}
+	// if ( ! empty( $authentication['success'] ) && ! empty( $authentication['token'] ) ) {
+	// 	$parsed_block['attrs']['token'] = $authentication['token'];
+	// }
 
-	$parsed_block['attrs']['confirmation'] = (string) CredentialsManager::get_confirmation( $form_id );
-
+	//$parsed_block['attrs']['confirmation'] = (string) CredentialsManager::get_confirmation( $form_id );
 	return $parsed_block;
 }
 
