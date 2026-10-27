@@ -66,7 +66,7 @@ composer.lock                    export-ignore
 
 The release zip (`.github/scripts/prepare-release-zip.sh`) is `git archive HEAD` of the product folder plus the built `dist/`. `vendor/` is not shipped, and `composer.json` must stay in the zip because Composer sites install from it. `src/` is not excluded because it can hold runtime PHP.
 
-Rules for files a product does not have are harmless, so the list is shared as-is. `composer.json`, `composer.lock`, `phpcs.xml` and `project.json` are deliberately not on the list (autoloading may need Composer files).
+Rules for files a product does not have are harmless, so the list is shared as-is. `composer.json` remains included for Composer installs; `composer.lock`, `phpcs.xml` and `project.json` are excluded by the standard.
 
 - **Source of truth:** `tools/monorepo/src/generators/plugin/files/.gitattributes`. The theme generator copy is identical, so new products inherit the standard.
 - **Enforcement:** `pnpm lint-gitattributes` (`tools/check-gitattributes.mjs`) runs in the PR workflow and fails if a plugin, theme, or generator copy is missing a standard rule.
