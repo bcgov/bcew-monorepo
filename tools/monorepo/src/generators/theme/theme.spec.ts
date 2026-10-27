@@ -19,5 +19,14 @@ describe( 'theme generator', () => {
         await themeGenerator( tree, options );
         const config = readProjectConfiguration( tree, 'test-theme' );
         expect( config ).toBeDefined();
+        expect( config.targets?.[ 'test-accessibility' ] ).toBeDefined();
+        expect(
+            tree.read( 'themes/test-theme/playwright.config.js' )?.toString()
+        ).toContain(
+            "export { default } from '@bcew-monorepo/e2e/playwright.config.js';"
+        );
+        expect(
+            tree.exists( 'themes/test-theme/playwright.regression.config.js' )
+        ).toBe( false );
     } );
 } );

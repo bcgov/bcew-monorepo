@@ -15,6 +15,7 @@
         "build": {},
         "start": {},
         "start-playwright": {},
+        "test-accessibility": {},
         "test-e2e": {},
         "test-e2e-docker": {},
         "test-integration": {},
@@ -22,10 +23,17 @@
         "test-screenshot": {},
         "test-screenshot-generate": {},
         "lint-template-parts": {},
-        "wp-env-start": {},
+        "wp-env-start": {
+            "dependsOn": [
+                "composer-install",
+                "build",
+                "^composer-install",
+                "^build"
+            ]
+        },
         "wp-env-clean": {},
         "wp-env-stop": {}
     },
-    "implicitDependencies": ["packages/phpunit-config/"],
+    "implicitDependencies": ["bcew-plugin", "packages/phpunit-config/"],
     "tags": ["type:wp-theme"]
 }

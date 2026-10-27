@@ -16,9 +16,9 @@ All workflows live under [`.github/workflows/`](https://github.com/bcgov/bcew-mo
 4. **Build** — `npx nx affected --base="origin/<base_branch>" -t build` so only **affected** projects build.
 5. **Tests**:
     1. **Integration** — PHP WordPress integration tests using wp-env.
-    2. **e2e** — e2e tests using Playwright and wp-env.
-    3. **Screenshot** — Visual regression tests using Playwright and wp-env. Compares screenshots
-        - **Note**: If a screenshot test fails in the CI/CD, check the artifact it uploads during the `actions/upload-artifact` step. It will contain a zip of the diff between the expected screenshots and the ones it produced. Usually the fix for this will require running `npx nx test-screenshot-generate` locally to generate new screenshots.
+    2. **e2e** — The `e2e` project from the shared Playwright config, running in the Playwright container with wp-env.
+    3. **Screenshot** — The `screenshot` project from the shared Playwright config, running visual regression tests against committed screenshots.
+        - If a screenshot test fails, inspect the uploaded Playwright report artifact. To intentionally update baselines, run `npx nx run <project-name>:test-screenshot-generate` for the affected project.
 6. **Artifacts** — Playwright report uploaded on completion (unless cancelled).
 
 ### How “affected” is chosen

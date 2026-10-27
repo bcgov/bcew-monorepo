@@ -15,6 +15,7 @@
         "build": {},
         "start": {},
         "start-playwright": {},
+        "test-accessibility": {},
         "test-e2e": {},
         "test-e2e-docker": {},
         "test-integration": {

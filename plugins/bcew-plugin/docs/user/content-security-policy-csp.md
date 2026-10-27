@@ -12,15 +12,15 @@ Click Save Settings to apply changes.
 
 ## How the form works
 
-- Each field accepts a space-separated allowlist of sources (no commas).
-- If a field is left empty, the plugin uses its built-in defaults (shown as helper text under each label).
+- Each field accepts additional space-separated sources (no commas); these are added to the built-in sources shown in the helper text.
+- If a field is left empty, the generated policy uses only its built-in sources.
 - You can add:
     - Keywords: `'self'` `'none'` `'unsafe-inline'` `'unsafe-eval'` `data:` `blob:` `https:`
     - Hosts: `example.com` `sub.example.com`
     - Wildcards: `*.example.com`
 - Use the least-privilege set you can. Prefer HTTPS. Avoid `'unsafe-inline'` and `'unsafe-eval'` when possible.
 
-To revert a directive to defaults, clear the field and Save Settings. To block a type entirely, enter `'none'`.
+To revert a directive to its built-in sources, clear the field and Save Settings. The built-in sources are always included, so these fields cannot replace or block a directive.
 
 ## Directive reference
 
