@@ -27,13 +27,13 @@
             "dependsOn": [
                 "composer-install",
                 "build",
-                "bcew-plugin:composer-install",
-                "bcew-plugin:build"
+                "^composer-install",
+                "^build"
             ]
         },
         "wp-env-clean": {},
         "wp-env-stop": {}
     },
-    "implicitDependencies": ["packages/phpunit-config/"],
+    "implicitDependencies": ["bcew-plugin", "packages/phpunit-config/"],
     "tags": ["type:wp-theme"]
 }
