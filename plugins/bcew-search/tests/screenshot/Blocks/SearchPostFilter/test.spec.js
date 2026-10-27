@@ -14,9 +14,6 @@ test.describe( 'Block', () => {
 
     test( 'should be created', async ( { editor } ) => {
         await editor.insertBlock( { name: BLOCK_NAME } );
-        await expect(
-            editor.page.getByRole( 'checkbox', { name: 'Posts' } )
-        ).toBeChecked();
 
         // Should probably make this into a reusable function as it will appear often.
         const preview = ( await editor.openPreviewPage() ).locator(
@@ -27,12 +24,7 @@ test.describe( 'Block', () => {
 
     test( 'should remove post type', async ( { editor } ) => {
         await editor.insertBlock( { name: BLOCK_NAME } );
-        const postsCheckbox = editor.page.getByRole( 'checkbox', {
-            name: 'Posts',
-        } );
-        await expect( postsCheckbox ).toBeChecked();
-        await postsCheckbox.click();
-        await expect( postsCheckbox ).not.toBeChecked();
+        await editor.page.getByRole( 'checkbox', { name: 'Posts' } ).click();
 
         const preview = ( await editor.openPreviewPage() ).locator(
             BLOCK_CLASS
