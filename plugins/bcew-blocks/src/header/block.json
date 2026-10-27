@@ -9,24 +9,9 @@
     "icon": "admin-home",
     "description": "Site header with the logo, menus, search, and breadcrumb.",
     "attributes": {
-        "align": {
-            "type": "string",
-            "default": "wide"
-        },
         "backgroundColor": {
             "type": "string",
             "default": "base"
-        },
-        "style": {
-            "type": "object",
-            "default": {
-                "spacing": {
-                    "padding": {
-                        "left": "var:preset|spacing|50",
-                        "right": "var:preset|spacing|50"
-                    }
-                }
-            }
         },
         "showSearch": {
             "type": "boolean",
@@ -35,7 +20,6 @@
     },
     "supports": {
         "html": false,
-        "align": [ "left", "center", "right", "wide", "full" ],
         "color": {
             "text": true,
             "background": true,
@@ -43,7 +27,7 @@
         },
         "spacing": {
             "margin": false,
-            "padding": [ "left", "right" ]
+            "padding": false
         }
     },
     "textdomain": "bcew-blocks",

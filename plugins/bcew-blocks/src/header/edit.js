@@ -73,7 +73,8 @@ const headerTemplate = () => {
     /*
      * The mobile menu is the overlay button. The desktop menu is the link
      * list. Passing 600 matches the stylesheet, because the design-system
-     * menu would otherwise switch at 768.
+     * menu would otherwise switch at 768. The core menu uses Mobile, so
+     * its hamburger is the overlay on small screens.
      */
     const mobileMenu = getBlockType( BCEW_NAVIGATION )
         ? innerBlock( BCEW_NAVIGATION, {
@@ -85,7 +86,7 @@ const headerTemplate = () => {
           } )
         : innerBlock( CORE_NAVIGATION, {
               className: 'bcew-blocks-header__mobile-menu',
-              overlayMenu: 'always',
+              overlayMenu: 'mobile',
           } );
 
     const desktopMenu = getBlockType( BCEW_NAVIGATION )
@@ -101,6 +102,13 @@ const headerTemplate = () => {
           } );
 
     /*
+     * The site logo block stores its width in pixels. 120 is the same size
+     * as the 7.5rem cap in the stylesheet, so a new header starts at that
+     * size instead of the unset logo.
+     */
+    const logo = innerBlock( 'core/site-logo', { width: 120 } );
+
+    /*
      * The logo row is a group so the logo, the mobile menu, and the search
      * sit on one line, in that order. That is the order of the theme header.
      * layout "default" keeps WordPress from constraining that row a second
@@ -114,7 +122,7 @@ const headerTemplate = () => {
                 className: 'bcew-blocks-header__logo-row',
                 layout: { type: 'default' },
             },
-            [ innerBlock( 'core/site-logo' ), mobileMenu, search ]
+            [ logo, mobileMenu, search ]
         ),
         desktopMenu,
     ];
@@ -309,7 +317,7 @@ const applyMenu = ( blocks, menuId, update ) => {
 };
 
 /**
- * Header editor. Alignment and colour come from the block toolbar.
+ * Header editor. Colour comes from the block toolbar.
  * One menu setting is shared by the mobile menu and the desktop menu.
  *
  * @param {Object}   props               Block props.
@@ -461,6 +469,25 @@ addFilter(
         }
 
         return <HeaderSearchPreview { ...props } />;
+    }
+);
+
+/*
+ * The header belongs in a template or a template part. Those are the
+ * editors where the site header is placed. A page or a post does not
+ * get the block in its inserter.
+ */
+addFilter(
+    'blockEditor.__unstableCanInsertBlockType',
+    'bcew-blocks/header-templates-only',
+    ( canInsert, blockType ) => {
+        if ( ! canInsert || 'bcew-blocks/header' !== blockType?.name ) {
+            return canInsert;
+        }
+
+        const postType = select( 'core/editor' )?.getCurrentPostType?.();
+
+        return 'wp_template' === postType || 'wp_template_part' === postType;
     }
 );
 
