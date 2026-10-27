@@ -43,14 +43,28 @@ foreach ( $block->inner_blocks as $inner ) {
 	$class_name = isset( $inner->attributes['className'] ) ? (string) $inner->attributes['className'] : '';
 
 	/*
-	 * The search sits in the logo row. Draw that row from its saved
-	 * blocks, and use the search that is available right now.
+	 * The theme header row is the logo, then the mobile menu, then the
+	 * search. Draw that order here. An older header may still have the
+	 * search saved between the logo and the menu. A header with the
+	 * search turned off has no search block, so nothing is added.
 	 */
 	if ( false !== strpos( $class_name, 'bcew-blocks-header__logo-row' ) ) {
-		$rows .= '<div class="wp-block-group bcew-blocks-header__logo-row">';
+		$logo_markup   = '';
+		$middle_markup = '';
+		$search_html   = '';
+
 		foreach ( $inner->inner_blocks as $child ) {
-			$rows .= $is_search( $child ) ? $search_markup : $child->render();
+			if ( 'core/site-logo' === $child->name ) {
+				$logo_markup .= $child->render();
+			} elseif ( $is_search( $child ) ) {
+				$search_html .= $search_markup;
+			} else {
+				$middle_markup .= $child->render();
+			}
 		}
+
+		$rows .= '<div class="wp-block-group bcew-blocks-header__logo-row">';
+		$rows .= $logo_markup . $middle_markup . $search_html;
 		$rows .= '</div>';
 		continue;
 	}
