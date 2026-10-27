@@ -27,11 +27,14 @@ A **valid** monorepo package in this repository is a workspace member that Nx ca
    | `wp-env-start` / `wp-env-stop` / `wp-env-clean` | Local WordPress via `@wordpress/env` |
    | `test-e2e` | Playwright via `wp-scripts test-playwright` |
    | `test-e2e-docker` | The above target except it runs inside a docker container running the official Playwright image |
+   | `test-accessibility` | Playwright accessibility suite (`tests/accessibility/`) |
    | `test-integration` | PHPUnit inside `wp-env` |
    | `test-screenshot` | Playwright visual regression tests, comparing with committed screenshots, generally only used by CI/CD. |
    | `test-screenshot-generate` | Generate new Playwright visual regression screenshots, necessary when CI/CD finds mismatch between screenshots. |
 
    Root shortcuts such as `pnpm build` run `nx run-many` across all projects that define the target.
+
+   Playwright test suites are projects in the shared `packages/e2e/playwright.config.js`; package-level `playwright.config.js` files reuse that configuration. Use the corresponding Nx target to select `e2e`, `accessibility`, or `screenshot`.
 
 5. **Local environment**
    - `.wp-env.json` at the project root when using `wp-env`, consistent with generator output.

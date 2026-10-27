@@ -15,6 +15,7 @@
         "build": {},
         "start": {},
         "start-playwright": {},
+        "test-accessibility": {},
         "test-screenshot": {},
         "test-screenshot-generate": {},
         "wp-env-start": {},
