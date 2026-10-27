@@ -212,11 +212,6 @@ function bcew_chefs_embed_register_menu() {
 function bcew_chefs_embed_init() {
 	if ( function_exists( 'wp_register_block_types_from_metadata_collection' ) ) {
 		wp_register_block_types_from_metadata_collection( __DIR__ . '/dist', __DIR__ . '/dist/blocks-manifest.php' );
-
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			$registered_block = \WP_Block_Type_Registry::get_instance()->is_registered( BCEW_CHEFS_EMBED_BLOCK_NAME );
-			error_log( sprintf( 'bcew-chefs-embed: metadata collection registration complete; chefs-form registered=%s', $registered_block ? 'yes' : 'no' ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-		}
 	} else {
 		// Define the path to the build directory.
 		$build_dir = plugin_dir_path( __FILE__ ) . 'dist/';
@@ -225,23 +220,10 @@ function bcew_chefs_embed_init() {
 		$block_files = glob( $build_dir . '*/block.json' );
 		$block_files = false === $block_files ? array() : $block_files;
 
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			error_log( sprintf( 'bcew-chefs-embed: found %d block metadata file(s) in %s', count( $block_files ), $build_dir ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-		}
-
 		// Loop through each block.json file.
 		foreach ( $block_files as $block_file ) {
 			// Register the block type from the metadata in block.json.
 			register_block_type_from_metadata( $block_file );
-
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				error_log( sprintf( 'bcew-chefs-embed: registered block metadata from %s', $block_file ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-			}
-		}
-
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			$registered_block = \WP_Block_Type_Registry::get_instance()->is_registered( BCEW_CHEFS_EMBED_BLOCK_NAME );
-			error_log( sprintf( 'bcew-chefs-embed: fallback registration complete; chefs-form registered=%s', $registered_block ? 'yes' : 'no' ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 		}
 	}
 
