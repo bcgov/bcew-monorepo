@@ -14,6 +14,9 @@ test.describe( 'Block', () => {
 
     test( 'should be created', async ( { editor } ) => {
         await editor.insertBlock( { name: BLOCK_NAME } );
+        await expect(
+            editor.page.getByRole( 'checkbox', { name: 'Posts' } )
+        ).toBeChecked();
 
         // Should probably make this into a reusable function as it will appear often.
         const preview = ( await editor.openPreviewPage() ).locator(

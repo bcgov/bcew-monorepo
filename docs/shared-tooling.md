@@ -26,7 +26,7 @@ Keep configuration **in the package** when it encodes product behavior:
 - **`.wp-env.json`** — port mappings, plugin/theme mappings, and env-specific options
 - **`composer.json`** — package name, autoload namespaces, `require` / `require-dev` for that product
 - **`project.json`** — which Nx targets the package implements and `implicitDependencies`
-- **E2E specs** under `tests/e2e/` and screenshots under `tests/screenshot/` (generator conventions)
+- **Playwright specs** under `tests/e2e/`, `tests/accessibility/`, and `tests/screenshot/` (generator conventions)
 
 ## Examples
 
@@ -39,7 +39,10 @@ Keep configuration **in the package** when it encodes product behavior:
 
 ### Testing
 
-- **E2E:** `npx nx run <project>:test-e2e` (depends on `wp-env-start` and upstream `build` per `nx.json`).
+- **Playwright configuration:** `packages/e2e/playwright.config.js` defines the `e2e`, `accessibility`, and `screenshot` projects. Each plugin/theme `playwright.config.js` reuses this shared configuration; put specs in the matching `tests/` subdirectory.
+- **E2E:** `npx nx run <project>:test-e2e` runs the `e2e` project; `npx nx run <project>:test-e2e-docker` runs it in the Playwright container. Both depend on `wp-env-start` and upstream `build` per `nx.json`.
+- **Accessibility:** `npx nx run <project>:test-accessibility` runs the `accessibility` project.
+- **Screenshot regression:** `npx nx run <project>:test-screenshot` compares against committed screenshots; `npx nx run <project>:test-screenshot-generate` regenerates them.
 - **PHP integration:** `npx nx run <project>:test-integration` runs PHPUnit inside `wp-env` using shared config from `packages/phpunit-config`.
 
 ### Build
