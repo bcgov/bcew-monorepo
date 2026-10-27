@@ -24,6 +24,15 @@ describe( 'plugin generator', () => {
         expect( config ).toBeDefined();
         expect( config.root ).toBe( 'plugins/test-plugin' );
         expect( config.sourceRoot ).toBe( 'plugins/test-plugin/src' );
+        expect( config.targets?.[ 'test-accessibility' ] ).toBeDefined();
+        expect(
+            tree.read( 'plugins/test-plugin/playwright.config.js' )?.toString()
+        ).toContain(
+            "export { default } from '@bcew-monorepo/e2e/playwright.config.js';"
+        );
+        expect(
+            tree.exists( 'plugins/test-plugin/playwright.regression.config.js' )
+        ).toBe( false );
     } );
 
     it( 'should sanitize the plugin slug from name input', async () => {
