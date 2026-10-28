@@ -1,23 +1,15 @@
-const { createRequire } = require( 'node:module' );
-const path = require( 'node:path' );
+import wordpress from '@wordpress/eslint-plugin';
+import preferArrow from 'eslint-plugin-prefer-arrow';
+import { createRequire } from 'node:module';
+
+const wordpressConfig = wordpress.configs.recommended;
 
 const lintSeverity = process.env.LINT_SEVERITY ?? 'error';
-const wpScriptsPath = require.resolve( '@wordpress/scripts/package.json' );
-const wpScriptsRequire = createRequire( wpScriptsPath );
-const eslintRequire = createRequire(
-    wpScriptsRequire.resolve( 'eslint/package.json' )
-);
-const { FlatCompat } = eslintRequire( '@eslint/eslintrc' );
-const wpScriptsNodeModules = path.resolve(
-    path.dirname( wpScriptsPath ),
-    '../..'
-);
-const compat = new FlatCompat( {
-    baseDirectory: __dirname,
-    resolvePluginsRelativeTo: wpScriptsNodeModules,
-} );
+const globals = createRequire(
+    import.meta.resolve( '@wordpress/eslint-plugin' )
+)( 'globals' );
 
-module.exports = [
+export default [
     {
         ignores: [
             '**/build/**',
@@ -25,33 +17,33 @@ module.exports = [
             '**/vendor/**',
             '**/dist/**',
             '**/coverage/**',
+            '**/.vitepress/cache/**',
             'tools/monorepo/src/generators/**/files/**',
             'tools/monorepo/src/generators/block/templates/**',
         ],
     },
-    ...compat.extends( 'plugin:@wordpress/eslint-plugin/recommended' ),
-    ...compat.config( {
-        env: {
-            node: true,
-            es6: true,
-            amd: true,
-            browser: true,
-            jquery: true,
-            jest: true,
-        },
-        globals: {
-            wp: true,
-        },
-        parserOptions: {
-            ecmaFeatures: {
-                jsx: true,
-                globalReturn: true,
-                generators: false,
-                objectLiteralDuplicateProperties: false,
-                experimentalObjectRestSpread: true,
+    ...wordpressConfig,
+    {
+        languageOptions: {
+            globals: {
+                ...globals.node,
+                ...globals.amd,
+                ...globals.browser,
+                ...globals.jquery,
+                ...globals.jest,
+                wp: 'writable',
             },
-            ecmaVersion: 2020,
-            sourceType: 'module',
+            parserOptions: {
+                ecmaFeatures: {
+                    jsx: true,
+                    globalReturn: true,
+                    generators: false,
+                    objectLiteralDuplicateProperties: false,
+                    experimentalObjectRestSpread: true,
+                },
+                ecmaVersion: 2022,
+                sourceType: 'module',
+            },
         },
         rules: {
             'no-console': 'production' === process.env.NODE_ENV ? 2 : 0,
@@ -82,7 +74,7 @@ module.exports = [
                 version: 'detect',
             },
         },
-    } ),
+    },
     {
         files: [ '**/*.{ts,tsx,cts,mts}' ],
         rules: {
@@ -92,7 +84,7 @@ module.exports = [
     {
         files: [ '**/*.{js,cjs,mjs,jsx,ts,cts,mts,tsx}' ],
         plugins: {
-            'prefer-arrow': require( 'eslint-plugin-prefer-arrow' ),
+            'prefer-arrow': preferArrow,
         },
     },
 ];
