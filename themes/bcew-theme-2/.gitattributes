@@ -4,6 +4,7 @@
 .wp-env.json                    export-ignore
 .eslintignore                   export-ignore
 .eslintrc.js                    export-ignore
+eslint.config.js                export-ignore
 .markdownlint.json              export-ignore
 .markdownlintignore             export-ignore
 .npmrc                          export-ignore

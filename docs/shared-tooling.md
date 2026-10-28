@@ -31,6 +31,7 @@ Every plugin and theme must contain this standard list (it currently only exclud
 .wp-env.json                    export-ignore
 .eslintignore                   export-ignore
 .eslintrc.js                    export-ignore
+eslint.config.js                export-ignore
 .markdownlint.json              export-ignore
 .markdownlintignore             export-ignore
 .npmrc                          export-ignore
