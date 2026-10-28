@@ -61,12 +61,14 @@ tsconfig.json                    export-ignore
 project.json                     export-ignore
 webpack.config.js                export-ignore
 eslint.json                      export-ignore
-composer.lock                    export-ignore
 ```
 
-The release zip (`.github/scripts/prepare-release-zip.sh`) is `git archive HEAD` of the product folder plus the built `dist/`. `vendor/` is not shipped, and `composer.json` must stay in the zip because Composer sites install from it. `src/` is not excluded because it can hold runtime PHP.
+The release zip (`.github/scripts/prepare-release-zip.sh`) is `git archive HEAD` of the product folder plus the built `dist/`. `vendor/` is not shipped. `src/` is not excluded because it can hold runtime PHP.
 
-Rules for files a product does not have are harmless, so the list is shared as-is. `composer.json` remains included for Composer installs; `composer.lock`, `phpcs.xml` and `project.json` are excluded by the standard.
+Rules for files a product does not have are harmless, so the list is shared as-is.
+
+- **Kept in the zip:** `composer.json` and `composer.lock`. Composer sites install from `packages.json`, which is built from the repository `composer.json` at release time. Keeping both files lets a site that deploys the zip without Composer run `composer install --no-dev` inside the product folder and get the locked dependencies.
+- **Excluded:** `phpcs.xml` and `project.json`. `phpcs.xml` is lint configuration, and `project.json` is Nx configuration that the release workflow reads from the repository, not from the zip. Neither is used at runtime.
 
 - **Source of truth:** `tools/monorepo/src/generators/plugin/files/.gitattributes`. The theme generator copy is identical, so new products inherit the standard.
 - **Enforcement:** `pnpm lint-gitattributes` (`tools/check-gitattributes.mjs`) runs in the PR workflow and fails if a plugin, theme, or generator copy is missing a standard rule.

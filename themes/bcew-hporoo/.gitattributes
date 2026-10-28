@@ -34,4 +34,3 @@ tsconfig.json                    export-ignore
 project.json                     export-ignore
 webpack.config.js                export-ignore
 eslint.json                      export-ignore
-composer.lock                    export-ignore
