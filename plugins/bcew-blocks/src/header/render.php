@@ -37,9 +37,26 @@ $is_search = static function ( $inner ) {
 	return 'core/search' === $inner->name || 'wordpress-search/search-bar' === $inner->name;
 };
 
+/*
+ * A missing switch means show the breadcrumb. The home page never shows
+ * it, including when an older header still has the breadcrumb group saved.
+ */
+$show_breadcrumb = ! isset( $block->attributes['showBreadcrumb'] )
+	|| $block->attributes['showBreadcrumb'];
+
+$is_breadcrumb_group = static function ( $inner ) {
+	$class_name = isset( $inner->attributes['className'] ) ? (string) $inner->attributes['className'] : '';
+
+	return false !== strpos( $class_name, 'bcew-blocks-header__breadcrumb' );
+};
+
 $rows = '';
 
 foreach ( $block->inner_blocks as $inner ) {
+	if ( $is_breadcrumb_group( $inner ) && ( is_front_page() || ! $show_breadcrumb ) ) {
+		continue;
+	}
+
 	$class_name = isset( $inner->attributes['className'] ) ? (string) $inner->attributes['className'] : '';
 
 	/*
