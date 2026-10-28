@@ -1,20 +1,25 @@
 /**
  * Layout for the header rows. WordPress loads this in the editor and on the front.
  * The logo row is the site logo, then the mobile menu, then search.
- * The logo, search, and mobile menu stay on one line, inside the theme content width.
- * The logo shrinks
- * as the screen gets narrower so the row does not wrap.
+ * The logo, search, and mobile menu stay on one line, inside the content width.
+ * The search sits on the right of that row.
+ * The logo shrinks as the screen gets narrower so the row does not wrap.
  * At 600px and below the desktop links are hidden. From 601px up the mobile menu is hidden.
  */
 
 /*
- * The logo row and the breadcrumb use the theme's content width.
- * That is the same width the page content uses, so the header lines up with it.
- * The desktop menu bar is wider. Its lines run the full width of the header.
- * The links inside it stay at the content width.
+ * The header uses the theme's side padding, the same padding as the page.
+ * The rows inside are capped at the content width and centered, so on a
+ * wide screen they line up with the page, and on a narrow screen the
+ * padding is the gap.
  */
-.wp-block-bcew-blocks-header .bcew-blocks-header__logo-row,
-.wp-block-bcew-blocks-header .bcew-blocks-header__breadcrumb {
+.wp-block-bcew-blocks-header {
+	padding-right: var(--wp--style--root--padding-right);
+	padding-left: var(--wp--style--root--padding-left);
+}
+
+.wp-block-bcew-blocks-header .bcew-blocks-header__logo-row {
+	width: 100%;
 	max-width: var(--wp--style--global--content-size);
 	margin-right: auto;
 	margin-left: auto;
@@ -34,13 +39,17 @@
 	flex: 0 0 auto;
 }
 
-.bcew-blocks-header__logo-row .wp-block-site-logo.is-default-size img {
-	width: clamp(3rem, 14vw, 7.5rem);
-	max-width: 100%;
+/*
+ * A chosen logo width is stored on the image. max-width still lets that
+ * image shrink on a narrow screen, so the search and the menu button
+ * keep their place inside the side gap.
+ */
+.bcew-blocks-header__logo-row .wp-block-site-logo img {
+	max-width: clamp(3rem, 14vw, 7.5rem);
 	height: auto;
 }
 
-.bcew-blocks-header__search {
+.bcew-blocks-header__logo-row > .bcew-blocks-header__search {
 	flex: 1 1 auto;
 	min-width: 0;
 	margin-left: auto;
@@ -80,41 +89,47 @@
 	flex: 0 0 auto;
 }
 
+/*
+ * The menu button's word "Menu" is wider than the icon. In this row it
+ * lands on top of the search button, so the header keeps the icon.
+ */
+.bcew-blocks-header__mobile-menu .dswp-nav-mobile-menu-icon-text {
+	display: none;
+}
+
 .bcew-blocks-header__desktop-menu {
 	padding-top: 0.75rem;
 	padding-bottom: 0.75rem;
 	font-size: 16px;
-	width: 100%;
 	justify-content: flex-start;
 }
 
 /*
- * The lines use the full header. The links start at the logo's left edge:
- * the header's side padding, plus any space left when the content column
- * is narrower than the header. The padding value is quoted so the build
- * leaves max() for the browser. Its calculator drops the padding when
- * max() sits inside calc().
- * WordPress also copies the menu class onto the link list. The lines
- * stay on the menu, which is the wider of the two.
+ * The menu and the breadcrumb sit in the header padding, so their lines
+ * would stop at that padding. The negative margin pulls the lines out to
+ * the header edge. The same padding is put back so the links and the
+ * breadcrumb text stay in the column.
  */
+nav.bcew-blocks-header__desktop-menu,
+.wp-block-bcew-blocks-header .bcew-blocks-header__breadcrumb {
+	margin-right: calc(var(--wp--style--root--padding-right) * -1);
+	margin-left: calc(var(--wp--style--root--padding-left) * -1);
+	padding-right: var(--wp--style--root--padding-right);
+	padding-left: var(--wp--style--root--padding-left);
+}
+
 nav.bcew-blocks-header__desktop-menu {
-	box-sizing: border-box;
-	width: calc(100% + (var(--wp--preset--spacing--50) * 2));
-	max-width: none;
-	margin-right: calc(var(--wp--preset--spacing--50) * -1);
-	margin-left: calc(var(--wp--preset--spacing--50) * -1);
-	padding-right: #{'max(var(--wp--preset--spacing--50), calc((100% - var(--wp--style--global--content-size)) / 2 + var(--wp--preset--spacing--50)))'};
-	padding-left: #{'max(var(--wp--preset--spacing--50), calc((100% - var(--wp--style--global--content-size)) / 2 + var(--wp--preset--spacing--50)))'};
 	border-top: 1px solid var(--wp--preset--color--border-default, #d8d8d8);
 	border-bottom: 1px solid var(--wp--preset--color--border-default, #d8d8d8);
 }
 
 nav.bcew-blocks-header__desktop-menu .dswp-block-navigation__container,
-nav.bcew-blocks-header__desktop-menu .wp-block-navigation__container {
+nav.bcew-blocks-header__desktop-menu .wp-block-navigation__container,
+.wp-block-bcew-blocks-header .bcew-blocks-header__breadcrumb > * {
 	width: 100%;
 	max-width: var(--wp--style--global--content-size);
-	margin-right: 0;
-	margin-left: 0;
+	margin-right: auto;
+	margin-left: auto;
 	justify-content: flex-start;
 }
 
