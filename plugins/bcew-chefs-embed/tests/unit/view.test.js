@@ -2,6 +2,7 @@ jest.mock( '../../src/chefs-form/utils/ensure-chefs-form-viewer', () =>
     jest.fn( () => Promise.resolve() )
 );
 
+const { CHEFS_BASE_URL } = require( '../../src/chefs-form/utils/constants' );
 const FORM_ID = '43cfb894-a0cf-4bef-8026-7c8001e3cdf5';
 
 const loadView = () => {
@@ -26,9 +27,7 @@ describe( 'CHEFS Form view script', () => {
         const viewer = document.querySelector( 'chefs-form-viewer' );
         expect( viewer ).not.toBeNull();
         expect( viewer.getAttribute( 'form-id' ) ).toBe( FORM_ID );
-        expect( viewer.getAttribute( 'base-url' ) ).toBe(
-            'https://submit.digital.gov.bc.ca/app'
-        );
+        expect( viewer.getAttribute( 'base-url' ) ).toBe( CHEFS_BASE_URL );
         expect( viewer.getAttribute( 'auto-reload-on-submit' ) ).toBe(
             'false'
         );
