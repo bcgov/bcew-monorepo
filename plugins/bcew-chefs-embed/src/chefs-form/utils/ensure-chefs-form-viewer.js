@@ -1,9 +1,11 @@
+import { CHEFS_EMBED_VERSION, CHEFS_VIEWER_INTEGRITY } from './constants';
+
 const pendingScripts = new Map();
 
 /**
  * Load the CHEFS form viewer web component script once per base URL.
  *
- * @param {string} baseUrl CHEFS app base URL from embed-config (e.g. https://submit.digital.gov.bc.ca/app).
+ * @param {string} baseUrl CHEFS app base URL (e.g. https://submit.digital.gov.bc.ca/app).
  * @return {Promise<void>}
  */
 const ensureChefsFormViewerDefined = ( baseUrl ) => {
@@ -18,7 +20,7 @@ const ensureChefsFormViewerDefined = ( baseUrl ) => {
         );
     }
 
-    const src = `${ normalizedBaseUrl }/embed/chefs-form-viewer.min.js`;
+    const src = `${ normalizedBaseUrl }/embed/${ CHEFS_EMBED_VERSION }/embed/chefs-form-viewer.min.js`;
 
     if ( pendingScripts.has( src ) ) {
         return pendingScripts.get( src );
@@ -59,6 +61,8 @@ const ensureChefsFormViewerDefined = ( baseUrl ) => {
 
         const script = document.createElement( 'script' );
         script.src = src;
+        script.integrity = CHEFS_VIEWER_INTEGRITY;
+        script.crossOrigin = 'anonymous';
         script.async = true;
         script.onload = finish;
         script.onerror = () =>

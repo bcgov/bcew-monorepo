@@ -19,11 +19,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-use Bcgov\BcewChefsEmbed\ChefsClient;
 use Bcgov\BcewChefsEmbed\CredentialsManager;
 
 const BCEW_CHEFS_EMBED_BLOCK_NAME        = 'bcew-chefs-embed/chefs-form';
 const BCEW_CHEFS_EMBED_GOV_ORIGIN        = '*.gov.bc.ca';
+const BCEW_CHEFS_EMBED_CHEFS_ORIGIN      = 'https://submit.digital.gov.bc.ca';
 const BCEW_CHEFS_EMBED_DOCUMENTATION_URL = 'https://bcgov.github.io/bcew-monorepo/docs/content/plugins/bcew-chefs-embed/';
 
 /**
@@ -36,7 +36,6 @@ if ( file_exists( $autoloader_path ) ) {
 
 register_activation_hook( __FILE__, array( CredentialsManager::class, 'activate' ) );
 add_action( 'wp_initialize_site', array( CredentialsManager::class, 'on_initialize_site' ) );
-add_action( 'rest_api_init', 'bcew_chefs_embed_register_rest_routes' );
 // Ensure the credentials table exists even if activation ran before Composer autoload was available.
 add_action( 'plugins_loaded', 'bcew_chefs_embed_maybe_install_credentials_table' );
 
@@ -49,11 +48,13 @@ add_filter( 'wp_headers', 'bcew_chefs_embed_extend_csp_header', 1000 );
  * @return array<string, string[]>
  */
 function bcew_chefs_embed_csp_sources() {
-	$styles = array( BCEW_CHEFS_EMBED_GOV_ORIGIN, 'cdn.form.io', 'fonts.googleapis.com' );
+	$styles  = array( BCEW_CHEFS_EMBED_GOV_ORIGIN, 'cdn.form.io', 'fonts.googleapis.com' );
+	$scripts = array( BCEW_CHEFS_EMBED_CHEFS_ORIGIN, 'cdn.form.io' );
 
 	return array(
-		'script-src'      => array( 'cdn.form.io' ),
-		'script-src-elem' => array( 'cdn.form.io' ),
+		'script-src'      => $scripts,
+		'script-src-elem' => $scripts,
+		'connect-src'     => array( BCEW_CHEFS_EMBED_CHEFS_ORIGIN, 'cdn.form.io' ),
 		'style-src'       => $styles,
 		'style-src-elem'  => $styles,
 		'font-src'        => array( BCEW_CHEFS_EMBED_GOV_ORIGIN ),
@@ -111,7 +112,7 @@ function bcew_chefs_embed_extend_csp_header( $headers ) {
 	if ( ! empty( $default_sources ) ) {
 		$inherited = array_diff( $default_sources, array( "'none'" ) );
 
-		foreach ( array( 'script-src', 'style-src', 'font-src' ) as $name ) {
+		foreach ( array( 'script-src', 'connect-src', 'style-src', 'font-src' ) as $name ) {
 			if ( ! isset( $found[ $name ] ) ) {
 				$policy[] = $name . ' ' . implode( ' ', array_unique( array_merge( $inherited, $sources[ $name ] ) ) );
 			}
@@ -121,41 +122,6 @@ function bcew_chefs_embed_extend_csp_header( $headers ) {
 	$headers['Content-Security-Policy'] = implode( ';', $policy );
 
 	return $headers;
-}
-
-add_filter( 'render_block_data', 'bcew_chefs_embed_add_token_to_block_data' );
-
-/**
- * Add a short-lived CHEFS token and confirmation message to the chefs-form block attributes.
- *
- * The token is fetched server-side only, so no public REST route is needed.
- * The API key never leaves the server.
- *
- * @param array $parsed_block Parsed block data.
- * @return array
- */
-function bcew_chefs_embed_add_token_to_block_data( $parsed_block ) {
-	if ( BCEW_CHEFS_EMBED_BLOCK_NAME !== ( $parsed_block['blockName'] ?? '' ) ) {
-		return $parsed_block;
-	}
-
-	$form_id     = sanitize_text_field( (string) ( $parsed_block['attrs']['formId'] ?? '' ) );
-	$credentials = '' === $form_id ? null : CredentialsManager::get_by_form_id( $form_id );
-
-	// Without saved credentials no token can be fetched; render.php shows an error.
-	if ( ! $credentials ) {
-		return $parsed_block;
-	}
-
-	$authentication = ( new ChefsClient() )->authenticate( $credentials['form_id'], $credentials['api_key'] );
-
-	if ( ! empty( $authentication['success'] ) && ! empty( $authentication['token'] ) ) {
-		$parsed_block['attrs']['token'] = $authentication['token'];
-	}
-
-	$parsed_block['attrs']['confirmation'] = (string) CredentialsManager::get_confirmation( $form_id );
-
-	return $parsed_block;
 }
 
 /**
@@ -230,48 +196,3 @@ add_action( 'admin_menu', 'bcew_chefs_embed_register_menu' );
 
 // Initialize blocks and other frontend functionality.
 add_action( 'init', 'bcew_chefs_embed_init' );
-
-/**
- * Register plugin REST API routes.
- */
-function bcew_chefs_embed_register_rest_routes() {
-	register_rest_route(
-		'bcew-chefs-embed/v1',
-		'/forms',
-		[
-			[
-				'methods'             => 'GET',
-				'callback'            => 'bcew_chefs_embed_get_saved_forms',
-				'permission_callback' => 'bcew_chefs_embed_can_edit_posts',
-			],
-		]
-	);
-}
-
-/**
- * Return saved CHEFS forms with display names and IDs.
- *
- * @return WP_REST_Response REST response containing saved forms.
- */
-function bcew_chefs_embed_get_saved_forms() {
-	$forms = CredentialsManager::list_forms();
-
-	return new WP_REST_Response( $forms, 200 );
-}
-
-/**
- * Permission callback for REST routes that require edit post capabilities.
- *
- * @return bool|\WP_Error True when current user can edit posts, otherwise error.
- */
-function bcew_chefs_embed_can_edit_posts() {
-	if ( ! current_user_can( 'edit_posts' ) ) {
-		return new \WP_Error(
-			'rest_forbidden',
-			__( 'You do not have permission to view CHEFS form IDs.', 'bcew-chefs-embed' ),
-			array( 'status' => 403 )
-		);
-	}
-
-	return true;
-}

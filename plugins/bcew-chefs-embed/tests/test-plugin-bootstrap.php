@@ -31,48 +31,6 @@ class PluginBootstrapTest extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * The saved-form endpoint returns the configured forms.
-	 *
-	 * @return void
-	 */
-	public function test_saved_forms_endpoint_returns_configured_forms() {
-		CredentialsManager::save( 'bootstrap-form', 'bootstrap-key' );
-
-		$response = bcew_chefs_embed_get_saved_forms();
-
-		$this->assertSame( 200, $response->get_status() );
-		$this->assertSame( 'bootstrap-form', $response->get_data()[0]['form_id'] );
-	}
-
-	/**
-	 * Editors with the required capability can access saved forms.
-	 *
-	 * @return void
-	 */
-	public function test_saved_forms_permission_allows_editors() {
-		$user_id = self::factory()->user->create( array( 'role' => 'editor' ) );
-		wp_set_current_user( $user_id );
-
-		$this->assertTrue( bcew_chefs_embed_can_edit_posts() );
-	}
-
-	/**
-	 * Users without edit capability receive a REST error.
-	 *
-	 * @return void
-	 */
-	public function test_saved_forms_permission_rejects_subscribers() {
-		$user_id = self::factory()->user->create( array( 'role' => 'subscriber' ) );
-		wp_set_current_user( $user_id );
-
-		$error = bcew_chefs_embed_can_edit_posts();
-
-		$this->assertInstanceOf( \WP_Error::class, $error );
-		$this->assertSame( 'rest_forbidden', $error->get_error_code() );
-		$this->assertSame( 403, $error->get_error_data()['status'] );
-	}
-
-	/**
 	 * Menu registration adds the CHEFS Documentation menu.
 	 *
 	 * @return void
@@ -108,16 +66,16 @@ class PluginBootstrapTest extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * The plugin registers its saved-form REST route.
+	 * The plugin no longer registers a saved-form REST route.
 	 *
 	 * @return void
 	 */
-	public function test_register_rest_routes_registers_saved_forms_route() {
+	public function test_saved_forms_rest_route_is_not_registered() {
 		do_action( 'rest_api_init' );
 
 		$routes = rest_get_server()->get_routes();
 
-		$this->assertArrayHasKey( '/bcew-chefs-embed/v1/forms', $routes );
+		$this->assertArrayNotHasKey( '/bcew-chefs-embed/v1/forms', $routes );
 	}
 
 	/**
@@ -135,7 +93,8 @@ class PluginBootstrapTest extends \WP_UnitTestCase {
 
 		$csp = $headers['Content-Security-Policy'];
 
-		$this->assertStringContainsString( "script-src 'self' cdn.form.io", $csp );
+		$this->assertStringContainsString( "script-src 'self' https://submit.digital.gov.bc.ca cdn.form.io", $csp );
+		$this->assertStringContainsString( "connect-src 'self' https://submit.digital.gov.bc.ca cdn.form.io", $csp );
 		$this->assertStringContainsString( "style-src 'self' *.gov.bc.ca cdn.form.io fonts.googleapis.com", $csp );
 		$this->assertStringContainsString( "font-src 'self' *.gov.bc.ca", $csp );
 	}
@@ -154,6 +113,7 @@ class PluginBootstrapTest extends \WP_UnitTestCase {
 		);
 
 		$this->assertStringContainsString( "font-src 'self' data: *.gov.bc.ca", $headers['Content-Security-Policy'] );
+		$this->assertStringContainsString( "connect-src 'self' data: https://submit.digital.gov.bc.ca cdn.form.io", $headers['Content-Security-Policy'] );
 	}
 
 	/**
@@ -172,7 +132,8 @@ class PluginBootstrapTest extends \WP_UnitTestCase {
 		$csp = $headers['Content-Security-Policy'];
 
 		$this->assertStringContainsString( "default-src 'self'", $csp );
-		$this->assertStringContainsString( "script-src 'self' cdn.form.io", $csp );
+		$this->assertStringContainsString( "script-src 'self' https://submit.digital.gov.bc.ca cdn.form.io", $csp );
+		$this->assertStringContainsString( "connect-src 'self' https://submit.digital.gov.bc.ca cdn.form.io", $csp );
 		$this->assertStringContainsString( "style-src 'self' *.gov.bc.ca cdn.form.io fonts.googleapis.com", $csp );
 	}
 
@@ -192,6 +153,7 @@ class PluginBootstrapTest extends \WP_UnitTestCase {
 		$csp = $headers['Content-Security-Policy'];
 
 		$this->assertStringNotContainsString( 'script-src ', $csp );
+		$this->assertStringNotContainsString( 'connect-src ', $csp );
 		$this->assertStringNotContainsString( 'style-src ', $csp );
 		$this->assertStringNotContainsString( 'font-src ', $csp );
 	}
@@ -211,8 +173,8 @@ class PluginBootstrapTest extends \WP_UnitTestCase {
 
 		$csp = $headers['Content-Security-Policy'];
 
-		$this->assertStringContainsString( "script-src 'self' cdn.form.io", $csp );
-		$this->assertStringContainsString( "script-src-elem 'self' cdn.form.io", $csp );
+		$this->assertStringContainsString( "script-src 'self' https://submit.digital.gov.bc.ca cdn.form.io", $csp );
+		$this->assertStringContainsString( "script-src-elem 'self' https://submit.digital.gov.bc.ca cdn.form.io", $csp );
 		$this->assertStringContainsString( "script-src-attr 'none'", $csp );
 		$this->assertStringContainsString( "style-src 'self' *.gov.bc.ca cdn.form.io fonts.googleapis.com", $csp );
 		$this->assertStringContainsString( "style-src-elem 'self' *.gov.bc.ca cdn.form.io fonts.googleapis.com", $csp );
