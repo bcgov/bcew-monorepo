@@ -93,8 +93,8 @@ class PluginBootstrapTest extends \WP_UnitTestCase {
 
 		$csp = $headers['Content-Security-Policy'];
 
-		$this->assertStringContainsString( "script-src 'self' https://submit.digital.gov.bc.ca cdn.form.io", $csp );
-		$this->assertStringContainsString( "connect-src 'self' https://submit.digital.gov.bc.ca cdn.form.io", $csp );
+		$this->assertStringContainsString( "script-src 'self' " . BCEW_CHEFS_EMBED_CHEFS_ORIGIN . ' cdn.form.io', $csp );
+		$this->assertStringContainsString( "connect-src 'self' " . BCEW_CHEFS_EMBED_CHEFS_ORIGIN . ' cdn.form.io', $csp );
 		$this->assertStringContainsString( "style-src 'self' *.gov.bc.ca cdn.form.io fonts.googleapis.com", $csp );
 		$this->assertStringContainsString( "font-src 'self' *.gov.bc.ca", $csp );
 	}
@@ -113,7 +113,7 @@ class PluginBootstrapTest extends \WP_UnitTestCase {
 		);
 
 		$this->assertStringContainsString( "font-src 'self' data: *.gov.bc.ca", $headers['Content-Security-Policy'] );
-		$this->assertStringContainsString( "connect-src 'self' data: https://submit.digital.gov.bc.ca cdn.form.io", $headers['Content-Security-Policy'] );
+		$this->assertStringContainsString( "connect-src 'self' data: " . BCEW_CHEFS_EMBED_CHEFS_ORIGIN . ' cdn.form.io', $headers['Content-Security-Policy'] );
 	}
 
 	/**
@@ -132,8 +132,8 @@ class PluginBootstrapTest extends \WP_UnitTestCase {
 		$csp = $headers['Content-Security-Policy'];
 
 		$this->assertStringContainsString( "default-src 'self'", $csp );
-		$this->assertStringContainsString( "script-src 'self' https://submit.digital.gov.bc.ca cdn.form.io", $csp );
-		$this->assertStringContainsString( "connect-src 'self' https://submit.digital.gov.bc.ca cdn.form.io", $csp );
+		$this->assertStringContainsString( "script-src 'self' " . BCEW_CHEFS_EMBED_CHEFS_ORIGIN . ' cdn.form.io', $csp );
+		$this->assertStringContainsString( "connect-src 'self' " . BCEW_CHEFS_EMBED_CHEFS_ORIGIN . ' cdn.form.io', $csp );
 		$this->assertStringContainsString( "style-src 'self' *.gov.bc.ca cdn.form.io fonts.googleapis.com", $csp );
 	}
 
@@ -173,8 +173,8 @@ class PluginBootstrapTest extends \WP_UnitTestCase {
 
 		$csp = $headers['Content-Security-Policy'];
 
-		$this->assertStringContainsString( "script-src 'self' https://submit.digital.gov.bc.ca cdn.form.io", $csp );
-		$this->assertStringContainsString( "script-src-elem 'self' https://submit.digital.gov.bc.ca cdn.form.io", $csp );
+		$this->assertStringContainsString( "script-src 'self' " . BCEW_CHEFS_EMBED_CHEFS_ORIGIN . ' cdn.form.io', $csp );
+		$this->assertStringContainsString( "script-src-elem 'self' " . BCEW_CHEFS_EMBED_CHEFS_ORIGIN . ' cdn.form.io', $csp );
 		$this->assertStringContainsString( "script-src-attr 'none'", $csp );
 		$this->assertStringContainsString( "style-src 'self' *.gov.bc.ca cdn.form.io fonts.googleapis.com", $csp );
 		$this->assertStringContainsString( "style-src-elem 'self' *.gov.bc.ca cdn.form.io fonts.googleapis.com", $csp );
