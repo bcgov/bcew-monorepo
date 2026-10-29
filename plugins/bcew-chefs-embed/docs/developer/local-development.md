@@ -36,11 +36,6 @@ Form ID with a different API key returns a `403` response. This is important
 for manual testing: arbitrary credentials fail the server-side token exchange,
 so the block shows a load error instead of the form.
 
-The MU-plugin also registers a test-only `bcew-chefs-embed-e2e/v1/forms` REST
-route (`POST` to save a form ID and API key with an optional `confirmation`,
-`DELETE` to remove all saved forms). Playwright helpers use it to seed forms.
-It requires `manage_options` and only exists when `BCEW_CHEFS_E2E_MOCK` is set.
-
 The development WordPress site on port `9012` does not enable the mock, so
 developers can manually test real Form ID and API key combinations against
 CHEFS. The mock is also not enabled in production. Do not add real API keys to

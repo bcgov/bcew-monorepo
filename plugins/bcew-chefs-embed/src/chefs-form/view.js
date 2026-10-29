@@ -2,16 +2,13 @@
  * Frontend loader for CHEFS Form blocks on published pages.
  *
  * The server renders the CHEFS web component with a short-lived token already
- * set. When the block markup only contains a mount (saved by save.js), this
- * script creates the web component from the block's Form ID without a token.
- * This script loads the component script and wires up submit/error events.
+ * set. This script loads the component script and wires up submit/error events.
  * On successful submit, replaces the viewer with a static success message
  * (DSWP-1149 generic, DSWP-1150 custom confirmation).
  * On CHEFS submit/load HTTP errors, shows title, status, and detail above
  * the form (DSWP-1151) and leaves the form on the page.
  */
 import ensureChefsFormViewerDefined from './utils/ensure-chefs-form-viewer';
-import { CHEFS_BASE_URL } from './utils/constants';
 
 /*
  * Only strings, numbers, and booleans become visible text. String(null)
@@ -220,7 +217,7 @@ const showSuccess = ( mount, customMessage ) => {
     /*
      * Success replaces the form. Clear any CHEFS error banner first.
      * Heading is always "Success". The paragraph is the custom confirmation
-     * saved for the form, or the generic sentence when none is saved.
+     * from Settings, or the generic sentence when none is saved.
      */
     if ( mount.parentElement ) {
         clearChefsError( mount.parentElement );
@@ -247,44 +244,14 @@ const showSuccess = ( mount, customMessage ) => {
 };
 
 /**
- * Return the block's CHEFS viewer, creating a tokenless one from the
- * block's Form ID when the markup does not already contain a viewer.
- *
- * @param {HTMLElement} root  Block wrapper with data-form-id.
- * @param {HTMLElement} mount Mount element inside the block.
- * @return {HTMLElement|null} Viewer element, or null without a Form ID.
- */
-const getOrCreateViewer = ( root, mount ) => {
-    const existing = root.querySelector( 'chefs-form-viewer' );
-
-    if ( existing ) {
-        return existing;
-    }
-
-    const formId = ( root.dataset.formId || '' ).trim();
-
-    if ( ! formId ) {
-        return null;
-    }
-
-    const viewer = document.createElement( 'chefs-form-viewer' );
-    viewer.setAttribute( 'form-id', formId );
-    viewer.setAttribute( 'base-url', CHEFS_BASE_URL );
-    viewer.setAttribute( 'auto-reload-on-submit', 'false' );
-    mount.appendChild( viewer );
-
-    return viewer;
-};
-
-/**
  * Mount a CHEFS form viewer for one block root.
  *
  * @param {HTMLElement} root Block wrapper with data-form-id.
  * @return {Promise<void>}
  */
 const mountChefsForm = async ( root ) => {
+    const viewer = root.querySelector( 'chefs-form-viewer' );
     const mount = root.querySelector( '.bcew-chefs-form__mount' );
-    const viewer = mount ? getOrCreateViewer( root, mount ) : null;
 
     if ( ! viewer || ! mount ) {
         return;

@@ -1,7 +1,6 @@
 import apiFetch from '@wordpress/api-fetch';
 import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
 import {
-    ExternalLink,
     Notice,
     PanelBody,
     SelectControl,
@@ -49,8 +48,6 @@ const Edit = ( { attributes, setAttributes } ) => {
     const [ savedForms, setSavedForms ] = useState( [] );
     const [ isLoading, setIsLoading ] = useState( true );
     const [ fetchError, setFetchError ] = useState( '' );
-    const documentationUrl =
-        window.bcewChefsEmbedSettings?.documentationUrl || '';
 
     useEffect( () => {
         let isMounted = true;
@@ -161,16 +158,6 @@ const Edit = ( { attributes, setAttributes } ) => {
                                         'bcew-chefs-embed'
                                     ) }
                                 </p>
-                                { documentationUrl && (
-                                    <p>
-                                        <ExternalLink href={ documentationUrl }>
-                                            { __(
-                                                'View CHEFS documentation',
-                                                'bcew-chefs-embed'
-                                            ) }
-                                        </ExternalLink>
-                                    </p>
-                                ) }
                             </Notice>
                         ) }
                 </PanelBody>

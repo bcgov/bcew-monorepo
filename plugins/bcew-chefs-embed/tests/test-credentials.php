@@ -284,52 +284,6 @@ class CredentialsTest extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * The editor script receives the settings page URL used by the no-forms message link.
-	 *
-	 * @return void
-	 */
-	public function test_editor_script_has_inline_settings_url_config() {
-		$registry = \WP_Block_Type_Registry::get_instance();
-		if ( $registry->is_registered( 'bcew-chefs-embed/chefs-form' ) ) {
-			$registry->unregister( 'bcew-chefs-embed/chefs-form' );
-		}
-
-		wp_register_script( 'bcew-chefs-embed-test-editor-script', false, array(), '1.0.0', true );
-		register_block_type(
-			'bcew-chefs-embed/chefs-form',
-			array(
-				'editor_script' => 'bcew-chefs-embed-test-editor-script',
-			)
-		);
-
-		bcew_chefs_embed_register_editor_settings();
-
-		$block_type = $registry->get_registered( 'bcew-chefs-embed/chefs-form' );
-
-		$this->assertNotNull( $block_type );
-		$this->assertNotEmpty( $block_type->editor_script_handles );
-
-		$editor_script_handle = reset( $block_type->editor_script_handles );
-		$this->assertIsString( $editor_script_handle );
-		$this->assertNotSame( '', $editor_script_handle );
-
-		$inline_scripts = wp_scripts()->get_data( $editor_script_handle, 'before' );
-
-		$this->assertNotFalse( $inline_scripts );
-		$this->assertIsArray( $inline_scripts );
-		$this->assertNotEmpty( $inline_scripts );
-
-		$inline_script = implode( "\n", $inline_scripts );
-
-		$this->assertStringContainsString( 'window.bcewChefsEmbedSettings', $inline_script );
-		$this->assertStringContainsString( 'documentationUrl', $inline_script );
-		$this->assertStringContainsString( wp_json_encode( BCEW_CHEFS_EMBED_DOCUMENTATION_URL ), $inline_script );
-		$this->assertStringNotContainsString( 'settingsUrl', $inline_script );
-
-		$registry->unregister( 'bcew-chefs-embed/chefs-form' );
-	}
-
-	/**
 	 * REST route denies access to users without the edit_posts capability.
 	 *
 	 * @return void

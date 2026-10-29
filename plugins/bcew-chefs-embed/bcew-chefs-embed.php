@@ -153,11 +153,7 @@ function bcew_chefs_embed_add_token_to_block_data( $parsed_block ) {
 		$parsed_block['attrs']['token'] = $authentication['token'];
 	}
 
-	// A confirmation message set on the block overrides the stored one.
-	$confirmation_override                 = sanitize_textarea_field( (string) ( $parsed_block['attrs']['confirmationMessage'] ?? '' ) );
-	$parsed_block['attrs']['confirmation'] = '' !== trim( $confirmation_override )
-		? $confirmation_override
-		: (string) CredentialsManager::get_confirmation( $form_id );
+	$parsed_block['attrs']['confirmation'] = (string) CredentialsManager::get_confirmation( $form_id );
 
 	return $parsed_block;
 }
@@ -209,67 +205,39 @@ function bcew_chefs_embed_init() {
 			register_block_type_from_metadata( $block_file );
 		}
 	}
-
-	bcew_chefs_embed_register_editor_settings();
 }
 
-add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'bcew_chefs_embed_add_plugin_action_links' );
-
 /**
- * Add a Documentation link to the plugin row on the Plugins screen.
+ * Register the CHEFS admin menu with a link to the plugin documentation.
  *
- * @param array $links Existing plugin action links.
- * @return array
- */
-function bcew_chefs_embed_add_plugin_action_links( $links ) {
-	array_unshift(
-		$links,
-		sprintf(
-			'<a href="%s">%s</a>',
-			esc_url( BCEW_CHEFS_EMBED_DOCUMENTATION_URL ),
-			esc_html__( 'Documentation', 'bcew-chefs-embed' )
-		)
-	);
-
-	return $links;
-}
-
-// Initialize blocks and other frontend functionality.
-add_action( 'init', 'bcew_chefs_embed_init' );
-
-/**
- * Bridge editor-only settings into the CHEFS Form block script.
+ * Capability manage_options = administrators only.
  *
  * @return void
  */
-function bcew_chefs_embed_register_editor_settings() {
-	// Resolve the registered block type so we can discover its editor script handle.
-	$block_type = \WP_Block_Type_Registry::get_instance()->get_registered( BCEW_CHEFS_EMBED_BLOCK_NAME );
+function bcew_chefs_embed_register_menu() {
+	add_menu_page(
+		__( 'CHEFS Forms', 'bcew-chefs-embed' ),
+		__( 'CHEFS Forms', 'bcew-chefs-embed' ),
+		'manage_options',
+		BCEW_CHEFS_EMBED_DOCUMENTATION_URL,
+		'',
+		'dashicons-feedback',
+		58
+	);
 
-	// If the block is not registered yet or has no editor script, there is nothing to attach.
-	if ( ! $block_type || empty( $block_type->editor_script_handles ) ) {
-		return;
-	}
-
-	// Use the block's first editor script handle as the inline script target.
-	$editor_script_handle = reset( $block_type->editor_script_handles );
-
-	if ( ! is_string( $editor_script_handle ) || '' === $editor_script_handle ) {
-		return;
-	}
-
-	// Inject a small JS config object before the editor script runs.
-	// The block editor reads this URL to build the "View CHEFS documentation" empty-state link.
-	wp_add_inline_script(
-		$editor_script_handle,
-		'window.bcewChefsEmbedSettings = ' . wp_json_encode(
-			array(
-				'documentationUrl' => BCEW_CHEFS_EMBED_DOCUMENTATION_URL,
-			)
-		) . ';',
-		'before'
+	add_submenu_page(
+		BCEW_CHEFS_EMBED_DOCUMENTATION_URL,
+		__( 'CHEFS Documentation', 'bcew-chefs-embed' ),
+		__( 'CHEFS Documentation', 'bcew-chefs-embed' ),
+		'manage_options',
+		BCEW_CHEFS_EMBED_DOCUMENTATION_URL
 	);
 }
+
+add_action( 'admin_menu', 'bcew_chefs_embed_register_menu' );
+
+// Initialize blocks and other frontend functionality.
+add_action( 'init', 'bcew_chefs_embed_init' );
 
 /**
  * Register plugin REST API routes.

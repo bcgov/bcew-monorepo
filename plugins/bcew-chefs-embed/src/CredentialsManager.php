@@ -114,6 +114,7 @@ class CredentialsManager {
 	/**
 	 * Remove a form by CHEFS form ID (hard delete).
 	 *
+	 * Used by the settings page Remove action.
 	 * Deletes the entire credentials row — including the stored API key —
 	 * so the form disappears from list_forms() / get_saved_form_ids().
 	 *
@@ -143,9 +144,10 @@ class CredentialsManager {
 	}
 
 	/**
-	 * List configured forms.
+	 * List configured forms for the settings page.
 	 *
-	 * Does not select api_key, so secrets never leave the server.
+	 * Does not select api_key — the settings table shows the form name, ID,
+	 * date, and actions. Keeps secrets off the HTML page.
 	 *
 	 * @return array<int,array{form_id:string,form_name:string,created_at:string}>
 	 */

@@ -136,50 +136,6 @@ class PluginFunctionsTest extends \WP_UnitTestCase {
     }
 
     /**
-     * A confirmation message set on the block overrides the stored one as plain text.
-     *
-     * @return void
-     */
-    public function test_add_token_to_block_data_prefers_block_confirmation_override() {
-        CredentialsManager::save( 'test-form', 'test-key' );
-        CredentialsManager::save_confirmation( 'test-form', 'Thanks for applying.' );
-
-        $block = array(
-            'blockName' => 'bcew-chefs-embed/chefs-form',
-            'attrs'     => array(
-                'formId'              => 'test-form',
-                'confirmationMessage' => "<strong>Block</strong> thanks.\nSee you soon.",
-            ),
-        );
-
-        $result = bcew_chefs_embed_add_token_to_block_data( $block );
-
-        $this->assertSame( "Block thanks.\nSee you soon.", $result['attrs']['confirmation'] );
-    }
-
-    /**
-     * A blank block confirmation message falls back to the stored one.
-     *
-     * @return void
-     */
-    public function test_add_token_to_block_data_ignores_blank_confirmation_override() {
-        CredentialsManager::save( 'test-form', 'test-key' );
-        CredentialsManager::save_confirmation( 'test-form', 'Thanks for applying.' );
-
-        $block = array(
-            'blockName' => 'bcew-chefs-embed/chefs-form',
-            'attrs'     => array(
-                'formId'              => 'test-form',
-                'confirmationMessage' => "  \n ",
-            ),
-        );
-
-        $result = bcew_chefs_embed_add_token_to_block_data( $block );
-
-        $this->assertSame( 'Thanks for applying.', $result['attrs']['confirmation'] );
-    }
-
-    /**
      * Test bcew_chefs_embed_init can be called without error.
      *
      * @return void
