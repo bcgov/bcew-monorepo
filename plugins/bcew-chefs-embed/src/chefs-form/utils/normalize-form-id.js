@@ -11,7 +11,7 @@ const FORM_ID_PATTERN =
  * @return {string} The Form ID, or an empty string when none can be found.
  */
 const normalizeFormId = ( value ) => {
-    const input = 'string' === typeof value ? value.trim() : '';
+    const input = ( 'string' === typeof value ? value.trim() : '' ).toLowerCase();
 
     if ( FORM_ID_PATTERN.test( input ) ) {
         return input.toLowerCase();

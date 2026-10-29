@@ -2,7 +2,7 @@
 
 The block metadata is defined in `src/chefs-form/block.json`. Its registered name is `bcew-chefs-embed/chefs-form`, its category is `widgets`, and its editor icon is the WordPress `media-document` Dashicon.
 
-The block has two persisted attributes:
+The block has the following attributes:
 
 ```json
 {
