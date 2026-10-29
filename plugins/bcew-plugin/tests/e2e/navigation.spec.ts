@@ -555,6 +555,90 @@ test.describe( 'Navigation', () => {
             await expect( submenuContainer ).not.toBeVisible();
         } );
 
+        test( 'Desktop: Submenu containers have a border on the top and sides', async ( {
+            editor,
+        } ) => {
+            await insertNavigationBlock( editor, submenuMenuId );
+            await setOverlayMode( editor, 'never' );
+
+            const preview = await editor.openPreviewPage();
+            await preview.setViewportSize( VIEWPORT_SIZES.DESKTOP );
+
+            const nav = preview.locator(
+                '.wp-block-design-system-wordpress-plugin-navigation'
+            );
+            const servicesItem = nav.getByRole( 'link', { name: 'Services' } );
+            await servicesItem.waitFor( { state: 'visible' } );
+
+            const { container: submenuContainer } = await findSubmenuContainer(
+                nav,
+                'Services'
+            );
+
+            await servicesItem.hover();
+            await expect( submenuContainer ).toBeVisible();
+            await expect( submenuContainer ).toHaveCSS(
+                'border-top-style',
+                'solid'
+            );
+            await expect( submenuContainer ).toHaveCSS(
+                'border-top-width',
+                '1px'
+            );
+            await expect( submenuContainer ).toHaveCSS(
+                'border-right-width',
+                '1px'
+            );
+            await expect( submenuContainer ).toHaveCSS(
+                'border-left-width',
+                '1px'
+            );
+            await expect( submenuContainer ).toHaveCSS(
+                'border-bottom-width',
+                '0px'
+            );
+        } );
+
+        test( 'Mobile: Submenu containers do not get the desktop outline', async ( {
+            editor,
+        } ) => {
+            await insertNavigationBlock( editor, submenuMenuId );
+            await setOverlayMode( editor, 'mobile' );
+            await setNavigationSetting( editor, 'Show in Mobile', true );
+
+            const preview = await editor.openPreviewPage();
+            await preview.setViewportSize( VIEWPORT_SIZES.MOBILE );
+
+            const nav = preview.locator(
+                '.wp-block-design-system-wordpress-plugin-navigation'
+            );
+            const hamburger = nav.locator( '.dswp-nav-mobile-toggle-icon' );
+            await hamburger.click();
+
+            const menuContainer = nav.locator(
+                '.dswp-block-navigation__container'
+            );
+            await menuContainer.waitFor( { state: 'visible' } );
+
+            const { submenu: servicesSubmenu, container: submenuContainer } =
+                await findSubmenuContainer( nav, 'Services' );
+            await servicesSubmenu.locator( '.dswp-submenu-toggle' ).click();
+            await submenuContainer.waitFor( { state: 'visible' } );
+
+            await expect( submenuContainer ).toHaveCSS(
+                'border-top-width',
+                '0px'
+            );
+            await expect( submenuContainer ).toHaveCSS(
+                'border-right-width',
+                '0px'
+            );
+            await expect( submenuContainer ).toHaveCSS(
+                'border-left-width',
+                '0px'
+            );
+        } );
+
         test( 'Mobile: Submenus open/close via arrow toggle next to parent item', async ( {
             editor,
         } ) => {

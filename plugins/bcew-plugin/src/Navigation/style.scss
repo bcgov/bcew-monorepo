@@ -221,6 +221,16 @@
 	// Desktop hover styles
 	&:not(.dswp-is-mobile) {
 
+		/*
+		 * Outline each dropdown on desktop. Every item already draws its own
+		 * bottom edge, so the container leaves the bottom open.
+		 */
+		.wp-block-navigation__submenu-container {
+			border-color: var(--dswp-theme-gray-30);
+			border-style: solid;
+			border-width: 1px 1px 0 1px;
+		}
+
 		> .wp-block-navigation-item:not(:last-child)::after {
 			content: "";
 			border-right: 1px solid var(--dswp-surface-color-border-default);
