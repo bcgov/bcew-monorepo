@@ -73,23 +73,22 @@ class PluginBootstrapTest extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Menu registration adds the CHEFS menu with a documentation submenu.
+	 * Menu registration adds the CHEFS Documentation menu.
 	 *
 	 * @return void
 	 */
-	public function test_register_menu_adds_chefs_menu() {
-		global $menu, $submenu;
+	public function test_register_menu_adds_documentation_menu() {
+		global $menu;
 
 		wp_set_current_user( self::factory()->user->create( array( 'role' => 'administrator' ) ) );
 
-		$menu    = array();
-		$submenu = array();
+		$menu = array();
 		bcew_chefs_embed_register_menu();
 
 		$slug = plugin_basename( BCEW_CHEFS_EMBED_DOCUMENTATION_URL );
 
 		$this->assertContains( $slug, array_column( $menu, 2 ) );
-		$this->assertContains( $slug, array_column( $submenu[ $slug ], 2 ) );
+		$this->assertContains( 'CHEFS Documentation', array_column( $menu, 0 ) );
 	}
 
 	/**

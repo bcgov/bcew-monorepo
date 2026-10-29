@@ -208,7 +208,7 @@ function bcew_chefs_embed_init() {
 }
 
 /**
- * Register the CHEFS admin menu with a link to the plugin documentation.
+ * Register the CHEFS Documentation admin menu.
  *
  * Capability manage_options = administrators only.
  *
@@ -216,21 +216,13 @@ function bcew_chefs_embed_init() {
  */
 function bcew_chefs_embed_register_menu() {
 	add_menu_page(
-		__( 'CHEFS Forms', 'bcew-chefs-embed' ),
-		__( 'CHEFS Forms', 'bcew-chefs-embed' ),
+		__( 'CHEFS Documentation', 'bcew-chefs-embed' ),
+		__( 'CHEFS Documentation', 'bcew-chefs-embed' ),
 		'manage_options',
 		BCEW_CHEFS_EMBED_DOCUMENTATION_URL,
 		'',
 		'dashicons-feedback',
 		58
-	);
-
-	add_submenu_page(
-		BCEW_CHEFS_EMBED_DOCUMENTATION_URL,
-		__( 'CHEFS Documentation', 'bcew-chefs-embed' ),
-		__( 'CHEFS Documentation', 'bcew-chefs-embed' ),
-		'manage_options',
-		BCEW_CHEFS_EMBED_DOCUMENTATION_URL
 	);
 }
 
