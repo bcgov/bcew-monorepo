@@ -4,14 +4,13 @@ Plugin block reference for blocks provided by `bcew-chefs-embed`.
 
 ## Blocks
 
-The CHEFS Form block embeds a BC Government CHEFS form on the page. In the editor, authors pick a saved Form ID from block settings. On the front end, the block renders a mount point and loads the CHEFS form viewer with a short-lived token.
+The CHEFS Form block embeds a BC Government CHEFS Public form on the page. Authors enter a Form ID or share URL and an optional plain-text confirmation message in block settings. The frontend loads the versioned CHEFS viewer without an API key or token.
 
 ### Why this block is different from a typical WordPress custom block
 
 - It depends on an external service (CHEFS) and does not render all content from static block attributes alone.
-- Form credentials are managed in plugin settings by administrators, not entered by content authors in the block.
-- Runtime authentication happens server-side while the block renders: the saved credentials are exchanged for a short-lived token, with no public REST endpoint.
-- It is a dynamic integration block: the final form experience is mounted by external viewer logic at runtime rather than being purely saved markup.
+- The form must use CHEFS's Public login option and allow the WordPress site's origin.
+- It is an integration block: saved markup provides a mount point, and the CHEFS viewer loads the live form at runtime.
 
 
 ## Local Development environment
