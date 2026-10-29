@@ -16,6 +16,10 @@
         "showSearch": {
             "type": "boolean",
             "default": true
+        },
+        "showBreadcrumb": {
+            "type": "boolean",
+            "default": true
         }
     },
     "supports": {
