@@ -4,7 +4,7 @@ Each saved form is one row in `{prefix}bcew_chefs_credentials`, with the Form ID
 
 Implementation safeguard: do not decide whether a Form ID is new by calling `get_by_form_id()`. It returns `null` for both a missing row and an undecryptable key, while `save()` can still update an existing row. Use `CredentialsManager::form_exists()` to check for the row without decrypting the stored key.
 
-During form rendering, the server decrypts the API key and uses it only for the CHEFS token exchange. Basic Authentication is server-to-server. The API key remains server-side and is not included in block attributes, rendered HTML, frontend source, or REST responses. The short-lived token is intentionally returned by `embed-config` and the frontend assigns it to the CHEFS viewer's `auth-token` attribute so the browser can load the form. The token is not stored in the block's persisted attributes.
+The CHEFS Form block no longer reads stored credentials or exchanges an API key for a token. It loads a Public form anonymously through the CHEFS 1.1.0 viewer, provided the WordPress site's origin is allowed by the form. Credential-table and server-authentication cleanup are handled separately in DSWP-1367 and DSWP-1370. The remaining credential code must continue to keep API keys encrypted and out of client-side code until that cleanup is complete.
 
 Do not commit API keys, add them to source code, or expose them in client-side code. Use non-production credentials for local testing.
 

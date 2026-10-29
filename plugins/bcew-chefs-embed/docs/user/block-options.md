@@ -1,7 +1,6 @@
 # Block options
 
-- **Form name:** Selects which saved CHEFS form to embed.
-- Available values come from the CHEFS forms saved in WordPress.
-- The Form ID remains the saved block value so the correct form is embedded.
-- If no forms are saved, the block shows a message.
-- If a selected Form ID is no longer saved, the block selection is cleared and must be set again.
+- **Form ID or share URL:** Enter the CHEFS Form ID or paste a CHEFS share URL. The block extracts and saves the Form ID.
+- **Confirmation message:** Optional plain-text message shown after a successful submission. Leave it empty to show the default success message.
+
+The form must be published, use the **Public** login option, and allow the WordPress site's origin in CHEFS **Allowed origins**. Forms that are private or do not allow the site's origin cannot load without credentials.

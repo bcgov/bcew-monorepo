@@ -1,15 +1,14 @@
-import apiFetch from '@wordpress/api-fetch';
 import { Notice, Spinner } from '@wordpress/components';
 import { useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 import ensureChefsFormViewerDefined from '../utils/ensure-chefs-form-viewer';
+import { CHEFS_BASE_URL } from '../utils/constants';
 
 /**
  * Editor preview for a selected CHEFS form.
  *
- * Gets a short-lived token from the server-rendered block, loads the CHEFS web component,
- * and renders it read-only so the form cannot be submitted in the editor.
+ * Loads the tokenless CHEFS web component and renders it read-only.
  *
  * @param {Object} props        Component props.
  * @param {string} props.formId Selected CHEFS form ID.
@@ -43,38 +42,7 @@ const ChefsFormPreview = ( { formId } ) => {
             }
 
             try {
-                /*
-                 * The core block-renderer route (edit_posts only) runs the
-                 * block's render.php, where the token is added server-side.
-                 */
-                const { rendered } = await apiFetch( {
-                    path: `/wp/v2/block-renderer/bcew-chefs-embed/chefs-form?context=edit&attributes[formId]=${ encodeURIComponent(
-                        formId
-                    ) }`,
-                } );
-
-                if ( isCancelled ) {
-                    return;
-                }
-
-                const renderedViewer = new DOMParser()
-                    .parseFromString( rendered, 'text/html' )
-                    .querySelector( 'chefs-form-viewer' );
-                const config = {
-                    token: renderedViewer?.getAttribute( 'auth-token' ),
-                    baseUrl: renderedViewer?.getAttribute( 'base-url' ),
-                };
-
-                if ( ! config.token || ! config.baseUrl ) {
-                    throw new Error(
-                        __(
-                            'Unable to load the CHEFS form.',
-                            'bcew-chefs-embed'
-                        )
-                    );
-                }
-
-                await ensureChefsFormViewerDefined( config.baseUrl );
+                await ensureChefsFormViewerDefined( CHEFS_BASE_URL );
 
                 if ( isCancelled || ! viewerHostRef.current ) {
                     return;
@@ -82,12 +50,8 @@ const ChefsFormPreview = ( { formId } ) => {
 
                 const viewer = document.createElement( 'chefs-form-viewer' );
                 viewer.setAttribute( 'form-id', formId );
-                viewer.setAttribute( 'auth-token', config.token );
-                viewer.setAttribute( 'base-url', config.baseUrl );
+                viewer.setAttribute( 'base-url', CHEFS_BASE_URL );
                 viewer.setAttribute( 'read-only', '' );
-                viewer.endpoints = {
-                    formioJs: `${ config.baseUrl }/webcomponents/v1/assets/formio.js`,
-                };
 
                 viewerHostRef.current.replaceChildren( viewer );
 

@@ -18,6 +18,7 @@
         "test-accessibility": {},
         "test-e2e": {},
         "test-e2e-docker": {},
+        "test-unit-js": {},
         "test-screenshot": {},
         "test-screenshot-generate": {},
         "test-integration": {

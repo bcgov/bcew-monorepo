@@ -1,6 +1,6 @@
 # User docs
 
-This guide explains how site administrators can add and manage existing CHEFS forms for use in WordPress pages and posts.
+This guide explains how site administrators can add CHEFS forms to WordPress pages and posts.
 
 ## Topics
 
