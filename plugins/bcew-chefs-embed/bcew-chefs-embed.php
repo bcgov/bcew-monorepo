@@ -153,7 +153,11 @@ function bcew_chefs_embed_add_token_to_block_data( $parsed_block ) {
 		$parsed_block['attrs']['token'] = $authentication['token'];
 	}
 
-	$parsed_block['attrs']['confirmation'] = (string) CredentialsManager::get_confirmation( $form_id );
+	// A confirmation message set on the block overrides the stored one.
+	$confirmation_override                 = sanitize_textarea_field( (string) ( $parsed_block['attrs']['confirmationMessage'] ?? '' ) );
+	$parsed_block['attrs']['confirmation'] = '' !== trim( $confirmation_override )
+		? $confirmation_override
+		: (string) CredentialsManager::get_confirmation( $form_id );
 
 	return $parsed_block;
 }

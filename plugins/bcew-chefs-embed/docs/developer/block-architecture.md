@@ -2,18 +2,32 @@
 
 The block metadata is defined in `src/chefs-form/block.json`. Its registered name is `bcew-chefs-embed/chefs-form`, its category is `widgets`, and its editor icon is the WordPress `media-document` Dashicon.
 
-The block has one persisted attribute:
+The block has two persisted attributes:
 
 ```json
 {
 	"formId": {
 		"type": "string",
 		"default": ""
+	},
+	"confirmationMessage": {
+		"type": "string",
+		"default": ""
 	}
 }
 ```
 
+`confirmationMessage` is an optional plain-text override for the success message. When it is not empty, it replaces the confirmation message stored for the form. The server sanitizes it with `sanitize_textarea_field()`.
+
 The API key and runtime token are never block attributes.
+
+## Saved markup and transition to save.js
+
+The block registers a `save` function (`src/chefs-form/save.js`). It stores the Form ID and confirmation override as `data-form-id` and `data-confirmation` on the block wrapper, with an empty `.bcew-chefs-form__mount` element. Existing posts saved by the earlier server-only block contain no markup. `src/chefs-form/deprecated.js` keeps those blocks valid, and the editor upgrades them to the new markup the next time the post is saved.
+
+`block.json` still registers `render.php`, so published pages continue to use the server-rendered viewer with a short-lived token. When the block markup contains a mount but no viewer, `src/chefs-form/view.js` creates a `chefs-form-viewer` from the Form ID without a token. This is used once `render` is removed from `block.json`.
+
+`src/chefs-form/utils/normalize-form-id.js` accepts a Form ID or a CHEFS share URL and returns the Form ID in lowercase. It returns an empty string for any other value. The block settings will use it to store a Form ID from either input.
 
 ## Data flow
 

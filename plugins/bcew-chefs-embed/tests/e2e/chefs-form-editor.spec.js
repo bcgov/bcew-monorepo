@@ -152,4 +152,35 @@ test.describe( 'CHEFS Form editor', () => {
             'https://bcgov.github.io/bcew-monorepo/docs/content/plugins/bcew-chefs-embed/'
         );
     } );
+
+    test( 'upgrades legacy server-rendered blocks to saved markup without invalid-block warnings', async ( {
+        admin,
+        editor,
+        page,
+        requestUtils,
+    } ) => {
+        const formId = '44444444-4444-4444-8444-444444444444';
+        await addSavedForm( requestUtils, formId, 'legacy-api-key' );
+        await mockChefsFormRoutes( page );
+        const post = await requestUtils.createPost( {
+            title: 'Legacy CHEFS block',
+            status: 'draft',
+            content: `<!-- wp:${ BLOCK_NAME } {"formId":"${ formId }"} /-->`,
+        } );
+
+        await admin.editPost( post.id );
+        await assertBlockVisible( editor );
+        await expect( page.locator( '.block-editor-warning' ) ).toHaveCount(
+            0
+        );
+
+        // Serialize current blocks; unedited posts return their stored raw content.
+        const content = await page.evaluate( () =>
+            window.wp.blocks.serialize(
+                window.wp.data.select( 'core/block-editor' ).getBlocks()
+            )
+        );
+        expect( content ).toContain( `data-form-id="${ formId }"` );
+        expect( content ).toContain( 'bcew-chefs-form__mount' );
+    } );
 } );
