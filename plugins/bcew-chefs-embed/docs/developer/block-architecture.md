@@ -31,23 +31,23 @@ The block registers a `save` function (`src/chefs-form/save.js`). It stores the 
 
 ## Data flow
 
-The runtime path below shows the target server-rendered token flow from
+The runtime path below shows the current server-rendered token flow from
 DSWP-1232. The browser receives a short-lived token so the CHEFS viewer can
 load the form, but it never receives the stored API key.
 
+The plugin no longer has an admin screen for saving Form IDs and API keys.
+The flow uses credentials that were saved before the settings page was
+removed. The credentials table and token exchange are removed in DSWP-1367
+and DSWP-1370.
+
 ```mermaid
 sequenceDiagram
-    actor Admin as WordPress admin
     actor Editor as User with edit_posts
     actor Visitor as Public visitor
     participant WP as WordPress plugin
     participant DB as Plugin database
     participant CHEFS as CHEFS API
     participant Viewer as CHEFS viewer script
-
-    Admin->>WP: Save Form ID and API key
-    WP->>CHEFS: Validate credentials over HTTPS
-    WP->>DB: Store Form ID and encrypted API key
 
     Editor->>WP: GET saved forms over HTTPS
     WP->>DB: Read Form IDs and names

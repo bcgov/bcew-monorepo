@@ -7,6 +7,6 @@ The CHEFS Forms settings page has been removed. Adding a form by Form ID or URL 
 ## Topics
 
 - [Before you begin](./user/before-you-begin)
-- [How to get your Form ID and API key for the CHEFS plugin](./user/how-to-get-your-form-id-and-api-key-for-the-chefs-plugin)
+- [How to get your Form ID for the CHEFS plugin](./user/how-to-get-your-form-id-for-the-chefs-plugin)
 - [Add a CHEFS form block to a page or post](./user/add-a-chefs-form-block-to-a-page-or-post)
 - [Block options](./user/block-options)
