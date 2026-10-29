@@ -136,7 +136,7 @@ const Edit = ( { attributes, setAttributes } ) => {
                         <SelectControl
                             label={ __( 'Form name', 'bcew-chefs-embed' ) }
                             help={ __(
-                                'Insert your form share url or form id.',
+                                'Choose one of the CHEFS forms saved in WordPress.',
                                 'bcew-chefs-embed'
                             ) }
                             value={ formId }
