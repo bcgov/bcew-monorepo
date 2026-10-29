@@ -23,7 +23,7 @@ use Bcgov\BcewChefsEmbed\CredentialsManager;
 
 const BCEW_CHEFS_EMBED_BLOCK_NAME        = 'bcew-chefs-embed/chefs-form';
 const BCEW_CHEFS_EMBED_GOV_ORIGIN        = '*.gov.bc.ca';
-const BCEW_CHEFS_EMBED_CHEFS_ORIGIN      = 'https://submit.digital.gov.bc.ca';
+const BCEW_CHEFS_EMBED_CHEFS_ORIGIN      = 'https://chefs-dev.apps.silver.devops.gov.bc.ca'; // TEMP: revert to https://submit.digital.gov.bc.ca before release
 const BCEW_CHEFS_EMBED_DOCUMENTATION_URL = 'https://bcgov.github.io/bcew-monorepo/docs/content/plugins/bcew-chefs-embed/';
 
 /**
