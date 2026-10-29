@@ -231,6 +231,33 @@ const isLogoRow = ( block ) =>
     );
 
 /**
+ * Whether this block is the header breadcrumb group.
+ *
+ * @param {Object} block Inner block.
+ * @return {boolean} Whether this block is the breadcrumb group.
+ */
+const isBreadcrumbGroup = ( block ) =>
+    'core/group' === block.name &&
+    ( block.attributes?.className || '' ).includes(
+        'bcew-blocks-header__breadcrumb'
+    );
+
+/**
+ * A fresh breadcrumb group, matching the one a new header starts with.
+ *
+ * @return {Object} Breadcrumb group block.
+ */
+const createBreadcrumbGroup = () =>
+    createBlock(
+        'core/group',
+        {
+            className: 'bcew-blocks-header__breadcrumb',
+            layout: { type: 'default' },
+        },
+        [ createBlock( BREADCRUMB ) ]
+    );
+
+/**
  * Whether this block is the header search.
  *
  * @param {Object} block Inner block.
@@ -277,6 +304,34 @@ const nextLogoRowBlocks = ( children, showSearch ) => {
         next.every( ( block, index ) => block === children[ index ] );
 
     return unchanged ? null : next;
+};
+
+/**
+ * Header blocks with the breadcrumb on or off.
+ *
+ * Turning the breadcrumb off takes that group out of the saved header.
+ * Turning it back on adds the group after the menu. The header is stored
+ * in a template or a template part, and WordPress keeps a revision of
+ * that content, so this change shows up there. Returns null when the
+ * header already matches, so the editor is not marked unsaved for no change.
+ *
+ * @param {Array}   blocks         Blocks inside the header.
+ * @param {boolean} showBreadcrumb Whether the breadcrumb should be saved.
+ * @return {Array|null} Next blocks, or null when unchanged.
+ */
+const nextBreadcrumbBlocks = ( blocks, showBreadcrumb ) => {
+    const breadcrumb = blocks.filter( ( block ) => isBreadcrumbGroup( block ) );
+    const rest = blocks.filter( ( block ) => ! isBreadcrumbGroup( block ) );
+
+    if ( ! showBreadcrumb ) {
+        return breadcrumb.length ? rest : null;
+    }
+
+    if ( breadcrumb.length || ! getBlockType( BREADCRUMB ) ) {
+        return null;
+    }
+
+    return [ ...rest, createBreadcrumbGroup() ];
 };
 
 /**
@@ -328,6 +383,7 @@ const applyMenu = ( blocks, menuId, update ) => {
  */
 const Edit = ( { clientId, attributes, setAttributes } ) => {
     const showSearch = false !== attributes.showSearch;
+    const showBreadcrumb = false !== attributes.showBreadcrumb;
     /*
      * Build the starting blocks once. A new array each render would hand
      * the editor a new template, and WordPress would treat the header as
@@ -366,9 +422,39 @@ const Edit = ( { clientId, attributes, setAttributes } ) => {
     );
 
     /*
+     * Drop the breadcrumb when the switch is off, and put it back after
+     * the menu when the switch is on. Wait until the logo is present so
+     * this does not run while WordPress is still inserting the starting
+     * blocks. The saved header still includes the breadcrumb for other
+     * pages. The home page leaves it out when the header is printed.
+     */
+    useEffect( () => {
+        const hasLogo = innerBlocks.some( ( block ) => {
+            if ( ! isLogoRow( block ) ) {
+                return false;
+            }
+
+            return block.innerBlocks?.some(
+                ( child ) => 'core/site-logo' === child.name
+            );
+        } );
+
+        if ( ! hasLogo ) {
+            return;
+        }
+
+        const next = nextBreadcrumbBlocks( innerBlocks, showBreadcrumb );
+
+        if ( next ) {
+            replaceInnerBlocks( clientId, next, false );
+        }
+    }, [ showBreadcrumb, innerBlocks, clientId, replaceInnerBlocks ] );
+
+    /*
      * Keep the logo row in the theme's order, and drop the search when the
      * switch is off. Wait until the logo is present so this does not run
-     * while WordPress is still inserting the starting blocks.
+     * while WordPress is still inserting the starting blocks. This runs
+     * after the breadcrumb update so a search change is not overwritten.
      */
     useEffect( () => {
         const logoRow = innerBlocks.find( ( block ) => isLogoRow( block ) );
@@ -428,6 +514,18 @@ const Edit = ( { clientId, attributes, setAttributes } ) => {
                         }
                     />
                 </PanelBody>
+                { getBlockType( BREADCRUMB ) && (
+                    <PanelBody title={ __( 'Breadcrumb', 'bcew-blocks' ) }>
+                        <ToggleControl
+                            __nextHasNoMarginBottom
+                            label={ __( 'Show breadcrumb', 'bcew-blocks' ) }
+                            checked={ showBreadcrumb }
+                            onChange={ ( value ) =>
+                                setAttributes( { showBreadcrumb: value } )
+                            }
+                        />
+                    </PanelBody>
+                ) }
             </InspectorControls>
             <header { ...innerBlocksProps } />
         </>
