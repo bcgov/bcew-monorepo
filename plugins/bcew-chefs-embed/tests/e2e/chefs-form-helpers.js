@@ -1,7 +1,7 @@
 const { expect } = require( '@wordpress/e2e-test-utils-playwright' );
 
 const BLOCK_NAME = 'bcew-chefs-embed/chefs-form';
-const SETTINGS_PAGE_QUERY = 'page=bcew-chefs-embed-settings';
+const SEED_FORMS_PATH = '/bcew-chefs-embed-e2e/v1/forms';
 
 const getChefsFormViewerStub = ( loadError ) => `
 	class ChefsFormViewerStub extends HTMLElement {
@@ -30,70 +30,28 @@ const getChefsFormViewerStub = ( loadError ) => `
 	}
 `;
 
-const assertSettingsPageAccess = async ( page ) => {
-    const settingsHeading = page.getByRole( 'heading', {
-        name: 'CHEFS Settings',
-    } );
-    const unauthorizedMessage = page.getByText(
-        /You do not have sufficient permissions|Unauthorized|Forbidden/i
-    );
-    if ( 0 === ( await settingsHeading.count() ) ) {
-        await expect( unauthorizedMessage ).toHaveCount( 0 );
-        return false;
-    }
-    await expect( settingsHeading ).toBeVisible( { timeout: 10000 } );
-    return true;
-};
-
 const ensureElementExpanded = async ( element ) => {
     if ( 'false' === ( await element.getAttribute( 'aria-expanded' ) ) ) {
         await element.click();
     }
 };
 
-const clearSavedForms = async ( admin, page ) => {
-    await admin.visitAdminPage( 'admin.php', SETTINGS_PAGE_QUERY );
-    await expect( page ).toHaveURL(
-        /\/wp-admin\/admin\.php\?page=bcew-chefs-embed-settings/
-    );
-    if ( ! ( await assertSettingsPageAccess( page ) ) ) {
-        return;
-    }
-
-    const removeButton = page.getByRole( 'button', {
-        name: 'Remove form',
-        exact: true,
-    } );
-    while ( ( await removeButton.count() ) > 0 ) {
-        const remainingForms = ( await removeButton.count() ) - 1;
-        page.once( 'dialog', ( dialog ) => dialog.accept() );
-        await removeButton.first().click();
-        await expect( removeButton ).toHaveCount( remainingForms );
-    }
+// Seed forms through the test-only REST route registered by e2e-chefs-mock-loader.php.
+const clearSavedForms = async ( requestUtils ) => {
+    await requestUtils.rest( { path: SEED_FORMS_PATH, method: 'DELETE' } );
 };
 
-const addSavedForm = async ( admin, page, formId, apiKey ) => {
-    await admin.visitAdminPage( 'admin.php', SETTINGS_PAGE_QUERY );
-    await expect( page ).toHaveURL(
-        /\/wp-admin\/admin\.php\?page=bcew-chefs-embed-settings/
-    );
-    const canAccess = await assertSettingsPageAccess( page );
-    if ( ! canAccess ) {
-        throw new Error(
-            'CHEFS settings page is not accessible (permission denied). ' +
-                'Verify the test user can manage options and access admin pages.'
-        );
-    }
-    const formIdField = page.getByLabel( 'Form ID / URL' ).first();
-    const apiKeyField = page.getByLabel( 'API Key' ).first();
-    await expect( formIdField ).toBeVisible();
-    await expect( apiKeyField ).toBeVisible();
-    await formIdField.fill( formId );
-    await apiKeyField.fill( apiKey );
-    await page.getByRole( 'button', { name: 'Save', exact: true } ).click();
-    await expect(
-        page.locator( '.notice-success' ).filter( { hasText: 'Saved.' } )
-    ).toBeVisible();
+const addSavedForm = async ( requestUtils, formId, apiKey, confirmation ) => {
+    const result = await requestUtils.rest( {
+        path: SEED_FORMS_PATH,
+        method: 'POST',
+        data: {
+            form_id: formId,
+            api_key: apiKey,
+            confirmation: confirmation || '',
+        },
+    } );
+    expect( result.success ).toBe( true );
 };
 
 const selectSavedFormId = async ( page, formId ) => {
@@ -160,24 +118,10 @@ const selectFormAndPublish = async ( admin, editor, page, formId ) => {
 };
 
 const publishFormAndVisit = async (
-    admin,
-    editor,
-    page,
+    { admin, editor, page, requestUtils },
     { formId, apiKey, confirmation, loadError }
 ) => {
-    await addSavedForm( admin, page, formId, apiKey );
-    if ( confirmation ) {
-        await page.getByRole( 'link', { name: 'Edit confirmation' } ).click();
-        await (
-            await getConfirmationMessageField( page )
-        ).fill( confirmation );
-        await page.getByRole( 'button', { name: 'Save confirmation' } ).click();
-        await expect(
-            page
-                .locator( '.notice-success' )
-                .filter( { hasText: 'Confirmation message saved.' } )
-        ).toBeVisible();
-    }
+    await addSavedForm( requestUtils, formId, apiKey, confirmation );
     await mockChefsFormRoutes( page, { loadError } );
     const postId = await selectFormAndPublish( admin, editor, page, formId );
     await page.context().clearCookies();
@@ -250,55 +194,24 @@ const dispatchFormioEvent = async ( viewer, eventName, detail ) => {
     );
 };
 
-const getFormIdField = async ( page ) => {
-    return page.getByLabel( 'Form ID' ).first();
-};
-
-const getApiKeyField = async ( page ) => {
-    return page.getByLabel( 'API Key' ).first();
-};
-
-const getConfirmationMessageField = async ( page ) => {
-    return page.getByLabel( 'Confirmation message' );
-};
-
-const getSaveButton = async ( page ) => {
-    return page.getByRole( 'button', { name: 'Save', exact: true } );
-};
-
-const getRemoveFormButton = async ( page ) => {
-    return page.getByRole( 'button', { name: 'Remove form', exact: true } );
-};
-
-const getErrorNotice = async ( page ) => {
-    return page.locator( '.notice-error' );
-};
-
 module.exports = {
     CHEFS_BASE_URL,
     E2E_TOKEN,
     BLOCK_NAME,
     addSavedForm,
     assertBlockVisible,
-    assertSettingsPageAccess,
     clearSavedForms,
     dispatchFormioEvent,
     ensureBlockSettingsVisible,
     ensureElementExpanded,
-    getApiKeyField,
     getChefsBlock,
-    getConfirmationMessageField,
-    getErrorNotice,
     getFormBlock,
     getFormError,
-    getFormIdField,
     getFormOptionLabels,
     getFormOptionValues,
     getFormSelect,
     getFormSuccess,
     getFormViewer,
-    getRemoveFormButton,
-    getSaveButton,
     mockChefsFormRoutes,
     publishFormAndVisit,
     selectFormAndPublish,

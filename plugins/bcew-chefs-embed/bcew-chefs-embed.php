@@ -15,8 +15,6 @@
  * @package bcew-chefs-embed
  */
 
-use Bcgov\BcewChefsEmbed\Settings;
-
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
@@ -24,8 +22,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 use Bcgov\BcewChefsEmbed\ChefsClient;
 use Bcgov\BcewChefsEmbed\CredentialsManager;
 
-const BCEW_CHEFS_EMBED_BLOCK_NAME = 'bcew-chefs-embed/chefs-form';
-const BCEW_CHEFS_EMBED_GOV_ORIGIN = '*.gov.bc.ca';
+const BCEW_CHEFS_EMBED_BLOCK_NAME        = 'bcew-chefs-embed/chefs-form';
+const BCEW_CHEFS_EMBED_GOV_ORIGIN        = '*.gov.bc.ca';
+const BCEW_CHEFS_EMBED_DOCUMENTATION_URL = 'https://bcgov.github.io/bcew-monorepo/docs/content/plugins/bcew-chefs-embed/';
 
 /**
  * Load Composer autoloader when present.
@@ -182,26 +181,6 @@ function bcew_chefs_embed_maybe_install_credentials_table() {
 }
 
 /**
- * Initialize the CHEFS settings admin page.
- *
- * @return void
- */
-function bcew_chefs_embed_admin_init() {
-	$settings = new Settings();
-	$settings->init();
-}
-
-/**
- * Register the CHEFS menu on admin_menu hook.
- *
- * @return void
- */
-function bcew_chefs_embed_register_menu() {
-	$settings = new Settings();
-	$settings->register_menu();
-}
-
-/**
  * Registers the block(s) metadata from the `blocks-manifest.php` and registers the block type(s)
  * based on the registered block metadata. Behind the scenes, it registers also all assets so they can be enqueued
  * through the block editor in the corresponding context.
@@ -230,10 +209,25 @@ function bcew_chefs_embed_init() {
 	bcew_chefs_embed_register_editor_settings();
 }
 
-// Initialize admin settings (menu, forms, actions).
-if ( is_admin() && class_exists( Settings::class ) ) {
-	add_action( 'admin_menu', 'bcew_chefs_embed_register_menu' );
-	add_action( 'admin_init', 'bcew_chefs_embed_admin_init' );
+add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'bcew_chefs_embed_add_plugin_action_links' );
+
+/**
+ * Add a Documentation link to the plugin row on the Plugins screen.
+ *
+ * @param array $links Existing plugin action links.
+ * @return array
+ */
+function bcew_chefs_embed_add_plugin_action_links( $links ) {
+	array_unshift(
+		$links,
+		sprintf(
+			'<a href="%s">%s</a>',
+			esc_url( BCEW_CHEFS_EMBED_DOCUMENTATION_URL ),
+			esc_html__( 'Documentation', 'bcew-chefs-embed' )
+		)
+	);
+
+	return $links;
 }
 
 // Initialize blocks and other frontend functionality.
@@ -245,11 +239,6 @@ add_action( 'init', 'bcew_chefs_embed_init' );
  * @return void
  */
 function bcew_chefs_embed_register_editor_settings() {
-	// Skip if the admin settings class is unavailable; no settings URL can be generated.
-	if ( ! class_exists( Settings::class ) ) {
-		return;
-	}
-
 	// Resolve the registered block type so we can discover its editor script handle.
 	$block_type = \WP_Block_Type_Registry::get_instance()->get_registered( BCEW_CHEFS_EMBED_BLOCK_NAME );
 
@@ -266,12 +255,12 @@ function bcew_chefs_embed_register_editor_settings() {
 	}
 
 	// Inject a small JS config object before the editor script runs.
-	// The block editor reads this URL to build the "Open CHEFS settings" empty-state link.
+	// The block editor reads this URL to build the "View CHEFS documentation" empty-state link.
 	wp_add_inline_script(
 		$editor_script_handle,
 		'window.bcewChefsEmbedSettings = ' . wp_json_encode(
 			array(
-				'settingsUrl' => Settings::get_page_url(),
+				'documentationUrl' => BCEW_CHEFS_EMBED_DOCUMENTATION_URL,
 			)
 		) . ';',
 		'before'

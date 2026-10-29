@@ -49,7 +49,8 @@ const Edit = ( { attributes, setAttributes } ) => {
     const [ savedForms, setSavedForms ] = useState( [] );
     const [ isLoading, setIsLoading ] = useState( true );
     const [ fetchError, setFetchError ] = useState( '' );
-    const settingsUrl = window.bcewChefsEmbedSettings?.settingsUrl || '';
+    const documentationUrl =
+        window.bcewChefsEmbedSettings?.documentationUrl || '';
 
     useEffect( () => {
         let isMounted = true;
@@ -138,7 +139,7 @@ const Edit = ( { attributes, setAttributes } ) => {
                         <SelectControl
                             label={ __( 'Form name', 'bcew-chefs-embed' ) }
                             help={ __(
-                                'Choose one of the CHEFS forms saved in plugin settings.',
+                                'Choose one of the saved CHEFS forms.',
                                 'bcew-chefs-embed'
                             ) }
                             value={ formId }
@@ -160,11 +161,11 @@ const Edit = ( { attributes, setAttributes } ) => {
                                         'bcew-chefs-embed'
                                     ) }
                                 </p>
-                                { settingsUrl && (
+                                { documentationUrl && (
                                     <p>
-                                        <ExternalLink href={ settingsUrl }>
+                                        <ExternalLink href={ documentationUrl }>
                                             { __(
-                                                'Open CHEFS settings',
+                                                'View CHEFS documentation',
                                                 'bcew-chefs-embed'
                                             ) }
                                         </ExternalLink>

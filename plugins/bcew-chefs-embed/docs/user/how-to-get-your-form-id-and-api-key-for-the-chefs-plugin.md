@@ -21,4 +21,4 @@ form that only has draft versions cannot be saved or embedded.
 3. Click the **Eye** button to reveal the API key.
 4. Click **Copy**.
 
-Return to WordPress Admin and enter the Form ID and API key in the new form entry.
+Keep the Form ID and API key ready to enter in WordPress.

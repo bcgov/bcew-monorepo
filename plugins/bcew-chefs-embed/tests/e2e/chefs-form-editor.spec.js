@@ -17,8 +17,8 @@ const {
 } = require( './chefs-form-helpers' );
 
 test.describe( 'CHEFS Form editor', () => {
-    test.beforeEach( async ( { admin, page } ) => {
-        await clearSavedForms( admin, page );
+    test.beforeEach( async ( { requestUtils } ) => {
+        await clearSavedForms( requestUtils );
     } );
 
     test.afterEach( async ( { page } ) => {
@@ -46,11 +46,12 @@ test.describe( 'CHEFS Form editor', () => {
         admin,
         editor,
         page,
+        requestUtils,
     } ) => {
         const formIdOne = '11111111-1111-4111-8111-111111111111';
         const formIdTwo = '22222222-2222-4222-8222-222222222222';
-        await addSavedForm( admin, page, formIdOne, 'api-key-one' );
-        await addSavedForm( admin, page, formIdTwo, 'api-key-two' );
+        await addSavedForm( requestUtils, formIdOne, 'api-key-one' );
+        await addSavedForm( requestUtils, formIdTwo, 'api-key-two' );
         await mockChefsFormRoutes( page );
         await admin.createNewPost();
         await expect( page ).toHaveURL( /\/wp-admin\/post-new\.php/ );
@@ -87,9 +88,10 @@ test.describe( 'CHEFS Form editor', () => {
         admin,
         editor,
         page,
+        requestUtils,
     } ) => {
         const formId = '33333333-3333-4333-8333-333333333333';
-        await addSavedForm( admin, page, formId, 'persisted-api-key' );
+        await addSavedForm( requestUtils, formId, 'persisted-api-key' );
         await mockChefsFormRoutes( page );
         const postId = await selectFormAndPublish(
             admin,
@@ -103,7 +105,7 @@ test.describe( 'CHEFS Form editor', () => {
         await expect( page.getByLabel( 'Form name' ).first() ).toHaveValue(
             formId
         );
-        await clearSavedForms( admin, page );
+        await clearSavedForms( requestUtils );
         await page.goto( `/wp-admin/post.php?post=${ postId }&action=edit` );
         await assertBlockVisible( editor );
         await expect(
@@ -115,12 +117,13 @@ test.describe( 'CHEFS Form editor', () => {
         expect( chefsBlock.attributes.formId ).toBe( '' );
     } );
 
-    test( 'shows empty-state settings link and placeholder when no form is selected', async ( {
+    test( 'shows empty-state documentation link and placeholder when no form is selected', async ( {
         admin,
         editor,
         page,
+        requestUtils,
     } ) => {
-        await clearSavedForms( admin, page );
+        await clearSavedForms( requestUtils );
         await admin.createNewPost();
         await expect( page ).toHaveURL( /\/wp-admin\/post-new\.php/ );
         await expect(
@@ -140,13 +143,13 @@ test.describe( 'CHEFS Form editor', () => {
         await expect(
             chefsPanel.getByText( /No CHEFS forms have been saved yet\./i )
         ).toBeVisible();
-        const settingsLink = chefsPanel.getByRole( 'link', {
-            name: 'Open CHEFS settings',
+        const documentationLink = chefsPanel.getByRole( 'link', {
+            name: /View CHEFS documentation/,
         } );
-        await expect( settingsLink ).toBeVisible();
-        await expect( settingsLink ).toHaveAttribute(
+        await expect( documentationLink ).toBeVisible();
+        await expect( documentationLink ).toHaveAttribute(
             'href',
-            /admin\.php\?page=bcew-chefs-embed-settings/
+            'https://bcgov.github.io/bcew-monorepo/docs/content/plugins/bcew-chefs-embed/'
         );
     } );
 } );

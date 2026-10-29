@@ -8,7 +8,6 @@
 namespace Bcgov\BcewChefsEmbed\Test;
 
 use Bcgov\BcewChefsEmbed\CredentialsManager;
-use Bcgov\BcewChefsEmbed\Settings;
 
 /**
  * Credentials table acceptance criteria.
@@ -323,8 +322,9 @@ class CredentialsTest extends \WP_UnitTestCase {
 		$inline_script = implode( "\n", $inline_scripts );
 
 		$this->assertStringContainsString( 'window.bcewChefsEmbedSettings', $inline_script );
-		$this->assertStringContainsString( 'settingsUrl', $inline_script );
-		$this->assertStringContainsString( Settings::PAGE_SLUG, $inline_script );
+		$this->assertStringContainsString( 'documentationUrl', $inline_script );
+		$this->assertStringContainsString( wp_json_encode( BCEW_CHEFS_EMBED_DOCUMENTATION_URL ), $inline_script );
+		$this->assertStringNotContainsString( 'settingsUrl', $inline_script );
 
 		$registry->unregister( 'bcew-chefs-embed/chefs-form' );
 	}

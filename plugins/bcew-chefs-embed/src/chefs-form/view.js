@@ -217,7 +217,7 @@ const showSuccess = ( mount, customMessage ) => {
     /*
      * Success replaces the form. Clear any CHEFS error banner first.
      * Heading is always "Success". The paragraph is the custom confirmation
-     * from Settings, or the generic sentence when none is saved.
+     * saved for the form, or the generic sentence when none is saved.
      */
     if ( mount.parentElement ) {
         clearChefsError( mount.parentElement );

@@ -15,7 +15,7 @@ Use `test-screenshot-generate` when updating approved screenshot baselines. The 
 
 1. Start the environment with `npx nx run bcew-chefs-embed:wp-env-start`.
 2. Open the development site at `http://localhost:9012` and confirm WordPress loads. Use port `9012` for manual tests with real CHEFS credentials because this site connects to the real CHEFS authentication endpoint. Do not use the Playwright test site on port `9013`, where CHEFS authentication is mocked.
-3. Open the CHEFS settings page as an administrator and save a Form ID and API key.
+3. Save a Form ID, form name, and API key, for example with `wp-env run cli wp eval '\Bcgov\BcewChefsEmbed\CredentialsManager::save( "<form-id>", "<api-key>", 1 ); \Bcgov\BcewChefsEmbed\CredentialsManager::save_form_name( "<form-id>", "<form-name>" );'`.
 4. Create a post and insert the CHEFS Form block.
 5. Confirm the saved Form ID appears in the block sidebar.
 6. Select the Form ID and confirm the editor preview loads when valid CHEFS credentials and network access are available.

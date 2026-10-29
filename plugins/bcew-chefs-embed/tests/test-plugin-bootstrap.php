@@ -84,18 +84,33 @@ class PluginBootstrapTest extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Menu registration adds the CHEFS settings page.
+	 * The CHEFS settings page and its admin-post handlers are no longer registered.
 	 *
 	 * @return void
 	 */
-	public function test_register_menu_adds_chefs_menu() {
-		global $menu;
+	public function test_settings_page_is_not_registered() {
+		$this->assertFalse( has_action( 'admin_menu', 'bcew_chefs_embed_register_menu' ) );
+		$this->assertFalse( has_action( 'admin_init', 'bcew_chefs_embed_admin_init' ) );
+		$this->assertFalse( has_action( 'admin_post_bcew_chefs_save' ) );
+		$this->assertFalse( has_action( 'admin_post_bcew_chefs_delete' ) );
+		$this->assertFalse( class_exists( '\\Bcgov\\BcewChefsEmbed\\Settings' ) );
+	}
 
-		$menu = array();
-		bcew_chefs_embed_register_menu();
+	/**
+	 * The Plugins screen row keeps a Documentation link for administrators.
+	 *
+	 * @return void
+	 */
+	public function test_plugin_action_links_include_documentation() {
+		$basename = plugin_basename( WP_PLUGIN_DIR . '/bcew-chefs-embed/bcew-chefs-embed.php' );
+		$this->assertSame( 10, has_filter( 'plugin_action_links_' . $basename, 'bcew_chefs_embed_add_plugin_action_links' ) );
 
-		$menu_slugs = array_column( $menu, 2 );
-		$this->assertContains( 'bcew-chefs-embed-settings', $menu_slugs );
+		$links = bcew_chefs_embed_add_plugin_action_links( array( '<a href="#">Deactivate</a>' ) );
+
+		$this->assertCount( 2, $links );
+		$this->assertStringContainsString( 'Documentation', $links[0] );
+		$this->assertStringContainsString( 'href="' . esc_url( BCEW_CHEFS_EMBED_DOCUMENTATION_URL ) . '"', $links[0] );
+		$this->assertStringNotContainsString( 'Settings', implode( '', $links ) );
 	}
 
 	/**
