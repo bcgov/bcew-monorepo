@@ -17,23 +17,23 @@ The API key and runtime token are never block attributes.
 
 ## Data flow
 
-The runtime path below shows the target server-rendered token flow from
+The runtime path below shows the current server-rendered token flow from
 DSWP-1232. The browser receives a short-lived token so the CHEFS viewer can
 load the form, but it never receives the stored API key.
 
+The plugin no longer has an admin screen for saving Form IDs and API keys.
+The flow uses credentials that were saved before the settings page was
+removed. The credentials table and token exchange are removed in DSWP-1367
+and DSWP-1370.
+
 ```mermaid
 sequenceDiagram
-    actor Admin as WordPress admin
     actor Editor as User with edit_posts
     actor Visitor as Public visitor
     participant WP as WordPress plugin
     participant DB as Plugin database
     participant CHEFS as CHEFS API
     participant Viewer as CHEFS viewer script
-
-    Admin->>WP: Save Form ID and API key (admin-post + nonce)
-    WP->>CHEFS: Validate credentials over HTTPS
-    WP->>DB: Store Form ID and encrypted API key
 
     Editor->>WP: GET saved forms over HTTPS
     WP->>DB: Read Form IDs and names
@@ -52,8 +52,8 @@ sequenceDiagram
     CHEFS-->>Viewer: Form
 ```
 
-Administrators manage Form IDs and API keys through nonce-protected
-`admin-post` actions. Users with `edit_posts` can retrieve saved Form IDs and
+Form IDs and encrypted API keys are stored by `src/CredentialsManager.php`.
+Users with `edit_posts` can retrieve saved Form IDs and
 select one in the block editor. Public visitors can load the published form
 with the short-lived token produced during server rendering, but the API key
 remains encrypted at rest and is only decrypted inside WordPress for the
@@ -64,7 +64,7 @@ server-to-server CHEFS token exchange.
 1. `src/chefs-form/edit.js` requests the saved forms from the `forms` REST route.
 2. The stored CHEFS titles are displayed in the block sidebar.
 3. Selecting a title updates the persisted `formId` attribute with the UUID.
-4. If the selected Form ID is deleted by an administrator, the editor clears the stale selection.
+4. If the selected Form ID is no longer saved, the editor clears the stale selection.
 5. The editor preview uses the runtime configuration endpoint and CHEFS viewer used by the published block.
 
 The editor preview is provided by `src/chefs-form/components/chefs-form-preview.js`. It uses the same runtime configuration endpoint as the published block and loads the CHEFS viewer through `src/chefs-form/utils/ensure-chefs-form-viewer.js`.

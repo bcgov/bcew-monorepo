@@ -8,7 +8,6 @@
 namespace Bcgov\BcewChefsEmbed\Test;
 
 use Bcgov\BcewChefsEmbed\CredentialsManager;
-use Bcgov\BcewChefsEmbed\Settings;
 
 /**
  * Tests for plugin functions.
@@ -134,22 +133,6 @@ class PluginFunctionsTest extends \WP_UnitTestCase {
         $result = bcew_chefs_embed_add_token_to_block_data( $block );
 
         $this->assertSame( 'Thanks for applying.', $result['attrs']['confirmation'] );
-    }
-
-    /**
-     * Test bcew_chefs_embed_admin_init does not error when called.
-     *
-     * @return void
-     */
-    public function test_admin_init_does_not_error() {
-        if ( ! class_exists( Settings::class ) ) {
-            $this->markTestSkipped( 'Settings class not available.' );
-        }
-
-        // Call the function; it should complete without error.
-        bcew_chefs_embed_admin_init();
-
-        $this->assertTrue( true, 'Function should complete without error.' );
     }
 
     /**

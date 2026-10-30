@@ -18,7 +18,7 @@ npx nx run bcew-chefs-embed:build
 npx nx run bcew-chefs-embed:wp-env-start
 ```
 
-The local site is available at `http://localhost:9012`. WordPress Admin is available at `http://localhost:9012/wp-admin`. The CHEFS settings page is available at `http://localhost:9012/wp-admin/admin.php?page=bcew-chefs-embed-settings`.
+The local site is available at `http://localhost:9012`. WordPress Admin is available at `http://localhost:9012/wp-admin`.
 The test environment uses port `9013` and is used by the Playwright targets. It is separate from the normal development site on port `9012`.
 
 The `wp-env` lifecycle script activates the plugin after the environment starts. Build the assets again after changing block JavaScript, styles, or metadata.
@@ -33,9 +33,8 @@ MU-plugin loads the mock from `tests/` and registers a server-side
 The mock accepts only the explicit Form ID and API key pairs used by the E2E
 fixtures. An unknown Form ID returns a `404` `Bad formId` response, and a known
 Form ID with a different API key returns a `403` response. This is important
-for manual testing: arbitrary credentials must fail during the settings save,
-rather than being saved and failing later with an invalid gateway token in the
-block editor.
+for manual testing: arbitrary credentials fail the server-side token exchange,
+so the block shows a load error instead of the form.
 
 The development WordPress site on port `9012` does not enable the mock, so
 developers can manually test real Form ID and API key combinations against

@@ -73,29 +73,22 @@ class PluginBootstrapTest extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Editor settings registration exits when the block has not been registered.
+	 * Menu registration adds the CHEFS Documentation menu.
 	 *
 	 * @return void
 	 */
-	public function test_editor_settings_registration_skips_unregistered_block() {
-		bcew_chefs_embed_register_editor_settings();
-
-		$this->assertTrue( true, 'The helper should safely return without a registered block.' );
-	}
-
-	/**
-	 * Menu registration adds the CHEFS settings page.
-	 *
-	 * @return void
-	 */
-	public function test_register_menu_adds_chefs_menu() {
+	public function test_register_menu_adds_documentation_menu() {
 		global $menu;
+
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'administrator' ) ) );
 
 		$menu = array();
 		bcew_chefs_embed_register_menu();
 
-		$menu_slugs = array_column( $menu, 2 );
-		$this->assertContains( 'bcew-chefs-embed-settings', $menu_slugs );
+		$slug = plugin_basename( BCEW_CHEFS_EMBED_DOCUMENTATION_URL );
+
+		$this->assertContains( $slug, array_column( $menu, 2 ) );
+		$this->assertContains( 'CHEFS Documentation', array_column( $menu, 0 ) );
 	}
 
 	/**

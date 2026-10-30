@@ -1,7 +1,6 @@
 import apiFetch from '@wordpress/api-fetch';
 import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
 import {
-    ExternalLink,
     Notice,
     PanelBody,
     SelectControl,
@@ -49,7 +48,6 @@ const Edit = ( { attributes, setAttributes } ) => {
     const [ savedForms, setSavedForms ] = useState( [] );
     const [ isLoading, setIsLoading ] = useState( true );
     const [ fetchError, setFetchError ] = useState( '' );
-    const settingsUrl = window.bcewChefsEmbedSettings?.settingsUrl || '';
 
     useEffect( () => {
         let isMounted = true;
@@ -138,7 +136,7 @@ const Edit = ( { attributes, setAttributes } ) => {
                         <SelectControl
                             label={ __( 'Form name', 'bcew-chefs-embed' ) }
                             help={ __(
-                                'Choose one of the CHEFS forms saved in plugin settings.',
+                                'Choose one of the CHEFS forms saved in WordPress.',
                                 'bcew-chefs-embed'
                             ) }
                             value={ formId }
@@ -160,16 +158,6 @@ const Edit = ( { attributes, setAttributes } ) => {
                                         'bcew-chefs-embed'
                                     ) }
                                 </p>
-                                { settingsUrl && (
-                                    <p>
-                                        <ExternalLink href={ settingsUrl }>
-                                            { __(
-                                                'Open CHEFS settings',
-                                                'bcew-chefs-embed'
-                                            ) }
-                                        </ExternalLink>
-                                    </p>
-                                ) }
                             </Notice>
                         ) }
                 </PanelBody>
