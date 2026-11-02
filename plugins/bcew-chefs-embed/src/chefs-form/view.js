@@ -1,9 +1,9 @@
 /**
  * Frontend loader for CHEFS Form blocks on published pages.
  *
- * The block markup contains a mount (saved by save.js), so this script creates
- * the web component from the block's Form ID without a token. It loads the
- * component script and wires up submit/error events.
+ * The block markup contains the tokenless viewer (saved by save.js), so this
+ * script sets its base URL, loads the component script and wires up
+ * submit/error events.
  * On successful submit, replaces the viewer with a static success message
  * (DSWP-1149 generic, DSWP-1150 custom confirmation).
  * On CHEFS submit/load HTTP errors, shows title, status, and detail above
@@ -257,6 +257,7 @@ const getOrCreateViewer = ( root, mount ) => {
     const existing = root.querySelector( 'chefs-form-viewer' );
 
     if ( existing ) {
+        existing.setAttribute( 'base-url', CHEFS_BASE_URL );
         return existing;
     }
 

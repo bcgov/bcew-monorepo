@@ -3,8 +3,9 @@ import { useBlockProps } from '@wordpress/block-editor';
 /**
  * Static markup for the CHEFS Form block.
  *
- * Stores only the Form ID and confirmation message override. view.js creates
- * the CHEFS viewer from this markup on the published page.
+ * Saves the tokenless CHEFS viewer web component with the Form ID, plus the
+ * confirmation message override. The base URL is not saved so it can change
+ * without invalidating blocks; view.js sets it before loading the viewer.
  *
  * @param {Object} props            Block props.
  * @param {Object} props.attributes Block attributes.
@@ -23,7 +24,12 @@ const save = ( { attributes } ) => {
     return (
         <div { ...blockProps }>
             { formId && (
-                <div className="bcew-chefs-form__mount" aria-live="polite" />
+                <div className="bcew-chefs-form__mount" aria-live="polite">
+                    <chefs-form-viewer
+                        form-id={ formId }
+                        auto-reload-on-submit="false"
+                    />
+                </div>
             ) }
         </div>
     );
