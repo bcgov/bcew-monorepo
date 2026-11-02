@@ -39,6 +39,27 @@ add_action( 'wp_initialize_site', array( CredentialsManager::class, 'on_initiali
 // Ensure the credentials table exists even if activation ran before Composer autoload was available.
 add_action( 'plugins_loaded', 'bcew_chefs_embed_maybe_install_credentials_table' );
 
+// Keep the saved viewer element when kses filters post content (users without unfiltered_html).
+add_filter( 'wp_kses_allowed_html', 'bcew_chefs_embed_allow_viewer_element', 10, 2 );
+
+/**
+ * Allow the chefs-form-viewer element and its saved attributes in post content.
+ *
+ * @param array  $tags    Allowed tags.
+ * @param string $context kses context.
+ * @return array
+ */
+function bcew_chefs_embed_allow_viewer_element( $tags, $context ) {
+	if ( 'post' === $context ) {
+		$tags['chefs-form-viewer'] = array(
+			'form-id'               => true,
+			'base-url'              => true,
+			'auto-reload-on-submit' => true,
+		);
+	}
+	return $tags;
+}
+
 // Add CHEFS resource origins to an existing Content Security Policy header.
 add_filter( 'wp_headers', 'bcew_chefs_embed_extend_csp_header', 1000 );
 

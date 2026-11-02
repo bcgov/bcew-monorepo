@@ -214,4 +214,15 @@ class PluginBootstrapTest extends \WP_UnitTestCase {
 
 		$this->assertSame( $headers, apply_filters( 'wp_headers', $headers ) );
 	}
+
+	/**
+	 * Post kses filtering keeps the saved chefs-form-viewer element.
+	 *
+	 * @return void
+	 */
+	public function test_kses_keeps_chefs_form_viewer_for_restricted_content() {
+		$html = '<div class="bcew-chefs-form"><chefs-form-viewer form-id="abc" base-url="https://x.test" auto-reload-on-submit="false"></chefs-form-viewer></div>';
+
+		$this->assertSame( $html, wp_kses_post( $html ) );
+	}
 }
