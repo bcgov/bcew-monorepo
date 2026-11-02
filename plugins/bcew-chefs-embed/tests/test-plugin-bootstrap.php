@@ -92,11 +92,11 @@ class PluginBootstrapTest extends \WP_UnitTestCase {
 		$form_id = '43cfb894-a0cf-4bef-8026-7c8001e3cdf5';
 		$html    = do_blocks(
 			'<!-- wp:bcew-chefs-embed/chefs-form {"formId":"' . $form_id . '"} -->'
-			. '<div class="wp-block-bcew-chefs-embed-chefs-form bcew-chefs-form" data-form-id="' . $form_id . '"><div class="bcew-chefs-form__mount" aria-live="polite"></div></div>'
+			. '<div class="wp-block-bcew-chefs-embed-chefs-form bcew-chefs-form" aria-live="polite"></div>'
 			. '<!-- /wp:bcew-chefs-embed/chefs-form -->'
 		);
 
-		$this->assertStringContainsString( 'data-form-id="' . $form_id . '"', $html );
+		$this->assertStringContainsString( 'bcew-chefs-form', $html );
 		$this->assertStringNotContainsString( 'auth-token', $html );
 		$this->assertStringNotContainsString( 'api-key', $html );
 	}

@@ -17,21 +17,18 @@ const save = ( { attributes } ) => {
 
     const blockProps = useBlockProps.save( {
         className: 'bcew-chefs-form',
-        'data-form-id': formId || undefined,
         'data-confirmation': confirmationMessage || undefined,
+        'aria-live': 'polite',
     } );
 
     return (
         <div { ...blockProps }>
             { formId && (
-                // view.js replaces this live region with the success message after submission.
-                <div className="bcew-chefs-form__mount" aria-live="polite">
-                    <chefs-form-viewer
-                        form-id={ formId }
-                        base-url={ CHEFS_BASE_URL }
-                        auto-reload-on-submit="false"
-                    />
-                </div>
+                <chefs-form-viewer
+                    form-id={ formId }
+                    base-url={ CHEFS_BASE_URL }
+                    auto-reload-on-submit="false"
+                />
             ) }
         </div>
     );

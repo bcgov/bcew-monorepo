@@ -189,10 +189,10 @@ const showChefsError = ( root, error ) => {
         region.append( message );
     }
 
-    const mount = root.querySelector( '.bcew-chefs-form__mount' );
+    const viewer = root.querySelector( 'chefs-form-viewer' );
 
-    if ( mount ) {
-        mount.before( region );
+    if ( viewer ) {
+        viewer.before( region );
     } else {
         root.prepend( region );
     }
@@ -211,21 +211,17 @@ const GENERIC_SUCCESS_MESSAGE = 'Your form has been submitted successfully';
  *
  * Inline (not a modal): not dismissible; cleared when the page is refreshed.
  *
- * @param {HTMLElement} mount         Mount element.
+ * @param {HTMLElement} viewer        The chefs-form-viewer element to replace.
  * @param {string|null} customMessage Confirmation message saved with the block.
  */
-const showSuccess = ( mount, customMessage ) => {
+const showSuccess = ( viewer, customMessage ) => {
     /*
      * Success replaces the form. Clear any CHEFS error banner first.
      * Heading is always "Success". The paragraph is the custom confirmation
      * saved for the form, or the generic sentence when none is saved.
      */
-    if ( mount.parentElement ) {
-        clearChefsError( mount.parentElement );
-    }
-
-    mount.replaceChildren();
-    mount.removeAttribute( 'aria-busy' );
+    const root = viewer.parentElement;
+    clearChefsError( root );
 
     const region = document.createElement( 'div' );
     region.className = 'bcew-chefs-form__success';
@@ -241,20 +237,19 @@ const showSuccess = ( mount, customMessage ) => {
     message.textContent = trimmed || GENERIC_SUCCESS_MESSAGE;
 
     region.append( heading, message );
-    mount.appendChild( region );
+    viewer.replaceWith( region );
 };
 
 /**
  * Mount a CHEFS form viewer for one block root.
  *
- * @param {HTMLElement} root Block wrapper with data-form-id.
+ * @param {HTMLElement} root Block wrapper containing the chefs-form-viewer.
  * @return {Promise<void>}
  */
 const mountChefsForm = async ( root ) => {
-    const mount = root.querySelector( '.bcew-chefs-form__mount' );
-    const viewer = mount?.querySelector( 'chefs-form-viewer' );
+    const viewer = root.querySelector( 'chefs-form-viewer' );
 
-    if ( ! viewer || ! mount ) {
+    if ( ! viewer ) {
         return;
     }
 
@@ -267,14 +262,12 @@ const mountChefsForm = async ( root ) => {
          * replaces the form. A CHEFS error is shown above it and the form stays.
          */
         viewer.addEventListener( 'formio:submitDone', () => {
-            showSuccess( mount, root.dataset.confirmation );
+            showSuccess( viewer, root.dataset.confirmation );
         } );
 
         viewer.addEventListener( 'formio:error', ( event ) => {
             showChefsError( root, readChefsError( event?.detail ) );
         } );
-
-        mount.removeAttribute( 'aria-busy' );
 
         if ( 'function' === typeof viewer.load ) {
             await viewer.load();

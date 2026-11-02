@@ -1,7 +1,6 @@
 const { test, expect } = require( '@wordpress/e2e-test-utils-playwright' );
 const {
     dispatchFormioEvent,
-    getFormBlock,
     getFormError,
     getFormSuccess,
     getFormViewer,
@@ -21,12 +20,10 @@ test.describe( 'CHEFS Form frontend', () => {
             { formId }
         );
         const serverHtml = await response.text();
-        expect( serverHtml ).toContain( `data-form-id="${ formId }"` );
+        expect( serverHtml ).toContain( `form-id="${ formId }"` );
         expect( serverHtml ).not.toContain( 'auth-token' );
         expect( serverHtml ).not.toContain( 'api-key' );
 
-        const block = await getFormBlock( page );
-        await expect( block ).toHaveAttribute( 'data-form-id', formId );
         const viewer = await getFormViewer( page );
         await expect( viewer ).toBeAttached();
         await expect( viewer ).toHaveAttribute( 'form-id', formId );
@@ -120,8 +117,8 @@ test.describe( 'CHEFS Form frontend', () => {
             const banner = document.querySelector(
                 '.bcew-chefs-form > .bcew-chefs-form__error'
             );
-            const mount = document.querySelector( '.bcew-chefs-form__mount' );
-            return banner && mount && banner.nextElementSibling === mount;
+            const form = document.querySelector( 'chefs-form-viewer' );
+            return banner && form && banner.nextElementSibling === form;
         } );
         expect( errorIsAboveForm ).toBe( true );
         await dispatchFormioEvent( viewer, 'formio:error', {
