@@ -9,6 +9,10 @@ The block has the following attributes:
 	"formId": {
 		"type": "string",
 		"default": ""
+	},
+	"confirmationMessage": {
+		"type": "string",
+		"default": ""
 	}
 }
 ```
@@ -20,6 +24,29 @@ The editor accepts a Form ID or CHEFS share URL. `src/chefs-form/utils/normalize
 `src/chefs-form/save.js` stores the Form ID and confirmation override as `data-form-id` and `data-confirmation` on the block wrapper, with an empty `.bcew-chefs-form__mount` element.
 
 The block does not use a PHP render callback or a WordPress REST route. The editor preview and published-page script create a `chefs-form-viewer` from the saved Form ID. `src/chefs-form/utils/ensure-chefs-form-viewer.js` loads the immutable CHEFS 1.1.0 viewer script with its Subresource Integrity hash.
+
+## Data flow
+
+The browser loads the form directly from CHEFS. WordPress only serves the saved markup; it never holds an API key or token.
+
+```mermaid
+sequenceDiagram
+    actor Editor as User with edit_posts
+    actor Visitor as Public visitor
+    participant WP as WordPress
+    participant Script as view.js
+    participant CHEFS as CHEFS
+
+    Editor->>WP: Save post with Form ID and confirmation in block markup
+    Visitor->>WP: Request public page over HTTPS
+    WP-->>Visitor: Saved wrapper markup (data-form-id, data-confirmation)
+    Visitor->>Script: Run view.js
+    Script->>CHEFS: Load chefs-form-viewer with SRI hash
+    Script->>CHEFS: Viewer requests Public form schema (origin must be allowed)
+    CHEFS-->>Visitor: Form
+    Visitor->>CHEFS: Submit form
+    Script-->>Visitor: Show confirmation message or generic success
+```
 
 ## Anonymous embed requirements
 
