@@ -6,6 +6,7 @@ const {
     getFormSuccess,
     getFormViewer,
     publishFormAndVisit,
+    selectFormAndPublish,
 } = require( './chefs-form-helpers' );
 
 test.describe( 'CHEFS Form frontend', () => {
@@ -47,6 +48,43 @@ test.describe( 'CHEFS Form frontend', () => {
         await expect(
             success.getByText( 'Your form has been submitted successfully' )
         ).toBeVisible();
+        await expect( page.locator( 'chefs-form-viewer' ) ).toHaveCount( 0 );
+    } );
+
+    test( 'loads the versioned viewer script with its integrity hash', async ( {
+        admin,
+        editor,
+        page,
+    } ) => {
+        await page.route(
+            '**/embed/*/embed/chefs-form-viewer.min.js',
+            ( route ) =>
+                route.fulfill( { contentType: 'text/javascript', body: '' } )
+        );
+        const postId = await selectFormAndPublish(
+            admin,
+            editor,
+            page,
+            '88888888-8888-4888-8888-888888888888'
+        );
+        await page.context().clearCookies();
+        await page.goto( `/?p=${ postId }` );
+
+        const script = page.locator(
+            'script[src$="/embed/chefs-form-viewer.min.js"]'
+        );
+        await expect( script ).toHaveAttribute( 'src', /\/embed\/1\.1\.0\// );
+        await expect( script ).toHaveAttribute( 'integrity', /^sha384-/ );
+        await expect( script ).toHaveAttribute( 'crossorigin', 'anonymous' );
+    } );
+
+    test( 'does not create a viewer when no Form ID is set', async ( {
+        admin,
+        editor,
+        page,
+    } ) => {
+        await publishFormAndVisit( { admin, editor, page }, { formId: '' } );
+
         await expect( page.locator( 'chefs-form-viewer' ) ).toHaveCount( 0 );
     } );
 

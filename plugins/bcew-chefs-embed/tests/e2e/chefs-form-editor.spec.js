@@ -71,6 +71,38 @@ test.describe( 'CHEFS Form editor', () => {
         ).toHaveCount( 0 );
     } );
 
+    for ( const [ label, suffix ] of [
+        [ 'a manage URL with extra parameters', 'manage?f=%s&fd=formDesigner' ],
+        [ 'a URL with a fragment', 'submit?f=%s#top' ],
+    ] ) {
+        test( `extracts the Form ID from ${ label }`, async ( {
+            admin,
+            editor,
+            page,
+        } ) => {
+            await admin.createNewPost();
+            await editor.insertBlock( { name: BLOCK_NAME } );
+            await ensureBlockSettingsVisible( editor, page );
+
+            await page
+                .getByLabel( 'Form ID or share URL' )
+                .first()
+                .fill(
+                    `https://submit.digital.gov.bc.ca/app/form/${ suffix.replace(
+                        '%s',
+                        FORM_ID
+                    ) }`
+                );
+
+            await expect
+                .poll(
+                    async () =>
+                        ( await getChefsBlock( editor ) ).attributes.formId
+                )
+                .toBe( FORM_ID );
+        } );
+    }
+
     test( 'rejects invalid Form ID input without persisting it', async ( {
         admin,
         editor,
