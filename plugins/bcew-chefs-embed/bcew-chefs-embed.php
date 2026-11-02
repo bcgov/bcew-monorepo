@@ -19,8 +19,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-use Bcgov\BcewChefsEmbed\CredentialsManager;
-
 const BCEW_CHEFS_EMBED_BLOCK_NAME        = 'bcew-chefs-embed/chefs-form';
 const BCEW_CHEFS_EMBED_GOV_ORIGIN        = '*.gov.bc.ca';
 const BCEW_CHEFS_EMBED_CHEFS_ORIGIN      = 'https://chefs-dev.apps.silver.devops.gov.bc.ca'; // TEMP: revert to https://submit.digital.gov.bc.ca before release.
@@ -33,11 +31,6 @@ $autoloader_path = __DIR__ . '/vendor/autoload.php';
 if ( file_exists( $autoloader_path ) ) {
 	require_once $autoloader_path;
 }
-
-register_activation_hook( __FILE__, array( CredentialsManager::class, 'activate' ) );
-add_action( 'wp_initialize_site', array( CredentialsManager::class, 'on_initialize_site' ) );
-// Ensure the credentials table exists even if activation ran before Composer autoload was available.
-add_action( 'plugins_loaded', 'bcew_chefs_embed_maybe_install_credentials_table' );
 
 // Keep the saved viewer element when kses filters post content (users without unfiltered_html).
 add_filter( 'wp_kses_allowed_html', 'bcew_chefs_embed_allow_viewer_element', 10, 2 );
@@ -59,7 +52,6 @@ function bcew_chefs_embed_allow_viewer_element( $tags, $context ) {
 	}
 	return $tags;
 }
-
 // Add CHEFS resource origins to an existing Content Security Policy header.
 add_filter( 'wp_headers', 'bcew_chefs_embed_extend_csp_header', 1000 );
 
@@ -143,28 +135,6 @@ function bcew_chefs_embed_extend_csp_header( $headers ) {
 	$headers['Content-Security-Policy'] = implode( ';', $policy );
 
 	return $headers;
-}
-
-/**
- * Create or upgrade the credentials table.
- *
- * When the old options table is still present, copy each form's name and
- * confirmation onto the matching credentials row, then drop that table.
- * The API key, created time, and user ID stay on the credentials row.
- *
- * @return void
- */
-function bcew_chefs_embed_maybe_install_credentials_table() {
-	if ( CredentialsManager::has_legacy_options_table() ) {
-		CredentialsManager::migrate_legacy_options_table();
-		return;
-	}
-
-	if ( get_option( CredentialsManager::DB_VERSION_OPTION ) === CredentialsManager::DB_VERSION ) {
-		return;
-	}
-
-	CredentialsManager::install();
 }
 
 /**

@@ -7,8 +7,5 @@
 		"WP_AUTO_UPDATE_CORE": false
 	},
 	"port": 9012,
-	"testsPort": 9013,
-	"lifecycleScripts": {
-		"afterStart": "sh tools/setup-bcew-chefs-embed-wp-env.sh"
-	}
+	"testsPort": 9013
 }
