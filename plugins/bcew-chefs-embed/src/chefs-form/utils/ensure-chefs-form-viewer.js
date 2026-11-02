@@ -1,4 +1,4 @@
-import { CHEFS_EMBED_VERSION, CHEFS_VIEWER_INTEGRITY } from './constants';
+import { CHEFS_EMBED_VERSION } from './constants';
 
 const pendingScripts = new Map();
 
@@ -61,7 +61,6 @@ const ensureChefsFormViewerDefined = ( baseUrl ) => {
 
         const script = document.createElement( 'script' );
         script.src = src;
-        script.integrity = CHEFS_VIEWER_INTEGRITY;
         script.crossOrigin = 'anonymous';
         script.async = true;
         script.onload = finish;

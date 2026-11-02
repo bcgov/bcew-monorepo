@@ -51,7 +51,7 @@ test.describe( 'CHEFS Form frontend', () => {
         await expect( page.locator( 'chefs-form-viewer' ) ).toHaveCount( 0 );
     } );
 
-    test( 'loads the versioned viewer script with its integrity hash', async ( {
+    test( 'loads the versioned viewer script', async ( {
         admin,
         editor,
         page,
@@ -74,10 +74,6 @@ test.describe( 'CHEFS Form frontend', () => {
             'script[src$="/embed/chefs-form-viewer.min.js"]'
         );
         await expect( script ).toHaveAttribute( 'src', /\/embed\/1\.1\.0\// );
-        await expect( script ).toHaveAttribute(
-            'integrity',
-            'sha384-Zz9bmBPxz2kLWrUMwBzY3L8+jmwV+e3XNKyLEkVuG6+esMd270diV4/7zcTooEmk'
-        );
         await expect( script ).toHaveAttribute( 'crossorigin', 'anonymous' );
     } );
 

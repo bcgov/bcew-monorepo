@@ -17,7 +17,6 @@ import { __ } from '@wordpress/i18n';
 import './editor.scss';
 
 import ChefsFormPreview from './components/chefs-form-preview';
-import normalizeFormId from './utils/normalize-form-id';
 
 /**
  * The edit function describes the structure of your block in the context of the
@@ -43,11 +42,22 @@ const Edit = ( { attributes, setAttributes } ) => {
     }, [ formId, invalidFormId, isFormIdFocused ] );
 
     const updateFormId = ( value ) => {
-        const normalizedFormId = normalizeFormId( value );
+        const input = value.trim();
+        const candidate = (
+            input.match( /[?&]f=([^&#]*)/ )?.[ 1 ] || input
+        ).toLowerCase();
+        const normalizedFormId =
+            /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(
+                candidate
+            )
+                ? candidate
+                : '';
 
         setFormIdInput( value );
-        setAttributes( { formId: normalizedFormId } );
-        setInvalidFormId( !! value.trim() && ! normalizedFormId );
+        setInvalidFormId( !! input && ! normalizedFormId );
+        if ( normalizedFormId || ! input ) {
+            setAttributes( { formId: normalizedFormId } );
+        }
     };
 
     return (

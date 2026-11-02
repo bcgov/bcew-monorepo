@@ -133,7 +133,7 @@ test.describe( 'CHEFS Form editor', () => {
         } );
     }
 
-    test( 'rejects invalid Form ID input without persisting it', async ( {
+    test( 'shows an error and keeps the saved Form ID when input is invalid', async ( {
         admin,
         editor,
         page,
@@ -142,19 +142,26 @@ test.describe( 'CHEFS Form editor', () => {
         await editor.insertBlock( { name: BLOCK_NAME } );
         await ensureBlockSettingsVisible( editor, page );
 
-        await page
-            .getByLabel( 'Form ID or share URL' )
-            .first()
-            .fill( 'not-a-chefs-form' );
+        const formInput = page.getByLabel( 'Form ID or share URL' ).first();
+        await formInput.fill( FORM_ID );
+        await expect
+            .poll(
+                async () => ( await getChefsBlock( editor ) ).attributes.formId
+            )
+            .toBe( FORM_ID );
+
+        await formInput.fill( 'not-a-chefs-form' );
 
         await expect(
             page
                 .locator( '.components-notice' )
                 .getByText( 'Enter a valid CHEFS Form ID or share URL.' )
         ).toBeVisible();
-        expect( ( await getChefsBlock( editor ) ).attributes.formId ).toBe(
-            ''
-        );
+        await expect
+            .poll(
+                async () => ( await getChefsBlock( editor ) ).attributes.formId
+            )
+            .toBe( FORM_ID );
     } );
 
     test( 'shows the placeholder when no form is selected', async ( {
