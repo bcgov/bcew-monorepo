@@ -79,6 +79,29 @@ class PluginBootstrapTest extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Saved block markup renders as-is, with no server-side token or API key.
+	 *
+	 * @return void
+	 */
+	public function test_block_renders_saved_markup_without_token() {
+		$block_type = \WP_Block_Type_Registry::get_instance()->get_registered( 'bcew-chefs-embed/chefs-form' );
+
+		$this->assertNotNull( $block_type );
+		$this->assertNull( $block_type->render_callback );
+
+		$form_id = '43cfb894-a0cf-4bef-8026-7c8001e3cdf5';
+		$html    = do_blocks(
+			'<!-- wp:bcew-chefs-embed/chefs-form {"formId":"' . $form_id . '"} -->'
+			. '<div class="wp-block-bcew-chefs-embed-chefs-form bcew-chefs-form" data-form-id="' . $form_id . '"><div class="bcew-chefs-form__mount" aria-live="polite"></div></div>'
+			. '<!-- /wp:bcew-chefs-embed/chefs-form -->'
+		);
+
+		$this->assertStringContainsString( 'data-form-id="' . $form_id . '"', $html );
+		$this->assertStringNotContainsString( 'auth-token', $html );
+		$this->assertStringNotContainsString( 'api-key', $html );
+	}
+
+	/**
 	 * The CHEFS resource origins are added to an existing CSP header.
 	 *
 	 * @return void

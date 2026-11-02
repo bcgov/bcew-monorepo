@@ -30,6 +30,7 @@ test.describe( 'CHEFS Form frontend', () => {
         await expect( viewer ).toBeAttached();
         await expect( viewer ).toHaveAttribute( 'form-id', formId );
         await expect( viewer ).not.toHaveAttribute( 'auth-token' );
+        await expect( viewer ).toHaveAttribute( 'base-url', /^https:\/\/.+/ );
         await expect( viewer ).toHaveAttribute(
             'auto-reload-on-submit',
             'false'
