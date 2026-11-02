@@ -74,7 +74,10 @@ test.describe( 'CHEFS Form frontend', () => {
             'script[src$="/embed/chefs-form-viewer.min.js"]'
         );
         await expect( script ).toHaveAttribute( 'src', /\/embed\/1\.1\.0\// );
-        await expect( script ).toHaveAttribute( 'integrity', /^sha384-/ );
+        await expect( script ).toHaveAttribute(
+            'integrity',
+            'sha384-Zz9bmBPxz2kLWrUMwBzY3L8+jmwV+e3XNKyLEkVuG6+esMd270diV4/7zcTooEmk'
+        );
         await expect( script ).toHaveAttribute( 'crossorigin', 'anonymous' );
     } );
 
