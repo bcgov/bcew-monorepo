@@ -71,6 +71,36 @@ test.describe( 'CHEFS Form editor', () => {
         ).toHaveCount( 0 );
     } );
 
+    test( 'keeps the Form ID and confirmation after the post is saved and reopened', async ( {
+        admin,
+        editor,
+        page,
+    } ) => {
+        await stubChefsFormViewer( page );
+        await admin.createNewPost();
+        await editor.insertBlock( { name: BLOCK_NAME } );
+        await ensureBlockSettingsVisible( editor, page );
+        await page.getByLabel( 'Form ID or share URL' ).first().fill( FORM_ID );
+        await page
+            .getByLabel( 'Confirmation message' )
+            .first()
+            .fill( 'Saved message' );
+        const postId = await editor.publishPost();
+
+        await page.goto( `/wp-admin/post.php?post=${ postId }&action=edit` );
+        await editor.setPreferences( 'core/edit-post', {
+            welcomeGuide: false,
+            fullscreenMode: false,
+        } );
+
+        await expect
+            .poll( async () => ( await getChefsBlock( editor ) )?.attributes )
+            .toMatchObject( {
+                formId: FORM_ID,
+                confirmationMessage: 'Saved message',
+            } );
+    } );
+
     for ( const [ label, suffix ] of [
         [ 'a manage URL with extra parameters', 'manage?f=%s&fd=formDesigner' ],
         [ 'a URL with a fragment', 'submit?f=%s#top' ],

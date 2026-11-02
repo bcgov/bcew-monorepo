@@ -11,6 +11,10 @@
         "formId": {
             "type": "string",
             "default": ""
+        },
+        "confirmationMessage": {
+            "type": "string",
+            "default": ""
         }
     },
     "example": {},
