@@ -1,8 +1,9 @@
 /**
  * Frontend loader for CHEFS Form blocks on published pages.
  *
- * The server renders the CHEFS web component with a short-lived token already
- * set. This script loads the component script and wires up submit/error events.
+ * The block markup contains the tokenless viewer (saved by save.js), so this
+ * script sets its base URL, loads the component script and wires up
+ * submit/error events.
  * On successful submit, replaces the viewer with a static success message
  * (DSWP-1149 generic, DSWP-1150 custom confirmation).
  * On CHEFS submit/load HTTP errors, shows title, status, and detail above
@@ -188,10 +189,10 @@ const showChefsError = ( root, error ) => {
         region.append( message );
     }
 
-    const mount = root.querySelector( '.bcew-chefs-form__mount' );
+    const viewer = root.querySelector( 'chefs-form-viewer' );
 
-    if ( mount ) {
-        mount.before( region );
+    if ( viewer ) {
+        viewer.before( region );
     } else {
         root.prepend( region );
     }
@@ -210,21 +211,17 @@ const GENERIC_SUCCESS_MESSAGE = 'Your form has been submitted successfully';
  *
  * Inline (not a modal): not dismissible; cleared when the page is refreshed.
  *
- * @param {HTMLElement} mount         Mount element.
- * @param {string|null} customMessage Custom confirmation from embed-config.
+ * @param {HTMLElement} viewer        The chefs-form-viewer element to replace.
+ * @param {string|null} customMessage Confirmation message saved with the block.
  */
-const showSuccess = ( mount, customMessage ) => {
+const showSuccess = ( viewer, customMessage ) => {
     /*
      * Success replaces the form. Clear any CHEFS error banner first.
      * Heading is always "Success". The paragraph is the custom confirmation
-     * from Settings, or the generic sentence when none is saved.
+     * saved for the form, or the generic sentence when none is saved.
      */
-    if ( mount.parentElement ) {
-        clearChefsError( mount.parentElement );
-    }
-
-    mount.replaceChildren();
-    mount.removeAttribute( 'aria-busy' );
+    const root = viewer.parentElement;
+    clearChefsError( root );
 
     const region = document.createElement( 'div' );
     region.className = 'bcew-chefs-form__success';
@@ -240,43 +237,37 @@ const showSuccess = ( mount, customMessage ) => {
     message.textContent = trimmed || GENERIC_SUCCESS_MESSAGE;
 
     region.append( heading, message );
-    mount.appendChild( region );
+    viewer.replaceWith( region );
 };
 
 /**
  * Mount a CHEFS form viewer for one block root.
  *
- * @param {HTMLElement} root Block wrapper with data-form-id.
+ * @param {HTMLElement} root Block wrapper containing the chefs-form-viewer.
  * @return {Promise<void>}
  */
 const mountChefsForm = async ( root ) => {
     const viewer = root.querySelector( 'chefs-form-viewer' );
-    const mount = root.querySelector( '.bcew-chefs-form__mount' );
 
-    if ( ! viewer || ! mount ) {
+    if ( ! viewer ) {
         return;
     }
 
     try {
         const baseUrl = viewer.getAttribute( 'base-url' ) || '';
         await ensureChefsFormViewerDefined( baseUrl );
-        viewer.endpoints = {
-            formioJs: `${ baseUrl }/webcomponents/v1/assets/formio.js`,
-        };
 
         /*
          * Submit success and CHEFS HTTP errors are separate events. Success
          * replaces the form. A CHEFS error is shown above it and the form stays.
          */
         viewer.addEventListener( 'formio:submitDone', () => {
-            showSuccess( mount, root.dataset.confirmation );
+            showSuccess( viewer, root.dataset.confirmation );
         } );
 
         viewer.addEventListener( 'formio:error', ( event ) => {
             showChefsError( root, readChefsError( event?.detail ) );
         } );
-
-        mount.removeAttribute( 'aria-busy' );
 
         if ( 'function' === typeof viewer.load ) {
             await viewer.load();

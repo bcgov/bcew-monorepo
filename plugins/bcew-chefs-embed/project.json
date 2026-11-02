@@ -23,7 +23,8 @@
         "test-integration": {
             "options": {
                 "command": "wp-env run tests-cli --env-cwd=wp-content/plugins/bcew-chefs-embed composer test"
-            }
+            },
+            "dependsOn": ["composer-install", "build", "wp-env-start"]
         },
         "wp-env-start": {},
         "wp-env-clean": {},
