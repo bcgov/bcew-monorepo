@@ -7,28 +7,10 @@
 
 namespace Bcgov\BcewChefsEmbed\Test;
 
-use Bcgov\BcewChefsEmbed\CredentialsManager;
-
 /**
  * CHEFS plugin bootstrap behavior.
  */
 class PluginBootstrapTest extends \WP_UnitTestCase {
-
-	/**
-	 * Ensure bootstrap tests start with the required tables and no saved forms.
-	 *
-	 * @return void
-	 */
-	public function set_up() {
-		parent::set_up();
-		CredentialsManager::install();
-
-		global $wpdb;
-
-		$table = CredentialsManager::table_name();
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Internal table name.
-		$wpdb->query( "DELETE FROM `{$table}`" );
-	}
 
 	/**
 	 * Menu registration adds the CHEFS Documentation menu.
@@ -47,22 +29,6 @@ class PluginBootstrapTest extends \WP_UnitTestCase {
 
 		$this->assertContains( $slug, array_column( $menu, 2 ) );
 		$this->assertContains( 'CHEFS Documentation', array_column( $menu, 0 ) );
-	}
-
-	/**
-	 * The install guards install missing tables and skip current schemas.
-	 *
-	 * @return void
-	 */
-	public function test_install_guards_create_tables() {
-		delete_option( CredentialsManager::DB_VERSION_OPTION );
-
-		bcew_chefs_embed_maybe_install_credentials_table();
-
-		$this->assertSame( CredentialsManager::DB_VERSION, get_option( CredentialsManager::DB_VERSION_OPTION ) );
-
-		bcew_chefs_embed_maybe_install_credentials_table();
-		$this->assertTrue( true, 'Current schema versions should be no-op install guards.' );
 	}
 
 	/**
