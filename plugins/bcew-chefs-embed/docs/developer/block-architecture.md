@@ -15,9 +15,9 @@ The block has the following attributes:
 
 The editor accepts a Form ID or CHEFS share URL. `src/chefs-form/utils/normalize-form-id.js` validates the UUID, extracts it from the URL's `f` parameter, and stores the lowercase Form ID. The confirmation override is plain text.
 
-## Saved markup and legacy blocks
+## Saved markup
 
-`src/chefs-form/save.js` stores the Form ID and confirmation override as `data-form-id` and `data-confirmation` on the block wrapper, with an empty `.bcew-chefs-form__mount` element. `src/chefs-form/deprecated.js` keeps blocks from the earlier server-rendered version valid; the editor upgrades them to saved markup when a post is next saved.
+`src/chefs-form/save.js` stores the Form ID and confirmation override as `data-form-id` and `data-confirmation` on the block wrapper, with an empty `.bcew-chefs-form__mount` element.
 
 The block does not use a PHP render callback or a WordPress REST route. The editor preview and published-page script create a `chefs-form-viewer` from the saved Form ID. `src/chefs-form/utils/ensure-chefs-form-viewer.js` loads the immutable CHEFS 1.1.0 viewer script with its Subresource Integrity hash.
 

@@ -19,7 +19,6 @@ import './style.scss';
  */
 import Edit from './edit';
 import save from './save';
-import deprecated from './deprecated';
 // eslint-disable-next-line import/no-unresolved
 import metadata from './block.json';
 
@@ -38,9 +37,4 @@ registerBlockType( metadata.name, {
      * @see ./save.js
      */
     save,
-
-    /**
-     * @see ./deprecated.js
-     */
-    deprecated,
 } );

@@ -176,32 +176,4 @@ test.describe( 'CHEFS Form editor', () => {
         await ensureBlockSettingsVisible( editor, page );
         await expect( page.getByLabel( 'Form ID or share URL' ) ).toBeVisible();
     } );
-
-    test( 'upgrades legacy server-rendered blocks to saved markup without invalid-block warnings', async ( {
-        admin,
-        editor,
-        page,
-        requestUtils,
-    } ) => {
-        await stubChefsFormViewer( page );
-        const post = await requestUtils.createPost( {
-            title: 'Legacy CHEFS block',
-            status: 'draft',
-            content: `<!-- wp:${ BLOCK_NAME } {"formId":"${ FORM_ID }"} /-->`,
-        } );
-
-        await admin.editPost( post.id );
-        await assertBlockVisible( editor );
-        await expect( page.locator( '.block-editor-warning' ) ).toHaveCount(
-            0
-        );
-
-        const content = await page.evaluate( () =>
-            window.wp.blocks.serialize(
-                window.wp.data.select( 'core/block-editor' ).getBlocks()
-            )
-        );
-        expect( content ).toContain( `data-form-id="${ FORM_ID }"` );
-        expect( content ).toContain( 'bcew-chefs-form__mount' );
-    } );
 } );
