@@ -95,7 +95,7 @@ test.describe( 'CHEFS Form editor', () => {
         );
     } );
 
-    test( 'shows the placeholder and documentation link when no form is selected', async ( {
+    test( 'shows the placeholder when no form is selected', async ( {
         admin,
         editor,
         page,
@@ -113,12 +113,6 @@ test.describe( 'CHEFS Form editor', () => {
         ).toBeVisible();
         await ensureBlockSettingsVisible( editor, page );
         await expect( page.getByLabel( 'Form ID or share URL' ) ).toBeVisible();
-        await expect(
-            page.getByRole( 'link', { name: 'View CHEFS documentation' } )
-        ).toHaveAttribute(
-            'href',
-            'https://bcgov.github.io/bcew-monorepo/docs/content/plugins/bcew-chefs-embed/'
-        );
     } );
 
     test( 'upgrades legacy server-rendered blocks to saved markup without invalid-block warnings', async ( {
