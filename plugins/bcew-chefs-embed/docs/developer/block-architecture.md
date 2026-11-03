@@ -2,84 +2,65 @@
 
 The block metadata is defined in `src/chefs-form/block.json`. Its registered name is `bcew-chefs-embed/chefs-form`, its category is `widgets`, and its editor icon is the WordPress `media-document` Dashicon.
 
-The block has one persisted attribute:
+The block persists these attributes:
 
 ```json
 {
 	"formId": {
 		"type": "string",
 		"default": ""
+	},
+	"confirmationMessage": {
+		"type": "string",
+		"default": ""
 	}
 }
 ```
 
-The API key and runtime token are never block attributes.
+The editor accepts a Form ID or a CHEFS share URL and stores the normalized Form ID. The confirmation message is plain text.
 
 ## Data flow
 
-The runtime path below shows the current server-rendered token flow from
-DSWP-1232. The browser receives a short-lived token so the CHEFS viewer can
-load the form, but it never receives the stored API key.
-
-The plugin no longer has an admin screen for saving Form IDs and API keys.
-The flow uses credentials that were saved before the settings page was
-removed. The credentials table and token exchange are removed in DSWP-1367
-and DSWP-1370.
+The block saves the CHEFS viewer element and its public Form ID in the post
+content. The browser loads the versioned viewer script from CHEFS, which loads
+the published Public form.
 
 ```mermaid
 sequenceDiagram
     actor Editor as User with edit_posts
     actor Visitor as Public visitor
-    participant WP as WordPress plugin
-    participant DB as Plugin database
-    participant CHEFS as CHEFS API
+    participant WP as WordPress block
     participant Viewer as CHEFS viewer script
+    participant CHEFS as CHEFS
 
-    Editor->>WP: GET saved forms over HTTPS
-    WP->>DB: Read Form IDs and names
-    DB-->>WP: Form metadata only
-    WP-->>Editor: Form IDs and names
-    Editor->>WP: Save selected Form ID in block
+    Editor->>WP: Enter Form ID or share URL
+    WP-->>Editor: Show read-only viewer preview
+    Editor->>WP: Save normalized Form ID and confirmation
 
     Visitor->>WP: Request public page over HTTPS
-    WP->>DB: render.php reads encrypted credentials
-    WP->>WP: Decrypt API key server-side
-    WP->>CHEFS: Exchange Form ID and API key over HTTPS
-    CHEFS-->>WP: Short-lived token
-    WP-->>Visitor: Render viewer configuration with token
-    Visitor->>Viewer: Load form with Form ID and token over HTTPS
-    Viewer->>CHEFS: Request form over HTTPS
+    WP-->>Visitor: Saved viewer element with Form ID
+    Visitor->>Viewer: Load versioned viewer script
+    Viewer->>CHEFS: Load published Public form
     CHEFS-->>Viewer: Form
+    Viewer-->>Visitor: Display form and submission result
 ```
-
-Form IDs and encrypted API keys are stored by `src/CredentialsManager.php`.
-Users with `edit_posts` can retrieve saved Form IDs and
-select one in the block editor. Public visitors can load the published form
-with the short-lived token produced during server rendering, but the API key
-remains encrypted at rest and is only decrypted inside WordPress for the
-server-to-server CHEFS token exchange.
 
 ## Editor flow
 
-1. `src/chefs-form/edit.js` requests the saved forms from the `forms` REST route.
-2. The stored CHEFS titles are displayed in the block sidebar.
-3. Selecting a title updates the persisted `formId` attribute with the UUID.
-4. If the selected Form ID is no longer saved, the editor clears the stale selection.
-5. The editor preview uses the runtime configuration endpoint and CHEFS viewer used by the published block.
+1. `src/chefs-form/edit.js` accepts a Form ID or share URL, extracts the `f` value when present, and normalizes a valid UUID to lowercase.
+2. The normalized Form ID is saved as the `formId` block attribute. Invalid input is reported without replacing a previously saved Form ID.
+3. The optional plain-text confirmation is saved as `confirmationMessage`.
+4. `src/chefs-form/components/chefs-form-preview.js` loads the CHEFS viewer in read-only mode for the editor preview.
 
-The editor preview is provided by `src/chefs-form/components/chefs-form-preview.js`. It uses the same runtime configuration endpoint as the published block and loads the CHEFS viewer through `src/chefs-form/utils/ensure-chefs-form-viewer.js`.
+`src/chefs-form/utils/ensure-chefs-form-viewer.js` loads the versioned viewer script once for the configured CHEFS base URL.
 
 ## Frontend flow
 
-`src/chefs-form/render.php` sanitizes the Form ID and renders the block wrapper with a `data-form-id` attribute. It renders an empty-state message when no Form ID is selected. It does not render an API key or token.
+`src/chefs-form/save.js` saves the block wrapper and, when a Form ID is set, a `chefs-form-viewer` element with the Form ID and CHEFS base URL. It also saves the optional confirmation message on the wrapper.
 
 `src/chefs-form/view.js` runs in the browser after the page loads. For each block, it:
 
-1. Finds the block wrapper and reads the Form ID from its `data-form-id` attribute.
-2. Requests `/wp-json/bcew-chefs-embed/v1/embed-config?formId=<form-id>`. This request goes to WordPress, where the plugin retrieves the encrypted API key and exchanges it with CHEFS for a short-lived access token. The API key is never sent to the browser.
-3. Loads the CHEFS form viewer web component from the CHEFS service if it is not already available on the page.
-4. Creates the viewer inside the block's mount element and passes it the short-lived token and CHEFS base URL returned by WordPress. The visitor can then interact with the live form.
-5. Listens for the viewer's `formio:submitDone` event. When submission succeeds, it removes the viewer and displays the configured confirmation message, or the generic success message when no custom message is configured.
-6. Listens for the viewer's `formio:error` event. When CHEFS reports a submission error, it displays the error above the form and keeps the form available so the visitor can try again.
-
-If the configuration request or viewer script fails before the form loads, the block displays a load error in place of the form.
+1. Loads the viewer script if the custom element is not already defined.
+2. Calls the viewer's `load()` method when available.
+3. On `formio:submitDone`, replaces the viewer with the configured confirmation, or a generic success message when no custom confirmation is set.
+4. On `formio:error` or a viewer load failure, displays an accessible error and keeps the viewer available when possible.

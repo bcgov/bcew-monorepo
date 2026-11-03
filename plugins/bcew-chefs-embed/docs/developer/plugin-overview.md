@@ -1,7 +1,7 @@
 # Plugin overview
 
-The plugin provides the `bcew-chefs-embed/chefs-form` dynamic block. It stores a selected CHEFS Form ID in the block content, while the corresponding API key is stored encrypted in the plugin's credentials table.
+The plugin provides the `bcew-chefs-embed/chefs-form` static block. It stores the CHEFS Form ID and optional confirmation message in the block content. Authors can enter either the Form ID or its share URL; the block saves only the normalized Form ID.
 
-The plugin has no admin settings page. The **CHEFS Documentation** admin menu links to the documentation.
+The **CHEFS Documentation** admin menu links to the documentation.
 
-The block does not embed a form directly in saved post content. WordPress renders a mount point, and the frontend script requests a short-lived CHEFS token before loading the CHEFS form viewer.
+The block saves a `chefs-form-viewer` element in post content. The editor displays a read-only preview, and the frontend script loads the CHEFS viewer and handles submission success and errors.
