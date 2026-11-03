@@ -17,11 +17,6 @@ export const CHEFS_EMBED_VERSION = '1.1.0';
 export const CHEFS_VIEWER_SCRIPT_PATH = 'embed/chefs-form-viewer.min.js';
 
 /**
- * Integrity manifest file name relative to the embed version root.
- */
-export const CHEFS_INTEGRITY_MANIFEST_FILE = 'integrity.json';
-
-/**
  * Build the versioned CHEFS embed asset URLs for a CHEFS base URL.
  *
  * @param {string} baseUrl CHEFS app base URL.
@@ -35,6 +30,6 @@ export const getChefsEmbedUrls = ( baseUrl ) => {
 
     return {
         viewerScriptUrl: `${ root }/${ CHEFS_VIEWER_SCRIPT_PATH }`,
-        integrityManifestUrl: `${ root }/${ CHEFS_INTEGRITY_MANIFEST_FILE }`,
+        integrityManifestUrl: `${ root }/integrity.json`,
     };
 };

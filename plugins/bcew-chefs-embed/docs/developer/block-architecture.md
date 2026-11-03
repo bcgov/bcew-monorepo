@@ -22,8 +22,9 @@ The editor accepts a Form ID or a CHEFS share URL and stores the normalized Form
 ## Data flow
 
 The block saves the CHEFS viewer element and its public Form ID in the post
-content. The browser loads the versioned viewer script from CHEFS, which loads
-the published Public form.
+content. The browser reads the viewer script's hash from the versioned CHEFS
+integrity manifest, loads the script with Subresource Integrity (SRI), and the
+viewer then loads the published Public form.
 
 ```mermaid
 sequenceDiagram
@@ -39,7 +40,10 @@ sequenceDiagram
 
     Visitor->>WP: Request public page over HTTPS
     WP-->>Visitor: Saved viewer element with Form ID
-    Visitor->>Viewer: Load versioned viewer script
+    Visitor->>CHEFS: Fetch versioned integrity.json
+    CHEFS-->>Visitor: Viewer script hash
+    Visitor->>Viewer: Load versioned viewer script with integrity hash
+    Note over Visitor,Viewer: Browser blocks the script if the hash does not match
     Viewer->>CHEFS: Load published Public form
     CHEFS-->>Viewer: Form
     Viewer-->>Visitor: Display form and submission result
@@ -100,15 +104,4 @@ itself (for example Form.io scripts, styles, and fonts) are not covered.
 
 ### Upgrading the CHEFS embed version
 
-The embed version and all asset URLs are configured in
-`src/chefs-form/utils/constants.js`:
-
-- `CHEFS_EMBED_VERSION` — the only value to change for an upgrade.
-- `getChefsEmbedUrls()` — builds the version-specific viewer script and integrity manifest URLs.
-
-To upgrade:
-
-1. Confirm CHEFS has published `{base}/embed/<version>/integrity.json` and that it contains an `embed/chefs-form-viewer.min.js` entry.
-2. Update `CHEFS_EMBED_VERSION`.
-3. Update the version asserted in `tests/e2e/chefs-form-frontend.spec.js`.
-4. Rebuild and run the E2E tests.
+Set `CHEFS_EMBED_VERSION` in `src/chefs-form/utils/constants.js`. Before changing it, confirm CHEFS publishes `{base}/embed/<version>/integrity.json` with an `embed/chefs-form-viewer.min.js` entry. Then update the version asserted in `tests/e2e/chefs-form-frontend.spec.js`, rebuild, and run the E2E tests.

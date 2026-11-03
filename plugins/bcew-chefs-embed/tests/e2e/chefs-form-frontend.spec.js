@@ -10,13 +10,19 @@ const {
 } = require( './chefs-form-helpers' );
 
 const VIEWER_PATH = 'embed/chefs-form-viewer.min.js';
+const VIEWER_BODY = 'window.__chefsViewerLoaded = true;';
+const SRI_FORM_ID = '88888888-8888-4888-8888-888888888888';
 
 const sha384 = ( body ) =>
     `sha384-${ createHash( 'sha384' ).update( body ).digest( 'base64' ) }`;
 
 const routeViewerAssets = async (
     page,
-    { body = '', manifest = {}, manifestStatus = 200 } = {}
+    {
+        body = VIEWER_BODY,
+        manifest = { [ VIEWER_PATH ]: sha384( VIEWER_BODY ) },
+        manifestStatus = 200,
+    } = {}
 ) => {
     await page.route( '**/embed/*/integrity.json', ( route ) =>
         route.fulfill( {
@@ -81,74 +87,92 @@ test.describe( 'CHEFS Form frontend', () => {
         await expect( page.locator( 'chefs-form-viewer' ) ).toHaveCount( 0 );
     } );
 
-    test( 'loads the versioned viewer script with SRI from the integrity manifest', async ( {
-        admin,
-        editor,
-        page,
-    } ) => {
-        const body = 'window.__chefsViewerLoaded = true;';
-        await routeViewerAssets( page, {
-            body,
-            manifest: { [ VIEWER_PATH ]: sha384( body ) },
-        } );
-        await visitPublishedForm(
-            { admin, editor, page },
-            '88888888-8888-4888-8888-888888888888'
-        );
-
-        const script = page.locator( `script[src$="/${ VIEWER_PATH }"]` );
-        await expect( script ).toHaveAttribute( 'src', /\/embed\/1\.1\.0\// );
-        await expect( script ).toHaveAttribute( 'crossorigin', 'anonymous' );
-        await expect( script ).toHaveAttribute( 'integrity', sha384( body ) );
-        await expect
-            .poll( () => page.evaluate( () => window.__chefsViewerLoaded ) )
-            .toBe( true );
-    } );
-
-    for ( const [ name, options ] of [
-        [ 'the integrity manifest is unavailable', { manifestStatus: 404 } ],
-        [ 'the manifest has no viewer hash', { manifest: {} } ],
+    for ( const [ name, options, loads ] of [
+        [ 'the manifest hash matches', {}, true ],
         [
-            'the manifest viewer hash is malformed',
+            'the integrity manifest is unavailable',
+            { manifestStatus: 404 },
+            false,
+        ],
+        [ 'the manifest has no viewer hash', { manifest: {} }, false ],
+        [
+            'the manifest hash is malformed',
             { manifest: { [ VIEWER_PATH ]: 'not-a-hash' } },
+            false,
+        ],
+        [
+            'the script does not match its hash',
+            { body: 'window.__chefsViewerLoaded = "tampered";' },
+            false,
         ],
     ] ) {
-        test( `does not load the viewer script when ${ name }`, async ( {
+        test( `SRI viewer script when ${ name }`, async ( {
             admin,
             editor,
             page,
         } ) => {
             await routeViewerAssets( page, options );
-            await visitPublishedForm(
-                { admin, editor, page },
-                '99999999-9999-4999-8999-999999999999'
-            );
+            await visitPublishedForm( { admin, editor, page }, SRI_FORM_ID );
+
+            const script = page.locator( `script[src$="/${ VIEWER_PATH }"]` );
+            if ( loads ) {
+                await expect( script ).toHaveAttribute(
+                    'src',
+                    /\/embed\/1\.1\.0\//
+                );
+                await expect( script ).toHaveAttribute(
+                    'crossorigin',
+                    'anonymous'
+                );
+                await expect( script ).toHaveAttribute(
+                    'integrity',
+                    sha384( VIEWER_BODY )
+                );
+                await expect
+                    .poll( () =>
+                        page.evaluate( () => window.__chefsViewerLoaded )
+                    )
+                    .toBe( true );
+                return;
+            }
 
             await expect( await getFormError( page ) ).toBeVisible();
-            await expect(
-                page.locator( `script[src$="/${ VIEWER_PATH }"]` )
-            ).toHaveCount( 0 );
+            await expect( script ).toHaveCount( 0 );
+            expect(
+                await page.evaluate( () => window.__chefsViewerLoaded )
+            ).toBeUndefined();
         } );
     }
 
-    test( 'blocks the viewer script when its hash does not match', async ( {
+    test( 'retries the viewer script after an SRI failure in the same page', async ( {
         admin,
         editor,
         page,
     } ) => {
         await routeViewerAssets( page, {
-            body: 'window.__chefsViewerLoaded = true;',
-            manifest: { [ VIEWER_PATH ]: sha384( 'different content' ) },
+            body: 'window.__chefsViewerLoaded = "tampered";',
         } );
-        await visitPublishedForm(
-            { admin, editor, page },
-            'aaaaaaaa-9999-4999-8999-999999999999'
-        );
-
+        await visitPublishedForm( { admin, editor, page }, SRI_FORM_ID );
         await expect( await getFormError( page ) ).toBeVisible();
-        expect(
-            await page.evaluate( () => window.__chefsViewerLoaded )
-        ).toBeUndefined();
+
+        // Serve the correct script, then re-run the block's view script as a second mount would.
+        await page.unroute( '**/embed/*/integrity.json' );
+        await page.unroute( `**/embed/*/${ VIEWER_PATH }` );
+        await routeViewerAssets( page );
+        await page.evaluate( () => {
+            const script = document.createElement( 'script' );
+            script.src = document.querySelector(
+                'script[src*="chefs-form/view.js"]'
+            ).src;
+            document.body.appendChild( script );
+        } );
+
+        await expect
+            .poll( () => page.evaluate( () => window.__chefsViewerLoaded ) )
+            .toBe( true );
+        await expect(
+            page.locator( `script[src$="/${ VIEWER_PATH }"]` )
+        ).toHaveCount( 1 );
     } );
 
     test( 'does not create a viewer when no Form ID is set', async ( {

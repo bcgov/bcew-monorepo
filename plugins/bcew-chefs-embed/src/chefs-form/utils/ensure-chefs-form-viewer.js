@@ -25,10 +25,7 @@ const fetchViewerIntegrity = async ( manifestUrl ) => {
     const manifest = await response.json();
     const integrity = manifest?.[ CHEFS_VIEWER_SCRIPT_PATH ];
 
-    if (
-        'string' !== typeof integrity ||
-        ! SRI_HASH_PATTERN.test( integrity )
-    ) {
+    if ( ! SRI_HASH_PATTERN.test( integrity ?? '' ) ) {
         throw new Error(
             'CHEFS integrity manifest has no valid hash for the form viewer.'
         );
@@ -58,21 +55,6 @@ const injectViewerScript = ( src, integrity ) =>
                 )
             );
         };
-        const fail = () =>
-            reject( new Error( 'Unable to load the CHEFS form viewer.' ) );
-
-        const existing = document.querySelector( `script[src="${ src }"]` );
-        if ( existing ) {
-            if ( customElements.get( 'chefs-form-viewer' ) ) {
-                resolve();
-                return;
-            }
-
-            existing.addEventListener( 'load', finish, { once: true } );
-            existing.addEventListener( 'error', fail, { once: true } );
-            return;
-        }
-
         const script = document.createElement( 'script' );
         script.src = src;
         script.integrity = integrity;
@@ -80,7 +62,12 @@ const injectViewerScript = ( src, integrity ) =>
         script.async = true;
         script.onload = finish;
         // Also fires when the browser blocks the script for an SRI mismatch.
-        script.onerror = fail;
+        // Remove the failed tag so a later retry injects a fresh one instead
+        // of waiting on an error event that has already fired.
+        script.onerror = () => {
+            script.remove();
+            reject( new Error( 'Unable to load the CHEFS form viewer.' ) );
+        };
         document.head.appendChild( script );
     } );
 
