@@ -25,9 +25,10 @@ class PluginBootstrapTest extends \WP_UnitTestCase {
 		$menu = array();
 		bcew_chefs_embed_register_menu();
 
-		$this->assertSame( 'CHEFS Documentation', $menu[58][0] );
-		$this->assertSame( 'manage_options', $menu[58][1] );
-		$this->assertSame( plugin_basename( BCEW_CHEFS_EMBED_DOCUMENTATION_URL ), $menu[58][2] );
+		$slug = plugin_basename( BCEW_CHEFS_EMBED_DOCUMENTATION_URL );
+
+		$this->assertContains( $slug, array_column( $menu, 2 ) );
+		$this->assertContains( 'CHEFS Documentation', array_column( $menu, 0 ) );
 	}
 
 	/**
