@@ -183,4 +183,31 @@ test.describe( 'CHEFS Form editor', () => {
         await ensureBlockSettingsVisible( editor, page );
         await expect( page.getByLabel( 'Form ID or share URL' ) ).toBeVisible();
     } );
+
+    test( 'shows an error when the CHEFS form cannot be loaded', async ( {
+        admin,
+        editor,
+        page,
+    } ) => {
+        await stubChefsFormViewer( page, {
+            loadError: {
+                error: {
+                    title: 'Service Unavailable',
+                    status: 503,
+                    detail: 'CHEFS is unavailable',
+                },
+            },
+        } );
+        await admin.createNewPost();
+        await editor.insertBlock( { name: BLOCK_NAME } );
+        await ensureBlockSettingsVisible( editor, page );
+        await page.getByLabel( 'Form ID or share URL' ).first().fill( FORM_ID );
+
+        await expect(
+            editor.canvas.getByText( 'Unable to load the CHEFS form.' )
+        ).toBeVisible();
+        await expect(
+            editor.canvas.locator( 'chefs-form-viewer' )
+        ).toHaveCount( 0 );
+    } );
 } );

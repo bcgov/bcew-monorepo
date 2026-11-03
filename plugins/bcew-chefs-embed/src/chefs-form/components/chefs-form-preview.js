@@ -54,6 +54,24 @@ const ChefsFormPreview = ( { formId } ) => {
                 viewer.setAttribute( 'read-only', '' );
 
                 viewerHostRef.current.replaceChildren( viewer );
+                viewer.addEventListener(
+                    'formio:error',
+                    () => {
+                        if ( isCancelled ) {
+                            return;
+                        }
+
+                        setErrorMessage(
+                            __(
+                                'Unable to load the CHEFS form.',
+                                'bcew-chefs-embed'
+                            )
+                        );
+                        setIsLoading( false );
+                        viewerHostRef.current?.replaceChildren();
+                    },
+                    { once: true }
+                );
 
                 if ( 'function' === typeof viewer.load ) {
                     await viewer.load();
