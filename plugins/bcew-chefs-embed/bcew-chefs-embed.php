@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       BCEW CHEFS Embed
  * Plugin URI:        https://github.com/bcgov/bcew-monorepo/plugins/bcew-chefs-embed
- * Documentation URI: https://bcgov.github.io/bcew-monorepo/docs/content/plugins/bcew-chefs-embed/
+ * Documentation URI: https://bcgov.github.io/bcew-monorepo/docs/content/plugins/bcew-chefs-embed/user-docs
  * Description:       Embed BC Government Common Hosted Form Service (CHEFS) forms into WordPress pages and posts.
  * Version:           1.0.0-alpha.2
  * Requires at least: 6.7
@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 const BCEW_CHEFS_EMBED_BLOCK_NAME        = 'bcew-chefs-embed/chefs-form';
 const BCEW_CHEFS_EMBED_GOV_ORIGIN        = '*.gov.bc.ca';
 const BCEW_CHEFS_EMBED_CHEFS_ORIGIN      = 'https://chefs-dev.apps.silver.devops.gov.bc.ca'; // TEMP: revert to https://submit.digital.gov.bc.ca before release.
-const BCEW_CHEFS_EMBED_DOCUMENTATION_URL = 'https://bcgov.github.io/bcew-monorepo/docs/content/plugins/bcew-chefs-embed/';
+const BCEW_CHEFS_EMBED_DOCUMENTATION_URL = 'https://bcgov.github.io/bcew-monorepo/docs/content/plugins/bcew-chefs-embed/user-docs';
 
 /**
  * Load Composer autoloader when present.
@@ -184,6 +184,29 @@ function bcew_chefs_embed_register_menu() {
 }
 
 add_action( 'admin_menu', 'bcew_chefs_embed_register_menu' );
+
+/**
+ * Add user documentation to this plugin's metadata on the Plugins page.
+ *
+ * @param string[] $links       Existing plugin metadata links.
+ * @param string   $plugin_file Plugin path relative to the plugins directory.
+ * @return string[]
+ */
+function bcew_chefs_embed_plugin_row_meta( $links, $plugin_file ) {
+	if ( plugin_basename( __FILE__ ) !== $plugin_file ) {
+		return $links;
+	}
+
+	$links[] = sprintf(
+		'<a href="%s">%s</a>',
+		esc_url( BCEW_CHEFS_EMBED_DOCUMENTATION_URL ),
+		esc_html__( 'User documentation', 'bcew-chefs-embed' )
+	);
+
+	return $links;
+}
+
+add_filter( 'plugin_row_meta', 'bcew_chefs_embed_plugin_row_meta', 10, 2 );
 
 // Initialize blocks and other frontend functionality.
 add_action( 'init', 'bcew_chefs_embed_init' );
