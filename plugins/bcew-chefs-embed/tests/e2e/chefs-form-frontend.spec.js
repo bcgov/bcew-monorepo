@@ -1,4 +1,6 @@
 const { test, expect } = require( '@wordpress/e2e-test-utils-playwright' );
+const fs = require( 'node:fs' );
+const path = require( 'node:path' );
 const {
     dispatchFormioEvent,
     getFormError,
@@ -7,10 +9,16 @@ const {
     publishFormAndVisit,
     selectFormAndPublish,
 } = require( './chefs-form-helpers' );
-
 const VIEWER_PATH = 'embed/chefs-form-viewer.min.js';
+const VIEWER_VERSION = '1.1.0';
 const VIEWER_BODY = 'window.__chefsViewerLoaded = true;';
 const SRI_FORM_ID = '88888888-8888-4888-8888-888888888888';
+// Exact bytes from the pinned CHEFS dev 1.1.0 viewer release.
+const VIEWER_FIXTURE = fs.readFileSync(
+    path.join( __dirname, '../fixtures/chefs-form-viewer-1.1.0.min.js' )
+);
+const VIEWER_INTEGRITY =
+    'sha384-Zz9bmBPxz2kLWrUMwBzY3L8+jmwV+e3XNKyLEkVuG6+esMd270diV4/7zcTooEmk';
 
 // Served bodies never match the pinned hash, so these tests cover blocked loads and retries.
 const routeViewerScript = async ( page, body = VIEWER_BODY ) => {
@@ -35,6 +43,62 @@ const visitPublishedForm = async ( { admin, editor, page }, formId ) => {
 };
 
 test.describe( 'CHEFS Form frontend', () => {
+    test( 'loads the versioned viewer with the pinned SRI hash', async ( {
+        admin,
+        editor,
+        page,
+    } ) => {
+        let viewerWasUndefinedBeforeLoad;
+        let requestedViewerUrl;
+        await page.route(
+            `**/embed/${ VIEWER_VERSION }/${ VIEWER_PATH }`,
+            async ( route ) => {
+                if ( ! page.url().includes( '/wp-admin/' ) ) {
+                    requestedViewerUrl = route.request().url();
+                    viewerWasUndefinedBeforeLoad = await page.evaluate(
+                        () => ! customElements.get( 'chefs-form-viewer' )
+                    );
+                }
+                await route.fulfill( {
+                    contentType: 'text/javascript',
+                    headers: { 'Access-Control-Allow-Origin': '*' },
+                    body: VIEWER_FIXTURE,
+                } );
+            }
+        );
+        const postId = await selectFormAndPublish(
+            admin,
+            editor,
+            page,
+            SRI_FORM_ID
+        );
+        await page.context().clearCookies();
+        await page.goto( `/?p=${ postId }` );
+
+        const viewer = page.locator( 'chefs-form-viewer' );
+        const baseUrl = await viewer.getAttribute( 'base-url' );
+        const viewerUrl = `${ baseUrl }/embed/${ VIEWER_VERSION }/${ VIEWER_PATH }`;
+        const viewerScript = page.locator( `script[src="${ viewerUrl }"]` );
+        await expect( viewerScript ).toHaveAttribute( 'src', viewerUrl );
+        await expect( viewerScript ).toHaveAttribute(
+            'integrity',
+            VIEWER_INTEGRITY
+        );
+        await expect( viewerScript ).toHaveAttribute(
+            'crossorigin',
+            'anonymous'
+        );
+        await expect
+            .poll( () =>
+                page.evaluate(
+                    () => !! customElements.get( 'chefs-form-viewer' )
+                )
+            )
+            .toBe( true );
+        expect( requestedViewerUrl ).toBe( viewerUrl );
+        expect( viewerWasUndefinedBeforeLoad ).toBe( true );
+    } );
+
     test( 'renders a Public form without an API key or token and shows generic success after submit', async ( {
         admin,
         editor,
