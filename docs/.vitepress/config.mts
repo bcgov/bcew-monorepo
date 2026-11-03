@@ -191,7 +191,6 @@ const monorepoGuideItems = [
   { text: 'Contributing docs', link: '/contributing' },
   { text: 'Onboarding checklist', link: '/onboarding-validation' },
   { text: 'Maintenance', link: '/maintenance' },
-  { text: 'Code Ownership', link: '/code-owners' }
 ];
 
 export default defineConfig({
