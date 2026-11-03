@@ -1,4 +1,3 @@
-const { createHash } = require( 'crypto' );
 const { test, expect } = require( '@wordpress/e2e-test-utils-playwright' );
 const {
     dispatchFormioEvent,
@@ -13,32 +12,20 @@ const VIEWER_PATH = 'embed/chefs-form-viewer.min.js';
 const VIEWER_BODY = 'window.__chefsViewerLoaded = true;';
 const SRI_FORM_ID = '88888888-8888-4888-8888-888888888888';
 
-const sha384 = ( body ) =>
-    `sha384-${ createHash( 'sha384' ).update( body ).digest( 'base64' ) }`;
-
-const routeViewerAssets = async (
-    page,
-    {
-        body = VIEWER_BODY,
-        manifest = { [ VIEWER_PATH ]: sha384( VIEWER_BODY ) },
-        manifestStatus = 200,
-    } = {}
-) => {
-    await page.route( '**/embed/*/integrity.json', ( route ) =>
-        route.fulfill( {
-            status: manifestStatus,
-            contentType: 'application/json',
-            headers: { 'Access-Control-Allow-Origin': '*' },
-            body: JSON.stringify( manifest ),
-        } )
-    );
-    await page.route( `**/embed/*/${ VIEWER_PATH }`, ( route ) =>
+// Served bodies never match the pinned hash, so these tests cover blocked loads and retries.
+const routeViewerScript = async ( page, body = VIEWER_BODY ) => {
+    let requests = 0;
+    await page.route( `**/embed/*/${ VIEWER_PATH }`, ( route ) => {
+        if ( ! page.url().includes( '/wp-admin/' ) ) {
+            requests++;
+        }
         route.fulfill( {
             contentType: 'text/javascript',
             headers: { 'Access-Control-Allow-Origin': '*' },
             body,
-        } )
-    );
+        } );
+    } );
+    return () => requests;
 };
 
 const visitPublishedForm = async ( { admin, editor, page }, formId ) => {
@@ -87,78 +74,40 @@ test.describe( 'CHEFS Form frontend', () => {
         await expect( page.locator( 'chefs-form-viewer' ) ).toHaveCount( 0 );
     } );
 
-    for ( const [ name, options, loads ] of [
-        [ 'the manifest hash matches', {}, true ],
-        [
-            'the integrity manifest is unavailable',
-            { manifestStatus: 404 },
-            false,
-        ],
-        [ 'the manifest has no viewer hash', { manifest: {} }, false ],
-        [
-            'the manifest hash is malformed',
-            { manifest: { [ VIEWER_PATH ]: 'not-a-hash' } },
-            false,
-        ],
-        [
-            'the script does not match its hash',
-            { body: 'window.__chefsViewerLoaded = "tampered";' },
-            false,
-        ],
-    ] ) {
-        test( `SRI viewer script when ${ name }`, async ( {
-            admin,
-            editor,
-            page,
-        } ) => {
-            await routeViewerAssets( page, options );
-            await visitPublishedForm( { admin, editor, page }, SRI_FORM_ID );
-
-            const script = page.locator( `script[src$="/${ VIEWER_PATH }"]` );
-            if ( loads ) {
-                await expect( script ).toHaveAttribute(
-                    'src',
-                    /\/embed\/1\.1\.0\//
-                );
-                await expect( script ).toHaveAttribute(
-                    'crossorigin',
-                    'anonymous'
-                );
-                await expect( script ).toHaveAttribute(
-                    'integrity',
-                    sha384( VIEWER_BODY )
-                );
-                await expect
-                    .poll( () =>
-                        page.evaluate( () => window.__chefsViewerLoaded )
-                    )
-                    .toBe( true );
-                return;
-            }
-
-            await expect( await getFormError( page ) ).toBeVisible();
-            await expect( script ).toHaveCount( 0 );
-            expect(
-                await page.evaluate( () => window.__chefsViewerLoaded )
-            ).toBeUndefined();
-        } );
-    }
-
-    test( 'retries the viewer script after an SRI failure in the same page', async ( {
+    test( 'blocks a viewer script that does not match the pinned SRI hash', async ( {
         admin,
         editor,
         page,
     } ) => {
-        await routeViewerAssets( page, {
-            body: 'window.__chefsViewerLoaded = "tampered";',
-        } );
+        await routeViewerScript(
+            page,
+            'window.__chefsViewerLoaded = "tampered";'
+        );
+        await visitPublishedForm( { admin, editor, page }, SRI_FORM_ID );
+
+        await expect( await getFormError( page ) ).toBeVisible();
+        await expect(
+            page.locator( `script[src$="/${ VIEWER_PATH }"]` )
+        ).toHaveCount( 0 );
+        expect(
+            await page.evaluate( () => window.__chefsViewerLoaded )
+        ).toBeUndefined();
+    } );
+
+    test( 'retries the viewer script after an SRI failure with a fresh script tag', async ( {
+        admin,
+        editor,
+        page,
+    } ) => {
+        const requests = await routeViewerScript(
+            page,
+            'window.__chefsViewerLoaded = "tampered";'
+        );
         await visitPublishedForm( { admin, editor, page }, SRI_FORM_ID );
         await expect( await getFormError( page ) ).toBeVisible();
+        await expect.poll( requests ).toBe( 1 );
 
-        // Serve the correct script, then re-run the block's view script as a second mount would.
-        await page.unroute( '**/embed/*/integrity.json' );
-        await page.unroute( `**/embed/*/${ VIEWER_PATH }` );
-        await routeViewerAssets( page );
+        // Re-run the block's view script as a second mount would.
         await page.evaluate( () => {
             const script = document.createElement( 'script' );
             script.src = document.querySelector(
@@ -167,12 +116,7 @@ test.describe( 'CHEFS Form frontend', () => {
             document.body.appendChild( script );
         } );
 
-        await expect
-            .poll( () => page.evaluate( () => window.__chefsViewerLoaded ) )
-            .toBe( true );
-        await expect(
-            page.locator( `script[src$="/${ VIEWER_PATH }"]` )
-        ).toHaveCount( 1 );
+        await expect.poll( requests ).toBe( 2 );
     } );
 
     test( 'does not create a viewer when no Form ID is set', async ( {

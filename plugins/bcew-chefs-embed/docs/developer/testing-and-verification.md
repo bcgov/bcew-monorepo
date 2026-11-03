@@ -20,6 +20,6 @@ Use `test-screenshot-generate` when updating approved screenshot baselines. The 
 5. Add a confirmation message, publish the post, and open it as a visitor.
 6. Submit the public form and verify that the configured confirmation replaces the viewer. Repeat without a custom message and verify the generic success message.
 7. Verify that the saved markup includes the `chefs-form-viewer` element with the Form ID and configured base URL.
-8. In browser developer tools, confirm `integrity.json` loads for the configured embed version and the `chefs-form-viewer.min.js` script tag has `integrity` and `crossorigin="anonymous"` attributes.
+8. In browser developer tools, confirm the `chefs-form-viewer.min.js` script tag has an `integrity` attribute matching `CHEFS_EMBED_INTEGRITY` and `crossorigin="anonymous"`.
 
 Testing a real form requires network access to the configured CHEFS service and a form published as a Public form.
