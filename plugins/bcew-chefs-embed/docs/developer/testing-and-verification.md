@@ -19,6 +19,6 @@ Use `test-screenshot-generate` when updating approved screenshot baselines. The 
 4. Enter a CHEFS Form ID and confirm the editor shows the read-only preview. Repeat with a share URL and verify the saved block attribute contains only the normalized Form ID.
 5. Add a confirmation message, publish the post, and open it as a visitor.
 6. Submit the public form and verify that the configured confirmation replaces the viewer. Repeat without a custom message and verify the generic success message.
-7. Verify that the saved markup contains the viewer element, Form ID, and configured base URL, with no API key or runtime token. Confirm there is no block PHP render callback or CHEFS REST route.
+7. Verify that the saved markup includes the `chefs-form-viewer` element with the Form ID and configured base URL.
 
-The local WordPress environment can start without CHEFS credentials. Loading a real form requires network access to the configured CHEFS service and a form published as a Public form.
+Testing a real form requires network access to the configured CHEFS service and a form published as a Public form.

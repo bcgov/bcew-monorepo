@@ -17,14 +17,13 @@ The block persists these attributes:
 }
 ```
 
-The editor accepts a Form ID or a CHEFS share URL and stores the normalized Form ID. The confirmation message is plain text. The block does not store credentials or tokens.
+The editor accepts a Form ID or a CHEFS share URL and stores the normalized Form ID. The confirmation message is plain text.
 
 ## Data flow
 
 The block saves the CHEFS viewer element and its public Form ID in the post
 content. The browser loads the versioned viewer script from CHEFS, which loads
-the published Public form. WordPress does not store API keys, exchange tokens,
-or expose CHEFS REST routes.
+the published Public form.
 
 ```mermaid
 sequenceDiagram
@@ -57,7 +56,7 @@ sequenceDiagram
 
 ## Frontend flow
 
-`src/chefs-form/save.js` saves the block wrapper and, when a Form ID is set, a `chefs-form-viewer` element with the Form ID and CHEFS base URL. It also saves the optional confirmation message on the wrapper. There is no `render.php` or server-side render callback.
+`src/chefs-form/save.js` saves the block wrapper and, when a Form ID is set, a `chefs-form-viewer` element with the Form ID and CHEFS base URL. It also saves the optional confirmation message on the wrapper.
 
 `src/chefs-form/view.js` runs in the browser after the page loads. For each block, it:
 
@@ -65,5 +64,3 @@ sequenceDiagram
 2. Calls the viewer's `load()` method when available.
 3. On `formio:submitDone`, replaces the viewer with the configured confirmation, or a generic success message when no custom confirmation is set.
 4. On `formio:error` or a viewer load failure, displays an accessible error and keeps the viewer available when possible.
-
-If no Form ID is set, the saved block contains no viewer element.

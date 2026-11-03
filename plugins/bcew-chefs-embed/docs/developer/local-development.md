@@ -24,9 +24,9 @@ The test environment uses port `9013` and is used by the Playwright targets. It 
 The `wp-env` lifecycle script activates the plugin after the environment starts. Build the assets again after changing block JavaScript, styles, or metadata.
 
 The block loads the CHEFS viewer directly in the editor preview and on the
-published page. Testing a real form therefore requires network access to the
-configured CHEFS service and a published Public form; no plugin credentials or
-API keys are needed.
+published page. The local WordPress environment starts independently of CHEFS.
+Testing a real form requires network access to the configured CHEFS service and
+a form published as a Public form.
 
 ## Stop or reset WordPress
 
