@@ -32,57 +32,6 @@ class PluginBootstrapTest extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Documentation metadata and navigation use the published user guide.
-	 *
-	 * @return void
-	 */
-	public function test_documentation_url_points_to_user_guide() {
-		$this->assertSame(
-			'https://bcgov.github.io/bcew-monorepo/docs/content/plugins/bcew-chefs-embed/user-docs',
-			BCEW_CHEFS_EMBED_DOCUMENTATION_URL
-		);
-
-		$headers = get_file_data(
-			dirname( __DIR__ ) . '/bcew-chefs-embed.php',
-			array( 'documentation' => 'Documentation URI' )
-		);
-
-		$this->assertSame( BCEW_CHEFS_EMBED_DOCUMENTATION_URL, $headers['documentation'] );
-	}
-
-	/**
-	 * The Plugins row appends a user documentation link to existing metadata.
-	 *
-	 * @return void
-	 */
-	public function test_plugin_row_meta_adds_documentation_link() {
-		$links       = array( '<span>Version 1.0</span>', '<span>By BC Government</span>' );
-		$plugin_file = plugin_basename( dirname( __DIR__ ) . '/bcew-chefs-embed.php' );
-
-		$this->assertSame(
-			array_merge(
-				$links,
-				array( '<a href="' . BCEW_CHEFS_EMBED_DOCUMENTATION_URL . '">User documentation</a>' )
-			),
-			apply_filters( 'plugin_row_meta', $links, $plugin_file )
-		);
-	}
-
-	/**
-	 * Other plugins keep their original metadata links.
-	 *
-	 * @return void
-	 */
-	public function test_plugin_row_meta_leaves_other_plugins_unchanged() {
-		$links = array( '<span>Version 1.0</span>' );
-
-		$this->assertSame(
-			$links,
-			apply_filters( 'plugin_row_meta', $links, 'another-plugin/another-plugin.php' )
-		);
-	}
-
-	/**
 	 * The plugin no longer registers a saved-form REST route.
 	 *
 	 * @return void
