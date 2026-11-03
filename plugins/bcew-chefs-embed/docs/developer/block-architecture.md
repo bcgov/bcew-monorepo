@@ -77,9 +77,9 @@ The editor preview is provided by `src/chefs-form/components/chefs-form-preview.
 
 1. Finds the block wrapper and reads the Form ID from its `data-form-id` attribute.
 2. Requests `/wp-json/bcew-chefs-embed/v1/embed-config?formId=<form-id>`. This request goes to WordPress, where the plugin retrieves the encrypted API key and exchanges it with CHEFS for a short-lived access token. The API key is never sent to the browser.
-3. Loads the CHEFS form viewer web component from the CHEFS service if it is not already available on the page.
+3. Loads the CHEFS form viewer web component from the CHEFS service if it is not already available on the page. The script is loaded with Subresource Integrity (SRI); see [Viewer script integrity](./security-and-credentials#viewer-script-integrity).
 4. Creates the viewer inside the block's mount element and passes it the short-lived token and CHEFS base URL returned by WordPress. The visitor can then interact with the live form.
 5. Listens for the viewer's `formio:submitDone` event. When submission succeeds, it removes the viewer and displays the configured confirmation message, or the generic success message when no custom message is configured.
 6. Listens for the viewer's `formio:error` event. When CHEFS reports a submission error, it displays the error above the form and keeps the form available so the visitor can try again.
 
-If the configuration request or viewer script fails before the form loads, the block displays a load error in place of the form.
+If the configuration request, integrity manifest, or viewer script fails before the form loads, the block displays a load error in place of the form.

@@ -1,3 +1,4 @@
+const { createHash } = require( 'crypto' );
 const { test, expect } = require( '@wordpress/e2e-test-utils-playwright' );
 const {
     dispatchFormioEvent,
@@ -7,6 +8,38 @@ const {
     publishFormAndVisit,
     selectFormAndPublish,
 } = require( './chefs-form-helpers' );
+
+const VIEWER_PATH = 'embed/chefs-form-viewer.min.js';
+
+const sha384 = ( body ) =>
+    `sha384-${ createHash( 'sha384' ).update( body ).digest( 'base64' ) }`;
+
+const routeViewerAssets = async (
+    page,
+    { body = '', manifest = {}, manifestStatus = 200 } = {}
+) => {
+    await page.route( '**/embed/*/integrity.json', ( route ) =>
+        route.fulfill( {
+            status: manifestStatus,
+            contentType: 'application/json',
+            headers: { 'Access-Control-Allow-Origin': '*' },
+            body: JSON.stringify( manifest ),
+        } )
+    );
+    await page.route( `**/embed/*/${ VIEWER_PATH }`, ( route ) =>
+        route.fulfill( {
+            contentType: 'text/javascript',
+            headers: { 'Access-Control-Allow-Origin': '*' },
+            body,
+        } )
+    );
+};
+
+const visitPublishedForm = async ( { admin, editor, page }, formId ) => {
+    const postId = await selectFormAndPublish( admin, editor, page, formId );
+    await page.context().clearCookies();
+    await page.goto( `/?p=${ postId }` );
+};
 
 test.describe( 'CHEFS Form frontend', () => {
     test( 'renders a Public form without an API key or token and shows generic success after submit', async ( {
@@ -48,30 +81,74 @@ test.describe( 'CHEFS Form frontend', () => {
         await expect( page.locator( 'chefs-form-viewer' ) ).toHaveCount( 0 );
     } );
 
-    test( 'loads the versioned viewer script', async ( {
+    test( 'loads the versioned viewer script with SRI from the integrity manifest', async ( {
         admin,
         editor,
         page,
     } ) => {
-        await page.route(
-            '**/embed/*/embed/chefs-form-viewer.min.js',
-            ( route ) =>
-                route.fulfill( { contentType: 'text/javascript', body: '' } )
+        const body = 'window.__chefsViewerLoaded = true;';
+        await routeViewerAssets( page, {
+            body,
+            manifest: { [ VIEWER_PATH ]: sha384( body ) },
+        } );
+        await visitPublishedForm(
+            { admin, editor, page },
+            '88888888-8888-4888-8888-888888888888'
         );
-        const postId = await selectFormAndPublish(
+
+        const script = page.locator( `script[src$="/${ VIEWER_PATH }"]` );
+        await expect( script ).toHaveAttribute( 'src', /\/embed\/1\.1\.0\// );
+        await expect( script ).toHaveAttribute( 'crossorigin', 'anonymous' );
+        await expect( script ).toHaveAttribute( 'integrity', sha384( body ) );
+        await expect
+            .poll( () => page.evaluate( () => window.__chefsViewerLoaded ) )
+            .toBe( true );
+    } );
+
+    for ( const [ name, options ] of [
+        [ 'the integrity manifest is unavailable', { manifestStatus: 404 } ],
+        [ 'the manifest has no viewer hash', { manifest: {} } ],
+        [
+            'the manifest viewer hash is malformed',
+            { manifest: { [ VIEWER_PATH ]: 'not-a-hash' } },
+        ],
+    ] ) {
+        test( `does not load the viewer script when ${ name }`, async ( {
             admin,
             editor,
             page,
-            '88888888-8888-4888-8888-888888888888'
-        );
-        await page.context().clearCookies();
-        await page.goto( `/?p=${ postId }` );
+        } ) => {
+            await routeViewerAssets( page, options );
+            await visitPublishedForm(
+                { admin, editor, page },
+                '99999999-9999-4999-8999-999999999999'
+            );
 
-        const script = page.locator(
-            'script[src$="/embed/chefs-form-viewer.min.js"]'
+            await expect( await getFormError( page ) ).toBeVisible();
+            await expect(
+                page.locator( `script[src$="/${ VIEWER_PATH }"]` )
+            ).toHaveCount( 0 );
+        } );
+    }
+
+    test( 'blocks the viewer script when its hash does not match', async ( {
+        admin,
+        editor,
+        page,
+    } ) => {
+        await routeViewerAssets( page, {
+            body: 'window.__chefsViewerLoaded = true;',
+            manifest: { [ VIEWER_PATH ]: sha384( 'different content' ) },
+        } );
+        await visitPublishedForm(
+            { admin, editor, page },
+            'aaaaaaaa-9999-4999-8999-999999999999'
         );
-        await expect( script ).toHaveAttribute( 'src', /\/embed\/1\.1\.0\// );
-        await expect( script ).toHaveAttribute( 'crossorigin', 'anonymous' );
+
+        await expect( await getFormError( page ) ).toBeVisible();
+        expect(
+            await page.evaluate( () => window.__chefsViewerLoaded )
+        ).toBeUndefined();
     } );
 
     test( 'does not create a viewer when no Form ID is set', async ( {

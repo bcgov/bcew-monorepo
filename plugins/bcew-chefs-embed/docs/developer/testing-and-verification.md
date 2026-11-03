@@ -22,5 +22,6 @@ Use `test-screenshot-generate` when updating approved screenshot baselines. The 
 7. Publish the post and open it as an anonymous visitor.
 8. Confirm the form loads through `embed-config`.
 9. Verify that the CHEFS API key is not present in the page source, frontend code, or REST response. The REST response may contain the short-lived token used to load the form.
+10. In browser developer tools, confirm `integrity.json` loads for the configured embed version and the `chefs-form-viewer.min.js` script tag has `integrity` and `crossorigin="anonymous"` attributes.
 
 The local WordPress environment can be started without live CHEFS credentials, but loading and submitting a real form on port `9012` requires valid credentials and access to the CHEFS service.
