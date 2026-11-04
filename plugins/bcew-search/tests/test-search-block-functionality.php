@@ -304,7 +304,7 @@ class SearchBlockFunctionalityTest extends WP_UnitTestCase {
         );
 
         // Include the render file from the correct path.
-        $render_file = dirname( __DIR__ ) . '/Blocks/build/Search/render.php';
+        $render_file = dirname( __DIR__ ) . '/dist/Search/render.php';
         include $render_file;
 
         return ob_get_clean();

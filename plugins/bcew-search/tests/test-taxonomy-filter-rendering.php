@@ -415,7 +415,7 @@ class TaxonomyBlockRenderingTest extends WP_UnitTestCase {
         ob_start();
 
         // Include the render template (same way WordPress does it).
-        include plugin_dir_path( __DIR__ ) . 'Blocks/src/SearchTaxonomyFilter/render.php';
+        include plugin_dir_path( __DIR__ ) . 'src/SearchTaxonomyFilter/render.php';
 
         // Return the buffered output.
         return ob_get_clean();

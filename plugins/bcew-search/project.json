@@ -12,22 +12,8 @@
     },
     "targets": {
         "composer-install": {},
-        "build": {
-            "options": {
-                "command": "npm run build",
-                "forwardAllArgs": false
-            },
-            "outputs": [
-                "{projectRoot}/build",
-                "{projectRoot}/Blocks/build"
-            ]
-        },
-        "start": {
-            "options": {
-                "command": "npm run start",
-                "forwardAllArgs": false
-            }
-        },
+        "build": {},
+        "start": {},
         "start-playwright": {},
         "test-accessibility": {},
         "test-e2e": {},
