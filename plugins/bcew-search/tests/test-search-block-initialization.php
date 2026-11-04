@@ -33,7 +33,7 @@ class SearchBlockInitializationTest extends WP_UnitTestCase {
      */
     private function register_test_blocks() {
         // Register each block individually to avoid the main plugin's registration logic.
-        $build_dir   = dirname( __DIR__ ) . '/Blocks/build/';
+        $build_dir   = dirname( __DIR__ ) . '/dist/';
         $block_files = glob( $build_dir . '*/block.json' );
 
 		foreach ( $block_files as $block_file ) {
@@ -193,7 +193,7 @@ class SearchBlockInitializationTest extends WP_UnitTestCase {
      * - No syntax errors in render template
      */
     public function test_search_block_render_file() {
-        $render_file_path = dirname( __DIR__ ) . '/Blocks/build/Search/render.php';
+        $render_file_path = dirname( __DIR__ ) . '/dist/Search/render.php';
 
         $this->assertFileExists( $render_file_path, 'Search block render.php file should exist' );
         $this->assertFileIsReadable( $render_file_path, 'Search block render.php file should be readable' );

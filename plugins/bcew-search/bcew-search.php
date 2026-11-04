@@ -162,14 +162,14 @@ if ( ! class_exists( 'Bcgov\\WordpressSearch\\SearchHighlight' ) ) {
 	 */
 function wordpress_search_init() {
 	// Register blocks.
-	register_block_type( plugin_dir_path( __FILE__ ) . 'Blocks/build/Search' );
-	register_block_type( plugin_dir_path( __FILE__ ) . 'Blocks/build/SearchPostFilter' );
-	register_block_type( plugin_dir_path( __FILE__ ) . 'Blocks/build/SearchResultsPostMetadataDisplay' );
-	register_block_type( plugin_dir_path( __FILE__ ) . 'Blocks/build/SearchTaxonomyFilter' );
-	register_block_type( plugin_dir_path( __FILE__ ) . 'Blocks/build/SearchActiveFilters' );
-	register_block_type( plugin_dir_path( __FILE__ ) . 'Blocks/build/SearchResultCount' );
-	register_block_type( plugin_dir_path( __FILE__ ) . 'Blocks/build/SearchResultsSort' );
-	register_block_type( plugin_dir_path( __FILE__ ) . 'Blocks/build/SearchModal' );
+	register_block_type( plugin_dir_path( __FILE__ ) . 'dist/Search' );
+	register_block_type( plugin_dir_path( __FILE__ ) . 'dist/SearchPostFilter' );
+	register_block_type( plugin_dir_path( __FILE__ ) . 'dist/SearchResultsPostMetadataDisplay' );
+	register_block_type( plugin_dir_path( __FILE__ ) . 'dist/SearchTaxonomyFilter' );
+	register_block_type( plugin_dir_path( __FILE__ ) . 'dist/SearchActiveFilters' );
+	register_block_type( plugin_dir_path( __FILE__ ) . 'dist/SearchResultCount' );
+	register_block_type( plugin_dir_path( __FILE__ ) . 'dist/SearchResultsSort' );
+	register_block_type( plugin_dir_path( __FILE__ ) . 'dist/SearchModal' );
 
 	// Initialize filter functionality.
 	$wordpress_search_taxonomy_filter = new \Bcgov\WordpressSearch\TaxonomyFilter();

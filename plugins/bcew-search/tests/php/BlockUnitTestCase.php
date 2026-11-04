@@ -38,7 +38,7 @@ abstract class BlockUnitTestCase extends \WP_UnitTestCase {
         );
 
         // Include the render file from the correct path.
-        $render_file = dirname( __DIR__, 2 ) . '/Blocks/src/' . $this->block_class . '/render.php';
+        $render_file = dirname( __DIR__, 2 ) . '/src/' . $this->block_class . '/render.php';
         include $render_file;
 
         return ob_get_clean();
