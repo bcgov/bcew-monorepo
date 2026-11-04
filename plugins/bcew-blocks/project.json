@@ -20,7 +20,10 @@
         "test-e2e-docker": {},
         "test-screenshot": {},
         "test-screenshot-generate": {},
-        "test-integration": {},
+        "test-integration": {
+            "executor": "nx:noop",
+            "dependsOn": []
+        },
         "wp-env-start": {
             "dependsOn": ["composer-install", "bcew-search:composer-install"]
         },
