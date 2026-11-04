@@ -1,9 +1,9 @@
 <?php
 
-namespace Bcgov\Bcew\DocumentRepository;
+namespace Bcew\DocumentRepository;
 
-use Bcgov\Bcew\DocumentRepository\MediaUploadHelper;
-use Bcgov\Bcew\DocumentRepository\RepositoryConfig;
+use Bcew\DocumentRepository\MediaUploadHelper;
+use Bcew\DocumentRepository\RepositoryConfig;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_Error;

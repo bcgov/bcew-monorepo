@@ -11,7 +11,7 @@
  * License URI:       https://www.apache.org/licenses/LICENSE-2.0
  * Text Domain:       bcew-document-repository
  *
- * @package Bcgov\Bcew\DocumentRepository
+ * @package Bcew\DocumentRepository
  */
 
 // Ensure WordPress is loaded.
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-use Bcgov\Bcew\DocumentRepository\{
+use Bcew\DocumentRepository\{
     DocumentRepository,
     DocumentRevisionManager,
     Settings,
@@ -49,7 +49,7 @@ if ( file_exists( $local_composer ) ) {
     require_once $local_composer;
 }
 
-if ( ! class_exists( 'Bcgov\\Bcew\\DocumentRepository\\Settings' ) ) {
+if ( ! class_exists( 'Bcew\\DocumentRepository\\Settings' ) ) {
     add_action(
         'admin_notices',
         function () {
