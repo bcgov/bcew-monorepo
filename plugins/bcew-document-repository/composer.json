@@ -27,11 +27,6 @@
             "Bcew\\DocumentRepository\\Tests\\": "tests/"
         }
     },
-    "scripts": {
-        "test": [
-            "./vendor/bin/phpunit -c vendor/bcew-monorepo/phpunit-config/phpunit.integration.xml"
-        ]
-    },
     "config": {
         "platform": {
             "php": "7.4.30"
