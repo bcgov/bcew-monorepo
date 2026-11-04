@@ -1,10 +1,10 @@
 const defaultConfig = require( '@wordpress/scripts/config/webpack.config' );
 
 module.exports = {
-	...defaultConfig,
+    ...defaultConfig,
 
-	entry: {
-		...defaultConfig.entry(),
-		'index': './src/index.js',
-	},
+    entry: {
+        ...defaultConfig.entry(),
+        index: './src/index.js',
+    },
 };
