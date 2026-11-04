@@ -1,5 +1,5 @@
 <?php
-namespace Bcgov\Bcew\DocumentRepository;
+namespace Bcew\DocumentRepository;
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit;

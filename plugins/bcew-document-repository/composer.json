@@ -19,17 +19,17 @@
     },
     "autoload": {
         "psr-4": {
-            "Bcgov\\Bcew\\DocumentRepository\\": "src/"
+            "Bcew\\DocumentRepository\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Bcgov\\Bcew\\DocumentRepository\\Tests\\": "tests/"
+            "Bcew\\DocumentRepository\\Tests\\": "tests/"
         }
     },
     "scripts": {
         "test": [
-            "./vendor/bin/phpunit"
+            "./vendor/bin/phpunit -c vendor/bcew-monorepo/phpunit-config/phpunit.integration.xml"
         ]
     },
     "config": {

@@ -1,12 +1,19 @@
 <?php
-namespace Bcgov\Bcew\DocumentRepository\Tests;
+namespace Bcew\DocumentRepository\Tests;
 
    /**
     * Class PluginFunctionalityTest
     *
-    * @package Bcgov\Bcew\DocumentRepository
+    * @package Bcew\DocumentRepository
     */
 class PluginFunctionalityTest extends \WP_UnitTestCase {
+	/**
+	 * Tests that the document repository class loads under the expected namespace.
+	 */
+	public function test_document_repository_class_loads_with_expected_namespace() {
+		$this->assertTrue( class_exists( \Bcew\DocumentRepository\DocumentRepository::class ) );
+	}
+
 	/**
 	 * Tests if the plugin is properly loaded and activated.
 	 * A simple test to verify WordPress test environment is working
