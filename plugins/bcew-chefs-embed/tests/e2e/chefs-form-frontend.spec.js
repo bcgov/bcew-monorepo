@@ -1,4 +1,5 @@
 const { test, expect } = require( '@wordpress/e2e-test-utils-playwright' );
+const { createHash } = require( 'node:crypto' );
 const {
     dispatchFormioEvent,
     getFormError,
@@ -7,8 +8,110 @@ const {
     publishFormAndVisit,
     selectFormAndPublish,
 } = require( './chefs-form-helpers' );
+const VIEWER_PATH = 'embed/chefs-form-viewer.min.js';
+const VIEWER_VERSION = '1.1.0';
+const VIEWER_BODY = 'window.__chefsViewerLoaded = true;';
+const SRI_FORM_ID = '88888888-8888-4888-8888-888888888888';
+const VIEWER_FIXTURE = `${ VIEWER_BODY }
+customElements.define('chefs-form-viewer', class extends HTMLElement {});`;
+const FIXTURE_INTEGRITY = `sha384-${ createHash( 'sha384' )
+    .update( VIEWER_FIXTURE )
+    .digest( 'base64' ) }`;
+const VIEWER_INTEGRITY =
+    'sha384-Zz9bmBPxz2kLWrUMwBzY3L8+jmwV+e3XNKyLEkVuG6+esMd270diV4/7zcTooEmk';
+
+// Served bodies never match the pinned hash, so these tests cover blocked loads and retries.
+const routeViewerScript = async ( page, body = VIEWER_BODY ) => {
+    let requests = 0;
+    await page.route( `**/embed/*/${ VIEWER_PATH }`, ( route ) => {
+        if ( ! page.url().includes( '/wp-admin/' ) ) {
+            requests++;
+        }
+        route.fulfill( {
+            contentType: 'text/javascript',
+            headers: { 'Access-Control-Allow-Origin': '*' },
+            body,
+        } );
+    } );
+    return () => requests;
+};
+
+const visitPublishedForm = async ( { admin, editor, page }, formId ) => {
+    const postId = await selectFormAndPublish( admin, editor, page, formId );
+    await page.context().clearCookies();
+    await page.goto( `/?p=${ postId }` );
+};
 
 test.describe( 'CHEFS Form frontend', () => {
+    test( 'loads the versioned viewer with a matching SRI hash', async ( {
+        admin,
+        editor,
+        page,
+    } ) => {
+        let viewerWasUndefinedBeforeLoad;
+        let requestedViewerUrl;
+        // Override only the served test bundle, leaving the runtime pin unchanged.
+        await page.route( '**/chefs-form/view.js*', async ( route ) => {
+            const response = await route.fetch();
+            const body = await response.text();
+            expect( body ).toContain( VIEWER_INTEGRITY );
+            await route.fulfill( {
+                response,
+                body: body.replaceAll( VIEWER_INTEGRITY, FIXTURE_INTEGRITY ),
+            } );
+        } );
+        await page.route(
+            `**/embed/${ VIEWER_VERSION }/${ VIEWER_PATH }`,
+            async ( route ) => {
+                if ( ! page.url().includes( '/wp-admin/' ) ) {
+                    requestedViewerUrl = route.request().url();
+                    viewerWasUndefinedBeforeLoad = await page.evaluate(
+                        () => ! customElements.get( 'chefs-form-viewer' )
+                    );
+                }
+                await route.fulfill( {
+                    contentType: 'text/javascript',
+                    headers: { 'Access-Control-Allow-Origin': '*' },
+                    body: VIEWER_FIXTURE,
+                } );
+            }
+        );
+        const postId = await selectFormAndPublish(
+            admin,
+            editor,
+            page,
+            SRI_FORM_ID
+        );
+        await page.context().clearCookies();
+        await page.goto( `/?p=${ postId }` );
+
+        const viewer = page.locator( 'chefs-form-viewer' );
+        const baseUrl = await viewer.getAttribute( 'base-url' );
+        const viewerUrl = `${ baseUrl }/embed/${ VIEWER_VERSION }/${ VIEWER_PATH }`;
+        const viewerScript = page.locator( `script[src="${ viewerUrl }"]` );
+        await expect( viewerScript ).toHaveAttribute( 'src', viewerUrl );
+        await expect( viewerScript ).toHaveAttribute(
+            'integrity',
+            FIXTURE_INTEGRITY
+        );
+        await expect( viewerScript ).toHaveAttribute(
+            'crossorigin',
+            'anonymous'
+        );
+        await expect
+            .poll( () =>
+                page.evaluate(
+                    () => !! customElements.get( 'chefs-form-viewer' )
+                )
+            )
+            .toBe( true );
+        expect( requestedViewerUrl ).toBe( viewerUrl );
+        expect( viewerWasUndefinedBeforeLoad ).toBe( true );
+        expect( await page.evaluate( () => window.__chefsViewerLoaded ) ).toBe(
+            true
+        );
+    } );
+
     test( 'renders a Public form without an API key or token and shows generic success after submit', async ( {
         admin,
         editor,
@@ -48,30 +151,49 @@ test.describe( 'CHEFS Form frontend', () => {
         await expect( page.locator( 'chefs-form-viewer' ) ).toHaveCount( 0 );
     } );
 
-    test( 'loads the versioned viewer script', async ( {
+    test( 'blocks a viewer script that does not match the pinned SRI hash', async ( {
         admin,
         editor,
         page,
     } ) => {
-        await page.route(
-            '**/embed/*/embed/chefs-form-viewer.min.js',
-            ( route ) =>
-                route.fulfill( { contentType: 'text/javascript', body: '' } )
-        );
-        const postId = await selectFormAndPublish(
-            admin,
-            editor,
+        await routeViewerScript(
             page,
-            '88888888-8888-4888-8888-888888888888'
+            'window.__chefsViewerLoaded = "tampered";'
         );
-        await page.context().clearCookies();
-        await page.goto( `/?p=${ postId }` );
+        await visitPublishedForm( { admin, editor, page }, SRI_FORM_ID );
 
-        const script = page.locator(
-            'script[src$="/embed/chefs-form-viewer.min.js"]'
+        await expect( await getFormError( page ) ).toBeVisible();
+        await expect(
+            page.locator( `script[src$="/${ VIEWER_PATH }"]` )
+        ).toHaveCount( 0 );
+        expect(
+            await page.evaluate( () => window.__chefsViewerLoaded )
+        ).toBeUndefined();
+    } );
+
+    test( 'retries the viewer script after an SRI failure with a fresh script tag', async ( {
+        admin,
+        editor,
+        page,
+    } ) => {
+        const requests = await routeViewerScript(
+            page,
+            'window.__chefsViewerLoaded = "tampered";'
         );
-        await expect( script ).toHaveAttribute( 'src', /\/embed\/1\.1\.0\// );
-        await expect( script ).toHaveAttribute( 'crossorigin', 'anonymous' );
+        await visitPublishedForm( { admin, editor, page }, SRI_FORM_ID );
+        await expect( await getFormError( page ) ).toBeVisible();
+        await expect.poll( requests ).toBe( 1 );
+
+        // Re-run the block's view script as a second mount would.
+        await page.evaluate( () => {
+            const script = document.createElement( 'script' );
+            script.src = document.querySelector(
+                'script[src*="chefs-form/view.js"]'
+            ).src;
+            document.body.appendChild( script );
+        } );
+
+        await expect.poll( requests ).toBe( 2 );
     } );
 
     test( 'does not create a viewer when no Form ID is set', async ( {

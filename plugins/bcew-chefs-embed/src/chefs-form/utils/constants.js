@@ -8,3 +8,11 @@ export const CHEFS_BASE_URL =
  * Immutable CHEFS viewer release that supports anonymous Public forms.
  */
 export const CHEFS_EMBED_VERSION = '1.1.0';
+
+/**
+ * Pinned SRI hash of `{CHEFS_BASE_URL}/embed/{CHEFS_EMBED_VERSION}/embed/chefs-form-viewer.min.js`.
+ * Recompute it whenever the base URL or version changes:
+ *   curl -sSL <url> | openssl dgst -sha384 -binary | openssl base64 -A
+ */
+export const CHEFS_EMBED_INTEGRITY =
+    'sha384-Zz9bmBPxz2kLWrUMwBzY3L8+jmwV+e3XNKyLEkVuG6+esMd270diV4/7zcTooEmk';
