@@ -35,7 +35,7 @@ if ( is_file( $autoloader_path ) ) {
  * @see https://make.wordpress.org/core/2025/03/13/more-efficient-block-type-registration-in-6-8/
  * @see https://make.wordpress.org/core/2024/10/17/new-block-type-registration-apis-to-improve-performance-in-wordpress-6-7/
  */
-function bcew_blocks_init() {
+function bcgov_wordpress_blocks_init() {
     if ( function_exists( 'wp_register_block_types_from_metadata_collection' ) ) {
         wp_register_block_types_from_metadata_collection( __DIR__ . '/dist', __DIR__ . '/dist/blocks-manifest.php' );
     } else {
@@ -51,7 +51,7 @@ function bcew_blocks_init() {
         }
     }
 }
-add_action( 'init', 'bcew_blocks_init' );
+add_action( 'init', 'bcgov_wordpress_blocks_init' );
 
 /**
  * Registers the `bcew-blocks/hideEmptyList` context on `core/list`.
@@ -66,7 +66,7 @@ add_action( 'init', 'bcew_blocks_init' );
  *
  * @return array The (possibly modified) registration arguments.
  */
-function bcew_blocks_list_uses_context( $args, $name ) {
+function bcgov_wordpress_blocks_list_uses_context( $args, $name ) {
     if ( 'core/list' === $name ) {
         $uses_context = isset( $args['uses_context'] ) ? (array) $args['uses_context'] : array();
         if ( ! in_array( 'bcew-blocks/hideEmptyList', $uses_context, true ) ) {
@@ -76,7 +76,7 @@ function bcew_blocks_list_uses_context( $args, $name ) {
     }
     return $args;
 }
-add_filter( 'register_block_type_args', 'bcew_blocks_list_uses_context', 10, 2 );
+add_filter( 'register_block_type_args', 'bcgov_wordpress_blocks_list_uses_context', 10, 2 );
 
 /**
  * Hides empty lists nested inside our wrapper blocks from the front end.
@@ -94,10 +94,10 @@ add_filter( 'register_block_type_args', 'bcew_blocks_list_uses_context', 10, 2 )
  *
  * @return string The original markup, or an empty string when the list is empty.
  */
-function bcew_blocks_hide_empty_list( $block_content, $instance = null ) {
+function bcgov_wordpress_blocks_hide_empty_list( $block_content, $instance = null ) {
     if ( ! $instance instanceof WP_Block || empty( $instance->context['bcew-blocks/hideEmptyList'] ) ) {
         return $block_content;
     }
     return '' === trim( wp_strip_all_tags( (string) $block_content ) ) ? '' : $block_content;
 }
-add_filter( 'render_block_core/list', 'bcew_blocks_hide_empty_list', 10, 2 );
+add_filter( 'render_block_core/list', 'bcgov_wordpress_blocks_hide_empty_list', 10, 2 );
