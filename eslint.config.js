@@ -25,6 +25,7 @@ module.exports = [
             '**/vendor/**',
             '**/dist/**',
             '**/coverage/**',
+            '**/tests/fixtures/**',
             'tools/monorepo/src/generators/**/files/**',
             'tools/monorepo/src/generators/block/templates/**',
         ],
