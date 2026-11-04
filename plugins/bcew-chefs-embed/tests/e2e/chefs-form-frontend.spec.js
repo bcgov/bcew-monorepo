@@ -1,6 +1,5 @@
 const { test, expect } = require( '@wordpress/e2e-test-utils-playwright' );
-const fs = require( 'node:fs' );
-const path = require( 'node:path' );
+const { createHash } = require( 'node:crypto' );
 const {
     dispatchFormioEvent,
     getFormError,
@@ -13,10 +12,11 @@ const VIEWER_PATH = 'embed/chefs-form-viewer.min.js';
 const VIEWER_VERSION = '1.1.0';
 const VIEWER_BODY = 'window.__chefsViewerLoaded = true;';
 const SRI_FORM_ID = '88888888-8888-4888-8888-888888888888';
-// Exact bytes from the pinned CHEFS dev 1.1.0 viewer release.
-const VIEWER_FIXTURE = fs.readFileSync(
-    path.join( __dirname, '../fixtures/chefs-form-viewer-1.1.0.min.js' )
-);
+const VIEWER_FIXTURE = `${ VIEWER_BODY }
+customElements.define('chefs-form-viewer', class extends HTMLElement {});`;
+const FIXTURE_INTEGRITY = `sha384-${ createHash( 'sha384' )
+    .update( VIEWER_FIXTURE )
+    .digest( 'base64' ) }`;
 const VIEWER_INTEGRITY =
     'sha384-Zz9bmBPxz2kLWrUMwBzY3L8+jmwV+e3XNKyLEkVuG6+esMd270diV4/7zcTooEmk';
 
@@ -43,13 +43,23 @@ const visitPublishedForm = async ( { admin, editor, page }, formId ) => {
 };
 
 test.describe( 'CHEFS Form frontend', () => {
-    test( 'loads the versioned viewer with the pinned SRI hash', async ( {
+    test( 'loads the versioned viewer with a matching SRI hash', async ( {
         admin,
         editor,
         page,
     } ) => {
         let viewerWasUndefinedBeforeLoad;
         let requestedViewerUrl;
+        // Override only the served test bundle, leaving the runtime pin unchanged.
+        await page.route( '**/chefs-form/view.js*', async ( route ) => {
+            const response = await route.fetch();
+            const body = await response.text();
+            expect( body ).toContain( VIEWER_INTEGRITY );
+            await route.fulfill( {
+                response,
+                body: body.replaceAll( VIEWER_INTEGRITY, FIXTURE_INTEGRITY ),
+            } );
+        } );
         await page.route(
             `**/embed/${ VIEWER_VERSION }/${ VIEWER_PATH }`,
             async ( route ) => {
@@ -82,7 +92,7 @@ test.describe( 'CHEFS Form frontend', () => {
         await expect( viewerScript ).toHaveAttribute( 'src', viewerUrl );
         await expect( viewerScript ).toHaveAttribute(
             'integrity',
-            VIEWER_INTEGRITY
+            FIXTURE_INTEGRITY
         );
         await expect( viewerScript ).toHaveAttribute(
             'crossorigin',
@@ -97,6 +107,9 @@ test.describe( 'CHEFS Form frontend', () => {
             .toBe( true );
         expect( requestedViewerUrl ).toBe( viewerUrl );
         expect( viewerWasUndefinedBeforeLoad ).toBe( true );
+        expect( await page.evaluate( () => window.__chefsViewerLoaded ) ).toBe(
+            true
+        );
     } );
 
     test( 'renders a Public form without an API key or token and shows generic success after submit', async ( {

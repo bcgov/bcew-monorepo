@@ -11,6 +11,8 @@ npx nx run bcew-chefs-embed:test-screenshot
 
 Use `test-screenshot-generate` when updating approved screenshot baselines. The browser tests use the test environment on port `9013`.
 
+The successful SRI browser test serves a tiny fake viewer and computes its SHA-384 hash. It substitutes that hash only in the intercepted frontend bundle, after asserting the bundle contains the runtime pin. This checks successful browser SRI loading, not whether the runtime pin matches the live CHEFS release; the failure and retry tests use the unchanged runtime pin.
+
 ## Manual smoke test
 
 1. Start the environment with `npx nx run bcew-chefs-embed:wp-env-start`.
