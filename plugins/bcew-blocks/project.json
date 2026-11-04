@@ -20,6 +20,11 @@
         "test-e2e-docker": {},
         "test-screenshot": {},
         "test-screenshot-generate": {},
+        "test-integration": {
+            "options": {
+                "command": "wp-env run tests-cli --env-cwd=wp-content/plugins/bcew-blocks composer test ./"
+            }
+        },
         "wp-env-start": {
             "dependsOn": ["composer-install", "bcew-search:composer-install"]
         },
