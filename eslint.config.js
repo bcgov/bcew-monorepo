@@ -25,7 +25,7 @@ module.exports = [
             '**/vendor/**',
             '**/dist/**',
             '**/coverage/**',
-            '**/tests/fixtures/**',
+            'plugins/bcew-chefs-embed/tests/fixtures/**',
             'tools/monorepo/src/generators/**/files/**',
             'tools/monorepo/src/generators/block/templates/**',
         ],
