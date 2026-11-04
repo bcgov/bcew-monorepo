@@ -5,7 +5,7 @@
  * @package bcew-chefs-embed
  */
 
-namespace Bcgov\BcewChefsEmbed\Test;
+namespace Bcew\ChefsEmbed\Test;
 
 /**
  * Tests for plugin functions.
