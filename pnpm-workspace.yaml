@@ -15,7 +15,7 @@ allowBuilds:
   'unrs-resolver': false
 catalog:
   '@axe-core/playwright': ^4.14.0
-  '@bcgov/bc-sans': ^2.1.0
+  '@bcgov/bc-sans': ^2.1.2
   '@bcgov/design-tokens': ^4.0.0
   '@fortawesome/fontawesome-free': 7.2.0
   '@nx/devkit': ^23.2.1
