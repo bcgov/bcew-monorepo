@@ -11,8 +11,9 @@ import{_t as e,it as t,n,ot as r,rt as i,xt as a}from"./chunks/framework.DmGhRbf
 
     Visitor->>WP: Request public page over HTTPS
     WP-->>Visitor: Saved viewer element with Form ID
-    Visitor->>Viewer: Load versioned viewer script
+    Visitor->>Viewer: Load versioned viewer script with pinned integrity hash
+    Note over Visitor,Viewer: Browser blocks the script if the hash does not match
     Viewer->>CHEFS: Load published Public form
     CHEFS-->>Viewer: Form
     Viewer-->>Visitor: Display form and submission result
-`}),o[1]||=t("",7)])}var l=n(s,[[`render`,c]]);export{o as __pageData,l as default};
+`}),o[1]||=t("",15)])}var l=n(s,[[`render`,c]]);export{o as __pageData,l as default};
