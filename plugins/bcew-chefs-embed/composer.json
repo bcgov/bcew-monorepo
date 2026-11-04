@@ -20,8 +20,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Bcgov\\BcewChefsEmbed\\": "src/",
-            "Bcgov\\BcewChefsEmbed\\Test\\": "tests/php/"
+            "Bcew\\ChefsEmbed\\": "src/",
+            "Bcew\\ChefsEmbed\\Test\\": "tests/php/"
         }
     },
     "scripts": {
