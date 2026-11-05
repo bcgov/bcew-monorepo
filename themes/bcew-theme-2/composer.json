@@ -9,8 +9,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Bcgov\\BcewTheme2\\": "src/",
-            "Bcgov\\BcewTheme2\\Test\\": "tests/"
+            "Bcew\\Theme2\\": "src/",
+            "Bcew\\Theme2\\Test\\": "tests/"
         }
     },
     "config": {
