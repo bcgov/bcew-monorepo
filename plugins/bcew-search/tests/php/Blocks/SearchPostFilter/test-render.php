@@ -1,8 +1,8 @@
 <?php
 
-namespace Bcgov\WordpressSearch\Test\SearchPostFilter;
+namespace Bcew\Search\Test\SearchPostFilter;
 
-use Bcgov\WordpressSearch\Test\BlockUnitTestCase;
+use Bcew\Search\Test\BlockUnitTestCase;
 
 /**
  * Tests the rendering of the SearchPostFilter block on the front end.

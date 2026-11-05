@@ -8,7 +8,7 @@
  * @package SearchPlugin
  */
 
-namespace Bcgov\WordpressSearch;
+namespace Bcew\Search;
 
 /**
  * MetadataTaxonomySearch class.

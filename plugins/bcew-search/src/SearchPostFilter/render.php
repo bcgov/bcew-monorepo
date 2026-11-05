@@ -6,7 +6,7 @@
  * @subpackage SearchPosTypetFilter
  */
 
-namespace Bcgov\WordpressSearch\SearchPosTypetFilter;
+namespace Bcew\Search\SearchPosTypetFilter;
 
 $selected_post_types = $attributes['selectedPostTypes'] ?? [];
 $underline_color     = $attributes['underlineColor'] ?? 'var(--wp--preset--color--bar-color)';

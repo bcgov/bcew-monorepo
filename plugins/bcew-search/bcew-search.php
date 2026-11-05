@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: BC Extended Web Search
+ * Plugin Name: BCEW Search
  * Plugin URI: https://github.com/bcgov/bcew-monorepo/tree/main/plugins/bcew-search
  * Author: govwordpress@gov.bc.ca
  * Author URI: https://citz-gdx.atlassian.net/browse/DSWP-114
@@ -143,16 +143,16 @@ if ( file_exists( $local_composer ) ) {
 }
 
 // Check if the required classes exist.
-if ( ! class_exists( 'Bcgov\\WordpressSearch\\TaxonomyFilter' ) ) {
-    wp_die( 'BC Extended Web Search error: The required class Bcgov\\WordpressSearch\\TaxonomyFilter could not be found. Please ensure the plugin is properly installed and all dependencies are loaded.' );
+if ( ! class_exists( 'Bcew\\Search\\TaxonomyFilter' ) ) {
+    wp_die( 'BCEW Search error: The required class Bcew\\Search\\TaxonomyFilter could not be found. Please ensure the plugin is properly installed and all dependencies are loaded.' );
 }
 
-if ( ! class_exists( 'Bcgov\\WordpressSearch\\MetadataTaxonomySearch' ) ) {
-    wp_die( 'BC Extended Web Search error: The required class Bcgov\\WordpressSearch\\MetadataTaxonomySearch could not be found. Please ensure the plugin is properly installed and all dependencies are loaded.' );
+if ( ! class_exists( 'Bcew\\Search\\MetadataTaxonomySearch' ) ) {
+    wp_die( 'BCEW Search error: The required class Bcew\\Search\\MetadataTaxonomySearch could not be found. Please ensure the plugin is properly installed and all dependencies are loaded.' );
 }
 
-if ( ! class_exists( 'Bcgov\\WordpressSearch\\SearchHighlight' ) ) {
-    wp_die( 'BC Extended Web Search error: The required class Bcgov\\WordpressSearch\\SearchHighlight could not be found. Please ensure the plugin is properly installed and all dependencies are loaded.' );
+if ( ! class_exists( 'Bcew\\Search\\SearchHighlight' ) ) {
+    wp_die( 'BCEW Search error: The required class Bcew\\Search\\SearchHighlight could not be found. Please ensure the plugin is properly installed and all dependencies are loaded.' );
 }
 	/**
 	 * Initialize the plugin
@@ -172,22 +172,22 @@ function wordpress_search_init() {
 	register_block_type( plugin_dir_path( __FILE__ ) . 'dist/SearchModal' );
 
 	// Initialize filter functionality.
-	$wordpress_search_taxonomy_filter = new \Bcgov\WordpressSearch\TaxonomyFilter();
+	$wordpress_search_taxonomy_filter = new \Bcew\Search\TaxonomyFilter();
 	$wordpress_search_taxonomy_filter->init();
 
 	// Initialize metadata and taxonomy search functionality.
-	$wordpress_search_metadata_taxonomy_search = new \Bcgov\WordpressSearch\MetadataTaxonomySearch();
+	$wordpress_search_metadata_taxonomy_search = new \Bcew\Search\MetadataTaxonomySearch();
 	$wordpress_search_metadata_taxonomy_search->init();
 	// Initialize enhanced search highlight functionality.
-	$wordpress_search_highlight = new \Bcgov\WordpressSearch\SearchHighlight();
+	$wordpress_search_highlight = new \Bcew\Search\SearchHighlight();
 	$wordpress_search_highlight->init();
 
 	// Initialize meta fields API.
-	$wordpress_search_meta_fields_api = new \Bcgov\WordpressSearch\MetaFieldsAPI();
+	$wordpress_search_meta_fields_api = new \Bcew\Search\MetaFieldsAPI();
 	$wordpress_search_meta_fields_api->init();
 
 	// Initialize search results sorting.
-	$wordpress_search_results_sort = new \Bcgov\WordpressSearch\SearchResultsSort();
+	$wordpress_search_results_sort = new \Bcew\Search\SearchResultsSort();
 	$wordpress_search_results_sort->init();
 }
 add_action( 'init', 'wordpress_search_init' );

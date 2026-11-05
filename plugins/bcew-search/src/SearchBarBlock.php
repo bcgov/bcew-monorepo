@@ -5,7 +5,7 @@
  * @package WordpressSearchWordPressPlugin
  */
 
-namespace Bcgov\WordpressSearch;
+namespace Bcew\Search;
 
 /**
  * Static helpers to keep `Blocks/.../Search/render.php` minimal.

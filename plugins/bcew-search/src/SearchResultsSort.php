@@ -7,7 +7,7 @@
  * @package SearchPlugin
  */
 
-namespace Bcgov\WordpressSearch;
+namespace Bcew\Search;
 
 /**
  * Class SearchResultsSort

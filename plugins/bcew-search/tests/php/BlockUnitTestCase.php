@@ -1,6 +1,6 @@
 <?php
 
-namespace Bcgov\WordpressSearch\Test;
+namespace Bcew\Search\Test;
 
 /**
  * Test case class mainly for testing a custom WP block's render function

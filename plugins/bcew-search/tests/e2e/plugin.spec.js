@@ -4,7 +4,7 @@ test.describe( 'Plugin', () => {
     test( 'Plugin is active', async ( { admin, page } ) => {
         await admin.visitAdminPage( 'plugins.php' );
         await expect(
-            page.getByLabel( 'Deactivate BC Extended Web Search' )
+            page.getByLabel( 'Deactivate BCEW Search' )
         ).toContainText( 'Deactivate' );
     } );
 } );

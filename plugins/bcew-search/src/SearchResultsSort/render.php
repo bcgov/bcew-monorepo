@@ -5,7 +5,7 @@
  * @package SearchPlugin
  */
 
-namespace Bcgov\WordpressSearch\SearchResultsSort;
+namespace Bcew\Search\SearchResultsSort;
 
 // Get selected meta field and sort order from block attributes.
 $selected_meta_field = $attributes['selectedMetaField'] ?? '';
@@ -34,7 +34,7 @@ if ( ! is_search() && empty( get_query_var( 's' ) ) ) {
 $meta_fields = [];
 
 // Use the MetaFieldsAPI class for efficiency (shared cache, single query).
-$meta_fields_api = new \Bcgov\WordpressSearch\MetaFieldsAPI();
+$meta_fields_api = new \Bcew\Search\MetaFieldsAPI();
 $meta_fields     = $meta_fields_api->get_meta_fields_data();
 
 // Note: Nonce verification not required for URL-based sorting of public search results.

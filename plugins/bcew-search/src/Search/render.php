@@ -9,9 +9,9 @@
  * @subpackage search-bar
  */
 
-namespace Bcgov\WordpressSearch\Searchbar;
+namespace Bcew\Search\Searchbar;
 
-use Bcgov\WordpressSearch\SearchBarBlock;
+use Bcew\Search\SearchBarBlock;
 
 $attrs               = SearchBarBlock::normalized_attributes( $attributes ?? array(), $block ?? null );
 $submit_button_class = SearchBarBlock::submit_button_class( $attrs );

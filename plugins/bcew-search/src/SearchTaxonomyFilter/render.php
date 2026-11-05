@@ -5,10 +5,10 @@
  * @package SearchPlugin
  */
 
-namespace Bcgov\WordpressSearch\SearchTaxonomyFilter;
+namespace Bcew\Search\SearchTaxonomyFilter;
 
 // Used to import TAXONOMY_PREFIX variable.
-use Bcgov\WordpressSearch\TaxonomyFilter;
+use Bcew\Search\TaxonomyFilter;
 
 // Get the selected taxonomies from block attributes.
 // Support both singular and plural attribute names for backward compatibility.
