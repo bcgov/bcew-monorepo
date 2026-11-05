@@ -6,11 +6,11 @@
  * On a single post: shows post title. Otherwise: shows the appropriate "page" title
  * (page title, blog index page title, search results, or archive title).
  *
- * @package DesignSystemWordPressPlugin
+ * @package Bcew\Plugin
  * @subpackage Breadcrumb
  */
 
-namespace DesignSystemWordPressPlugin\Breadcrumb;
+namespace Bcew\Plugin\Breadcrumb;
 
 // Do not display breadcrumb on the home/front page.
 if ( is_front_page() ) {

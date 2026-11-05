@@ -10,18 +10,18 @@
  * - Security and escaping
  * - Works on all post types
  *
- * @package DesignSystemWordPressPlugin
+ * @package Bcew\Plugin
  * @subpackage Tests
  */
 
-namespace DesignSystemWordPressPlugin\Tests\SkipNavigation;
+namespace Bcew\Plugin\Tests\SkipNavigation;
 
-use Bcgov\DesignSystemPlugin\SkipNavigation;
+use Bcew\Plugin\SkipNavigation;
 
 /**
  * SkipNavigation Test Class
  *
- * @package DesignSystemWordPressPlugin\Tests\SkipNavigation
+ * @package Bcew\Plugin\Tests\SkipNavigation
  */
 class SkipNavigationTest extends \WP_UnitTestCase {
 

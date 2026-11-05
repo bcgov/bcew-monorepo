@@ -2,17 +2,17 @@
 /**
  * Content Security Policy page rendering tests.
  *
- * @package DesignSystemWordPressPlugin\Tests\ContentSecurityPolicy
+ * @package Bcew\Plugin\Tests\ContentSecurityPolicy
  */
 
-namespace DesignSystemWordPressPlugin\Tests\ContentSecurityPolicy;
+namespace Bcew\Plugin\Tests\ContentSecurityPolicy;
 
-use Bcgov\DesignSystemPlugin\ContentSecurityPolicy;
+use Bcew\Plugin\ContentSecurityPolicy;
 
 /**
  * Tests for rendering the CSP settings page.
  *
- * @covers \Bcgov\DesignSystemPlugin\ContentSecurityPolicy::render_content_security_policy_page
+ * @covers \Bcew\Plugin\ContentSecurityPolicy::render_content_security_policy_page
  */
 class ContentSecurityPolicyRenderPageTest extends \WP_UnitTestCase {
 

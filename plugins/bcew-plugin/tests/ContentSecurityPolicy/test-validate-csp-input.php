@@ -9,18 +9,18 @@
  * - Error messages are displayed appropriately
  * - Valid input is preserved correctly
  *
- * @package DesignSystemWordPressPlugin
+ * @package Bcew\Plugin
  * @subpackage Tests
  */
 
-namespace DesignSystemWordPressPlugin\Tests\ContentSecurityPolicy;
+namespace Bcew\Plugin\Tests\ContentSecurityPolicy;
 
-use Bcgov\DesignSystemPlugin\ContentSecurityPolicy;
+use Bcew\Plugin\ContentSecurityPolicy;
 
 /**
  * ContentSecurityPolicy Test Class
  *
- * @package DesignSystemWordPressPlugin\Tests\ContentSecurityPolicy
+ * @package Bcew\Plugin\Tests\ContentSecurityPolicy
  */
 class ContentSecurityPolicyTest extends \WP_UnitTestCase {
 
