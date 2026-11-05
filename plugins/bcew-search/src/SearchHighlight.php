@@ -11,7 +11,7 @@
  * @author BC Gov
  */
 
-namespace Bcgov\WordpressSearch;
+namespace Bcew\Search;
 
 /**
  * SearchHighlight class

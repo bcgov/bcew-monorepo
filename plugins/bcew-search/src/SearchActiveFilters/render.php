@@ -5,7 +5,7 @@
  * @package SearchPlugin
  */
 
-namespace Bcgov\WordpressSearch\SearchActiveFilters;
+namespace Bcew\Search\SearchActiveFilters;
 
 // Get current URL using WordPress functions.
 $current_url = add_query_arg( null, null );

@@ -4,12 +4,12 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ac7b33d295a5d6e4167720fa5c8527c4",
+    "content-hash": "43b82c5fd43ead463e9271fb5c1630e9",
     "packages": [],
     "packages-dev": [
         {
             "name": "bcew-monorepo/phpunit-config",
-            "version": "dev-feature/dswp-1049-align-wordpress-search-structure",
+            "version": "dev-chore/dswp-1323-search-use-bcew-classname",
             "dist": {
                 "type": "path",
                 "url": "../../packages/phpunit-config",

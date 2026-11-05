@@ -5,7 +5,7 @@
  * @package SearchPlugin
  */
 
-namespace Bcgov\WordpressSearch\SearchResultCount;
+namespace Bcew\Search\SearchResultCount;
 
 global $wp_query;
 

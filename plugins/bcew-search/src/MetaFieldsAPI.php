@@ -5,7 +5,7 @@
  * @package SearchPlugin
  */
 
-namespace Bcgov\WordpressSearch;
+namespace Bcew\Search;
 
 use WP_REST_Request;
 use WP_REST_Response;

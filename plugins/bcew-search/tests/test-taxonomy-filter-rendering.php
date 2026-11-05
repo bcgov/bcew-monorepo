@@ -8,7 +8,7 @@
  * @package WordPress_Search
  */
 
-use Bcgov\WordpressSearch\TaxonomyFilter;
+use Bcew\Search\TaxonomyFilter;
 
 /**
  * Class TaxonomyBlockRenderingTest

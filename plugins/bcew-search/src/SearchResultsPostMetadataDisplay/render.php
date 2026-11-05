@@ -1,6 +1,6 @@
 <?php
 
-namespace Bcgov\WordpressSearch\SearchResultsPostMetadataDisplay;
+namespace Bcew\Search\SearchResultsPostMetadataDisplay;
 
 // Get the current post using the most reliable method based on context
 // For search results in a loop context, we prioritize the loop post

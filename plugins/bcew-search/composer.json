@@ -19,8 +19,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Bcgov\\WordpressSearch\\": "src/",
-            "Bcgov\\WordpressSearch\\Test\\": "tests/php/"
+            "Bcew\\Search\\": "src/",
+            "Bcew\\Search\\Test\\": "tests/php/"
         }
     },
     "scripts": {
