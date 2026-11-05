@@ -5,7 +5,7 @@
  * @package Bcew_Theme
  */
 
-use Bcgov\Theme\DesignSystem\LegacyPatterns;
+use Bcew\Theme\LegacyPatterns;
 
 /**
  * Plugin path (relative to wp-content/plugins) required by this theme.
@@ -30,7 +30,7 @@ if ( file_exists( $autoloader_path ) ) {
 /**
  * Legacy patterns.
  */
-if ( class_exists( 'Bcgov\\Theme\\DesignSystem\\LegacyPatterns' ) ) {
+if ( class_exists( 'Bcew\\Theme\\LegacyPatterns' ) ) {
     $legacy_patterns = new LegacyPatterns();
     $legacy_patterns->init();
 }
