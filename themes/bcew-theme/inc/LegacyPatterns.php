@@ -5,7 +5,7 @@
  * @package Design_System_WordPress_Theme
  */
 
-namespace Bcgov\Theme\DesignSystem;
+namespace Bcew\Theme;
 
 /**
  * Conditionally registers archived block patterns.
