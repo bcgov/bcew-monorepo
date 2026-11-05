@@ -18,8 +18,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Bcgov\\BcgovWordpressBlocks\\": "src/",
-            "Bcgov\\BcgovWordpressBlocks\\Test\\": "tests/php/"
+            "Bcew\\Blocks\\": "src/",
+            "Bcew\\Blocks\\Test\\": "tests/php/"
         }
     },
     "scripts": {
