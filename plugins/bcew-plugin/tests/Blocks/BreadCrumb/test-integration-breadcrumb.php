@@ -7,16 +7,16 @@
  * - URLs and content are properly escaped
  * - Block configurations work as expected
  *
- * @package DesignSystemWordPressPlugin
+ * @package Bcew\Plugin
  * @subpackage Tests
  */
 
-namespace DesignSystemWordPressPlugin\Tests\Blocks\BreadCrumb;
+namespace Bcew\Plugin\Tests\Blocks\BreadCrumb;
 
 /**
  * Breadcrumb Block Test Class
  *
- * @package DesignSystemWordPressPlugin\Tests\Blocks\BreadCrumb
+ * @package Bcew\Plugin\Tests\Blocks\BreadCrumb
  */
 class BreadCrumbTest extends \WP_UnitTestCase {
 

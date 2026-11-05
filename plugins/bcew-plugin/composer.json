@@ -19,8 +19,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Bcgov\\DesignSystemPlugin\\": "src/",
-            "Bcgov\\DesignSystemPlugin\\Test\\": "tests/php/"
+            "Bcew\\Plugin\\": "src/",
+            "Bcew\\Plugin\\Test\\": "tests/php/"
         }
     },
     "scripts": {
