@@ -5,7 +5,7 @@
 ## Prerequisites and access
 
 - Document Repository plugin installed and enabled.
-- BC Extended Web Search plugin installed and enabled to search document metadata.
+- BCEW Search plugin installed and enabled to search document metadata.
 - Admins and users with the configured Document Repository capability can upload, edit, and delete documents. The default capability is `upload_files`.
 
 ## Where to find it
@@ -80,6 +80,6 @@ Documents can be **Published**, **Draft**, or **Pending Review**. To restore a t
 
 - Use descriptive titles and excerpts; define metadata fields before large uploads.
 - Confirm files are valid PDFs and within hosting size limits if upload fails.
-- If search misses documents, ensure the BC Extended Web Search plugin is active and has indexed metadata.
+- If search misses documents, ensure the BCEW Search plugin is active and has indexed metadata.
 - If fields do not appear, create them in **Metadata Settings** and refresh.
 - Verify user permissions if editing or deleting is unavailable.
