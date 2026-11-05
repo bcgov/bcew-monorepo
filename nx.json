@@ -182,15 +182,70 @@
             "tag": true
         },
         "version": {
-            "currentVersionResolver": "git-tag",
+            "conventionalCommits": true,
             "fallbackCurrentVersionResolver": "disk",
             "versionActions": "tools/monorepo/src/release/wordpress-version-actions.ts"
+        },
+        "conventionalCommits": {
+            "types": {
+                "feat": {
+                    "changelog": {
+                        "title": "Features"
+                    }
+                },
+                "fix": {
+                    "changelog": {
+                        "title": "Fixes"
+                    }
+                },
+                "perf": {
+                    "changelog": {
+                        "title": "Performance Improvements"
+                    }
+                },
+                "revert": {
+                    "changelog": {
+                        "title": "Reverts"
+                    }
+                },
+                "docs": {
+                    "changelog": {
+                        "title": "Documentation"
+                    }
+                },
+                "style": {
+                    "changelog": {
+                        "title": "Style"
+                    }
+                },
+                "refactor": {
+                    "changelog": {
+                        "title": "Refactor"
+                    }
+                },
+                "test": {
+                    "changelog": {
+                        "title": "Test"
+                    }
+                },
+                "build": {
+                    "changelog": {
+                        "title": "Build"
+                    }
+                },
+                "ci": {
+                    "changelog": {
+                        "title": "CI"
+                    }
+                }
+            }
         },
         "changelog": {
             "workspaceChangelog": false,
             "projectChangelogs": {
                 "createRelease": "github"
-            }
+            },
+            "file": false
         }
     },
     "parallel": 3,

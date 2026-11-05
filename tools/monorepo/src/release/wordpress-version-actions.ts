@@ -15,7 +15,7 @@
  * plugins and themes; each project versions independently.
  */
 
-import { readJson, updateJson, type Tree } from '@nx/devkit';
+import { readJson, type Tree } from '@nx/devkit';
 import { join } from 'node:path';
 // nx is installed at the workspace root. This file is the Nx release version action.
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -60,66 +60,12 @@ export default class WordPressVersionActions extends VersionActions {
     }
 
     /**
-     * Registry lookup is unused; releases resolve the current version from git tags.
+     * This override is required, so the package.json version is not updated by Nx Release.
      *
-     * @return {Promise<null>} Always null.
-     */
-    async readCurrentVersionFromRegistry(): Promise< {
-        currentVersion: string | null;
-        logText: string;
-    } | null > {
-        /*
-         * We do not publish to npm, so there is no registry version to read.
-         * Returning null tells Nx to use git tags or package.json instead.
-         */
-        return null;
-    }
-
-    /**
-     * WordPress packages are not versioned against each other in package.json.
-     *
-     * @return {Promise<{currentVersion: null, dependencyCollection: null}>} Empty dependency version.
-     */
-    async readCurrentVersionOfDependency(): Promise< {
-        currentVersion: string | null;
-        dependencyCollection: string | null;
-    } > {
-        /*
-         * Independent plugins and themes do not bump each other. An empty
-         * result stops Nx from rewriting workspace dependency ranges.
-         */
-        return { currentVersion: null, dependencyCollection: null };
-    }
-
-    /**
-     * Write the new version to package.json.
-     *
-     * @param {Tree}   tree       Virtual filesystem.
-     * @param {string} newVersion Semver for this release.
      * @return {Promise<string[]>} Log lines for the CLI.
      */
-    async updateProjectVersion(
-        tree: Tree,
-        newVersion: string
-    ): Promise< string[] > {
+    async updateProjectVersion(): Promise< string[] > {
         const logMessages: string[] = [];
-
-        /*
-         * package.json "version" is what the zip script and GitHub Release
-         * tag use. Nx already decided newVersion (from our Action's
-         * specifier). We only write it. Plugin PHP and theme style.css
-         * stay untouched.
-         */
-        for ( const manifestToUpdate of this.manifestsToUpdate ) {
-            updateJson( tree, manifestToUpdate.manifestPath, ( json ) => {
-                json.version = newVersion;
-                return json;
-            } );
-            logMessages.push(
-                `New version ${ newVersion } written to ${ manifestToUpdate.manifestPath }`
-            );
-        }
-
         return logMessages;
     }
 
