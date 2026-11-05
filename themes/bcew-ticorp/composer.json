@@ -5,8 +5,8 @@
     "license": "Apache-2.0",
     "autoload": {
         "psr-4": {
-            "Bcgov\\BcewTicorp\\": "src/",
-            "Bcgov\\BcewTicorp\\Test\\": "tests/"
+            "Bcew\\Ticorp\\": "src/",
+            "Bcew\\Ticorp\\Test\\": "tests/"
         }
     },
     "config": {
