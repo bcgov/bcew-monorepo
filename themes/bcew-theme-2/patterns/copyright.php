@@ -8,7 +8,7 @@
  * Template-part HTML files cannot run PHP, so a pattern supplies the dynamic
  * year (wp_date() respects the site timezone).
  *
- * @package BcewTheme2
+ * @package Bcew\Theme2
  */
 
 ?>

@@ -8,7 +8,7 @@
  * lets us resolve the asset URL with get_template_directory_uri() so it works
  * in any environment (template-part HTML files cannot run PHP).
  *
- * @package BcewTheme2
+ * @package Bcew\Theme2
  */
 
 $bcew_logo_url = get_template_directory_uri() . '/assets/images/bcid_h_rgb_pos.png';

@@ -2,7 +2,7 @@
 /**
  * Theme functions and definitions
  *
- * @package BcewTheme2
+ * @package Bcew\Theme2
  */
 
 /**
