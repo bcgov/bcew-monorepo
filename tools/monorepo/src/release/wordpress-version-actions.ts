@@ -58,14 +58,62 @@ export default class WordPressVersionActions extends VersionActions {
             currentVersion: packageJson.version,
         };
     }
+    /**
+     * Registry lookup is unused; releases resolve the current version from git tags.
+     *
+     * @return {Promise<null>} Always null.
+     */
+    async readCurrentVersionFromRegistry(): Promise< {
+        currentVersion: string | null;
+        logText: string;
+    } | null > {
+        /*
+         * We do not publish to npm, so there is no registry version to read.
+         * Returning null tells Nx to use git tags or package.json instead.
+         */
+        return null;
+    }
 
     /**
-     * This override is required, so the package.json version is not updated by Nx Release.
+     * WordPress packages are not versioned against each other in package.json.
      *
+     * @return {Promise<{currentVersion: null, dependencyCollection: null}>} Empty dependency version.
+     */
+    async readCurrentVersionOfDependency(): Promise< {
+        currentVersion: string | null;
+        dependencyCollection: string | null;
+    } > {
+        /*
+         * Independent plugins and themes do not bump each other. An empty
+         * result stops Nx from rewriting workspace dependency ranges.
+         */
+        return { currentVersion: null, dependencyCollection: null };
+    }
+    /**
+     * Write the new version to package.json.
+     *
+     * @param {Tree}   tree       Virtual filesystem.
+     * @param {string} newVersion Semver for this release.
      * @return {Promise<string[]>} Log lines for the CLI.
      */
-    async updateProjectVersion(): Promise< string[] > {
+    async updateProjectVersion(
+        tree: Tree,
+        newVersion: string
+    ): Promise< string[] > {
         const logMessages: string[] = [];
+
+        /*
+         * package.json "version" is what the zip script and GitHub Release
+         * tag use. Nx already decided newVersion (from our Action's
+         * specifier). We only write it. Plugin PHP and theme style.css
+         * stay untouched.
+         */
+        for ( const manifestToUpdate of this.manifestsToUpdate ) {
+            logMessages.push(
+                `New version ${ newVersion } is not written to ${ manifestToUpdate.manifestPath }`
+            );
+        }
+
         return logMessages;
     }
 
