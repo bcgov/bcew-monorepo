@@ -2,19 +2,19 @@
 /**
  * NotificationBanner Integration Tests - Updated with fixes
  *
- * @package DesignSystemWordPressPlugin
+ * @package Bcew\Plugin
  * @subpackage Tests
  */
 
-namespace DesignSystemWordPressPlugin\Tests\NotificationBanner;
+namespace Bcew\Plugin\Tests\NotificationBanner;
 
-use Bcgov\DesignSystemPlugin\NotificationBanner;
-use Bcgov\DesignSystemPlugin\DesignSystemSettings;
+use Bcew\Plugin\NotificationBanner;
+use Bcew\Plugin\DesignSystemSettings;
 
 /**
  * NotificationBanner Test Class
  *
- * @package DesignSystemWordPressPlugin\Tests\NotificationBanner
+ * @package Bcew\Plugin\Tests\NotificationBanner
  */
 class NotificationBannerTest extends \WP_UnitTestCase {
 

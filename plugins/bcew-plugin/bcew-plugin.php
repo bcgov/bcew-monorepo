@@ -14,19 +14,19 @@
  * Text Domain: bcew-plugin
  * Tags:
  *
- * @package DesignSystemPlugin
+ * @package Bcew\Plugin
  */
-use Bcgov\DesignSystemPlugin\{
+use Bcew\Plugin\{
     ContentSecurityPolicy,
     DesignSystemSettings,
     NotificationBanner,
     SkipNavigation,
 };
-use Bcgov\DesignSystemPlugin\Enqueue\{
+use Bcew\Plugin\Enqueue\{
     Script,
     Style
 };
-use Bcgov\DesignSystemPlugin\InPageNav\InPageNav;
+use Bcew\Plugin\InPageNav\InPageNav;
 
 /**
  * Load Composer autoloader and verify required class exists.
@@ -36,7 +36,7 @@ $autoloader_path = __DIR__ . '/vendor/autoload.php';
 if ( file_exists( $autoloader_path ) ) {
     require_once $autoloader_path;
 }
-if ( ! class_exists( 'Bcgov\\DesignSystemPlugin\\DesignSystemSettings' ) ) {
+if ( ! class_exists( 'Bcew\\Plugin\\DesignSystemSettings' ) ) {
     return;
 }
 
