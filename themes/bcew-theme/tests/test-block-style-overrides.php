@@ -1,10 +1,12 @@
 <?php
+namespace Bcew\Theme\Tests;
+
 /**
  * Class BlockStyleRegistrationTest
  *
  * @package Design_System_Wordpress_Theme
  */
-class BlockStyleRegistrationTest extends WP_UnitTestCase {
+class BlockStyleRegistrationTest extends \WP_UnitTestCase {
 	/**
      * Tests if the navigation block style is registered.
      *
@@ -15,7 +17,7 @@ class BlockStyleRegistrationTest extends WP_UnitTestCase {
         $block_name       = 'core/navigation';
         $block_style_name = 'navigation-separator';
 
-        $registry         = WP_Block_Styles_Registry::get_instance();
+        $registry         = \WP_Block_Styles_Registry::get_instance();
         $registered_style = $registry->is_registered( $block_name, $block_style_name );
 
         $this->assertTrue( $registered_style );
