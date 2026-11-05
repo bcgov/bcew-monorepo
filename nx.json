@@ -244,8 +244,7 @@
             "workspaceChangelog": false,
             "projectChangelogs": {
                 "createRelease": "github"
-            },
-            "file": false
+            }
         }
     },
     "parallel": 3,
