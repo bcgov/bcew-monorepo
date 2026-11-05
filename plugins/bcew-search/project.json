@@ -6,8 +6,8 @@
     "projectType": "application",
     "generators": {
         "bcew-monorepo:plugin": {
-            "name": "BC Extended Web Search",
-            "description": "BC Extended Web Search"
+            "name": "BCEW Search",
+            "description": "BCEW Search"
         }
     },
     "targets": {

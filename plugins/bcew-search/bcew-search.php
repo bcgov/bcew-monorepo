@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: BC Extended Web Search
+ * Plugin Name: BCEW Search
  * Plugin URI: https://github.com/bcgov/bcew-monorepo/tree/main/plugins/bcew-search
  * Author: govwordpress@gov.bc.ca
  * Author URI: https://citz-gdx.atlassian.net/browse/DSWP-114
@@ -144,15 +144,15 @@ if ( file_exists( $local_composer ) ) {
 
 // Check if the required classes exist.
 if ( ! class_exists( 'Bcew\\Search\\TaxonomyFilter' ) ) {
-    wp_die( 'BC Extended Web Search error: The required class Bcew\\Search\\TaxonomyFilter could not be found. Please ensure the plugin is properly installed and all dependencies are loaded.' );
+    wp_die( 'BCEW Search error: The required class Bcew\\Search\\TaxonomyFilter could not be found. Please ensure the plugin is properly installed and all dependencies are loaded.' );
 }
 
 if ( ! class_exists( 'Bcew\\Search\\MetadataTaxonomySearch' ) ) {
-    wp_die( 'BC Extended Web Search error: The required class Bcew\\Search\\MetadataTaxonomySearch could not be found. Please ensure the plugin is properly installed and all dependencies are loaded.' );
+    wp_die( 'BCEW Search error: The required class Bcew\\Search\\MetadataTaxonomySearch could not be found. Please ensure the plugin is properly installed and all dependencies are loaded.' );
 }
 
 if ( ! class_exists( 'Bcew\\Search\\SearchHighlight' ) ) {
-    wp_die( 'BC Extended Web Search error: The required class Bcew\\Search\\SearchHighlight could not be found. Please ensure the plugin is properly installed and all dependencies are loaded.' );
+    wp_die( 'BCEW Search error: The required class Bcew\\Search\\SearchHighlight could not be found. Please ensure the plugin is properly installed and all dependencies are loaded.' );
 }
 	/**
 	 * Initialize the plugin
