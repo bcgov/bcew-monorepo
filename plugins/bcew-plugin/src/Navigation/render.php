@@ -4,7 +4,7 @@
  *
  * Dynamically renders navigation menu from wp_navigation post type
  *
- * @package DesignSystemWordPressPlugin
+ * @package Bcew\Plugin
  * @subpackage Navigation
  *
  * @var array    $attributes Block attributes.

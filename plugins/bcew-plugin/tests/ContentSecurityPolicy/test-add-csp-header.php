@@ -2,12 +2,12 @@
 /**
  * Tests for CSP header generation.
  *
- * @package DesignSystemWordPressPlugin\Tests\ContentSecurityPolicy
+ * @package Bcew\Plugin\Tests\ContentSecurityPolicy
  */
 
-namespace DesignSystemWordPressPlugin\Tests\ContentSecurityPolicy;
+namespace Bcew\Plugin\Tests\ContentSecurityPolicy;
 
-use Bcgov\DesignSystemPlugin\ContentSecurityPolicy;
+use Bcew\Plugin\ContentSecurityPolicy;
 
 /**
  * Tests for add_csp_header method.

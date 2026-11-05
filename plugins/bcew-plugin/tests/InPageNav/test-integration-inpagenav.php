@@ -9,16 +9,16 @@
  * - Editor integration
  * - Security and escaping
  *
- * @package DesignSystemWordPressPlugin
+ * @package Bcew\Plugin
  * @subpackage Tests
  */
 
-namespace DesignSystemWordPressPlugin\Tests\InPageNav;
+namespace Bcew\Plugin\Tests\InPageNav;
 
 /**
  * InPageNav Test Class
  *
- * @package DesignSystemWordPressPlugin\Tests\InPageNav
+ * @package Bcew\Plugin\Tests\InPageNav
  */
 class InPageNavTest extends \WP_UnitTestCase {
 
