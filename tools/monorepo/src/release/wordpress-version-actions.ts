@@ -15,7 +15,7 @@
  * plugins and themes; each project versions independently.
  */
 
-import { readJson, type Tree } from '@nx/devkit';
+import { readJson, updateJson, type Tree } from '@nx/devkit';
 import { join } from 'node:path';
 // nx is installed at the workspace root. This file is the Nx release version action.
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -109,6 +109,10 @@ export default class WordPressVersionActions extends VersionActions {
          * stay untouched.
          */
         for ( const manifestToUpdate of this.manifestsToUpdate ) {
+            updateJson( tree, manifestToUpdate.manifestPath, ( json ) => {
+                json.version = newVersion;
+                return json;
+            } );
             logMessages.push(
                 `New version ${ newVersion } is not written to ${ manifestToUpdate.manifestPath }`
             );
