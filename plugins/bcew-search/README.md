@@ -1,10 +1,10 @@
-# BC Extended Web Search
+# BCEW Search
 
 A powerful and customizable search plugin that enhances WordPress search with advanced features and an improved user experience.
 
 ## Description
 
-BC Extended Web Search provides customizable search blocks, improved search results, and better performance than the default WordPress search.
+BCEW Search provides customizable search blocks, improved search results, and better performance than the default WordPress search.
 
 
 ## Requirements

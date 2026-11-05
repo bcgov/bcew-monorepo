@@ -1,4 +1,4 @@
-# BC Extended Web Search
+# BCEW Search
 
 Documentation for content authors and developers maintaining the `bcew-search` plugin.
 
