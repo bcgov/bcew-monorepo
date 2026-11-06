@@ -18,7 +18,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Bcgov\\Theme\\FIRB\\": [
+      "Bcew\\Firb\\": [
         "src",
         "inc"
       ]
