@@ -9,11 +9,12 @@ import { expect, Page } from '@playwright/test';
 import { test as baseTest } from '@wordpress/e2e-test-utils-playwright';
 import config from './playwright.config';
 
+export const createAxe = ( page: Page ) =>
+    new AxeBuilder( { page } ).withTags( [ 'wcag2a', 'wcag2aa' ] );
+
 const test = baseTest.extend< { axe: AxeBuilder } >( {
     axe: async ( { page }, use ) => {
-        await use(
-            new AxeBuilder( { page } ).withTags( [ 'wcag2a', 'wcag2aa' ] )
-        );
+        await use( createAxe( page ) );
     },
 } );
 
