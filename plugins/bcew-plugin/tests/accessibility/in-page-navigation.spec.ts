@@ -32,7 +32,10 @@ test( 'In-Page Navigation has no Axe violations', async ( {
     } );
     if ( ! ( await enableCheckbox.isVisible() ) ) {
         await editor.page
-            .getByRole( 'button', { name: 'In-page Navigation' } )
+            .getByRole( 'button', {
+                name: 'In-page Navigation',
+                exact: true,
+            } )
             .click();
         enableCheckbox = editor.page.getByRole( 'checkbox', {
             name: 'Enable in-page navigation',
