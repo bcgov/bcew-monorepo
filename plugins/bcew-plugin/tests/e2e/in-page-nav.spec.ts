@@ -257,7 +257,9 @@ test.describe( 'InPageNav', () => {
             <!-- /wp:heading -->`;
         const filler = Array.from( { length: 12 }, ( _, i ) =>
             paragraph(
-                `Filler paragraph ${ i + 1 }. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.`
+                `Filler paragraph ${
+                    i + 1
+                }. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.`
             )
         ).join( '' );
 
@@ -354,7 +356,9 @@ test.describe( 'InPageNav', () => {
 
             // Scrolling reveals the toggle and collapses the nav.
             await preview.mouse.wheel( 0, 600 );
-            await expect.poll( () => preview.evaluate( () => window.scrollY ) ).toBeGreaterThan( 50 );
+            await expect
+                .poll( () => preview.evaluate( () => window.scrollY ) )
+                .toBeGreaterThan( 50 );
             await expect( toggle ).toBeVisible();
             await expect( toggle ).toHaveAttribute( 'aria-expanded', 'false' );
             await expect( nav ).not.toHaveClass( /is-expanded/ );
