@@ -102,7 +102,7 @@
         "test-accessibility": {
             "executor": "nx:run-commands",
             "options": {
-                "command": "wp-scripts test-playwright --project=accessibility",
+                "command": "wp-scripts test-playwright --project=accessibility {args.playwrightArgs}",
                 "cwd": "{projectRoot}"
             },
             "dependsOn": ["composer-install", "build", "wp-env-start"]
