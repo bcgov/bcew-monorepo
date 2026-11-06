@@ -5,8 +5,8 @@
     "license": "Apache-2.0",
     "autoload": {
         "psr-4": {
-            "Bcgov\\BcewBellevilleTerminal\\": "src/",
-            "Bcgov\\BcewBellevilleTerminal\\Test\\": "tests/"
+            "Bcew\\BellevilleTerminal\\": "src/",
+            "Bcew\\BellevilleTerminal\\Test\\": "tests/"
         }
     },
     "config": {
