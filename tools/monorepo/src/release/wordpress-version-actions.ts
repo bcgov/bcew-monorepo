@@ -1,132 +1,253 @@
 /**
  * Custom Nx Release version actions for WordPress plugins and themes.
  *
- * Nx Release uses a "version actions" class to read and write version
- * numbers. The default class is built for npm packages. This one is wired
- * from nx.json (release.version.versionActions) and does two things:
+ * Git tags are the authoritative source for released versions.
  *
- * 1. Read the fallback version from package.json when git tags cannot.
- * 2. Write the new version to package.json (zip name, GitHub Release tag).
+ * During versioning, Nx provides the calculated new version to
+ * updateProjectVersion(). This action writes that version only to the
+ * archived WordPress plugin or theme Version header.
  *
- * It does not edit plugin or theme source. The WordPress Version header
- * stays as it is in git. The release zip stamps that header in a temp copy.
- * It does not write composer.json. Composer versions come from git tags
- * and packages.json. It also does not rewrite dependency ranges between
- * plugins and themes; each project versions independently.
+ * Source files, package.json, composer.json, and dependency ranges are
+ * not modified.
  */
 
-import { readJson, updateJson, type Tree } from '@nx/devkit';
-import { join } from 'node:path';
-// nx is installed at the workspace root. This file is the Nx release version action.
+import {
+    joinPathFragments,
+    type Tree,
+} from '@nx/devkit';
+
+// Nx is installed at the workspace root.
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { VersionActions } from 'nx/release';
 
+const WORDPRESS_HEADER_SIZE = 8 * 1024;
+
+const VERSION_HEADER_PATTERN =
+    /^([ \t]*(?:<\?(?:php)?)?[ \t/*#@]*Version:[ \t]*)([^\r\n]*)/im;
+
+const PLUGIN_NAME_HEADER_PATTERN =
+    /^[ \t]*(?:<\?(?:php)?)?[ \t/*#@]*Plugin Name:[ \t]*[^\r\n]+/im;
+
+const THEME_NAME_HEADER_PATTERN =
+    /^[ \t/*#@]*Theme Name:[ \t]*[^\r\n]+/im;
+
+/**
+ * Read a text file from the Nx virtual filesystem.
+ *
+ * @param tree Nx virtual filesystem.
+ * @param filePath Workspace-relative file path.
+ * @return File contents.
+ */
+const readTextFile = (
+    tree: Tree,
+    filePath: string
+): string => {
+    const contents = tree.read( filePath, 'utf-8' );
+
+    if ( contents === null ) {
+        throw new Error(
+            `Release file does not exist: ${ filePath }`
+        );
+    }
+
+    return contents;
+};
+
+/**
+ * Check whether a file contains a WordPress header within its first 8 KB.
+ *
+ * @param tree Nx virtual filesystem.
+ * @param filePath Workspace-relative file path.
+ * @param pattern Header pattern.
+ * @return Whether the header exists.
+ */
+const containsWordPressHeader = (
+    tree: Tree,
+    filePath: string,
+    pattern: RegExp
+): boolean => {
+    if ( ! tree.exists( filePath ) ) {
+        return false;
+    }
+
+    const contents = readTextFile( tree, filePath );
+    const header = contents.slice( 0, WORDPRESS_HEADER_SIZE );
+
+    return pattern.test( header );
+};
+
+/**
+ * Find the WordPress plugin entry point or theme stylesheet.
+ *
+ * Theme metadata is stored in style.css. Plugin metadata is located by
+ * finding a top-level PHP file containing the Plugin Name header.
+ *
+ * @param tree Nx virtual filesystem.
+ * @param projectRoot Archived project root.
+ * @return WordPress metadata file path.
+ */
+const findWordPressVersionFile = (
+    tree: Tree,
+    projectRoot: string
+): string => {
+    const themeStylesheet = joinPathFragments(
+        projectRoot,
+        'style.css'
+    );
+
+    if (
+        containsWordPressHeader(
+            tree,
+            themeStylesheet,
+            THEME_NAME_HEADER_PATTERN
+        )
+    ) {
+        return themeStylesheet;
+    }
+
+    const pluginFiles = tree
+        .children( projectRoot )
+        .filter( ( fileName ) => fileName.endsWith( '.php' ) )
+        .sort();
+
+    for ( const fileName of pluginFiles ) {
+        const pluginFile = joinPathFragments(
+            projectRoot,
+            fileName
+        );
+
+        if (
+            containsWordPressHeader(
+                tree,
+                pluginFile,
+                PLUGIN_NAME_HEADER_PATTERN
+            )
+        ) {
+            return pluginFile;
+        }
+    }
+
+    throw new Error(
+        `WordPress plugin or theme entry point not found in ${ projectRoot }`
+    );
+};
+
+/**
+ * Update a WordPress Version header.
+ *
+ * Only the first 8 KB are searched, matching WordPress's metadata
+ * handling. Existing whitespace and comment formatting are preserved.
+ *
+ * @param tree Nx virtual filesystem.
+ * @param filePath WordPress plugin entry point or theme style.css.
+ * @param newVersion Calculated release version.
+ */
+const updateWordPressVersion = (
+    tree: Tree,
+    filePath: string,
+    newVersion: string
+): void => {
+    const contents = readTextFile( tree, filePath );
+    const header = contents.slice( 0, WORDPRESS_HEADER_SIZE );
+    const remainder = contents.slice( WORDPRESS_HEADER_SIZE );
+
+    if ( ! VERSION_HEADER_PATTERN.test( header ) ) {
+        throw new Error(
+            `WordPress Version header not found in ${ filePath }`
+        );
+    }
+
+    const updatedHeader = header.replace(
+        VERSION_HEADER_PATTERN,
+        ( _match, prefix: string ) =>
+            `${ prefix }${ newVersion }`
+    );
+
+    tree.write(
+        filePath,
+        `${ updatedHeader }${ remainder }`
+    );
+};
+
 /**
  * Nx Release version actions for WordPress plugins and themes.
- * Updates package.json only. Does not write plugin or theme source, or composer.json.
  */
 export default class WordPressVersionActions extends VersionActions {
-    validManifestFilenames = [ 'package.json' ];
-
+    validManifestFilenames: string[] = [];
     /**
-     * Read the current version from package.json when git tags are not used.
+     * Registry lookup is unused because release versions come from Git tags.
      *
-     * @param {Tree} tree Virtual filesystem.
-     * @return {Promise<{currentVersion: string, manifestPath: string} | null>} Version from disk.
+     * @return Always null.
      */
-    async readCurrentVersionFromSourceManifest( tree: Tree ): Promise< {
-        currentVersion: string;
-        manifestPath: string;
-    } | null > {
-        /*
-         * nx.json prefers git tags. This path is the fallback for a first
-         * release (--first-release) when no {project}/v* tag exists yet.
-         */
-        const manifestPath = join(
-            this.projectGraphNode.data.root,
-            'package.json'
-        );
-        const packageJson = readJson< { version?: string } >(
-            tree,
-            manifestPath
-        );
-        if ( ! packageJson.version ) {
-            return null;
-        }
-        return {
-            manifestPath,
-            currentVersion: packageJson.version,
-        };
-    }
-    /**
-     * Registry lookup is unused; releases resolve the current version from git tags.
-     *
-     * @return {Promise<null>} Always null.
-     */
-    async readCurrentVersionFromRegistry(): Promise< {
+    async readCurrentVersionFromRegistry(): Promise<{
         currentVersion: string | null;
         logText: string;
-    } | null > {
-        /*
-         * We do not publish to npm, so there is no registry version to read.
-         * Returning null tells Nx to use git tags or package.json instead.
-         */
+    } | null> {
         return null;
     }
 
     /**
-     * WordPress packages are not versioned against each other in package.json.
+     * WordPress plugins and themes are independently versioned.
      *
-     * @return {Promise<{currentVersion: null, dependencyCollection: null}>} Empty dependency version.
+     * @return Empty dependency version information.
      */
-    async readCurrentVersionOfDependency(): Promise< {
+    async readCurrentVersionOfDependency(): Promise<{
         currentVersion: string | null;
         dependencyCollection: string | null;
-    } > {
-        /*
-         * Independent plugins and themes do not bump each other. An empty
-         * result stops Nx from rewriting workspace dependency ranges.
-         */
-        return { currentVersion: null, dependencyCollection: null };
+    }> {
+        return {
+            currentVersion: null,
+            dependencyCollection: null,
+        };
     }
+
     /**
-     * Write the new version to package.json.
+     * Write the calculated release version to the archived WordPress
+     * plugin entry point or theme style.css.
      *
-     * @param {Tree}   tree       Virtual filesystem.
-     * @param {string} newVersion Semver for this release.
-     * @return {Promise<string[]>} Log lines for the CLI.
+     * @param tree Nx virtual filesystem.
+     * @param newVersion Calculated release version.
+     * @return Nx CLI log messages.
      */
     async updateProjectVersion(
         tree: Tree,
         newVersion: string
-    ): Promise< string[] > {
-        const logMessages: string[] = [];
+    ): Promise<string[]> {
+        const projectRoot = this.projectGraphNode.data.root;
 
-        /*
-         * package.json "version" is what the zip script and GitHub Release
-         * tag use. Nx already decided newVersion (from our Action's
-         * specifier). We only write it. Plugin PHP and theme style.css
-         * stay untouched.
-         */
-        for ( const manifestToUpdate of this.manifestsToUpdate ) {
-            updateJson( tree, manifestToUpdate.manifestPath, ( json ) => {
-                json.version = newVersion;
-                return json;
-            } );
-            logMessages.push(
-                `New version ${ newVersion } is not written to ${ manifestToUpdate.manifestPath }`
+        const archivedProjectRoot = joinPathFragments(
+            projectRoot,
+            '__release-archive__'
+        );
+
+        if ( ! tree.exists( archivedProjectRoot ) ) {
+            throw new Error(
+                `Archived project does not exist: ${ archivedProjectRoot }`
             );
         }
 
-        return logMessages;
+        const versionFile = findWordPressVersionFile(
+            tree,
+            archivedProjectRoot
+        );
+
+        updateWordPressVersion(
+            tree,
+            versionFile,
+            newVersion
+        );
+
+        return [
+            `Updated WordPress Version header in ${ versionFile } to ${ newVersion }`,
+        ];
     }
 
     /**
-     * Skip rewriting workspace and catalog dependency ranges in package.json.
+     * Do not rewrite workspace or catalog dependency ranges.
      *
-     * @return {Promise<string[]>} No log lines.
+     * @return No log messages.
      */
-    async updateProjectDependencies(): Promise< string[] > {
+    async updateProjectDependencies(): Promise<string[]> {
         return [];
     }
 }

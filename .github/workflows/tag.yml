@@ -82,10 +82,11 @@ jobs:
           ALPHA: ${{ inputs.alpha }}
         run: |
           set -euo pipefail
-          VERSION="$(node .github/scripts/next-release-version-cli.mjs "${NAME}" "${ALPHA}")"
-          # specifier is positional: `nx release 1.1.0-alpha.1`, not --specifier=.
-          ARGS=(release "${VERSION}" --projects="${NAME}" --yes)
-          # No tags yet: tell Nx to use package.json as the current version.
+          ARGS=(release preminor --projects="${NAME}" --yes)
+          if [[ "${ALPHA}" == "true" ]]; then
+            ARGS+=(--preid="alpha")
+          fi
+          # No tags yet: tell Nx this is the project's first release.
           if ! git tag --list "${NAME}/v*" | grep -q .; then
             ARGS+=(--first-release)
           fi

@@ -156,9 +156,18 @@
         "nx-release-publish": {
             "executor": "nx:run-commands",
             "options": {
-                "command": "bash .github/scripts/publish-wordpress-release.sh {projectName}",
-                "cwd": "{workspaceRoot}"
+                "command": "bash .github/scripts/nx-release-publish.sh {projectRoot} {projectName}",
+                "cwd": "{workspaceRoot}",
+                "packageRoot": "__release-archive__/"
             }
+        },
+        "prepare-release": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "bash .github/scripts/pre-version-command.sh {projectRoot}",
+                "cwd": "{workspaceRoot}"
+            },
+            "dependsOn": ["install","composer-install","build"]
         }
     },
     "namedInputs": {
@@ -183,17 +192,21 @@
         },
         "version": {
             "conventionalCommits": true,
-            "fallbackCurrentVersionResolver": "disk",
+            "manifestRootsToUpdate": ["{projectRoot}/__release-archive__"],
+            "preVersionCommand": "pnpm nx run-many -t prepare-release --",
             "versionActions": "tools/monorepo/src/release/wordpress-version-actions.ts"
         },
         "conventionalCommits": {
+            "useCommitScope": false,
             "types": {
                 "feat": {
+                    "semverBump": "minor",
                     "changelog": {
                         "title": "Features"
                     }
                 },
                 "fix": {
+                    "semverBump": "minor",
                     "changelog": {
                         "title": "Fixes"
                     }
@@ -219,6 +232,7 @@
                     }
                 },
                 "refactor": {
+                    "semverBump": "minor",
                     "changelog": {
                         "title": "Refactor"
                     }
@@ -243,6 +257,7 @@
         "changelog": {
             "workspaceChangelog": false,
             "projectChangelogs": {
+                "file": false,
                 "createRelease": "github"
             }
         }
