@@ -12,6 +12,7 @@
     },
     "targets": {
         "composer-install": {},
+        "prepare-release": {},
         "build": {
             "dependsOn": ["bcew-theme:build", "bcew-plugin:build"]
         },

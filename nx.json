@@ -192,8 +192,9 @@
         },
         "version": {
             "conventionalCommits": true,
+            "fallbackCurrentVersionResolver": "disk",
             "manifestRootsToUpdate": ["{projectRoot}/__release-archive__"],
-            "preVersionCommand": "pnpm nx run-many -t prepare-release --",
+            "preVersionCommand": "pnpm nx run ${NX_RELEASE_PROJECT}:prepare-release",
             "versionActions": "tools/monorepo/src/release/wordpress-version-actions.ts"
         },
         "conventionalCommits": {
