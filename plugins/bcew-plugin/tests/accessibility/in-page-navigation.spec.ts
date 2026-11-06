@@ -6,6 +6,7 @@ import { closeChoosePatternModal } from '../e2e/helpers';
 test( 'In-Page Navigation has no Axe violations', async ( {
     admin,
     editor,
+    axe
 } ) => {
     await admin.createNewPost( {
         postType: 'page',
