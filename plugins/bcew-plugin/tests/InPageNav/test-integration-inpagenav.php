@@ -249,9 +249,10 @@ class InPageNavTest extends \WP_UnitTestCase {
 	public function test_javascript_localization_data_is_correctly_passed() {
 		$page_id = $this->factory->post->create(
 			array(
-				'post_type'  => 'page',
-				'post_title' => 'Test Page',
-				'post_name'  => 'test-page',
+				'post_type'    => 'page',
+				'post_title'   => 'Test Page',
+				'post_name'    => 'test-page',
+				'post_excerpt' => 'This is a test excerpt for the page.',
 			)
 		);
 
