@@ -1,11 +1,11 @@
 import { expect } from '@playwright/test';
-import AxeBuilder from '@axe-core/playwright';
 import { test } from '@bcew-monorepo/e2e';
 import { closeChoosePatternModal } from '../e2e/helpers';
 
 test( 'In-Page Navigation has no Axe violations', async ( {
     admin,
     editor,
+    axe,
 } ) => {
     await admin.createNewPost( {
         postType: 'page',
@@ -49,8 +49,7 @@ test( 'In-Page Navigation has no Axe violations', async ( {
         preview.getByRole( 'navigation', { name: 'On this page' } )
     ).toBeVisible();
 
-    const { violations } = await new AxeBuilder( { page: preview } )
-        .withTags( [ 'wcag2a', 'wcag2aa' ] )
-        .analyze();
+    await editor.page.goto( preview.url() );
+    const { violations } = await axe.analyze();
     expect( violations ).toEqual( [] );
 } );
