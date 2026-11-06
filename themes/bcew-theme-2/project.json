@@ -16,7 +16,6 @@
         "start": {},
         "start-playwright": {},
         "test-accessibility": {},
-        "test-accessibility-docker": {},
         "test-screenshot": {},
         "test-screenshot-generate": {},
         "wp-env-start": {},
