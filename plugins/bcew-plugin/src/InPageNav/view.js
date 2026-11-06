@@ -64,9 +64,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
     nav.setAttribute( 'role', 'navigation' );
     nav.setAttribute( 'aria-label', 'On this page' );
 
-    // Get page excerpt from PHP
-    const pageExcerpt = window.dswpInPageNav?.page_excerpt || '';
-
     // Insert the navigation HTML structure with accessibility attributes.
     nav.innerHTML = `
         <div class="nav-header">
@@ -84,15 +81,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
             class="nav-links" 
             role="list" 
             aria-labelledby="nav-title">
-            ${
-                pageExcerpt
-                    ? `
-                <li class="nav-excerpt">
-                    <span class="excerpt-text">${ pageExcerpt }</span>
-                </li>
-            `
-                    : ''
-            }
             ${ headings
                 .map(
                     ( heading, index ) => `

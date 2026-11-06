@@ -114,6 +114,8 @@ const findSubmenuContainer = async ( nav: any, linkText: string ) => {
 };
 
 test.describe( 'Navigation', () => {
+    test.describe.configure( { mode: 'parallel' } );
+
     let requestUtils: RequestUtils;
     let simpleMenuId: number;
     let submenuMenuId: number;
@@ -177,6 +179,16 @@ test.describe( 'Navigation', () => {
                 },
             ],
         } );
+    } );
+
+    test.afterAll( async () => {
+        for ( const id of [ simpleMenuId, submenuMenuId, multiLevelMenuId ] ) {
+            await requestUtils.rest( {
+                method: 'DELETE',
+                path: `/wp/v2/navigation/${ id }`,
+                params: { force: true },
+            } );
+        }
     } );
 
     test.beforeEach( async ( { admin, editor } ) => {
@@ -1228,6 +1240,9 @@ test.describe( 'Navigation', () => {
     } );
 
     test.describe( 'Role-Based Permissions', () => {
+        // Creates shared editor users and pages, so it must not run in parallel.
+        test.describe.configure( { mode: 'serial' } );
+
         let editorUserId: number;
         let editorPageId: number;
         let editorUsername: string;

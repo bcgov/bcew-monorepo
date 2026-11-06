@@ -244,11 +244,9 @@ class InPageNavTest extends \WP_UnitTestCase {
 	 * What this tests:
 	 * - dswpInPageNav object is localized with correct structure
 	 * - Options (mobile_breakpoint, scroll_offset, heading_selectors) are included
-	 * - Page excerpt is included when available
-	 * - Default values are used when excerpt is not available
+	 * - No page excerpt is sent (the nav lists headings only)
 	 */
 	public function test_javascript_localization_data_is_correctly_passed() {
-		// Create a test page with excerpt.
 		$page_id = $this->factory->post->create(
 			array(
 				'post_type'    => 'page',
@@ -277,182 +275,11 @@ class InPageNavTest extends \WP_UnitTestCase {
 		// Verify localization data exists.
 		$this->assertNotEmpty( $script_data, 'Script should have localization data' );
 		$this->assertStringContainsString( 'dswpInPageNav', $script_data, 'Localization should include dswpInPageNav object' );
-		$this->assertStringContainsString( 'page_excerpt', $script_data, 'Localization should include page_excerpt' );
+		$this->assertStringNotContainsString( 'page_excerpt', $script_data, 'Localization should not include page_excerpt' );
 		$this->assertStringContainsString( 'options', $script_data, 'Localization should include options' );
 		$this->assertStringContainsString( 'mobile_breakpoint', $script_data, 'Localization should include mobile_breakpoint' );
 		$this->assertStringContainsString( 'scroll_offset', $script_data, 'Localization should include scroll_offset' );
 		$this->assertStringContainsString( 'heading_selectors', $script_data, 'Localization should include heading_selectors' );
-	}
-
-	/**
-	 * Test: Page excerpt is extracted from post excerpt
-	 *
-	 * What this tests:
-	 * - When post_excerpt exists, it is used
-	 * - Excerpt is properly stripped of HTML tags
-	 * - Excerpt is passed to JavaScript
-	 */
-	public function test_page_excerpt_is_extracted_from_post_excerpt() {
-		$excerpt_text = 'This is a test excerpt with <strong>HTML</strong> tags.';
-
-		// Create a test page with excerpt.
-		$page_id = $this->factory->post->create(
-			array(
-				'post_type'    => 'page',
-				'post_title'   => 'Test Page',
-				'post_name'    => 'test-page',
-				'post_excerpt' => $excerpt_text,
-			)
-		);
-
-		// Enable the feature.
-		update_post_meta( $page_id, 'show_inpage_nav', true );
-
-		// Set up global post and query to simulate page view.
-		global $post;
-		$post = get_post( $page_id );
-		setup_postdata( $post );
-		$this->go_to( get_permalink( $page_id ) );
-
-		// Trigger the enqueue action.
-		do_action( 'wp_enqueue_scripts' );
-
-		// Get the localized script data.
-		global $wp_scripts;
-		$script_data = $wp_scripts->get_data( 'dswp-in-page-nav-script', 'data' );
-
-		// Verify excerpt is included and HTML is stripped.
-		$stripped_excerpt = wp_strip_all_tags( $excerpt_text );
-		$this->assertStringContainsString( $stripped_excerpt, $script_data, 'Excerpt should be included in localization data' );
-		$this->assertStringNotContainsString( '<strong>', $script_data, 'HTML tags should be stripped from excerpt' );
-		$this->assertStringNotContainsString( '</strong>', $script_data, 'HTML closing tags should be stripped from excerpt' );
-	}
-
-	/**
-	 * Test: Page excerpt falls back to first paragraph when excerpt is empty
-	 *
-	 * What this tests:
-	 * - When post_excerpt is empty, first paragraph of content is used
-	 * - Only paragraphs longer than 20 characters are used
-	 * - Content is properly stripped of HTML tags
-	 */
-	public function test_page_excerpt_falls_back_to_first_paragraph_when_excerpt_is_empty() {
-		$first_paragraph = 'This is the first paragraph of the content that should be used as excerpt.';
-
-		// Create a test page without excerpt but with content.
-		$page_id = $this->factory->post->create(
-			array(
-				'post_type'    => 'page',
-				'post_title'   => 'Test Page',
-				'post_name'    => 'test-page',
-				'post_excerpt' => '',
-				'post_content' => $first_paragraph . "\n\nThis is the second paragraph.",
-			)
-		);
-
-		// Enable the feature.
-		update_post_meta( $page_id, 'show_inpage_nav', true );
-
-		// Set up global post and query to simulate page view.
-		global $post;
-		$post = get_post( $page_id );
-		setup_postdata( $post );
-		$this->go_to( get_permalink( $page_id ) );
-
-		// Trigger the enqueue action.
-		do_action( 'wp_enqueue_scripts' );
-
-		// Get the localized script data.
-		global $wp_scripts;
-		$script_data = $wp_scripts->get_data( 'dswp-in-page-nav-script', 'data' );
-
-		// Verify first paragraph is used as excerpt.
-		$this->assertStringContainsString( $first_paragraph, $script_data, 'First paragraph should be used as excerpt when post_excerpt is empty' );
-	}
-
-	/**
-	 * Test: Page excerpt is empty when content is too short
-	 *
-	 * What this tests:
-	 * - Paragraphs shorter than 20 characters are not used as excerpt
-	 * - Empty excerpt is passed when no suitable content is found
-	 */
-	public function test_page_excerpt_is_empty_when_content_is_too_short() {
-		// Create a test page with short content.
-		$page_id = $this->factory->post->create(
-			array(
-				'post_type'    => 'page',
-				'post_title'   => 'Test Page',
-				'post_name'    => 'test-page',
-				'post_excerpt' => '',
-				'post_content' => 'Short.',
-			)
-		);
-
-		// Enable the feature.
-		update_post_meta( $page_id, 'show_inpage_nav', true );
-
-		// Set up global post and query to simulate page view.
-		global $post;
-		$post = get_post( $page_id );
-		setup_postdata( $post );
-		$this->go_to( get_permalink( $page_id ) );
-
-		// Trigger the enqueue action.
-		do_action( 'wp_enqueue_scripts' );
-
-		// Get the localized script data.
-		global $wp_scripts;
-		$script_data = $wp_scripts->get_data( 'dswp-in-page-nav-script', 'data' );
-
-		// Verify excerpt is empty or not present.
-		// The excerpt should be an empty string when content is too short.
-		$this->assertStringContainsString( 'page_excerpt', $script_data, 'page_excerpt key should be present' );
-	}
-
-	/**
-	 * Test: Dangerous content in excerpt is properly escaped
-	 *
-	 * What this tests:
-	 * - XSS protection: script tags in excerpt are stripped
-	 * - HTML entities are properly handled
-	 * - Malicious code cannot execute in JavaScript
-	 */
-	public function test_dangerous_content_in_excerpt_is_properly_escaped() {
-		$dangerous_excerpt = '<script>alert("XSS")</script>Test excerpt';
-
-		// Create a test page with dangerous content in excerpt.
-		$page_id = $this->factory->post->create(
-			array(
-				'post_type'    => 'page',
-				'post_title'   => 'Test Page',
-				'post_name'    => 'test-page',
-				'post_excerpt' => $dangerous_excerpt,
-			)
-		);
-
-		// Enable the feature.
-		update_post_meta( $page_id, 'show_inpage_nav', true );
-
-		// Set up global post and query to simulate page view.
-		global $post;
-		$post = get_post( $page_id );
-		setup_postdata( $post );
-		$this->go_to( get_permalink( $page_id ) );
-
-		// Trigger the enqueue action.
-		do_action( 'wp_enqueue_scripts' );
-
-		// Get the localized script data.
-		global $wp_scripts;
-		$script_data = $wp_scripts->get_data( 'dswp-in-page-nav-script', 'data' );
-
-		// Verify dangerous content is stripped.
-		$stripped_excerpt = wp_strip_all_tags( $dangerous_excerpt );
-		$this->assertStringContainsString( $stripped_excerpt, $script_data, 'Excerpt should be stripped of HTML tags' );
-		$this->assertStringNotContainsString( '<script>', $script_data, 'Script tags should be stripped from excerpt' );
-		$this->assertStringNotContainsString( '</script>', $script_data, 'Closing script tags should be stripped from excerpt' );
-		$this->assertStringNotContainsString( 'alert("XSS")', $script_data, 'JavaScript code should not be present in raw form' );
 	}
 
 	/**
