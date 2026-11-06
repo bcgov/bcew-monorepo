@@ -107,6 +107,18 @@
             },
             "dependsOn": ["composer-install", "build", "wp-env-start"]
         },
+        "test-accessibility-docker": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "docker exec playwright sh -c \"cd {projectRoot} && npx wp-scripts test-playwright --project=accessibility {args.playwrightArgs}\""
+            },
+            "dependsOn": [
+                "composer-install",
+                "start-playwright",
+                "build",
+                "wp-env-start"
+            ]
+        },
         "wp-env-start": {
             "executor": "nx:run-commands",
             "options": {

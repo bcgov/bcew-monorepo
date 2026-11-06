@@ -272,14 +272,7 @@ jobs:
 
             # run-many skips targets a project lacks; --parallel=1 avoids concurrent use of the shared wp-env and Playwright container.
             - name: Run e2e, accessibility, and screenshot tests
-              run: |
-                  npx nx run-many --targets=test-e2e-docker,test-screenshot --projects="${{ matrix.project }}" --parallel=1 --playwrightArgs="--max-failures=1 --reporter=list,github" --no-tui
-
-                  project_json="$(npx nx show project "${{ matrix.project }}" --json)"
-                  project_root="$(jq -r '.root' <<< "$project_json")"
-                  if jq -e '.targets | has("test-accessibility")' <<< "$project_json" >/dev/null; then
-                    docker exec playwright sh -c 'cd "$1" && npx wp-scripts test-playwright --project=accessibility --max-failures=1 --reporter=list,github' sh "$project_root"
-                  fi
+              run: npx nx run-many --targets=test-e2e-docker,test-accessibility-docker,test-screenshot --projects="${{ matrix.project }}" --parallel=1 --playwrightArgs="--max-failures=1 --reporter=list,github" --no-tui
 
             - name: Summarize screenshot failures
               if: failure()

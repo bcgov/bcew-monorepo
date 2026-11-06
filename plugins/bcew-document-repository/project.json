@@ -26,6 +26,7 @@
         },
         "start-playwright": {},
         "test-accessibility": {},
+        "test-accessibility-docker": {},
         "test-e2e": {},
         "test-e2e-docker": {},
         "test-integration": {},
