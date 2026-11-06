@@ -145,8 +145,8 @@
             "executor": "nx:run-commands",
             "options": {
                 "command": "bash .github/scripts/nx-release-publish.sh {projectRoot} {projectName}",
-                "cwd": "{workspaceRoot}",
-                "packageRoot": "__release-archive__/"
+                "cwd": "{workspaceRoot}"
+              
             }
         },
         "prepare-release": {
