@@ -35,3 +35,10 @@ test( 'page has no accessibility violations', async ( { page, axe } ) => {
     expect( violations ).toHaveLength( 0 );
 } );
 ```
+
+Run accessibility tests locally with `pnpm exec nx run bcew-plugin:test-accessibility`,
+or in the Playwright container with `pnpm exec nx run bcew-plugin:test-accessibility-docker`.
+Both targets accept Playwright options through `--playwrightArgs`.
+CI uses the Docker target alongside the e2e and screenshot targets.
+Register `test-accessibility-docker` in a project's `project.json` when adding
+its first accessibility spec; projects without a suite should omit that target.

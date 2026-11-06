@@ -1,6 +1,6 @@
-# BC Extended Web Plugin
+# BCEW Plugin
 
-The BC Extended Web Plugin provides reusable WordPress features for site navigation, accessibility, and content presentation.
+The BCEW Plugin provides reusable WordPress features for site navigation, accessibility, and content presentation.
 
 ## Key features
 
