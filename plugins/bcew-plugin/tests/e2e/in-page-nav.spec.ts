@@ -76,15 +76,10 @@ test.describe( 'InPageNav', () => {
             await admin.createNewPost( {
                 postType: 'page',
                 title: 'Test page',
-                // This doesn't seem to work.
-                excerpt: 'This is a test excerpt.',
                 showWelcomeGuide: false,
             } );
         } );
 
-        /**
-         * @todo Test that excerpt appears in InPageNav. The test environment currently doesn't seem to let excerpts be set.
-         */
         test( 'should create links for h2s and scroll to them when clicked, keyboard', async ( {
             editor,
         } ) => {
@@ -242,6 +237,135 @@ test.describe( 'InPageNav', () => {
                     name: 'Québec & Māori – Intro/',
                 } )
             ).toHaveId( 'section-qu-bec-m-ori-intro-overview-0' );
+        } );
+    } );
+
+    /**
+     * Regression tests for DSWP-1026: the page intro must not be repeated in
+     * the "On this page" navigation box.
+     */
+    test.describe( 'Intro duplication (DSWP-1026)', () => {
+        const intro =
+            'This is the page introduction. It is long enough to be treated as an excerpt.';
+        const paragraph = ( text: string ) => `
+            <!-- wp:paragraph -->
+            <p>${ text }</p>
+            <!-- /wp:paragraph -->`;
+        const heading = ( text: string ) => `
+            <!-- wp:heading -->
+            <h2 class="wp-block-heading">${ text }</h2>
+            <!-- /wp:heading -->`;
+        const filler = Array.from( { length: 12 }, ( _, i ) =>
+            paragraph(
+                `Filler paragraph ${ i + 1 }. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.`
+            )
+        ).join( '' );
+
+        test.beforeEach( async ( { admin } ) => {
+            await admin.createNewPost( {
+                postType: 'page',
+                title: 'Intro test page',
+                showWelcomeGuide: false,
+            } );
+        } );
+
+        test( 'should show the intro once in the body and list only h2 links in the nav', async ( {
+            editor,
+        } ) => {
+            await editor.setContent(
+                paragraph( intro ) +
+                    heading( 'First Section' ) +
+                    filler +
+                    heading( 'Second Section' ) +
+                    filler
+            );
+            await closeChoosePatternModal( editor );
+            const preview = await getPreviewPage( editor );
+
+            const nav = preview.getByRole( 'navigation', {
+                name: 'On this page',
+            } );
+            await expect( nav ).toHaveCount( 1 );
+            await expect( nav ).not.toContainText( intro );
+            await expect( nav.getByRole( 'link' ) ).toHaveCount( 2 );
+            await expect(
+                preview.getByText( intro, { exact: true } )
+            ).toHaveCount( 1 );
+        } );
+
+        test( 'should scroll to each section when its nav link is clicked', async ( {
+            editor,
+        } ) => {
+            await editor.setContent(
+                paragraph( intro ) +
+                    heading( 'First Section' ) +
+                    filler +
+                    heading( 'Second Section' ) +
+                    filler
+            );
+            await closeChoosePatternModal( editor );
+            const preview = await getPreviewPage( editor );
+            const nav = preview.getByRole( 'navigation', {
+                name: 'On this page',
+            } );
+
+            await nav.getByRole( 'link', { name: 'First Section' } ).click();
+            await expect(
+                preview.getByRole( 'heading', {
+                    name: 'First Section',
+                    exact: true,
+                } )
+            ).toBeInViewport();
+
+            await nav.getByRole( 'link', { name: 'Second Section' } ).click();
+            await expect(
+                preview.getByRole( 'heading', {
+                    name: 'Second Section',
+                    exact: true,
+                } )
+            ).toBeInViewport();
+        } );
+
+        test( 'should toggle the nav on a narrow viewport', async ( {
+            editor,
+        } ) => {
+            await editor.setContent(
+                paragraph( intro ) +
+                    heading( 'First Section' ) +
+                    filler +
+                    heading( 'Second Section' ) +
+                    filler
+            );
+            await closeChoosePatternModal( editor );
+            const preview = await getPreviewPage( editor );
+            await preview.setViewportSize( { width: 375, height: 812 } );
+            await preview.reload();
+            await preview.waitForLoadState( 'networkidle' );
+
+            const nav = preview.getByRole( 'navigation', {
+                name: 'On this page',
+            } );
+            const toggle = nav.getByRole( 'button', {
+                name: 'Toggle section navigation',
+            } );
+
+            // The toggle is hidden at the top of the page.
+            await expect( toggle ).toBeHidden();
+
+            // Scrolling reveals the toggle and collapses the nav.
+            await preview.mouse.wheel( 0, 600 );
+            await expect.poll( () => preview.evaluate( () => window.scrollY ) ).toBeGreaterThan( 50 );
+            await expect( toggle ).toBeVisible();
+            await expect( toggle ).toHaveAttribute( 'aria-expanded', 'false' );
+            await expect( nav ).not.toHaveClass( /is-expanded/ );
+
+            await toggle.click();
+            await expect( toggle ).toHaveAttribute( 'aria-expanded', 'true' );
+            await expect( nav ).toHaveClass( /is-expanded/ );
+
+            await toggle.click();
+            await expect( toggle ).toHaveAttribute( 'aria-expanded', 'false' );
+            await expect( nav ).not.toHaveClass( /is-expanded/ );
         } );
     } );
 
