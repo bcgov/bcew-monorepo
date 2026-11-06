@@ -1,10 +1,10 @@
 <?php
 /**
- * Plugin Name: BC Extended Web Plugin
+ * Plugin Name: BCEW
  * Plugin URI: https://github.com/bcgov/bcew-monorepo/tree/main/plugins/bcew-plugin
  * Author: govwordpress@gov.bc.ca
  * Author URI: https://apps.itsm.gov.bc.ca/jira/browse/ENG-138
- * Description: BC Extended Web Plugin adds custom functionality for BC government sites.
+ * Description: BCEW adds custom functionality for BC government sites.
  * Requires at least: 6.4.4
  * Tested up to: 6.5
  * Requires PHP: 7.4

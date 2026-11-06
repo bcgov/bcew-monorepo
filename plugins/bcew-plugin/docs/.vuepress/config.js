@@ -7,8 +7,8 @@ import { viteBundler } from '@vuepress/bundler-vite';
 export default defineUserConfig({
     base: '/bcew-plugin/',
     lang: 'en-US',
-    title: 'BC Extended Web Plugin',
-    description: 'User and developer documentation for BC Extended Web Plugin',
+    title: 'BCEW Plugin',
+    description: 'User and developer documentation for BCEW Plugin',
     bundler: viteBundler({}),
     theme: defaultTheme({
         logo: '/images/BCID_H_rgb_pos.png',
