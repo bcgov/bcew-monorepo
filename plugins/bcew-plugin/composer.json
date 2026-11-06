@@ -1,6 +1,6 @@
 {
     "name": "bcgov-plugin/bcew-plugin",
-    "description": "BC Extended Web Plugin",
+    "description": "BCEW Plugin",
     "type": "wordpress-plugin",
     "license": "Apache-2.0",
     "repositories": [

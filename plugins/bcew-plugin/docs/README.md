@@ -1,1 +1,1 @@
-# [BC Extended Web Plugin](./index.md)
+# [BCEW Plugin](./index.md)

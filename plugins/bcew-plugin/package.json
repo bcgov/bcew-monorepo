@@ -1,7 +1,7 @@
 {
     "name": "bcew-plugin",
     "version": "1.0.0",
-    "description": "BC Extended Web Plugin",
+    "description": "BCEW Plugin",
     "author": "govwordpress@gov.bc.ca",
     "license": "GPL-2.0-or-later",
     "keywords": [

@@ -6,7 +6,7 @@
     "projectType": "application",
     "generators": {
         "bcew-monorepo:plugin": {
-            "name": "BC Extended Web Plugin",
+            "name": "BCEW",
             "slug": "bcew-plugin"
         }
     },
@@ -16,6 +16,7 @@
         "start": {},
         "start-playwright": {},
         "test-accessibility": {},
+        "test-accessibility-docker": {},
         "test-e2e": {},
         "test-e2e-docker": {},
         "test-integration": {
