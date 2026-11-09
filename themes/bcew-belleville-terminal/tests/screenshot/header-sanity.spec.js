@@ -1,3 +1,5 @@
+/* global getComputedStyle */
+
 import { expect, test } from '@playwright/test';
 
 const DESKTOP_VIEWPORT = { width: 1440, height: 1200 };
