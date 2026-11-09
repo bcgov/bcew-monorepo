@@ -22,6 +22,21 @@ runs:
         run_install: true
         cache: true
 
+    - name: Locate Composer download cache
+      if: inputs.install-composer == 'true'
+      id: composer-cache
+      shell: bash
+      run: echo "path=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+    - name: Cache Composer downloads
+      if: inputs.install-composer == 'true'
+      uses: actions/cache@v6.1.0
+      with:
+        path: ${{ steps.composer-cache.outputs.path }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-composer-
+
     - name: Install Composer dependencies
       if: inputs.install-composer == 'true'
       shell: bash
