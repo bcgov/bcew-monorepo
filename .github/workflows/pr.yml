@@ -36,9 +36,12 @@ jobs:
         runs-on: ubuntu-latest
         timeout-minutes: 15
         steps:
+            - uses: actions/checkout@v7
+              with:
+                  ref: ${{ github.head_ref }}
+
             - uses: ./.github/actions/setup
               with:
-                  checkout-ref: ${{ github.head_ref }}
                   install-composer: 'true'
 
             - name: Run php lint
@@ -69,10 +72,13 @@ jobs:
         outputs:
             has-coverage: ${{ steps.coverage.outputs.has-coverage }}
         steps:
+            - uses: actions/checkout@v7
+              with:
+                  fetch-depth: 0
+                  ref: ${{ github.head_ref }}
+
             - uses: ./.github/actions/setup
               with:
-                  checkout-ref: ${{ github.head_ref }}
-                  fetch-depth: '0'
                   install-composer: 'true'
 
             # wp-env pulls these from Docker Hub. Anonymous pulls from
@@ -131,10 +137,12 @@ jobs:
         runs-on: ubuntu-latest
         timeout-minutes: 15
         steps:
-            - uses: ./.github/actions/setup
+            - uses: actions/checkout@v7
               with:
-                  checkout-ref: ${{ github.head_ref }}
-                  fetch-depth: '0'
+                  fetch-depth: 0
+                  ref: ${{ github.head_ref }}
+
+            - uses: ./.github/actions/setup
 
             - name: Run affected JS unit tests
               if: github.event_name == 'pull_request'
@@ -152,10 +160,12 @@ jobs:
         outputs:
             projects: ${{ steps.affected.outputs.projects }}
         steps:
-            - uses: ./.github/actions/setup
+            - uses: actions/checkout@v7
               with:
-                  checkout-ref: ${{ github.head_ref }}
-                  fetch-depth: '0'
+                  fetch-depth: 0
+                  ref: ${{ github.head_ref }}
+
+            - uses: ./.github/actions/setup
 
             - name: List affected e2e and screenshot projects
               id: affected
@@ -177,9 +187,12 @@ jobs:
             matrix:
                 project: ${{ fromJSON(needs.affected-test-projects.outputs.projects) }}
         steps:
+            - uses: actions/checkout@v7
+              with:
+                  ref: ${{ github.head_ref }}
+
             - uses: ./.github/actions/setup
               with:
-                  checkout-ref: ${{ github.head_ref }}
                   install-composer: 'true'
 
             # Same images as the integration job. Load them before wp-env starts.
