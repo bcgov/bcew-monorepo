@@ -36,26 +36,10 @@ jobs:
         runs-on: ubuntu-latest
         timeout-minutes: 15
         steps:
-            - name: Checkout
-              uses: actions/checkout@v7
+            - uses: ./.github/actions/setup
               with:
-                  ref: ${{ github.head_ref }}
-
-            - name: Setup Node.js 24
-              uses: actions/setup-node@v6.4.0
-              with:
-                  node-version: 24
-
-            - name: Install pnpm
-              uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
-
-              with:
-                  version: 10
-                  run_install: true
-                  cache: true
-
-            - name: Install Composer dependencies
-              run: composer i
+                  checkout-ref: ${{ github.head_ref }}
+                  install-composer: 'true'
 
             - name: Run php lint
               run: pnpm run lint-php
@@ -85,26 +69,11 @@ jobs:
         outputs:
             has-coverage: ${{ steps.coverage.outputs.has-coverage }}
         steps:
-            - name: Checkout
-              uses: actions/checkout@v7
+            - uses: ./.github/actions/setup
               with:
-                  fetch-depth: 0
-                  ref: ${{ github.head_ref }}
-
-            - name: Setup Node.js 24
-              uses: actions/setup-node@v6.4.0
-              with:
-                  node-version: 24
-
-            - name: Install pnpm
-              uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
-              with:
-                  version: 10
-                  run_install: true
-                  cache: true
-
-            - name: Install Composer dependencies
-              run: composer i
+                  checkout-ref: ${{ github.head_ref }}
+                  fetch-depth: '0'
+                  install-composer: 'true'
 
             # wp-env pulls these from Docker Hub. Anonymous pulls from
             # GitHub-hosted runners time out once every project starts at once.
@@ -162,23 +131,10 @@ jobs:
         runs-on: ubuntu-latest
         timeout-minutes: 15
         steps:
-            - name: Checkout
-              uses: actions/checkout@v7
+            - uses: ./.github/actions/setup
               with:
-                  fetch-depth: 0
-                  ref: ${{ github.head_ref }}
-
-            - name: Setup Node.js 24
-              uses: actions/setup-node@v6.4.0
-              with:
-                  node-version: 24
-
-            - name: Install pnpm
-              uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
-              with:
-                  version: 10
-                  run_install: true
-                  cache: true
+                  checkout-ref: ${{ github.head_ref }}
+                  fetch-depth: '0'
 
             - name: Run affected JS unit tests
               if: github.event_name == 'pull_request'
@@ -196,23 +152,10 @@ jobs:
         outputs:
             projects: ${{ steps.affected.outputs.projects }}
         steps:
-            - name: Checkout
-              uses: actions/checkout@v7
+            - uses: ./.github/actions/setup
               with:
-                  fetch-depth: 0
-                  ref: ${{ github.head_ref }}
-
-            - name: Setup Node.js 24
-              uses: actions/setup-node@v6.4.0
-              with:
-                  node-version: 24
-
-            - name: Install pnpm
-              uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
-              with:
-                  version: 10
-                  run_install: true
-                  cache: true
+                  checkout-ref: ${{ github.head_ref }}
+                  fetch-depth: '0'
 
             - name: List affected e2e and screenshot projects
               id: affected
@@ -234,25 +177,10 @@ jobs:
             matrix:
                 project: ${{ fromJSON(needs.affected-test-projects.outputs.projects) }}
         steps:
-            - name: Checkout
-              uses: actions/checkout@v7
+            - uses: ./.github/actions/setup
               with:
-                  ref: ${{ github.head_ref }}
-
-            - name: Setup Node.js 24
-              uses: actions/setup-node@v6.4.0
-              with:
-                  node-version: 24
-
-            - name: Install pnpm
-              uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
-              with:
-                  version: 10
-                  run_install: true
-                  cache: true
-
-            - name: Install Composer dependencies
-              run: composer i
+                  checkout-ref: ${{ github.head_ref }}
+                  install-composer: 'true'
 
             # Same images as the integration job. Load them before wp-env starts.
             - name: Load WordPress images from the Docker Hub mirror

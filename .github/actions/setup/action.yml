@@ -1,0 +1,41 @@
+name: Setup
+description: Check out the repository and install Node.js, pnpm, and optional Composer dependencies.
+
+inputs:
+  checkout-ref:
+    description: Git ref to check out.
+    required: false
+    default: ''
+  fetch-depth:
+    description: Number of commits to fetch.
+    required: false
+    default: '1'
+  install-composer:
+    description: Whether to install Composer dependencies.
+    required: false
+    default: 'false'
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v7
+      with:
+        ref: ${{ inputs.checkout-ref }}
+        fetch-depth: ${{ inputs.fetch-depth }}
+
+    - name: Setup Node.js 24
+      uses: actions/setup-node@v6.4.0
+      with:
+        node-version: 24
+
+    - name: Install pnpm
+      uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+      with:
+        version: 10
+        run_install: true
+        cache: true
+
+    - name: Install Composer dependencies
+      if: inputs.install-composer == 'true'
+      shell: bash
+      run: composer i

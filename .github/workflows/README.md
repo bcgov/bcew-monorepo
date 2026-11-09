@@ -7,6 +7,7 @@ Workflow files in this directory implement CI, releases, and documentation deplo
 Runs on every new commit in a PR. Features:
 
 - **Automatic PR labeling** — `actions/labeler` sets labels from `.github/labeler.yml`. When a new plugin or theme is added under `plugins/` or `themes/`, update the labeler rules.
+- **Shared setup** — applicable jobs use `.github/actions/setup` for checkout, Node.js, pnpm, and optional Composer dependencies.
 - **Affected projects** — Changed files are analyzed with **`nx affected`** (base = target branch, usually `origin/main`). Only affected projects run `build`, `test-e2e`, and `test-integration`.
 - **Lint** — Full monorepo lint (PHP, JS, CSS, Markdown, `package.json`) runs on every PR.
 
