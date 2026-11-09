@@ -286,6 +286,9 @@ const roots = document.querySelectorAll(
     '.wp-block-bcew-chefs-embed-chefs-form, .bcew-chefs-form'
 );
 
-roots.forEach( ( root ) => {
-    mountChefsForm( root );
-} );
+Promise.all( Array.from( roots, ( root ) => mountChefsForm( root ) ) ).catch(
+    ( error ) => {
+        // eslint-disable-next-line no-console
+        console.error( 'CHEFS form mount failed', error );
+    }
+);
