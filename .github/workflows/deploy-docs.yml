@@ -44,20 +44,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+      - uses: ./.github/actions/setup
         with:
-          version: 10
-
-      - name: Setup Node
-        uses: actions/setup-node@v7.1.0
-        with:
-          node-version: "24"
-          cache: "pnpm"
-          cache-dependency-path: pnpm-lock.yaml
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile --ignore-scripts #prevent scripts from running during install, as we will run them explicitly in the next step
+          frozen-lockfile: 'true'
+          ignore-scripts: 'true'
 
       - name: Build docs site (VitePress; includes sync)
         env:
