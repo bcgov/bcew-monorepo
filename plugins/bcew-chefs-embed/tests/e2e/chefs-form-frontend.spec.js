@@ -1,3 +1,5 @@
+/* global customElements */
+
 const { test, expect } = require( '@wordpress/e2e-test-utils-playwright' );
 const { createHash } = require( 'node:crypto' );
 const {
