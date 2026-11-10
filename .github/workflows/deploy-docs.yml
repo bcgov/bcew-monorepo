@@ -11,6 +11,7 @@ on:
       - "tools/sync-docs.mjs"
       - "package.json"
       - "pnpm-lock.yaml"
+      - ".github/actions/setup/**"
       - ".github/workflows/deploy-docs.yml"
   pull_request:
     branches: [main]
@@ -21,6 +22,7 @@ on:
       - "tools/sync-docs.mjs"
       - "package.json"
       - "pnpm-lock.yaml"
+      - ".github/actions/setup/**"
       - ".github/workflows/deploy-docs.yml"
 
 permissions:
