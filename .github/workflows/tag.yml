@@ -36,6 +36,10 @@ on:
         description: 'Alpha'
         type: boolean
         default: true
+      version:
+        description: 'Version (optional; will be calculated if left blank)'
+        required: false
+        type: string
 
 # Share the lock with tag-delete.yml so packages.json is not written by two jobs at once.
 concurrency:
@@ -80,9 +84,10 @@ jobs:
           PACKAGES_JSON_URL: https://${{ github.repository_owner }}.github.io/bcew-monorepo/packages.json
           ALPHA: ${{ inputs.alpha }}
           NX_RELEASE_PROJECT: ${{ inputs.name }}
+          VERSION: ${{ inputs.version }}
         run: |
           set -euo pipefail
-          ARGS=(release preminor --projects="${NX_RELEASE_PROJECT}" --yes)
+          ARGS=(release "${VERSION:-}" --projects="${NX_RELEASE_PROJECT}" --yes)
           if [[ "${ALPHA}" == "true" ]]; then
             ARGS+=(--preid="alpha")
           fi
