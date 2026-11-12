@@ -28,17 +28,8 @@ runs:
       with:
         version: 10
         cache: true
-
-    - name: Install pnpm dependencies
-      shell: bash
-      env:
-        FROZEN_LOCKFILE: ${{ inputs.frozen-lockfile }}
-        IGNORE_SCRIPTS: ${{ inputs.ignore-scripts }}
-      run: |
-        args=(install)
-        if [[ "$FROZEN_LOCKFILE" == "true" ]]; then args+=(--frozen-lockfile); fi
-        if [[ "$IGNORE_SCRIPTS" == "true" ]]; then args+=(--ignore-scripts); fi
-        pnpm "${args[@]}"
+        run_install: |
+          - args: [${{ inputs.frozen-lockfile == 'true' && '--frozen-lockfile' || '' }}${{ inputs.frozen-lockfile == 'true' && inputs.ignore-scripts == 'true' && ', ' || '' }}${{ inputs.ignore-scripts == 'true' && '--ignore-scripts' || '' }}]
 
     - name: Locate Composer download cache
       if: inputs.install-composer == 'true'
