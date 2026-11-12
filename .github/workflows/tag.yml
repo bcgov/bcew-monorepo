@@ -78,16 +78,16 @@ jobs:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
           REPOSITORY: ${{ github.repository }}
           PACKAGES_JSON_URL: https://${{ github.repository_owner }}.github.io/bcew-monorepo/packages.json
-          NAME: ${{ inputs.name }}
           ALPHA: ${{ inputs.alpha }}
+          NX_RELEASE_PROJECT: ${{ inputs.name }}
         run: |
           set -euo pipefail
-          ARGS=(release preminor --projects="${NAME}" --yes)
+          ARGS=(release preminor --projects="${NX_RELEASE_PROJECT}" --yes)
           if [[ "${ALPHA}" == "true" ]]; then
             ARGS+=(--preid="alpha")
           fi
           # No tags yet: tell Nx this is the project's first release.
-          if ! git tag --list "${NAME}/v*" | grep -q .; then
+          if ! git tag --list "${NX_RELEASE_PROJECT}/v*" | grep -q .; then
             ARGS+=(--first-release)
           fi
           echo "npx nx ${ARGS[*]}"
