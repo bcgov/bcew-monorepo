@@ -186,6 +186,10 @@
         "releaseTag": {
             "pattern": "{projectName}/v{version}"
         },
+        "git": {
+            "commit": true,
+            "tag": true
+        },
         
         "version": {
             "conventionalCommits": true,
@@ -193,23 +197,18 @@
             "manifestRootsToUpdate": ["{projectRoot}/__release-archive__"],
             "preVersionCommand": "pnpm nx run-many -t prepare-release",
             "versionActions": "tools/monorepo/src/release/wordpress-version-actions.ts",
-            "git": {
-                "commit": true,
-                "tag": true
-            }
+            
             
         },
         "conventionalCommits": {
             "useCommitScope": false,
             "types": {
                 "feat": {
-                    "semverBump": "minor",
                     "changelog": {
                         "title": "Features"
                     }
                 },
                 "fix": {
-                    "semverBump": "minor",
                     "changelog": {
                         "title": "Fixes"
                     }
@@ -235,7 +234,6 @@
                     }
                 },
                 "refactor": {
-                    "semverBump": "minor",
                     "changelog": {
                         "title": "Refactor"
                     }
