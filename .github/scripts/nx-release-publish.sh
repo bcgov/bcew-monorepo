@@ -23,7 +23,7 @@ PROJECT_NAME="${2:?project name required}"
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 # Package the prepared release directory as the asset uploaded to GitHub.
 ARCHIVE_PATH="${REPO_ROOT}/${PROJECT_PATH}/__release-archive__"
-ASSET_NAME="dist.zip"
+ASSET_NAME="dist-$(git rev-parse HEAD).zip"
 ZIP="${ARCHIVE_PATH}/${ASSET_NAME}"
 
 rm -f "${ZIP}"
@@ -53,15 +53,3 @@ fi
 
 # --clobber replaces a zip from a retried run on the same tag.
 gh release upload "${TAG}" "${ZIP}" --clobber
-
-# Seed the package metadata with the existing live feed so the updater can add
-# this release without discarding versions already published. The updater uses
-# the project path, asset name, tag, and repository to build the package entry.
-REPOSITORY="${REPOSITORY:-$(gh repo view --json nameWithOwner --jq .nameWithOwner)}"
-PACKAGES_JSON_URL="${PACKAGES_JSON_URL:-https://${REPOSITORY%%/*}.github.io/${REPOSITORY##*/}/packages.json}"
-curl --tlsv1.2 -sSf "${PACKAGES_JSON_URL}" -o packages.json \
-  || echo '{"packages":{}}' > packages.json
-
-rm -rf "${REPO_ROOT}/public"
-mkdir -p "${REPO_ROOT}/public"
-php .github/scripts/update-packages.php --project-path "${PROJECT_PATH}" --asset-name "${ASSET_NAME}" --tag "${TAG}" --repository "${REPOSITORY}"
