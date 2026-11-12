@@ -48,7 +48,6 @@ jobs:
 
       - uses: ./.github/actions/setup
         with:
-          frozen-lockfile: 'true'
           ignore-scripts: 'true'
 
       - name: Build docs site (VitePress; includes sync)

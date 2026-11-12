@@ -6,10 +6,6 @@ inputs:
     description: Whether to install Composer dependencies.
     required: false
     default: 'false'
-  frozen-lockfile:
-    description: Whether to require the pnpm lockfile to be up to date.
-    required: false
-    default: 'false'
   ignore-scripts:
     description: Whether to prevent package install scripts from running.
     required: false
@@ -29,7 +25,7 @@ runs:
         version: 10
         cache: true
         run_install: |
-          - args: [${{ inputs.frozen-lockfile == 'true' && '--frozen-lockfile' || '' }}${{ inputs.frozen-lockfile == 'true' && inputs.ignore-scripts == 'true' && ', ' || '' }}${{ inputs.ignore-scripts == 'true' && '--ignore-scripts' || '' }}]
+          - args: [${{ inputs.ignore-scripts == 'true' && '--ignore-scripts' || '' }}]
 
     - name: Locate Composer download cache
       if: inputs.install-composer == 'true'
