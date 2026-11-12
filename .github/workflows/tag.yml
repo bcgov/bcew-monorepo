@@ -65,8 +65,6 @@ jobs:
           token: ${{ steps.app-token.outputs.token }}
 
       - uses: ./.github/actions/setup
-        with:
-          ignore-scripts: 'true'
 
       # Nx commits as this identity. Matches the usual github-actions bot.
       - name: Configure git identity

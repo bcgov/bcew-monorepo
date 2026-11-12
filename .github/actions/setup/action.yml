@@ -6,10 +6,6 @@ inputs:
     description: Whether to install Composer dependencies.
     required: false
     default: 'false'
-  ignore-scripts:
-    description: Whether to prevent package install scripts from running.
-    required: false
-    default: 'false'
 
 runs:
   using: composite
@@ -25,7 +21,7 @@ runs:
         version: 10
         cache: true
         run_install: |
-          - args: [${{ inputs.ignore-scripts == 'true' && '--ignore-scripts' || '' }}]
+          - args: [--ignore-scripts]
 
     - name: Locate Composer download cache
       if: inputs.install-composer == 'true'
