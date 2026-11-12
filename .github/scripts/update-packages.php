@@ -40,12 +40,31 @@ unset( $new_entry['require-dev'] );
 unset( $new_entry['scripts'] );
 
 // Update the master array.
-$existing_json['packages'][ $new_entry['name'] ][ $version ] = $new_entry;
+
+$package_name = $new_entry['name'] ?? null;
+if ( ! $package_name ) {
+	throw new RuntimeException( 'The local composer.json must define a package name.' );
+}
+
+$existing_json['packages']                  ??= [];
+$existing_json['packages'][ $package_name ] ??= [];
+$existing_json['packages'][ $package_name ][] = $new_entry;
 
 // Save back.
 // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
-file_put_contents(
-    'public/packages.json',
-// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
-    json_encode( $existing_json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES )
-);
+try {
+	// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
+	$json = json_encode( $existing_json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES );
+	if ( false === $json ) {
+		throw new RuntimeException( 'Could not encode packages.json.' );
+	}
+
+	$result = file_put_contents( 'public/packages.json', $json );
+	if ( false === $result ) {
+		throw new RuntimeException( 'Could not write public/packages.json.' );
+	}
+
+	echo "Successfully updated public/packages.json.\n";
+} catch ( Throwable $exception ) {
+	echo "Failed to update public/packages.json: {$exception->getMessage()}\n";
+}

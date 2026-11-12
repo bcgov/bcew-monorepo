@@ -19,7 +19,6 @@ set -euo pipefail
 
 PROJECT_PATH="${1:?project path required}"
 PROJECT_NAME="${2:?project name required}"
-TAG="${3:-}"
 
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 # Package the prepared release directory as the asset uploaded to GitHub.
@@ -33,16 +32,14 @@ rm -f "${ZIP}"
   zip -rq "${ZIP}" .
 )
 
-if [[ -z "${TAG}" ]]; then
-  # Select the highest matching version tag attached to the current commit.
-    TAG="$(
-        git tag \
-            --points-at HEAD \
-            --list "${PROJECT_NAME}/v*" \
-            --sort=-version:refname |
-        head -n 1
-    )"
-fi
+TAG="$(
+    git tag \
+        --points-at HEAD \
+        --list "${PROJECT_NAME}/v*" \
+        --sort=-version:refname |
+    head -n 1
+)"
+
 if [[ -z "${TAG}" ]]; then
     echo "No release tag found for ${PROJECT_NAME}"
     exit 1
@@ -68,5 +65,3 @@ curl --tlsv1.2 -sSf "${PACKAGES_JSON_URL}" -o packages.json \
 rm -rf "${REPO_ROOT}/public"
 mkdir -p "${REPO_ROOT}/public"
 php .github/scripts/update-packages.php --project-path "${PROJECT_PATH}" --asset-name "${ASSET_NAME}" --tag "${TAG}" --repository "${REPOSITORY}"
-
-echo "Published ${ASSET_NAME} to ${TAG} and wrote public/packages.json"
