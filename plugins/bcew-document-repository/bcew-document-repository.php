@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:       BCEW – Document Repository
+ * Plugin Name:       BCEW Document Repository
  * Plugin URI:        https://github.com/bcgov/bcew-monorepo/plugins/bcew-document-repository
  * Description:       WordPress Document Repository plugin is a plugin that enhances the ability to upload and manage
  * Version:           1.1.0
