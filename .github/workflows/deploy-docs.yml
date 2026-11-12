@@ -11,6 +11,7 @@ on:
       - "tools/sync-docs.mjs"
       - "package.json"
       - "pnpm-lock.yaml"
+      - ".github/actions/setup/**"
       - ".github/workflows/deploy-docs.yml"
   pull_request:
     branches: [main]
@@ -21,6 +22,7 @@ on:
       - "tools/sync-docs.mjs"
       - "package.json"
       - "pnpm-lock.yaml"
+      - ".github/actions/setup/**"
       - ".github/workflows/deploy-docs.yml"
 
 permissions:
@@ -44,20 +46,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
-        with:
-          version: 10
-
-      - name: Setup Node
-        uses: actions/setup-node@v6.4.0
-        with:
-          node-version: "24"
-          cache: "pnpm"
-          cache-dependency-path: pnpm-lock.yaml
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile --ignore-scripts #prevent scripts from running during install, as we will run them explicitly in the next step
+      - uses: ./.github/actions/setup
 
       - name: Build docs site (VitePress; includes sync)
         env:

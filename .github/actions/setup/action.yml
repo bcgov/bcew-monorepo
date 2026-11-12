@@ -1,0 +1,44 @@
+name: Setup
+description: Install Node.js, pnpm, and optional Composer dependencies.
+
+inputs:
+  install-composer:
+    description: Whether to install Composer dependencies.
+    required: false
+    default: 'false'
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Node.js 24
+      uses: actions/setup-node@v7.1.0
+      with:
+        node-version: 24
+
+    - name: Install pnpm
+      uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+      with:
+        version: 10
+        cache: true
+        run_install: |
+          - args: [--ignore-scripts]
+
+    - name: Locate Composer download cache
+      if: inputs.install-composer == 'true'
+      id: composer-cache
+      shell: bash
+      run: echo "path=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+    - name: Cache Composer downloads
+      if: inputs.install-composer == 'true'
+      uses: actions/cache@v6.1.0
+      with:
+        path: ${{ steps.composer-cache.outputs.path }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-composer-
+
+    - name: Install Composer dependencies
+      if: inputs.install-composer == 'true'
+      shell: bash
+      run: composer i

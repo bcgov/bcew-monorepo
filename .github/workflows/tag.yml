@@ -64,20 +64,7 @@ jobs:
           fetch-depth: 0
           token: ${{ steps.app-token.outputs.token }}
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
-        with:
-          version: 10
-          cache: true
-
-      - name: Setup Node.js 24
-        uses: actions/setup-node@v6.4.0
-        with:
-          node-version: 24
-          cache: "pnpm"
-
-      - name: Install dependencies
-        run: pnpm install --ignore-scripts
+      - uses: ./.github/actions/setup
 
       # Nx commits as this identity. Matches the usual github-actions bot.
       - name: Configure git identity

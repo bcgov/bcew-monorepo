@@ -20,6 +20,7 @@ documentation/docs/.vuepress/.temp
 documentation/docs/.vuepress/.cache
 documentation/node_modules
 .wp-env.override.json
+.github/pull_request_template.md
 
 # VSCode
 .vscode/*
