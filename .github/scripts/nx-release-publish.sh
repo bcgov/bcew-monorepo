@@ -32,6 +32,7 @@ rm -f "${ZIP}"
   zip -rq "${ZIP}" .
 )
 
+
 TAG="$(
     git tag \
         --points-at HEAD \
@@ -52,11 +53,24 @@ fi
 
 
 # --clobber replaces a zip from a retried run on the same tag.
-gh release upload "${TAG}" "${ZIP}" --clobber
+#gh release upload "${TAG}" "${ZIP}" --clobber
 
 
 rm -rf "${REPO_ROOT}/public"
 mkdir -p "${REPO_ROOT}/public"
-GITHUB_SHA=$(git rev-parse HEAD)
-RELEASE_INFO=$(gh release view "${TAG}" --json tagName,assets,url)
-php .github/scripts/update-packages.php --project-path "${PROJECT_PATH}" --release-info "$RELEASE_INFO"  --hash "$GITHUB_SHA"
+ZIP_SHASUM="$(shasum -a 1 "${ZIP}" | cut -d' ' -f1)"
+GITHUB_SHA="$(git rev-parse HEAD)"
+RELEASE_INFO="$(
+    gh release view "${TAG}" --json tagName,assets,url |
+    jq \
+        --arg zipsha "${ZIP_SHASUM}" \
+        --arg gitsha "${GITHUB_SHA}" \
+        --arg project "${PROJECT_PATH}" \
+        '. + {
+            zipsha: $zipsha,
+            gitsha: $gitsha,
+            project: $project
+        }'
+)"
+
+php .github/scripts/update-packages.php  --release-info "$RELEASE_INFO"

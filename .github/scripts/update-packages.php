@@ -67,13 +67,11 @@ for ( $i = 1; $i < $argc; $i += 2 ) {
     $key          = ltrim( $argv[ $i ], '-' );
     $args[ $key ] = $argv[ $i + 1 ] ?? null;
 }
-$project_path = $args['project-path'] ?? getenv( 'PROJECT_PATH' ); // e.g., 'themes/theme-a' or 'plugins/plugin-b'.
-$hash         = $args['hash2'] ?? getenv( 'GITHUB_SHA' ); // Commit hash for this release.
-$release_info = get_release_info_from_github( $args['release-info'] ?? [] ); // JSON string with release info from GitHub API.
 
+$release_info = get_release_info_from_github( $args['release-info'] ?? [] ); // JSON string with release info from GitHub API.
 // Load the local composer.json for this subproject to get 'require', 'autoload', etc.
 // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-$local_metadata = json_decode( file_get_contents( "$project_path/composer.json" ), true );
+$local_metadata = json_decode( file_get_contents( $release_info['project'] . '/composer.json' ), true );
 // Construct the new version entry.
 $new_entry = array_merge(
     $local_metadata,
@@ -82,18 +80,11 @@ $new_entry = array_merge(
 		'dist'    => [
 			'url'       => $release_info['assets'][0]['url'] ?? '',
 			'type'      => 'zip',
-			'reference' => $hash,
-			'shasum'    => str_replace( 'sha256:', '', $release_info['assets'][0]['digest'] ?? '' ), // Optional: You can compute the SHA1 checksum of the zip file if needed.
+			'reference' => $release_info['gitsha'] ?? '',
+			'shasum'    => $release_info['zipsha'] ?? '', // Optional: You can compute the SHA1 checksum of the zip file if needed.
 		],
-		'source'  => [
-			'type'      => 'git',
-			'url'       => "https://github.com/{$release_info['repository']}.git",
-			'reference' => $hash,
-		],
-
 	]
 );
-
 
 // Remove unnecessary properties before merging into packages.
 unset( $new_entry['repositories'] );
