@@ -53,7 +53,7 @@ fi
 
 
 # --clobber replaces a zip from a retried run on the same tag.
-#gh release upload "${TAG}" "${ZIP}" --clobber
+gh release upload "${TAG}" "${ZIP}" --clobber
 
 
 rm -rf "${REPO_ROOT}/public"
