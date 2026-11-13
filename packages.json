@@ -629,15 +629,10 @@
                 },
                 "version": "1.2.0-alpha.0",
                 "dist": {
-                    "url": "https://github.com/bcgov/bcew-monorepo/releases/download/bcew-document-repository/v1.2.0-alpha.0/dist-8e9b14bb87394f477bc4f2e85e2acd41ec0147ce.zip",
+                    "url": "",
                     "type": "zip",
-                    "reference": "8e9b14bb87394f477bc4f2e85e2acd41ec0147ce",
-                    "shasum": "1356b63a799932efb012eaaa8d52919f7d8a28d5c3a09e2bf87c2c9d23722157"
-                },
-                "source": {
-                    "type": "git",
-                    "url": "https://github.com/bcgov/bcew-monorepo.git",
-                    "reference": "8e9b14bb87394f477bc4f2e85e2acd41ec0147ce"
+                    "reference": "54afd7ecc07f12c3a6e667d6310b8ee7ddd87ce7",
+                    "shasum": "ed6f5213bc351f39bf77a8e0824e1385f10e5416"
                 }
             }
         },
