@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: BCEW
+ * Plugin Name: BCEW Plugin
  * Plugin URI: https://github.com/bcgov/bcew-monorepo/tree/main/plugins/bcew-plugin
  * Author: govwordpress@gov.bc.ca
  * Author URI: https://apps.itsm.gov.bc.ca/jira/browse/ENG-138
