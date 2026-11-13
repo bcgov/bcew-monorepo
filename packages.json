@@ -683,6 +683,25 @@
                     "reference": "ce303b6fa453de69c19c716458e06a57aec47b9f",
                     "shasum": "f66d2d54a8098e00a573e944d452da93737b6a62b9e0e015dec167a537bd5614"
                 }
+            },
+            "2.19.0": {
+                "name": "bcgov-plugin/bcew-plugin",
+                "description": "BCEW Plugin",
+                "type": "wordpress-plugin",
+                "license": "Apache-2.0",
+                "autoload": {
+                    "psr-4": {
+                        "Bcew\\Plugin\\": "src/",
+                        "Bcew\\Plugin\\Test\\": "tests/php/"
+                    }
+                },
+                "version": "2.19.0",
+                "dist": {
+                    "url": "https://github.com/bcgov/bcew-monorepo/releases/download/bcew-plugin/v2.19.0/dist-3ec9d1818f9c550ca76de01975a1f14f42ec5590.zip",
+                    "type": "zip",
+                    "reference": "3ec9d1818f9c550ca76de01975a1f14f42ec5590",
+                    "shasum": "1f309d93eb4387231957d3908e0ad8755930e408"
+                }
             }
         }
     }
