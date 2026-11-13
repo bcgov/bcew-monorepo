@@ -187,7 +187,7 @@
             "pattern": "{projectName}/v{version}"
         },
         "git": {
-            "commit": false,
+            "commit": true,
             "tag": true
         },
         

@@ -53,3 +53,10 @@ fi
 
 # --clobber replaces a zip from a retried run on the same tag.
 gh release upload "${TAG}" "${ZIP}" --clobber
+
+
+rm -rf "${REPO_ROOT}/public"
+mkdir -p "${REPO_ROOT}/public"
+GITHUB_SHA=$(git rev-parse HEAD)
+RELEASE_INFO=$(gh release view "${TAG}" --json tagName,assets,url)
+php .github/scripts/update-packages.php --project-path "${PROJECT_PATH}" --release-info "$RELEASE_INFO"  --hash "$GITHUB_SHA"
