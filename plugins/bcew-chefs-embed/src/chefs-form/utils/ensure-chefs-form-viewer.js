@@ -58,7 +58,7 @@ const ensureChefsFormViewerDefined = ( baseUrl ) => {
         );
     }
 
-    const src = `${ root }/embed/${ CHEFS_EMBED_VERSION }/embed/chefs-form-viewer.min.js`;
+    const src = `${ root }/embed/${ CHEFS_EMBED_VERSION }/chefs-form-viewer.min.js`;
 
     if ( pendingScripts.has( src ) ) {
         return pendingScripts.get( src );

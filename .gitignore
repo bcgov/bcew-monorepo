@@ -39,6 +39,7 @@ docs/.vitepress/dist/
 docs/content/
 public/
 tsconfig.tsbuildinfo
+**/__release-archive__/
 
 # nx files
 .nx/cache
