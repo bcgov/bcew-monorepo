@@ -79,16 +79,16 @@ $new_entry = array_merge(
     $local_metadata,
     [
 		'version' => get_package_and_version_from_tag( $release_info['tagName'] )['version'],
-		'source'  => [
-			'type'      => 'git',
-			'url'       => "https://github.com/{$release_info['repository']}.git",
-			'reference' => $hash,
-		],
 		'dist'    => [
 			'url'       => $release_info['assets'][0]['url'] ?? '',
 			'type'      => 'zip',
 			'reference' => $hash,
 			'shasum'    => str_replace( 'sha256:', '', $release_info['assets'][0]['digest'] ?? '' ), // Optional: You can compute the SHA1 checksum of the zip file if needed.
+		],
+		'source'  => [
+			'type'      => 'git',
+			'url'       => "https://github.com/{$release_info['repository']}.git",
+			'reference' => $hash,
 		],
 
 	]
