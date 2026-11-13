@@ -640,6 +640,32 @@
                     "shasum": "7e38bbb1435ef3a61ca005b405f4ce59f578af1706f7a53035f403a8255c61e6"
                 }
             }
+        },
+        "bcgov-plugin/bcew-plugin": {
+            "2.19.0-alpha.0": {
+                "name": "bcgov-plugin/bcew-plugin",
+                "description": "BCEW Plugin",
+                "type": "wordpress-plugin",
+                "license": "Apache-2.0",
+                "autoload": {
+                    "psr-4": {
+                        "Bcew\\Plugin\\": "src/",
+                        "Bcew\\Plugin\\Test\\": "tests/php/"
+                    }
+                },
+                "version": "2.19.0-alpha.0",
+                "source": {
+                    "type": "git",
+                    "url": "https://github.com/bcgov/bcew-monorepo.git",
+                    "reference": "ce303b6fa453de69c19c716458e06a57aec47b9f"
+                },
+                "dist": {
+                    "url": "https://github.com/bcgov/bcew-monorepo/releases/download/bcew-plugin/v2.19.0-alpha.0/dist-ce303b6fa453de69c19c716458e06a57aec47b9f.zip",
+                    "type": "zip",
+                    "reference": "ce303b6fa453de69c19c716458e06a57aec47b9f",
+                    "shasum": "f66d2d54a8098e00a573e944d452da93737b6a62b9e0e015dec167a537bd5614"
+                }
+            }
         }
     }
 }
