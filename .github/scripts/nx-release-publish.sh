@@ -26,6 +26,11 @@ ARCHIVE_PATH="${REPO_ROOT}/${PROJECT_PATH}/__release-archive__"
 ASSET_NAME="dist-$(git rev-parse HEAD).zip"
 ZIP="${ARCHIVE_PATH}/${ASSET_NAME}"
 
+if [[ "${NX_DRY_RUN:-}" == "true" ]]; then
+  echo "Dry run: would package and publish ${PROJECT_NAME}"
+  exit 0
+fi
+
 rm -f "${ZIP}"
 (
   cd "${ARCHIVE_PATH}"

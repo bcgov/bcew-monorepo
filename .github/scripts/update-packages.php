@@ -59,7 +59,15 @@ function get_package_and_version_from_tag( string $tag ): array {
 
 // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
 // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-$existing_json = json_decode( file_get_contents( 'https://bcgov.github.io/bcew-monorepo/packages.json' ) ?? [ 'packages' => [] ], true );
+$feed_url = getenv( 'PACKAGES_JSON_URL' ) ?: 'https://bcgov.github.io/bcew-monorepo/packages.json';
+$feed_contents = file_get_contents( $feed_url );
+if ( false === $feed_contents ) {
+	throw new RuntimeException( 'Could not download the existing packages.json.' );
+}
+$existing_json = json_decode( $feed_contents, true );
+if ( ! is_array( $existing_json ) || ! isset( $existing_json['packages'] ) || ! is_array( $existing_json['packages'] ) ) {
+	throw new RuntimeException( 'The existing packages.json is invalid.' );
+}
 $args          = [];
 $argc          = count( $argv );
 
@@ -119,4 +127,5 @@ try {
 } catch ( Throwable $exception ) {
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo "Failed to update public/packages.json: {$exception->getMessage()}\n";
+	exit( 1 );
 }
