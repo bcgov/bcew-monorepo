@@ -12,6 +12,7 @@
     },
     "targets": {
         "composer-install": {},
+        "prepare-release": {},
         "build": {
             "options": {
                 "command": "npm run build:doc-repo && npm run build:metadata-settings && npm run build:css",

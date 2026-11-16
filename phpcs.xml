@@ -17,6 +17,7 @@
 	<exclude-pattern>*.js</exclude-pattern>
 	<exclude-pattern>*.min.js</exclude-pattern>
 	<exclude-pattern>*/build/*</exclude-pattern>
+	<exclude-pattern>*/__release-archive__/*</exclude-pattern>
 	<exclude-pattern>*/dist/*</exclude-pattern>
 	<exclude-pattern>*/coverage/*</exclude-pattern>
 	<exclude-pattern>*/artifacts/*</exclude-pattern>

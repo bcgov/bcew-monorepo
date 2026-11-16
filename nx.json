@@ -156,9 +156,18 @@
         "nx-release-publish": {
             "executor": "nx:run-commands",
             "options": {
-                "command": "bash .github/scripts/publish-wordpress-release.sh {projectName}",
+                "command": "bash .github/scripts/nx-release-publish.sh {projectRoot} {projectName}",
                 "cwd": "{workspaceRoot}"
+              
             }
+        },
+        "prepare-release": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "bash .github/scripts/pre-version-command.sh {projectRoot}",
+                "cwd": "{workspaceRoot}"
+            },
+            "dependsOn": ["install","composer-install","build"]
         }
     },
     "namedInputs": {
@@ -181,14 +190,74 @@
             "commit": true,
             "tag": true
         },
+        
+        
         "version": {
-            "currentVersionResolver": "git-tag",
+            "conventionalCommits": true,
             "fallbackCurrentVersionResolver": "disk",
+            "manifestRootsToUpdate": ["{projectRoot}/__release-archive__"],
+            "preVersionCommand": "pnpm nx run-many -t prepare-release",
             "versionActions": "tools/monorepo/src/release/wordpress-version-actions.ts"
+        },
+        "conventionalCommits": {
+            "useCommitScope": false,
+            "types": {
+                "feat": {
+                    "changelog": {
+                        "title": "Features"
+                    }
+                },
+                "fix": {
+                    "changelog": {
+                        "title": "Fixes"
+                    }
+                },
+                "perf": {
+                    "changelog": {
+                        "title": "Performance Improvements"
+                    }
+                },
+                "revert": {
+                    "changelog": {
+                        "title": "Reverts"
+                    }
+                },
+                "docs": {
+                    "changelog": {
+                        "title": "Documentation"
+                    }
+                },
+                "style": {
+                    "changelog": {
+                        "title": "Style"
+                    }
+                },
+                "refactor": {
+                    "changelog": {
+                        "title": "Refactor"
+                    }
+                },
+                "test": {
+                    "changelog": {
+                        "title": "Test"
+                    }
+                },
+                "build": {
+                    "changelog": {
+                        "title": "Build"
+                    }
+                },
+                "ci": {
+                    "changelog": {
+                        "title": "CI"
+                    }
+                }
+            }
         },
         "changelog": {
             "workspaceChangelog": false,
             "projectChangelogs": {
+                "file": false,
                 "createRelease": "github"
             }
         }

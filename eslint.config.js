@@ -20,6 +20,7 @@ module.exports = [
     {
         ignores: [
             '**/build/**',
+            '**/__release-archive__/**',
             '**/node_modules/**',
             '**/vendor/**',
             '**/dist/**',
