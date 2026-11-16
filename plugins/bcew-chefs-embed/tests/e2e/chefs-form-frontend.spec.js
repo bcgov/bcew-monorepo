@@ -10,7 +10,7 @@ const {
     publishFormAndVisit,
     selectFormAndPublish,
 } = require( './chefs-form-helpers' );
-const VIEWER_PATH = 'embed/chefs-form-viewer.min.js';
+const VIEWER_PATH = 'chefs-form-viewer.min.js';
 const VIEWER_VERSION = '1.1.0';
 const VIEWER_BODY = 'window.__chefsViewerLoaded = true;';
 const SRI_FORM_ID = '88888888-8888-4888-8888-888888888888';
