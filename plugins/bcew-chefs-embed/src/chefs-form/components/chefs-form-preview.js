@@ -76,22 +76,6 @@ const ChefsFormPreview = ( { formId } ) => {
                 if ( 'function' === typeof viewer.load ) {
                     await viewer.load();
                 }
-            } catch ( error ) {
-                if ( isCancelled ) {
-                    return;
-                }
-
-                setErrorMessage(
-                    error?.message ||
-                        __(
-                            'Unable to load the CHEFS form.',
-                            'bcew-chefs-embed'
-                        )
-                );
-
-                if ( viewerHostRef.current ) {
-                    viewerHostRef.current.replaceChildren();
-                }
             } finally {
                 if ( ! isCancelled ) {
                     setIsLoading( false );
@@ -99,7 +83,17 @@ const ChefsFormPreview = ( { formId } ) => {
             }
         };
 
-        loadPreview();
+        loadPreview().catch( ( error ) => {
+            if ( isCancelled ) {
+                return;
+            }
+
+            setErrorMessage(
+                error?.message ||
+                    __( 'Unable to load the CHEFS form.', 'bcew-chefs-embed' )
+            );
+            viewerHostRef.current?.replaceChildren();
+        } );
 
         return () => {
             isCancelled = true;

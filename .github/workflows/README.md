@@ -7,6 +7,8 @@ Workflow files in this directory implement CI, releases, and documentation deplo
 Runs on every new commit in a PR. Features:
 
 - **Automatic PR labeling** — `actions/labeler` sets labels from `.github/labeler.yml`. When a new plugin or theme is added under `plugins/` or `themes/`, update the labeler rules.
+- **Shared setup** — applicable jobs run checkout first, then use `.github/actions/setup` for Node.js 24, pnpm 10, dependency installation and caching, and optional Composer dependency installation (`install-composer: 'true'`). Dependency install scripts are disabled consistently across workflows. pnpm uses a frozen lockfile by default in CI. Checkout stays in each job because the local action must already be present on disk before GitHub can load it.
+- **Composer cache** — jobs that install Composer dependencies cache downloaded packages using the runner OS and root `composer.lock`. When the lockfile changes, a previous OS-matched cache can seed the downloads. Composer installation still runs on cache hits; installed `vendor/` directories are not cached.
 - **Affected projects** — Changed files are analyzed with **`nx affected`** (base = target branch, usually `origin/main`). Only affected projects run `build`, `test-e2e`, and `test-integration`.
 - **Lint** — Full monorepo lint (PHP, JS, CSS, Markdown, `package.json`) runs on every PR.
 

@@ -1,3 +1,4 @@
+const { afterAll, describe, expect, test } = require( '@jest/globals' );
 const fs = require( 'fs' );
 const os = require( 'os' );
 const path = require( 'path' );

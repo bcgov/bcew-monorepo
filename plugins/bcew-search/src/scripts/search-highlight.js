@@ -8,7 +8,7 @@
  * @author BC Gov
  */
 
-/* global searchHighlightData, Cufon */
+/* global searchHighlightData, Cufon, jQuery, NodeFilter */
 
 jQuery( document ).ready( () => {
     'use strict';

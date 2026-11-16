@@ -45,6 +45,39 @@ test.describe( 'SkipNav', () => {
             ).toBeVisible();
         } );
 
+        test( 'should navigate skip links in reverse order with Shift+Tab', async ( {
+            editor,
+        } ) => {
+            const preview = await openPreviewAndSetFocus( editor );
+            const linkNames = [
+                'Skip to main content',
+                'Skip to main navigation',
+                'Accessibility Statement',
+            ];
+
+            for ( const name of linkNames ) {
+                await preview.keyboard.press( 'Tab' );
+                const link = preview.getByRole( 'link', {
+                    name,
+                    exact: true,
+                } );
+                await expect( link ).toBeFocused();
+                await expect( link ).toBeVisible();
+                await expect( link ).toBeInViewport( { ratio: 1 } );
+            }
+
+            for ( const name of linkNames.slice( 0, -1 ).reverse() ) {
+                await preview.keyboard.press( 'Shift+Tab' );
+                const link = preview.getByRole( 'link', {
+                    name,
+                    exact: true,
+                } );
+                await expect( link ).toBeFocused();
+                await expect( link ).toBeVisible();
+                await expect( link ).toBeInViewport( { ratio: 1 } );
+            }
+        } );
+
         test( 'should skip to main content', async ( { editor } ) => {
             const preview = await openPreviewAndSetFocus( editor );
 

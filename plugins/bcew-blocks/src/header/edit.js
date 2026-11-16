@@ -498,7 +498,7 @@ const Edit = ( { clientId, attributes, setAttributes } ) => {
                                 select( blockEditorStore ).getBlocks(
                                     clientId
                                 ),
-                                parseInt( value, 10 ),
+                                Number.parseInt( value, 10 ),
                                 updateBlockAttributes
                             );
                         } }

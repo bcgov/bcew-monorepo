@@ -1,3 +1,5 @@
+/* global customElements */
+
 import { CHEFS_EMBED_INTEGRITY, CHEFS_EMBED_VERSION } from './constants';
 
 const pendingScripts = new Map();
