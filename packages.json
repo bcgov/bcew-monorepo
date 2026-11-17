@@ -286,6 +286,25 @@
                     "url": "https://github.com/bcgov/bcew-monorepo.git",
                     "reference": "bcew-theme-2/v1.0.0-alpha.2"
                 }
+            },
+            "1.0.0-alpha.0": {
+                "name": "bcgov-theme/bcew-theme-2",
+                "description": "BCEW Theme 2",
+                "type": "wordpress-theme",
+                "license": "Apache-2.0",
+                "autoload": {
+                    "psr-4": {
+                        "Bcew\\Theme2\\": "src/",
+                        "Bcew\\Theme2\\Test\\": "tests/"
+                    }
+                },
+                "version": "1.0.0-alpha.0",
+                "dist": {
+                    "url": "https://github.com/bcgov/bcew-monorepo/releases/download/bcew-theme-2/v1.0.0-alpha.0/dist-e036a6bff8c76fa48ac98975ee8105abaff41432.zip",
+                    "type": "zip",
+                    "reference": "e036a6bff8c76fa48ac98975ee8105abaff41432",
+                    "shasum": "9e4af101d2349429b196b57e1b0c82aa242e5630"
+                }
             }
         },
         "bcgov-theme/bcew-ticorp": {
