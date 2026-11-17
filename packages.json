@@ -690,6 +690,27 @@
                     "shasum": "1f309d93eb4387231957d3908e0ad8755930e408"
                 }
             }
+        },
+        "bcgov-plugin/bcew-search": {
+            "1.3.0": {
+                "name": "bcgov-plugin/bcew-search",
+                "description": "BCEW Search",
+                "type": "wordpress-plugin",
+                "license": "Apache-2.0",
+                "autoload": {
+                    "psr-4": {
+                        "Bcew\\Search\\": "src/",
+                        "Bcew\\Search\\Test\\": "tests/php/"
+                    }
+                },
+                "version": "1.3.0",
+                "dist": {
+                    "url": "https://github.com/bcgov/bcew-monorepo/releases/download/bcew-search/v1.3.0/dist-e036a6bff8c76fa48ac98975ee8105abaff41432.zip",
+                    "type": "zip",
+                    "reference": "e036a6bff8c76fa48ac98975ee8105abaff41432",
+                    "shasum": "4c33f9bf22efbe944ed0a099839725bfaa96039d"
+                }
+            }
         }
     }
 }
