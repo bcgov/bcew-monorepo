@@ -1,98 +1,6 @@
 {
     "packages": {
         "bcgov-theme/bcew-belleville-terminal": {
-            "1.0.0-alpha.4": {
-                "name": "bcgov-theme/bcew-belleville-terminal",
-                "description": "Belleville Terminal Child Theme",
-                "type": "wordpress-theme",
-                "license": "Apache-2.0",
-                "autoload": {
-                    "psr-4": {
-                        "Bcgov\\BcewBellevilleTerminal\\": "src/",
-                        "Bcgov\\BcewBellevilleTerminal\\Test\\": "tests/"
-                    }
-                },
-                "version": "1.0.0-alpha.4",
-                "dist": {
-                    "url": "https://github.com/bcgov/bcew-monorepo/releases/download/bcew-belleville-terminal/v1.0.0-alpha.4/dist.zip",
-                    "type": "zip",
-                    "reference": "bcew-belleville-terminal/v1.0.0-alpha.4"
-                },
-                "source": {
-                    "type": "git",
-                    "url": "https://github.com/bcgov/bcew-monorepo.git",
-                    "reference": "bcew-belleville-terminal/v1.0.0-alpha.4"
-                }
-            },
-            "1.0.0-alpha.5": {
-                "name": "bcgov-theme/bcew-belleville-terminal",
-                "description": "Belleville Terminal Child Theme",
-                "type": "wordpress-theme",
-                "license": "Apache-2.0",
-                "autoload": {
-                    "psr-4": {
-                        "Bcgov\\BcewBellevilleTerminal\\": "src/",
-                        "Bcgov\\BcewBellevilleTerminal\\Test\\": "tests/"
-                    }
-                },
-                "version": "1.0.0-alpha.5",
-                "dist": {
-                    "url": "https://github.com/bcgov/bcew-monorepo/releases/download/bcew-belleville-terminal/v1.0.0-alpha.5/dist.zip",
-                    "type": "zip",
-                    "reference": "bcew-belleville-terminal/v1.0.0-alpha.5"
-                },
-                "source": {
-                    "type": "git",
-                    "url": "https://github.com/bcgov/bcew-monorepo.git",
-                    "reference": "bcew-belleville-terminal/v1.0.0-alpha.5"
-                }
-            },
-            "1.0.0-alpha.6": {
-                "name": "bcgov-theme/bcew-belleville-terminal",
-                "description": "Belleville Terminal Child Theme",
-                "type": "wordpress-theme",
-                "license": "Apache-2.0",
-                "autoload": {
-                    "psr-4": {
-                        "Bcgov\\BcewBellevilleTerminal\\": "src/",
-                        "Bcgov\\BcewBellevilleTerminal\\Test\\": "tests/"
-                    }
-                },
-                "version": "1.0.0-alpha.6",
-                "dist": {
-                    "url": "https://github.com/bcgov/bcew-monorepo/releases/download/bcew-belleville-terminal/v1.0.0-alpha.6/dist.zip",
-                    "type": "zip",
-                    "reference": "bcew-belleville-terminal/v1.0.0-alpha.6"
-                },
-                "source": {
-                    "type": "git",
-                    "url": "https://github.com/bcgov/bcew-monorepo.git",
-                    "reference": "bcew-belleville-terminal/v1.0.0-alpha.6"
-                }
-            },
-            "1.0.0-alpha.7": {
-                "name": "bcgov-theme/bcew-belleville-terminal",
-                "description": "Belleville Terminal Child Theme",
-                "type": "wordpress-theme",
-                "license": "Apache-2.0",
-                "autoload": {
-                    "psr-4": {
-                        "Bcgov\\BcewBellevilleTerminal\\": "src/",
-                        "Bcgov\\BcewBellevilleTerminal\\Test\\": "tests/"
-                    }
-                },
-                "version": "1.0.0-alpha.7",
-                "dist": {
-                    "url": "https://github.com/bcgov/bcew-monorepo/releases/download/bcew-belleville-terminal/v1.0.0-alpha.7/bcew-belleville-terminal-1.0.0-alpha.7.zip",
-                    "type": "zip",
-                    "reference": "bcew-belleville-terminal/v1.0.0-alpha.7"
-                },
-                "source": {
-                    "type": "git",
-                    "url": "https://github.com/bcgov/bcew-monorepo.git",
-                    "reference": "bcew-belleville-terminal/v1.0.0-alpha.7"
-                }
-            },
             "1.0.0": {
                 "name": "bcgov-theme/bcew-belleville-terminal",
                 "description": "Belleville Terminal Child Theme",
@@ -142,98 +50,6 @@
             }
         },
         "bcgov-plugin/bcew-blocks": {
-            "1.0.0-alpha.1": {
-                "name": "bcgov-plugin/bcew-blocks",
-                "description": "Plugin containing blocks intended to be used with the Design System WordPress Theme suite of products.",
-                "type": "wordpress-plugin",
-                "license": "Apache-2.0",
-                "autoload": {
-                    "psr-4": {
-                        "Bcgov\\BcgovWordpressBlocks\\": "src/",
-                        "Bcgov\\BcgovWordpressBlocks\\Test\\": "tests/php/"
-                    }
-                },
-                "version": "1.0.0-alpha.1",
-                "dist": {
-                    "url": "https://github.com/bcgov/bcew-monorepo/releases/download/bcew-blocks/v1.0.0-alpha.1/dist.zip",
-                    "type": "zip",
-                    "reference": "bcew-blocks/v1.0.0-alpha.1"
-                },
-                "source": {
-                    "type": "git",
-                    "url": "https://github.com/bcgov/bcew-monorepo.git",
-                    "reference": "bcew-blocks/v1.0.0-alpha.1"
-                }
-            },
-            "1.0.0-alpha.2": {
-                "name": "bcgov-plugin/bcew-blocks",
-                "description": "Plugin containing blocks intended to be used with the Design System WordPress Theme suite of products.",
-                "type": "wordpress-plugin",
-                "license": "Apache-2.0",
-                "autoload": {
-                    "psr-4": {
-                        "Bcgov\\BcgovWordpressBlocks\\": "src/",
-                        "Bcgov\\BcgovWordpressBlocks\\Test\\": "tests/php/"
-                    }
-                },
-                "version": "1.0.0-alpha.2",
-                "dist": {
-                    "url": "https://github.com/bcgov/bcew-monorepo/releases/download/bcew-blocks/v1.0.0-alpha.2/dist.zip",
-                    "type": "zip",
-                    "reference": "bcew-blocks/v1.0.0-alpha.2"
-                },
-                "source": {
-                    "type": "git",
-                    "url": "https://github.com/bcgov/bcew-monorepo.git",
-                    "reference": "bcew-blocks/v1.0.0-alpha.2"
-                }
-            },
-            "1.0.0-alpha.3": {
-                "name": "bcgov-plugin/bcew-blocks",
-                "description": "Plugin containing blocks intended to be used with the Design System WordPress Theme suite of products.",
-                "type": "wordpress-plugin",
-                "license": "Apache-2.0",
-                "autoload": {
-                    "psr-4": {
-                        "Bcgov\\BcgovWordpressBlocks\\": "src/",
-                        "Bcgov\\BcgovWordpressBlocks\\Test\\": "tests/php/"
-                    }
-                },
-                "version": "1.0.0-alpha.3",
-                "dist": {
-                    "url": "https://github.com/bcgov/bcew-monorepo/releases/download/bcew-blocks/v1.0.0-alpha.3/dist.zip",
-                    "type": "zip",
-                    "reference": "bcew-blocks/v1.0.0-alpha.3"
-                },
-                "source": {
-                    "type": "git",
-                    "url": "https://github.com/bcgov/bcew-monorepo.git",
-                    "reference": "bcew-blocks/v1.0.0-alpha.3"
-                }
-            },
-            "1.0.0-alpha.4": {
-                "name": "bcgov-plugin/bcew-blocks",
-                "description": "Plugin containing blocks intended to be used with the Design System WordPress Theme suite of products.",
-                "type": "wordpress-plugin",
-                "license": "Apache-2.0",
-                "autoload": {
-                    "psr-4": {
-                        "Bcgov\\BcgovWordpressBlocks\\": "src/",
-                        "Bcgov\\BcgovWordpressBlocks\\Test\\": "tests/php/"
-                    }
-                },
-                "version": "1.0.0-alpha.4",
-                "dist": {
-                    "url": "https://github.com/bcgov/bcew-monorepo/releases/download/bcew-blocks/v1.0.0-alpha.4/dist.zip",
-                    "type": "zip",
-                    "reference": "bcew-blocks/v1.0.0-alpha.4"
-                },
-                "source": {
-                    "type": "git",
-                    "url": "https://github.com/bcgov/bcew-monorepo.git",
-                    "reference": "bcew-blocks/v1.0.0-alpha.4"
-                }
-            },
             "1.0.0": {
                 "name": "bcgov-plugin/bcew-blocks",
                 "description": "Plugin containing blocks intended to be used with the Design System WordPress Theme suite of products.",
@@ -264,29 +80,6 @@
             }
         },
         "bcgov-theme/bcew-theme-2": {
-            "1.0.0-alpha.2": {
-                "name": "bcgov-theme/bcew-theme-2",
-                "description": "BCEW Theme 2",
-                "type": "wordpress-theme",
-                "license": "Apache-2.0",
-                "autoload": {
-                    "psr-4": {
-                        "Bcgov\\BcewTheme2\\": "src/",
-                        "Bcgov\\BcewTheme2\\Test\\": "tests/"
-                    }
-                },
-                "version": "1.0.0-alpha.2",
-                "dist": {
-                    "url": "https://github.com/bcgov/bcew-monorepo/releases/download/bcew-theme-2/v1.0.0-alpha.2/bcew-theme-2-1.0.0-alpha.2.zip",
-                    "type": "zip",
-                    "reference": "bcew-theme-2/v1.0.0-alpha.2"
-                },
-                "source": {
-                    "type": "git",
-                    "url": "https://github.com/bcgov/bcew-monorepo.git",
-                    "reference": "bcew-theme-2/v1.0.0-alpha.2"
-                }
-            },
             "1.0.0-alpha.0": {
                 "name": "bcgov-theme/bcew-theme-2",
                 "description": "BCEW Theme 2",
@@ -308,34 +101,6 @@
             }
         },
         "bcgov-theme/bcew-ticorp": {
-            "1.0.0-alpha.1": {
-                "name": "bcgov-theme/bcew-ticorp",
-                "description": "BCEW \u2013 TI Corp Child Theme",
-                "type": "wordpress-theme",
-                "license": "Apache-2.0",
-                "autoload": {
-                    "psr-4": {
-                        "Bcgov\\BcewTicorp\\": "src/",
-                        "Bcgov\\BcewTicorp\\Test\\": "tests/"
-                    }
-                },
-                "config": {
-                    "platform": {
-                        "php": "7.4.30"
-                    }
-                },
-                "version": "1.0.0-alpha.1",
-                "dist": {
-                    "url": "https://github.com/bcgov/bcew-monorepo/releases/download/bcew-ticorp/v1.0.0-alpha.1/bcew-ticorp-1.0.0-alpha.1.zip",
-                    "type": "zip",
-                    "reference": "bcew-ticorp/v1.0.0-alpha.1"
-                },
-                "source": {
-                    "type": "git",
-                    "url": "https://github.com/bcgov/bcew-monorepo.git",
-                    "reference": "bcew-ticorp/v1.0.0-alpha.1"
-                }
-            },
             "1.3.0": {
                 "name": "bcgov-theme/bcew-ticorp",
                 "description": "BCEW \u2013 TI Corp Child Theme",
@@ -357,90 +122,6 @@
             }
         },
         "bcgov-plugin/bcew-chefs-embed": {
-            "1.0.0-alpha.2": {
-                "name": "bcgov-plugin/bcew-chefs-embed",
-                "description": "Embed BC Government Common Hosted Form Service (CHEFS) forms into WordPress pages and posts.",
-                "type": "wordpress-plugin",
-                "license": "Apache-2.0",
-                "autoload": {
-                    "psr-4": {
-                        "Bcgov\\BcewChefsEmbed\\": "src/",
-                        "Bcgov\\BcewChefsEmbed\\Test\\": "tests/php/"
-                    }
-                },
-                "config": {
-                    "platform": {
-                        "php": "7.4.30"
-                    }
-                },
-                "version": "1.0.0-alpha.2",
-                "dist": {
-                    "url": "https://github.com/bcgov/bcew-monorepo/releases/download/bcew-chefs-embed/v1.0.0-alpha.2/bcew-chefs-embed-1.0.0-alpha.2.zip",
-                    "type": "zip",
-                    "reference": "bcew-chefs-embed/v1.0.0-alpha.2"
-                },
-                "source": {
-                    "type": "git",
-                    "url": "https://github.com/bcgov/bcew-monorepo.git",
-                    "reference": "bcew-chefs-embed/v1.0.0-alpha.2"
-                }
-            },
-            "1.0.0-alpha.3": {
-                "name": "bcgov-plugin/bcew-chefs-embed",
-                "description": "Embed BC Government Common Hosted Form Service (CHEFS) forms into WordPress pages and posts.",
-                "type": "wordpress-plugin",
-                "license": "Apache-2.0",
-                "autoload": {
-                    "psr-4": {
-                        "Bcgov\\BcewChefsEmbed\\": "src/",
-                        "Bcgov\\BcewChefsEmbed\\Test\\": "tests/php/"
-                    }
-                },
-                "config": {
-                    "platform": {
-                        "php": "7.4.30"
-                    }
-                },
-                "version": "1.0.0-alpha.3",
-                "dist": {
-                    "url": "https://github.com/bcgov/bcew-monorepo/releases/download/bcew-chefs-embed/v1.0.0-alpha.3/bcew-chefs-embed-1.0.0-alpha.3.zip",
-                    "type": "zip",
-                    "reference": "bcew-chefs-embed/v1.0.0-alpha.3"
-                },
-                "source": {
-                    "type": "git",
-                    "url": "https://github.com/bcgov/bcew-monorepo.git",
-                    "reference": "bcew-chefs-embed/v1.0.0-alpha.3"
-                }
-            },
-            "1.0.0-alpha.4": {
-                "name": "bcgov-plugin/bcew-chefs-embed",
-                "description": "Embed BC Government Common Hosted Form Service (CHEFS) forms into WordPress pages and posts.",
-                "type": "wordpress-plugin",
-                "license": "Apache-2.0",
-                "autoload": {
-                    "psr-4": {
-                        "Bcgov\\BcewChefsEmbed\\": "src/",
-                        "Bcgov\\BcewChefsEmbed\\Test\\": "tests/php/"
-                    }
-                },
-                "config": {
-                    "platform": {
-                        "php": "7.4.30"
-                    }
-                },
-                "version": "1.0.0-alpha.4",
-                "dist": {
-                    "url": "https://github.com/bcgov/bcew-monorepo/releases/download/bcew-chefs-embed/v1.0.0-alpha.4/bcew-chefs-embed-1.0.0-alpha.4.zip",
-                    "type": "zip",
-                    "reference": "bcew-chefs-embed/v1.0.0-alpha.4"
-                },
-                "source": {
-                    "type": "git",
-                    "url": "https://github.com/bcgov/bcew-monorepo.git",
-                    "reference": "bcew-chefs-embed/v1.0.0-alpha.4"
-                }
-            },
             "1.0.0-alpha.0": {
                 "name": "bcgov-plugin/bcew-chefs-embed",
                 "description": "Embed BC Government Common Hosted Form Service (CHEFS) forms into WordPress pages and posts.",
@@ -462,36 +143,6 @@
             }
         },
         "bcgov-theme/bcew-theme": {
-            "1.17.0-alpha.1": {
-                "name": "bcgov-theme/bcew-theme",
-                "description": "BC Extended Web Theme",
-                "type": "wordpress-theme",
-                "license": "Apache-2.0",
-                "autoload": {
-                    "psr-4": {
-                        "Bcgov\\Theme\\DesignSystem\\": [
-                            "src",
-                            "inc"
-                        ]
-                    }
-                },
-                "config": {
-                    "allow-plugins": {
-                        "dealerdirect/phpcodesniffer-composer-installer": true
-                    }
-                },
-                "version": "1.17.0-alpha.1",
-                "dist": {
-                    "url": "https://github.com/bcgov/bcew-monorepo/releases/download/bcew-theme/v1.17.0-alpha.1/bcew-theme-1.17.0-alpha.1.zip",
-                    "type": "zip",
-                    "reference": "bcew-theme/v1.17.0-alpha.1"
-                },
-                "source": {
-                    "type": "git",
-                    "url": "https://github.com/bcgov/bcew-monorepo.git",
-                    "reference": "bcew-theme/v1.17.0-alpha.1"
-                }
-            },
             "1.17.0": {
                 "name": "bcgov-theme/bcew-theme",
                 "description": "BCEW Theme",
@@ -515,36 +166,6 @@
             }
         },
         "bcgov-theme/bcew-hporoo": {
-            "1.0.0-alpha.1": {
-                "name": "bcgov-theme/bcew-hporoo",
-                "description": "BC Extended Web HPOROO",
-                "type": "wordpress-theme",
-                "license": "Apache-2.0",
-                "autoload": {
-                    "psr-4": {
-                        "Bcgov\\Theme\\DesignSystem\\": [
-                            "src",
-                            "inc"
-                        ]
-                    }
-                },
-                "config": {
-                    "allow-plugins": {
-                        "dealerdirect/phpcodesniffer-composer-installer": true
-                    }
-                },
-                "version": "1.0.0-alpha.1",
-                "dist": {
-                    "url": "https://github.com/bcgov/bcew-monorepo/releases/download/bcew-hporoo/v1.0.0-alpha.1/bcew-hporoo-1.0.0-alpha.1.zip",
-                    "type": "zip",
-                    "reference": "bcew-hporoo/v1.0.0-alpha.1"
-                },
-                "source": {
-                    "type": "git",
-                    "url": "https://github.com/bcgov/bcew-monorepo.git",
-                    "reference": "bcew-hporoo/v1.0.0-alpha.1"
-                }
-            },
             "1.3.0": {
                 "name": "bcgov-theme/bcew-hporoo",
                 "description": "BCEW HPOROO",
@@ -568,29 +189,6 @@
             }
         },
         "bcgov-plugin/bcew-document-repository": {
-            "1.2.0-alpha.0": {
-                "name": "bcgov-plugin/bcew-document-repository",
-                "description": "BCEW Document Repository",
-                "type": "wordpress-plugin",
-                "license": "Apache-2.0",
-                "autoload": {
-                    "psr-4": {
-                        "Bcew\\DocumentRepository\\": "src/"
-                    }
-                },
-                "autoload-dev": {
-                    "psr-4": {
-                        "Bcew\\DocumentRepository\\Tests\\": "tests/"
-                    }
-                },
-                "version": "1.2.0-alpha.0",
-                "dist": {
-                    "url": "",
-                    "type": "zip",
-                    "reference": "54afd7ecc07f12c3a6e667d6310b8ee7ddd87ce7",
-                    "shasum": "ed6f5213bc351f39bf77a8e0824e1385f10e5416"
-                }
-            },
             "1.2.0": {
                 "name": "bcgov-plugin/bcew-document-repository",
                 "description": "BCEW Document Repository",
@@ -616,30 +214,6 @@
             }
         },
         "bcgov-plugin/bcew-plugin": {
-            "2.19.0-alpha.0": {
-                "name": "bcgov-plugin/bcew-plugin",
-                "description": "BCEW Plugin",
-                "type": "wordpress-plugin",
-                "license": "Apache-2.0",
-                "autoload": {
-                    "psr-4": {
-                        "Bcew\\Plugin\\": "src/",
-                        "Bcew\\Plugin\\Test\\": "tests/php/"
-                    }
-                },
-                "version": "2.19.0-alpha.0",
-                "source": {
-                    "type": "git",
-                    "url": "https://github.com/bcgov/bcew-monorepo.git",
-                    "reference": "ce303b6fa453de69c19c716458e06a57aec47b9f"
-                },
-                "dist": {
-                    "url": "https://github.com/bcgov/bcew-monorepo/releases/download/bcew-plugin/v2.19.0-alpha.0/dist-ce303b6fa453de69c19c716458e06a57aec47b9f.zip",
-                    "type": "zip",
-                    "reference": "ce303b6fa453de69c19c716458e06a57aec47b9f",
-                    "shasum": "f66d2d54a8098e00a573e944d452da93737b6a62b9e0e015dec167a537bd5614"
-                }
-            },
             "2.19.0": {
                 "name": "bcgov-plugin/bcew-plugin",
                 "description": "BCEW Plugin",
