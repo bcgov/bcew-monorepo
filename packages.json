@@ -667,6 +667,29 @@
                     "shasum": "4c33f9bf22efbe944ed0a099839725bfaa96039d"
                 }
             }
+        },
+        "bcgov-theme/bcew-firb": {
+            "1.5.0": {
+                "name": "bcgov-theme/bcew-firb",
+                "description": "BCEW FIRB",
+                "type": "wordpress-theme",
+                "license": "Apache-2.0",
+                "autoload": {
+                    "psr-4": {
+                        "Bcew\\Firb\\": [
+                            "src",
+                            "inc"
+                        ]
+                    }
+                },
+                "version": "1.5.0",
+                "dist": {
+                    "url": "https://github.com/bcgov/bcew-monorepo/releases/download/bcew-firb/v1.5.0/dist-e036a6bff8c76fa48ac98975ee8105abaff41432.zip",
+                    "type": "zip",
+                    "reference": "e036a6bff8c76fa48ac98975ee8105abaff41432",
+                    "shasum": "13aa56b35acb10dfac1b3912ac8333b23f418299"
+                }
+            }
         }
     }
 }
