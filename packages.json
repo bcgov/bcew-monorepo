@@ -316,6 +316,25 @@
                     "url": "https://github.com/bcgov/bcew-monorepo.git",
                     "reference": "bcew-ticorp/v1.0.0-alpha.1"
                 }
+            },
+            "1.3.0": {
+                "name": "bcgov-theme/bcew-ticorp",
+                "description": "BCEW \u2013 TI Corp Child Theme",
+                "type": "wordpress-theme",
+                "license": "Apache-2.0",
+                "autoload": {
+                    "psr-4": {
+                        "Bcew\\Ticorp\\": "src/",
+                        "Bcew\\Ticorp\\Test\\": "tests/"
+                    }
+                },
+                "version": "1.3.0",
+                "dist": {
+                    "url": "https://github.com/bcgov/bcew-monorepo/releases/download/bcew-ticorp/v1.3.0/dist-e036a6bff8c76fa48ac98975ee8105abaff41432.zip",
+                    "type": "zip",
+                    "reference": "e036a6bff8c76fa48ac98975ee8105abaff41432",
+                    "shasum": "eb1b3ff972463f9482183f1280c577e4de83f8e0"
+                }
             }
         },
         "bcgov-plugin/bcew-chefs-embed": {
