@@ -56,7 +56,7 @@ class Setup {
      * @return void
      */
     public function register_blocks() {
-        $build_dir = plugin_dir_path( __FILE__ ) . 'dist/';
+        $build_dir = plugin_dir_path( __DIR__ ) . 'dist/';
 
         if ( function_exists( 'wp_register_block_types_from_metadata_collection' ) ) {
             wp_register_block_types_from_metadata_collection( $build_dir, $build_dir . 'blocks-manifest.php' );
