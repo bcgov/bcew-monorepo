@@ -7,6 +7,8 @@
 
 namespace Bcew\Search\SearchResultsSort;
 
+use Bcew\Search\Utility;
+
 // Get selected meta field and sort order from block attributes.
 $selected_meta_field = $attributes['selectedMetaField'] ?? '';
 $sort_order          = $attributes['sortOrder'] ?? 'asc';
@@ -82,46 +84,6 @@ $block_id = 'search-results-sort-' . \wp_generate_uuid4();
 // Build the current URL without the sort parameters.
 $current_url = remove_query_arg( [ 'sort', 'meta_sort', 'meta_field' ] );
 
-/**
- * Function to convert field names to user-friendly titles.
- *
- * @param string $field_value The field value in format 'posttype:fieldname'.
- * @return string Formatted field label for display.
- */
-function format_field_label( $field_value ) {
-    // Extract just the field name (remove post type prefix).
-    if ( \strpos( $field_value, ':' ) !== false ) {
-        $parts      = \explode( ':', $field_value );
-        $field_name = end( $parts );
-    } else {
-        $field_name = $field_value;
-    }
-
-    // Convert underscores to spaces and title case.
-    $formatted = \str_replace( '_', ' ', $field_name );
-    $formatted = \ucwords( $formatted );
-
-    // Handle common field name patterns.
-    $replacements = [
-        'Sort Relevance'     => 'Sort Relevance',
-        'Document File Name' => 'File Name',
-        'Document File Url'  => 'File URL',
-        'Document File Size' => 'File Size',
-        'Document File Type' => 'File Type',
-        'Post Date'          => 'Publication Date',
-        'Page Order'         => 'Page Order',
-        'This2'              => 'This 2',  // Handle numbered fields.
-    ];
-
-    foreach ( $replacements as $search => $replace ) {
-        if ( \strcasecmp( $formatted, $search ) === 0 ) {
-            return $replace;
-        }
-    }
-
-    return $formatted;
-}
-
 // Build sort options - relevance only shows when there's a keyword.
 $sort_options = [];
 
@@ -136,7 +98,7 @@ $sort_options['title_desc'] = __( 'Alphabetical (Z-A)', 'wordpress-search' );
 
 // Add metadata options if configured.
 if ( $selected_meta_field ) {
-    $field_label = format_field_label( $selected_meta_field );
+    $field_label = Utility::format_field_label( $selected_meta_field );
 
     // Always add both asc and desc options for any metadata field.
     $sort_options['meta_asc']  = $field_label . ' (' . __( 'Ascending', 'wordpress-search' ) . ')';
