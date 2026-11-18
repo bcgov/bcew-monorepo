@@ -87,7 +87,7 @@ jobs:
           VERSION: ${{ inputs.version }}
         run: |
           set -euo pipefail
-          ARGS=(release "${VERSION:-}" --projects="${NX_RELEASE_PROJECT}" --skip-publish)
+          ARGS=(release "${VERSION:-}" --projects="${NX_RELEASE_PROJECT}" --yes )
           if [[ "${ALPHA}" == "true" ]]; then
             ARGS+=(--preid="alpha")
           fi
@@ -97,6 +97,44 @@ jobs:
           fi
           echo "npx nx ${ARGS[*]}"
           npx nx "${ARGS[@]}"
+          # inside the nx-release-publish.sh script sets TAG, ZIP, and PROJECT_PATH variables to GITHUB_ENV
+
+      - name: Upload file to draft release
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          if ! command -v gh >/dev/null 2>&1; then
+            echo "gh is required to attach ${ZIP} to GitHub Release ${TAG}"
+            exit 1
+          fi
+
+          # Uploads the release file
+          gh release upload "${TAG}" "${ZIP}" --clobber
+
+          RELEASE_INFO="$(
+              gh release view "${TAG}" --json tagName,assets,url |
+              jq \
+                  --arg zipsha "$(shasum -a 1 "${ZIP}" | cut -d' ' -f1)" \
+                  --arg gitsha "$(git rev-parse HEAD)" \
+                  --arg project "${PROJECT_PATH}" \
+                  '. + {
+                      zipsha: $zipsha,
+                      gitsha: $gitsha,
+                      project: $project
+                  }'
+          )"
+          {
+            echo 'RELEASE_INFO<<EOF'
+            echo "${RELEASE_INFO}"
+            echo 'EOF'
+          } >> "${GITHUB_ENV}"
+
+      - name: Create package.json
+        run: |
+          set -euo pipefail
+          mkdir -p "$(git rev-parse --show-toplevel)/public"
+          php .github/scripts/update-packages.php  --release-info "$RELEASE_INFO"
 
       # publish-wordpress-release.sh writes public/packages.json. Skip deploy when that file was not created.
       - name: Deploy packages.json to GH Pages

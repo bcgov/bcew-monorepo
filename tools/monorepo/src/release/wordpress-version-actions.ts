@@ -199,7 +199,7 @@ export default class WordPressVersionActions extends VersionActions {
 
         const archivedProjectRoot = joinPathFragments(
             projectRoot,
-            ''
+            '__release-archive__'
         );
 
         if ( ! tree.exists( archivedProjectRoot ) ) {
