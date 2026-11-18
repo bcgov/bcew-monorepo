@@ -16,27 +16,49 @@
 # initializes an empty packages.json before updating it.
 
 set -euo pipefail
-
 PROJECT_PATH="${1:?project path required}"
 PROJECT_NAME="${2:?project name required}"
-
 REPO_ROOT="$(git rev-parse --show-toplevel)"
-# Package the prepared release directory as the asset uploaded to GitHub.
 ARCHIVE_PATH="${REPO_ROOT}/${PROJECT_PATH}/__release-archive__"
-ASSET_NAME="dist-$(git rev-parse HEAD).zip"
-ZIP="${ARCHIVE_PATH}/${ASSET_NAME}"
 
-if [[ "${NX_DRY_RUN:-}" == "true" ]]; then
-  echo "Dry run: would package and publish ${PROJECT_NAME}"
-  exit 0
+# Package the prepared release directory as the asset uploaded to GitHub.
+ASSET_NAME="${PROJECT_NAME}-$(git rev-parse HEAD).zip"
+ZIP="${ARCHIVE_PATH}/${ASSET_NAME}"
+cd "${REPO_ROOT}"
+
+# Cleans up if required
+rm -rf "${ARCHIVE_PATH}"
+mkdir -p "${ARCHIVE_PATH}"
+
+# Extract the HEAD, ensuring to use the root .gitattributes file, it then is extracted to add dist and updated version file
+git archive --worktree-attributes HEAD "${PROJECT_PATH}" \
+  | tar -x \
+      --strip-components=2 \
+      -C "${ARCHIVE_PATH}"
+
+# Moves the updated style.css or project_name.php file to the dist, as nx version would have updated it, it needs to be copied.
+# This step prevents requiring a prerelease command.
+if [[ -f "style.css" ]]; then
+    cp "${REPO_ROOT}/${PROJECT_PATH}/style.css" "${REPO_ROOT}/${PROJECT_PATH}/__release-archive__/style.css"
+elif [[ -f "${REPO_ROOT}/${PROJECT_PATH}/${PROJECT_NAME}.php" ]]; then
+    cp "${REPO_ROOT}/${PROJECT_PATH}/${PROJECT_NAME}.php" "${REPO_ROOT}/${PROJECT_PATH}/__release-archive__/${PROJECT_NAME}.php"
 fi
 
+# Copies the dist folder across
+if [[ -d "${PROJECT_PATH}/dist" ]]; then
+    cp -R "${PROJECT_PATH}/dist" "${ARCHIVE_PATH}/dist"
+fi
+
+# because nx wants to change a tracked file, need to do this to untrack this file.
+
+
+
+# cleans up any old zip and re-creates
 rm -f "${ZIP}"
 (
   cd "${ARCHIVE_PATH}"
   zip -rq "${ZIP}" .
 )
-
 
 TAG="$(
     git tag \
@@ -57,9 +79,16 @@ if ! command -v gh >/dev/null 2>&1; then
 fi
 
 
-# --clobber replaces a zip from a retried run on the same tag.
-gh release upload "${TAG}" "${ZIP}" --clobber
+# Uploads the release file
+gh release upload "${TAG}" "${ZIP}"
 
+## this publishes the release
+gh release edit "${TAG}" --draft=false
+
+## This needs to be part of a workflow, otherwise if this gets run in this script, bad things could happen.
+git stash
+
+## This will eventually be removed into workflow
 
 rm -rf "${REPO_ROOT}/public"
 mkdir -p "${REPO_ROOT}/public"

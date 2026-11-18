@@ -87,7 +87,7 @@ jobs:
           VERSION: ${{ inputs.version }}
         run: |
           set -euo pipefail
-          ARGS=(release "${VERSION:-}" --projects="${NX_RELEASE_PROJECT}" --yes)
+          ARGS=(release "${VERSION:-}" --projects="${NX_RELEASE_PROJECT}" --skip-publish)
           if [[ "${ALPHA}" == "true" ]]; then
             ARGS+=(--preid="alpha")
           fi
