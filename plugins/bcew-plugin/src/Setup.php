@@ -46,7 +46,7 @@ class Setup {
         $enqueue_scripts = new Script();
         $enqueue_scripts->init();
         // Initialize InPageNav.
-        $in_page_nav = new InPageNav();
+        new InPageNav();
     }
 
 
