@@ -71,32 +71,11 @@ class DocumentRepository {
     }
 
     /**
-     * Initialize frontend-specific functionality.
-     * This method is called when the plugin runs on the frontend (not admin).
-     *
-     * @return void
-     */
-    public function init_frontend(): void {
-        // Note: Post types and taxonomies are registered in the main plugin file.
-        // to avoid duplicate registrations between admin and frontend.
-
-        // Register REST routes for frontend access if needed.
-        add_action( 'rest_api_init', [ $this, 'register_rest_routes' ], 10 );
-
-        // Hook to re-register metadata fields when they are updated (frontend).
-        add_action( 'bcgov_document_repository_metadata_fields_updated', [ $this->get_document_post_type_instance(), 'register_metadata_fields' ] );
-        add_action( 'bcgov_document_repository_metadata_fields_updated', [ $this, 'register_metadata_taxonomies' ] );
-    }
-
-    /**
-     * Initialize the plugin by registering WordPress hooks and integrations.
-     * This method is called when the plugin runs in the admin area.
+     * Initializes all WordPress hooks.
      *
      * @return void
      */
     public function init(): void {
-        // Note: Post types and taxonomies are registered in the main plugin file.
-        // to avoid duplicate registrations between admin and frontend.
 
         add_action( 'rest_api_init', [ $this, 'register_rest_routes' ], 10 );
         add_action( 'admin_menu', [ $this, 'register_admin_menus' ] );
@@ -114,7 +93,44 @@ class DocumentRepository {
 
         // Migrate existing files to the new direct path structure.
         add_action( 'admin_init', [ $this, 'migrate_existing_files' ] );
+        // Always register post types and taxonomies (needed everywhere).
+        add_action( 'init', [ $this, 'register_post_types' ] );
+        add_action( 'init', [ $this, 'register_metadata_taxonomies' ], 15 );
+        // Only initialize plugin features if NOT in site editor.
+        if ( ! $this->is_site_editor() ) {
+            // Admin features.
+            if ( is_admin() ) {
+                add_action( 'admin_menu', [ $this, 'register_admin_menus' ] );
+                add_action( 'admin_init', [ $this, 'init_admin_without_menus' ] );
+                $document_repository_settings = new Settings();
+                $document_repository_settings->init();
+            }
+
+            // Frontend features.
+            if ( ! is_admin() ) {
+                $this->init_frontend();
+            }
+        }
     }
+
+    /**
+     * Initialize frontend-specific functionality.
+     * This method is called when the plugin runs on the frontend (not admin).
+     *
+     * @return void
+     */
+    public function init_frontend(): void {
+        // Note: Post types and taxonomies are registered in the main plugin file.
+        // to avoid duplicate registrations between admin and frontend.
+
+        // Register REST routes for frontend access if needed.
+        add_action( 'rest_api_init', [ $this, 'register_rest_routes' ], 10 );
+
+        // Hook to re-register metadata fields when they are updated (frontend).
+        add_action( 'bcgov_document_repository_metadata_fields_updated', [ $this->get_document_post_type_instance(), 'register_metadata_fields' ] );
+        add_action( 'bcgov_document_repository_metadata_fields_updated', [ $this, 'register_metadata_taxonomies' ] );
+    }
+
 
     /**
      * Initialize admin functionality without menus (for conditional loading).
@@ -311,5 +327,23 @@ class DocumentRepository {
                 update_post_meta( $attachment_id, '_document_repository_post_id', $document->ID );
             }
         }
+    }
+
+    /**
+     * Check if we're in the site editor to avoid API conflicts.
+     *
+     * @return bool True if in site editor, false otherwise.
+     */
+    private function is_site_editor() {
+        if ( ! is_admin() || ! function_exists( 'get_current_screen' ) ) {
+            return false;
+        }
+
+        $screen = get_current_screen();
+        return $screen && (
+            'appearance_page_gutenberg-edit-site' === $screen->id ||
+            strpos( $screen->id, 'site-editor' ) !== false ||
+            strpos( $screen->id, 'gutenberg-edit-site' ) !== false
+        );
     }
 }
