@@ -76,7 +76,6 @@
     "fix-md": "wp-scripts lint-md-docs --fix",
     "lint-pkg-json": "wp-scripts lint-pkg-json",
     "lint-template-parts": "npx nx run-many -t lint-template-parts",
-    "lint-gitattributes": "node tools/check-gitattributes.mjs",
     "check-engines": "wp-scripts check-engines",
     "check-licenses": "wp-scripts check-licenses --prod",
     "wp-env": "wp-env",
