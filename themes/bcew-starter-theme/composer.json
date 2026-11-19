@@ -9,6 +9,26 @@
             "Bcew\\StarterTheme\\Test\\": "tests/"
         }
     },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../../packages/phpunit-config",
+            "options": {
+                "symlink": false
+            }
+        }
+    ],
+    "require-dev": {
+        "bcew-monorepo/phpunit-config": "@dev",
+        "phpunit/phpunit": "^9.5",
+        "yoast/phpunit-polyfills": "^4.0",
+        "php-stubs/wordpress-stubs": "^7.1"
+    },
+     "scripts": {
+        "test": [
+            "./vendor/bin/phpunit -c vendor/bcew-monorepo/phpunit-config/phpunit.integration.xml"
+        ]
+    },
     "config": {
         "platform": {
             "php": "7.4.30"
