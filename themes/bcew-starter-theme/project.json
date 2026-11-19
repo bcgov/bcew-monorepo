@@ -13,14 +13,25 @@
     "targets": {
         "composer-install": {},
         "prepare-release": {},
-        "lint-template-parts": {},
         "build": {},
         "start": {},
         "start-playwright": {},
         "test-accessibility": {},
+        "test-e2e": {},
+        "test-e2e-docker": {},
+        "test-integration": {},
+        "test-unit-js": {},
         "test-screenshot": {},
         "test-screenshot-generate": {},
-        "wp-env-start": {},
+        "lint-template-parts": {},
+        "wp-env-start": {
+            "dependsOn": [
+                "composer-install",
+                "build",
+                "^composer-install",
+                "^build"
+            ]
+        },
         "wp-env-clean": {},
         "wp-env-stop": {}
     },
