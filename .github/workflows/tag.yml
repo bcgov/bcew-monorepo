@@ -32,6 +32,7 @@ on:
           - bcew-search
           - bcew-hporoo
           - bcew-firb
+          - bcew-starter-theme
       alpha:
         description: 'Alpha'
         type: boolean
