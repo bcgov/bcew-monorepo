@@ -87,7 +87,7 @@ jobs:
           VERSION: ${{ inputs.version }}
         run: |
           set -euo pipefail
-          ARGS=(release "${VERSION:-}" --projects="${NX_RELEASE_PROJECT}" --yes )
+          ARGS=(release "${VERSION:-}" --projects="${NX_RELEASE_PROJECT}" --yes)
           if [[ "${ALPHA}" == "true" ]]; then
             ARGS+=(--preid="alpha")
           fi
@@ -97,9 +97,9 @@ jobs:
           fi
           echo "npx nx ${ARGS[*]}"
           npx nx "${ARGS[@]}"
-          # inside the nx-release-publish.sh script sets TAG, ZIP, and PROJECT_PATH variables to GITHUB_ENV
+          # Inside the nx-release-publish.sh script sets TAG, ZIP, and PROJECT_PATH variables to GITHUB_ENV
 
-      - name: Upload file to draft release
+      - name: Upload dist zip file to release
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
@@ -111,7 +111,7 @@ jobs:
 
           # Uploads the release file
           gh release upload "${TAG}" "${ZIP}" --clobber
-
+          # Generate the release info to build the packages.json
           RELEASE_INFO="$(
               gh release view "${TAG}" --json tagName,assets,url |
               jq \
@@ -130,7 +130,7 @@ jobs:
             echo 'EOF'
           } >> "${GITHUB_ENV}"
 
-      - name: Create package.json
+      - name: Create https://bcgov.github.io/bcew-monorepo/packages.json
         run: |
           set -euo pipefail
           mkdir -p "$(git rev-parse --show-toplevel)/public"

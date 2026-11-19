@@ -18,12 +18,9 @@
 set -euo pipefail
 PROJECT_PATH="${1:?project path required}"
 PROJECT_NAME="${2:?project name required}"
-
 REPO_ROOT="$(git rev-parse --show-toplevel)"
-
 ARCHIVE_PATH="${REPO_ROOT}/${PROJECT_PATH}/__release-archive__"
 ZIP="${ARCHIVE_PATH}/${PROJECT_NAME}-$(git rev-parse HEAD).zip"
-
 
 cd "${REPO_ROOT}"
 
@@ -47,7 +44,6 @@ if [[ -z "${TAG}" ]]; then
     echo "No release tag found for ${PROJECT_NAME}"
     exit 1
 fi
-
 
 # This adds all of the required env variables so github workflow has access to them
 if [[ -n "${GITHUB_ENV:-}" ]]; then
