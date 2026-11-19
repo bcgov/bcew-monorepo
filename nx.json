@@ -164,7 +164,7 @@
         "prepare-release": {
             "executor": "nx:run-commands",
             "options": {
-                "command": "bash .github/scripts/pre-version-command.sh {projectRoot}",
+                "command": "bash .github/scripts/pre-version-command.sh {projectRoot} {projectName}",
                 "cwd": "{workspaceRoot}"
             },
             "dependsOn": ["install","composer-install","build"]
@@ -196,7 +196,7 @@
             "conventionalCommits": true,
             "fallbackCurrentVersionResolver": "disk",
             "manifestRootsToUpdate": ["{projectRoot}/__release-archive__"],
-            "preVersionCommand": "pnpm nx run-many -t prepare-release",
+            "preVersionCommand": "pnpm nx affected -t prepare-release",
             "versionActions": "tools/monorepo/src/release/wordpress-version-actions.ts"
         },
         "conventionalCommits": {

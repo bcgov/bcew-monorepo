@@ -16,28 +16,22 @@
 # initializes an empty packages.json before updating it.
 
 set -euo pipefail
-
 PROJECT_PATH="${1:?project path required}"
 PROJECT_NAME="${2:?project name required}"
-
 REPO_ROOT="$(git rev-parse --show-toplevel)"
-# Package the prepared release directory as the asset uploaded to GitHub.
 ARCHIVE_PATH="${REPO_ROOT}/${PROJECT_PATH}/__release-archive__"
-ASSET_NAME="dist-$(git rev-parse HEAD).zip"
-ZIP="${ARCHIVE_PATH}/${ASSET_NAME}"
+ZIP="${ARCHIVE_PATH}/${PROJECT_NAME}-$(git rev-parse HEAD).zip"
 
-if [[ "${NX_DRY_RUN:-}" == "true" ]]; then
-  echo "Dry run: would package and publish ${PROJECT_NAME}"
-  exit 0
-fi
+cd "${REPO_ROOT}"
 
+# cleans up any old zip and re-creates
 rm -f "${ZIP}"
 (
   cd "${ARCHIVE_PATH}"
   zip -rq "${ZIP}" .
 )
 
-
+# Checks to see if the tag was created.
 TAG="$(
     git tag \
         --points-at HEAD \
@@ -51,31 +45,11 @@ if [[ -z "${TAG}" ]]; then
     exit 1
 fi
 
-if ! command -v gh >/dev/null 2>&1; then
-  echo "gh is required to attach ${ZIP} to GitHub Release ${TAG}"
-  exit 1
+# This adds all of the required env variables so github workflow has access to them
+if [[ -n "${GITHUB_ENV:-}" ]]; then
+    {
+        echo "TAG=${TAG}"
+        echo "ZIP=${ZIP}"
+        echo "PROJECT_PATH=${PROJECT_PATH}"
+    } >> "${GITHUB_ENV}"
 fi
-
-
-# --clobber replaces a zip from a retried run on the same tag.
-gh release upload "${TAG}" "${ZIP}" --clobber
-
-
-rm -rf "${REPO_ROOT}/public"
-mkdir -p "${REPO_ROOT}/public"
-ZIP_SHASUM="$(shasum -a 1 "${ZIP}" | cut -d' ' -f1)"
-GITHUB_SHA="$(git rev-parse HEAD)"
-RELEASE_INFO="$(
-    gh release view "${TAG}" --json tagName,assets,url |
-    jq \
-        --arg zipsha "${ZIP_SHASUM}" \
-        --arg gitsha "${GITHUB_SHA}" \
-        --arg project "${PROJECT_PATH}" \
-        '. + {
-            zipsha: $zipsha,
-            gitsha: $gitsha,
-            project: $project
-        }'
-)"
-
-php .github/scripts/update-packages.php  --release-info "$RELEASE_INFO"

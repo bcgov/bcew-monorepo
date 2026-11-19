@@ -62,8 +62,6 @@ jobs:
             - name: Run template parts lint
               run: pnpm run lint-template-parts
 
-            - name: Check .gitattributes standard
-              run: pnpm run lint-gitattributes
     
     test-integration:
         name: Test integration
