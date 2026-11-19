@@ -17,19 +17,20 @@
         "start": {},
         "start-playwright": {},
         "test-accessibility": {},
-        "test-e2e": {},
-        "test-e2e-docker": {},
-        "test-integration": {},
         "test-screenshot": {},
         "test-screenshot-generate": {},
         "lint-template-parts": {},
         "wp-env-start": {
             "dependsOn": [
                 "composer-install",
-                "build",
-                "^composer-install",
-                "^build"
+                "build"
             ]
+        },
+        "test-integration": {
+            "options": {
+                "command": "wp-env run tests-cli --env-cwd=wp-content/themes/bcew-starter-theme composer test"
+            },
+            "dependsOn": ["composer-install", "build", "wp-env-start"]
         },
         "wp-env-clean": {},
         "wp-env-stop": {}
