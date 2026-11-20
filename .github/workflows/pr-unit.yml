@@ -1,0 +1,31 @@
+name: Pull request unit tests
+
+on:
+    workflow_call:
+
+permissions:
+    contents: read
+
+env:
+    NX_DEFAULT_OUTPUT_STYLE: static
+
+jobs:
+    test-unit-js:
+        name: Test unit (JS, affected)
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        steps:
+            - uses: actions/checkout@v7
+              with:
+                  fetch-depth: 0
+                  ref: ${{ github.head_ref }}
+
+            - uses: ./.github/actions/setup
+
+            - name: Run affected JS unit tests
+              if: github.event_name == 'pull_request'
+              run: pnpm nx affected --base="origin/${{ github.base_ref }}" -t test-unit-js
+
+            - name: Run JS unit tests
+              if: github.event_name == 'push'
+              run: pnpm nx run-many -t test-unit-js

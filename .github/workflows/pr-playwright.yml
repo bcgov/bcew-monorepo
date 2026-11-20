@@ -1,0 +1,122 @@
+name: Pull request Playwright tests
+
+on:
+    workflow_call:
+
+permissions:
+    contents: read
+
+env:
+    NX_DEFAULT_OUTPUT_STYLE: static
+
+jobs:
+    affected-test-projects:
+        name: Find affected e2e and screenshot projects
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        if: github.event_name == 'pull_request'
+        outputs:
+            projects: ${{ steps.affected.outputs.projects }}
+        steps:
+            - uses: actions/checkout@v7
+              with:
+                  fetch-depth: 0
+                  ref: ${{ github.head_ref }}
+
+            - uses: ./.github/actions/setup
+
+            - name: List affected e2e and screenshot projects
+              id: affected
+              env:
+                  BASE_REF: ${{ github.base_ref }}
+              run: |
+                  projects=$(pnpm --silent nx show projects --affected --base="origin/$BASE_REF" --withTarget=test-e2e-docker --withTarget=test-screenshot --json)
+                  echo "projects=$projects" >> "$GITHUB_OUTPUT"
+                  echo "Affected e2e and screenshot projects: $projects"
+
+    test-playwright-project:
+        name: Test e2e and screenshots (${{ matrix.project }})
+        needs: affected-test-projects
+        if: needs.affected-test-projects.outputs.projects != '[]'
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+        strategy:
+            fail-fast: false
+            matrix:
+                project: ${{ fromJSON(needs.affected-test-projects.outputs.projects) }}
+        steps:
+            - uses: actions/checkout@v7
+              with:
+                  ref: ${{ github.head_ref }}
+
+            - uses: ./.github/actions/setup
+              with:
+                  install-composer: 'true'
+
+            # Same images as the integration job. Load them before wp-env starts.
+            - name: Load WordPress images from the Docker Hub mirror
+              run: |
+                  set -euo pipefail
+                  pull() {
+                    local image="$1"
+                    docker pull "mirror.gcr.io/library/${image}"
+                    docker tag "mirror.gcr.io/library/${image}" "${image}"
+                  }
+                  pull mariadb:lts
+                  pull wordpress:php8.2
+                  pull wordpress:cli-php8.2
+
+            - name: Start playwright container
+              run: docker compose up -d --wait playwright || { docker logs playwright; exit 1; }
+
+            # run-many skips targets a project lacks; --parallel=1 avoids concurrent use of the shared wp-env and Playwright container.
+            - name: Run e2e, accessibility, and screenshot tests
+              run: npx nx run-many --targets=test-e2e-docker,test-accessibility-docker,test-screenshot --projects="${{ matrix.project }}" --parallel=1 --playwrightArgs="--max-failures=1 --reporter=list,github" --no-tui
+
+            - name: Summarize screenshot failures
+              if: failure()
+              env:
+                  PROJECT: ${{ matrix.project }}
+              run: |
+                  {
+                    echo "### Playwright failures: $PROJECT"
+                    echo
+                    echo "Download the \`playwright-report-$PROJECT\` artifact for actual, expected, and diff images plus traces."
+                    echo
+                    find plugins themes -path '*/artifacts/test-results/*' -name '*-diff.png' -print 2>/dev/null
+                    find plugins themes -path '*/artifacts/test-results/*' -name 'error-context.md' 2>/dev/null | while read -r file; do
+                      echo
+                      echo "<details><summary>$file</summary>"
+                      echo
+                      head -n 60 "$file"
+                      echo
+                      echo "</details>"
+                    done
+                  } >> "$GITHUB_STEP_SUMMARY"
+
+            - uses: actions/upload-artifact@v7.0.1
+              if: ${{ !cancelled() }}
+              with:
+                  name: playwright-report-${{ matrix.project }}
+                  path: |
+                    plugins/*/artifacts/test-results/
+                    themes/*/artifacts/test-results/
+                  if-no-files-found: ignore
+                  retention-days: 7
+
+    check-playwright-results:
+        name: Check e2e and screenshot results (affected)
+        needs:
+            - affected-test-projects
+            - test-playwright-project
+        if: ${{ always() && github.event_name == 'pull_request' }}
+        runs-on: ubuntu-latest
+        timeout-minutes: 5
+        steps:
+            - name: Validate project discovery and test results
+              env:
+                  PROJECT_DISCOVERY_RESULT: ${{ needs.affected-test-projects.result }}
+                  TEST_MATRIX_RESULT: ${{ needs.test-playwright-project.result }}
+              run: |
+                  echo "Project discovery: $PROJECT_DISCOVERY_RESULT; test matrix: $TEST_MATRIX_RESULT"
+                  [[ "$PROJECT_DISCOVERY_RESULT" == success && "$TEST_MATRIX_RESULT" =~ ^(success|skipped)$ ]]

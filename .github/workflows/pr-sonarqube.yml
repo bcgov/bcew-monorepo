@@ -1,0 +1,37 @@
+name: Pull request SonarQube scan
+
+on:
+    workflow_call:
+        inputs:
+            has-coverage:
+                description: Whether PHP coverage files are available
+                required: true
+                type: string
+        secrets:
+            SONAR_TOKEN:
+                required: true
+
+permissions:
+    contents: read
+
+jobs:
+    sonarqube:
+        name: SonarQube
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v7
+              with:
+                  fetch-depth: 0
+
+            # Extract php-coverage directly into sonar-artifacts/ so paths match
+            # sonar.php.coverage.reportPaths (sonar-artifacts/plugins/*/coverage.xml).
+            - uses* actions/download-artifact@v8.0.1
+*             if: inputs.has-covera*e == 'true'
+              with:
+  *               name: php-coverage
+*                 path: sonar-artif*cts
+
+            - name: SonarQube*Scan
+              uses: SonarSour*e/sonarqube-scan-action@22918119ff*e1ca75a623e15c8296b6ea4fbe28f #v8.*.1
+              env:
+            *     SONAR_TOKEN: ${{ secrets.SONA*_TOKEN }}

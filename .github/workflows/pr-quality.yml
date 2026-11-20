@@ -1,0 +1,55 @@
+name: Pull request quality checks
+
+on:
+    workflow_call:
+
+permissions:
+    contents: read
+
+env:
+    NX_DEFAULT_OUTPUT_STYLE: static
+
+jobs:
+    labeler:
+        name: Add labels
+        permissions:
+            contents: read
+            pull-requests: write
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        steps:
+            - uses: actions/checkout@v7
+            - uses: actions/labeler@v6
+              with:
+                  sync-labels: true
+
+    lint:
+        name: Lint monorepo
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        steps:
+            - uses: actions/checkout@v7
+              with:
+                  ref: ${{ github.head_ref }}
+
+            - uses: ./.github/actions/setup
+              with:
+                  install-composer: 'true'
+
+            - name: Run php lint
+              run: pnpm run lint-php
+
+            - name: Run js lint
+              run: pnpm run lint-js
+
+            - name: Run css lint
+              run: pnpm run lint-css
+
+            - name: Run md lint
+              run: pnpm run lint-md
+
+            - name: Run package.json lint
+              run: pnpm run lint-pkg-json
+
+            - name: Run template parts lint
+              run: pnpm run lint-template-parts
