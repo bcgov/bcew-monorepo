@@ -15,19 +15,20 @@ runs:
       with:
         node-version: 24
 
-    - name: Install pnpm
+    - name: Install pnpm dependencies
       uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
       with:
         version: 10
         cache: true
+        cache_dependency_path: pnpm-lock.yaml
         run_install: |
-          - args: [--ignore-scripts]
+          - args: [--frozen-lockfile, --ignore-scripts]
 
-    - name: Locate Composer download cache
+    - name: Locate Composer cache
       if: inputs.install-composer == 'true'
       id: composer-cache
       shell: bash
-      run: echo "path=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+      run: echo "path=$(composer config cache-dir --absolute)" >> "$GITHUB_OUTPUT"
 
     - name: Cache Composer downloads
       if: inputs.install-composer == 'true'
@@ -41,4 +42,4 @@ runs:
     - name: Install Composer dependencies
       if: inputs.install-composer == 'true'
       shell: bash
-      run: composer i
+      run: composer install --no-interaction --prefer-dist
