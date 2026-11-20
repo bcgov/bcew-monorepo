@@ -20,63 +20,96 @@ jobs:
         timeout-minutes: 15
         outputs:
             has-coverage: ${{ steps.coverage.outputs.has-coverage }}
+
         steps:
             - uses: actions/checkout@v7
               with:
                   fetch-depth: 0
-                  ref: ${{ github.head_ref }}
 
             - uses: ./.github/actions/setup
               with:
                   install-composer: 'true'
 
-            # wp-env pulls these from Docker Hub. Anonymous pulls from
-            # GitHub-hosted runners time out once every project starts at once.
-            # Tag the mirror copies with the names wp-env already uses.
+            # wp-env pulls these images from Docker Hub. Pull the mirror copies
+            # concurrently, then tag them with the names wp-env expects.
             - name: Load WordPress images from the Docker Hub mirror
               run: |
                   set -euo pipefail
-                  pull() {
+
+                  images=(
+                    "mariadb:lts"
+                    "wordpress:php7.4"
+                    "wordpress:cli-php7.4"
+                  )
+
+                  pull_image() {
                     local image="$1"
-                    docker pull "mirror.gcr.io/library/${image}"
-                    docker tag "mirror.gcr.io/library/${image}" "${image}"
+                    local mirror="mirror.gcr.io/library/${image}"
+
+                    docker pull "$mirror"
+                    docker tag "$mirror" "$image"
                   }
-                  pull mariadb:lts
-                  pull wordpress:php7.4
-                  pull wordpress:cli-php7.4
+
+                  export -f pull_image
+
+                  printf '%s\n' "${images[@]}" |
+                    xargs -P "${#images[@]}" -I {} bash -c 'pull_image "$1"' _ {}
+
+                  for image in "${images[@]}"; do
+                    docker image inspect "$image" >/dev/null
+                  done
 
             - name: Run affected PHP integration tests
               if: github.event_name == 'pull_request'
-              run: pnpm nx affected --base="origin/${{ github.base_ref }}" -t test-integration
+              env:
+                  BASE_SHA: ${{ github.event.pull_request.base.sha }}
+                  HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+              run: |
+                  pnpm nx affected \
+                    --base="$BASE_SHA" \
+                    --head="$HEAD_SHA" \
+                    -t test-integration \
+                    --no-tui
 
-            - name: Run PHP integration tests
+            - name: Run all PHP integration tests
               if: github.event_name == 'push'
-              run: pnpm nx run-many -t test-integration
+              run: |
+                  pnpm nx run-many \
+                    -t test-integration \
+                    --no-tui
 
-            # PHPUnit runs in wp-env, so clover paths use /var/www/html/wp-content/...
-            # Rewrite them to repo-relative paths Sonar can match.
+            # PHPUnit runs in wp-env, so Clover paths use
+            # /var/www/html/wp-content/... Rewrite them to repository-relative
+            # paths that SonarQube can match.
             - name: Normalize coverage paths
               run: |
-                shopt -s nullglob
-                for f in plugins/*/coverage.xml themes/*/coverage.xml; do
-                  sed -i 's#/var/www/html/wp-content/##g' "$f"
-                done
+                  find plugins themes \
+                    -type f \
+                    -name coverage.xml \
+                    -exec sed -i 's#/var/www/html/wp-content/##g' {} +
 
             - name: Check for coverage files
               id: coverage
               run: |
-                if find plugins themes -type f -name coverage.xml | grep -q .; then
-                  echo "has-coverage=true" >> "$GITHUB_OUTPUT"
-                else
-                  echo "has-coverage=false" >> "$GITHUB_OUTPUT"
-                fi
+                  if find plugins themes \
+                    -type f \
+                    -name coverage.xml \
+                    -print \
+                    -quit |
+                    grep -q .
+                  then
+                    echo "has-coverage=true" >> "$GITHUB_OUTPUT"
+                  else
+                    echo "has-coverage=false" >> "$GITHUB_OUTPUT"
+                  fi
 
             - name: Upload coverage
               if: steps.coverage.outputs.has-coverage == 'true'
               uses: actions/upload-artifact@v7.0.1
               with:
-                name: php-coverage
-                path: |
-                  plugins/*/coverage.xml
-                  themes/*/coverage.xml
-                if-no-files-found: warn
+                  name: php-coverage
+                  path: |
+                      plugins/*/coverage.xml
+                      themes/*/coverage.xml
+                  if-no-files-found: warn
+                  retention-days: 1
