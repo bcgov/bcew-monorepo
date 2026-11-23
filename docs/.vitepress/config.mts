@@ -176,7 +176,7 @@ function packageDocsSection(
 }
 
 const monorepoGuideItems = [
-  { text: 'Getting started', link: '/getting-started' },
+  { text: 'Developer Documentation', link: '/developer' },
   { text: 'Documentation site', link: '/documentation-site' },
   { text: 'Architecture', link: '/architecture' },
   { text: 'Project standards', link: '/project-standards' },

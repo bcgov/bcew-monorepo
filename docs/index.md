@@ -12,8 +12,8 @@ The latest version of this documentation is published to GitHub Pages:
 
 | I want to… | Read |
 | --- | --- |
-| Clone, install, and run builds | [Getting started](./getting-started.md) |
-| Understand why and how the monorepo is structured | [Architecture](./architecture.md) |
+| Developer Documentation | [Developer](./developer.md) |
+| Troubleshooting | [Troubleshooting](./troubleshooting.md) |
 | Know what a valid package looks like | [Project standards](./project-standards.md) |
 | Import a legacy repo, cut over / archive it, or add a new project | [Contributing workflow](./contributing-workflow.md) |
 | Rename a plugin or theme already in the monorepo | [Renaming plugins and themes](./renaming-projects.md) |
