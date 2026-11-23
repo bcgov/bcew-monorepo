@@ -15,10 +15,6 @@
         "prepare-release": {},
         "build": {},
         "start": {},
-        "start-playwright": {},
-        "test-accessibility": {},
-        "test-screenshot": {},
-        "test-screenshot-generate": {},
         "lint-template-parts": {},
         "wp-env-start": {
             "dependsOn": [
