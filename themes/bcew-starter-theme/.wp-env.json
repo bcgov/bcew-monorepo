@@ -1,0 +1,13 @@
+{
+    "core": "WordPress/WordPress#6.7.2",
+    "phpVersion": "7.4",
+    "themes": ["."],
+    "config": {
+        "WP_AUTO_UPDATE_CORE": false
+    },
+    "port": 9024,
+    "testsPort": 9025,
+    "lifecycleScripts": {
+        "afterStart": "wp-env run cli wp theme activate bcew-starter-theme && wp-env run tests-cli wp theme activate bcew-starter-theme"
+    }
+}
