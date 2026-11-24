@@ -28,7 +28,7 @@ on:
       - ci/dswp-1445-screenshot-workflow
 
 permissions:
-  contents: read
+  contents: write
 
 env:
   NX_DEFAULT_OUTPUT_STYLE: static
@@ -45,6 +45,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.ref_name }}
 
       - uses: ./.github/actions/setup
         with:
@@ -71,6 +73,22 @@ jobs:
           pnpm nx run "$PROJECT:test-screenshot-generate" \
             --playwrightArgs="--max-failures=1 --reporter=list,github" \
             --no-tui
+
+      - name: Commit generated screenshots
+        run: |
+          set -euo pipefail
+
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "No screenshot changes generated."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add --all
+          git commit -m "Update $PROJECT screenshots"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
 
       - name: Summarize screenshot failures
         if: failure()
