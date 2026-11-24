@@ -55,7 +55,7 @@ jobs:
           set -euo pipefail
 
           pnpm --silent nx show project "$PROJECT" --json |
-            jq -e '.targets["test-screenshot"]' >/dev/null
+            jq -e '.targets["test-screenshot-generate"]' >/dev/null
 
       - name: Start Playwright container
         run: |
@@ -66,9 +66,9 @@ jobs:
             --wait \
             playwright
 
-      - name: Run screenshot tests
+      - name: Run screenshot generate
         run: |
-          pnpm nx run "$PROJECT:test-screenshot" \
+          pnpm nx run "$PROJECT:test-screenshot-generate" \
             --playwrightArgs="--max-failures=1 --reporter=list,github" \
             --no-tui
 
