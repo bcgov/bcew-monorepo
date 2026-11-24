@@ -168,8 +168,8 @@ jobs:
                   }
 
                   pull mariadb:lts
-                  pull wordpress:php8.2
-                  pull wordpress:cli-php8.2
+                  pull wordpress:php7.4
+                  pull wordpress:cli-php7.4
 
             - name: Start Playwright container
               run: |
