@@ -1,10 +1,10 @@
-name: Run Screenshot Tests (Manual Workflow)
+name: Run Screenshot Generator (Manual Workflow)
 
 on:
   workflow_dispatch:
     inputs:
       name:
-        description: 'Project to test'
+        description: 'Project to Generate'
         required: true
         type: choice
         options:
@@ -21,11 +21,6 @@ on:
           - bcew-firb
           - bcew-starter-theme
 
-  # TEMPORARY: Allows testing this new workflow before it exists on main.
-  # Remove this trigger before merging.
-  push:
-    branches:
-      - ci/dswp-1445-screenshot-workflow
 
 permissions:
   contents: write
@@ -34,11 +29,11 @@ env:
   NX_DEFAULT_OUTPUT_STYLE: static
   # workflow_dispatch uses the selected project.
   # The temporary push trigger defaults to bcew-starter-theme.
-  PROJECT: ${{ inputs.name || 'bcew-starter-theme' }}
+  PROJECT: ${{ inputs.name }}
 
 jobs:
   screenshot-test:
-    name: Screenshot test (${{ inputs.name || 'bcew-starter-theme' }})
+    name: Screenshot test (${{ inputs.name }})
     if: github.ref_type == 'branch' && github.ref_name != 'main'
     runs-on: ubuntu-latest
     timeout-minutes: 25
@@ -127,7 +122,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v7.0.1
         with:
-          name: playwright-report-${{ inputs.name || 'bcew-starter-theme' }}
+          name: playwright-report-${{ inputs.name }}
           path: |
             plugins/*/artifacts/test-results/
             themes/*/artifacts/test-results/
