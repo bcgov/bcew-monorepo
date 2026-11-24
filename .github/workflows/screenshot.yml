@@ -1,10 +1,10 @@
-name: Run Screenshot Generate (Manual Workflow)
+name: Run Screenshot Tests (Manual Workflow)
 
 on:
   workflow_dispatch:
     inputs:
       name:
-        description: 'Project to generate screenshot'
+        description: 'Project to test'
         required: true
         type: choice
         options:
@@ -21,15 +21,24 @@ on:
           - bcew-firb
           - bcew-starter-theme
 
+  # TEMPORARY: Allows testing this new workflow before it exists on main.
+  # Remove this trigger before merging.
+  push:
+    branches:
+      - ci/dswp-1445-screenshot-workflow
+
 permissions:
   contents: read
 
 env:
   NX_DEFAULT_OUTPUT_STYLE: static
+  # workflow_dispatch uses the selected project.
+  # The temporary push trigger defaults to bcew-starter-theme.
+  PROJECT: ${{ inputs.name || 'bcew-starter-theme' }}
 
 jobs:
   screenshot-test:
-    name: Screenshot test (${{ inputs.name }})
+    name: Screenshot test (${{ inputs.name || 'bcew-starter-theme' }})
     if: github.ref_type == 'branch' && github.ref_name != 'main'
     runs-on: ubuntu-latest
     timeout-minutes: 25
@@ -42,8 +51,6 @@ jobs:
           install-composer: 'true'
 
       - name: Validate screenshot target
-        env:
-          PROJECT: ${{ inputs.name }}
         run: |
           set -euo pipefail
 
@@ -59,18 +66,14 @@ jobs:
             --wait \
             playwright
 
-      - name: Run screenshot generate
-        env:
-          PROJECT: ${{ inputs.name }}
+      - name: Run screenshot tests
         run: |
-          pnpm nx run "$PROJECT:test-screenshot-generate" \
+          pnpm nx run "$PROJECT:test-screenshot" \
             --playwrightArgs="--max-failures=1 --reporter=list,github" \
             --no-tui
 
       - name: Summarize screenshot failures
         if: failure()
-        env:
-          PROJECT: ${{ inputs.name }}
         run: |
           {
             echo "### Screenshot failures: $PROJECT"
@@ -106,7 +109,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v7.0.1
         with:
-          name: playwright-report-${{ inputs.name }}
+          name: playwright-report-${{ inputs.name || 'bcew-starter-theme' }}
           path: |
             plugins/*/artifacts/test-results/
             themes/*/artifacts/test-results/
