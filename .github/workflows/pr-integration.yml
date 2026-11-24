@@ -1,0 +1,85 @@
+name: Pull request integration tests
+
+on:
+    workflow_call:
+        outputs:
+            has-coverage:
+                description: Whether PHP coverage files were generated
+                value: ${{ jobs.test-integration.outputs.has-coverage }}
+
+permissions:
+    contents: read
+
+env:
+    NX_DEFAULT_OUTPUT_STYLE: static
+
+jobs:
+    test-integration:
+        name: Test integration
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        outputs:
+            has-coverage: ${{ steps.coverage.outputs.has-coverage }}
+
+        steps:
+            - uses: actions/checkout@v7
+              with:
+                  fetch-depth: 0
+
+            - uses: ./.github/actions/setup
+              with:
+                  install-composer: 'true'
+            - name: Run affected PHP integration tests
+              if: github.event_name == 'pull_request'
+              env:
+                  BASE_SHA: ${{ github.event.pull_request.base.sha }}
+                  HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+              run: |
+                  pnpm nx affected \
+                    --base="$BASE_SHA" \
+                    --head="$HEAD_SHA" \
+                    -t test-integration \
+                    --no-tui
+
+            - name: Run all PHP integration tests
+              if: github.event_name == 'push'
+              run: |
+                  pnpm nx run-many \
+                    -t test-integration \
+                    --no-tui
+
+            # PHPUnit runs in wp-env, so Clover paths use
+            # /var/www/html/wp-content/... Rewrite them to repository-relative
+            # paths that SonarQube can match.
+            - name: Normalize coverage paths
+              run: |
+                  find plugins themes \
+                    -type f \
+                    -name coverage.xml \
+                    -exec sed -i 's#/var/www/html/wp-content/##g' {} +
+
+            - name: Check for coverage files
+              id: coverage
+              run: |
+                  if find plugins themes \
+                    -type f \
+                    -name coverage.xml \
+                    -print \
+                    -quit |
+                    grep -q .
+                  then
+                    echo "has-coverage=true" >> "$GITHUB_OUTPUT"
+                  else
+                    echo "has-coverage=false" >> "$GITHUB_OUTPUT"
+                  fi
+
+            - name: Upload coverage
+              if: steps.coverage.outputs.has-coverage == 'true'
+              uses: actions/upload-artifact@v7.0.1
+              with:
+                  name: php-coverage
+                  path: |
+                      plugins/*/coverage.xml
+                      themes/*/coverage.xml
+                  if-no-files-found: warn
+                  retention-days: 1

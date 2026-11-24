@@ -1,0 +1,254 @@
+name: Pull request Playwright tests
+
+on:
+    workflow_call:
+
+permissions:
+    contents: read
+
+env:
+    NX_DEFAULT_OUTPUT_STYLE: static
+
+jobs:
+    affected-test-projects:
+        name: Find affected Playwright projects
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        outputs:
+            projects: ${{ steps.projects.outputs.projects }}
+            project-count: ${{ steps.projects.outputs.project-count }}
+        steps:
+            - uses: actions/checkout@v7
+              with:
+                  fetch-depth: 0
+
+            - uses: ./.github/actions/setup
+
+            - name: Find affected pull request projects
+              id: affected
+              if: github.event_name == 'pull_request'
+              env:
+                  BASE_SHA: ${{ github.event.pull_request.base.sha }}
+                  HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+              run: |
+                  set -euo pipefail
+
+                  e2e_projects="$(
+                    pnpm --silent nx show projects \
+                      --affected \
+                      --base="$BASE_SHA" \
+                      --head="$HEAD_SHA" \
+                      --withTarget=test-e2e-docker \
+                      --json
+                  )"
+
+                  accessibility_projects="$(
+                    pnpm --silent nx show projects \
+                      --affected \
+                      --base="$BASE_SHA" \
+                      --head="$HEAD_SHA" \
+                      --withTarget=test-accessibility-docker \
+                      --json
+                  )"
+
+                  screenshot_projects="$(
+                    pnpm --silent nx show projects \
+                      --affected \
+                      --base="$BASE_SHA" \
+                      --head="$HEAD_SHA" \
+                      --withTarget=test-screenshot \
+                      --json
+                  )"
+
+                  projects="$(
+                    jq -cn \
+                      --argjson e2e "$e2e_projects" \
+                      --argjson accessibility "$accessibility_projects" \
+                      --argjson screenshot "$screenshot_projects" \
+                      '$e2e + $accessibility + $screenshot | unique | sort'
+                  )"
+
+                  echo "projects=$projects" >> "$GITHUB_OUTPUT"
+
+            - name: Find all main branch projects
+              id: all
+              if: github.event_name == 'push'
+              run: |
+                  set -euo pipefail
+
+                  e2e_projects="$(
+                    pnpm --silent nx show projects \
+                      --withTarget=test-e2e-docker \
+                      --json
+                  )"
+
+                  accessibility_projects="$(
+                    pnpm --silent nx show projects \
+                      --withTarget=test-accessibility-docker \
+                      --json
+                  )"
+
+                  screenshot_projects="$(
+                    pnpm --silent nx show projects \
+                      --withTarget=test-screenshot \
+                      --json
+                  )"
+
+                  projects="$(
+                    jq -cn \
+                      --argjson e2e "$e2e_projects" \
+                      --argjson accessibility "$accessibility_projects" \
+                      --argjson screenshot "$screenshot_projects" \
+                      '$e2e + $accessibility + $screenshot | unique | sort'
+                  )"
+
+                  echo "projects=$projects" >> "$GITHUB_OUTPUT"
+
+            - name: Create project matrix
+              id: projects
+              env:
+                  EVENT_NAME: ${{ github.event_name }}
+                  AFFECTED_PROJECTS: ${{ steps.affected.outputs.projects }}
+                  ALL_PROJECTS: ${{ steps.all.outputs.projects }}
+              run: |
+                  set -euo pipefail
+
+                  if [[ "$EVENT_NAME" == "pull_request" ]]; then
+                    projects="${AFFECTED_PROJECTS:-[]}"
+                  else
+                    projects="${ALL_PROJECTS:-[]}"
+                  fi
+
+                  project_count="$(jq 'length' <<< "$projects")"
+
+                  echo "projects=$projects" >> "$GITHUB_OUTPUT"
+                  echo "project-count=$project_count" >> "$GITHUB_OUTPUT"
+
+                  {
+                    echo "### Playwright project selection"
+                    echo
+                    echo "Selected projects: $project_count"
+                    echo
+
+                    if [[ "$project_count" -eq 0 ]]; then
+                      echo "No Playwright projects require testing."
+                    else
+                      jq -r '.[] | "- `\(.)`"' <<< "$projects"
+                    fi
+                  } >> "$GITHUB_STEP_SUMMARY"
+
+    test-playwright-project:
+        name: Test Playwright (${{ matrix.project }})
+        needs:
+            - affected-test-projects
+        if: needs.affected-test-projects.outputs.project-count != '0'
+        runs-on: ubuntu-latest
+        timeout-minutes: 25
+        strategy:
+            fail-fast: false
+            matrix:
+                project: ${{ fromJSON(needs.affected-test-projects.outputs.projects) }}
+        steps:
+            - uses: actions/checkout@v7
+
+            - uses: ./.github/actions/setup
+              with:
+                  install-composer: 'true'
+            - name: Start Playwright container
+              run: |
+                  set -euo pipefail
+
+                  docker compose up \
+                    --detach \
+                    --wait \
+                    playwright
+
+            - name: Run E2E, accessibility, and screenshot tests
+              env:
+                  PROJECT: ${{ matrix.project }}
+              run: |
+                  pnpm nx run-many \
+                    --targets=test-e2e-docker,test-accessibility-docker,test-screenshot \
+                    --projects="$PROJECT" \
+                    --parallel=1 \
+                    --playwrightArgs="--max-failures=1 --reporter=list,github" \
+                    --no-tui
+
+            - name: Summarize Playwright failures
+              if: failure()
+              env:
+                  PROJECT: ${{ matrix.project }}
+              run: |
+                  {
+                    echo "### Playwright failures: $PROJECT"
+                    echo
+                    echo "Download the \`playwright-report-$PROJECT\` artifact for actual, expected, and diff images plus traces."
+                    echo
+
+                    find plugins themes \
+                      -path '*/artifacts/test-results/*' \
+                      -name '*-diff.png' \
+                      -print 2>/dev/null || true
+
+                    while IFS= read -r file; do
+                      echo
+                      echo "<details><summary>$file</summary>"
+                      echo
+                      head -n 60 "$file"
+                      echo
+                      echo "</details>"
+                    done < <(
+                      find plugins themes \
+                        -path '*/artifacts/test-results/*' \
+                        -name 'error-context.md' \
+                        -print 2>/dev/null
+                    )
+                  } >> "$GITHUB_STEP_SUMMARY"
+
+            - name: Show Playwright container logs
+              if: failure()
+              run: docker compose logs --no-color playwright
+
+            - name: Upload failed Playwright results
+              if: failure()
+              uses: actions/upload-artifact@v7.0.1
+              with:
+                  name: playwright-report-${{ matrix.project }}
+                  path: |
+                      plugins/*/artifacts/test-results/
+                      themes/*/artifacts/test-results/
+                  if-no-files-found: warn
+                  retention-days: 7
+
+            - name: Stop test containers
+              if: always()
+              run: docker compose down --volumes --remove-orphans
+
+    check-playwright-results:
+        name: Check Playwright results
+        needs:
+            - affected-test-projects
+            - test-playwright-project
+        if: always()
+        runs-on: ubuntu-latest
+        timeout-minutes: 5
+        steps:
+            - name: Validate project discovery and test results
+              env:
+                  PROJECT_DISCOVERY_RESULT: ${{ needs.affected-test-projects.result }}
+                  PROJECT_COUNT: ${{ needs.affected-test-projects.outputs.project-count }}
+                  TEST_MATRIX_RESULT: ${{ needs.test-playwright-project.result }}
+              run: |
+                  set -euo pipefail
+
+                  echo "Project discovery: $PROJECT_DISCOVERY_RESULT"
+                  echo "Selected projects: $PROJECT_COUNT"
+                  echo "Playwright matrix: $TEST_MATRIX_RESULT"
+
+                  [[ "$PROJECT_DISCOVERY_RESULT" == "success" ]]
+
+                  if [[ "$PROJECT_COUNT" == "0" ]]; then
+                    [[ "$TEST_MATRIX_RESULT" == "skipped" ]]
+                  else
+                    [[ "$TEST_MATRIX_RESULT" == "success" ]]
+                  fi
