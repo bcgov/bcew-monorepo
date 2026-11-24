@@ -122,7 +122,7 @@
         "wp-env-start": {
             "executor": "nx:run-commands",
             "options": {
-                "command": "wp-env start --xdebug=coverage || wp-env start --xdebug=coverage",
+                "command": "wp-env start --xdebug=coverage --debug",
                 "cwd": "{projectRoot}"
             },
             "dependsOn": ["composer-install"]
