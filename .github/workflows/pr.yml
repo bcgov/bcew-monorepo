@@ -34,6 +34,7 @@ jobs:
         name: Test e2e and screenshots
         uses: ./.github/workflows/pr-playwright.yml
 
+    # cSpell:ignore sonarqube
     sonarqube:
         name: SonarQube
         needs:
