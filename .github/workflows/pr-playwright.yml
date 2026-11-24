@@ -154,23 +154,6 @@ jobs:
             - uses: ./.github/actions/setup
               with:
                   install-composer: 'true'
-
-            - name: Load WordPress images from the Docker Hub mirror
-              run: |
-                  set -euo pipefail
-
-                  pull() {
-                    local image="$1"
-                    local mirror="mirror.gcr.io/library/${image}"
-
-                    docker pull "$mirror"
-                    docker tag "$mirror" "$image"
-                  }
-
-                  pull mariadb:lts
-                  pull wordpress:php7.4
-                  pull wordpress:cli-php7.4
-
             - name: Start Playwright container
               run: |
                   set -euo pipefail

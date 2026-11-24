@@ -29,36 +29,6 @@ jobs:
             - uses: ./.github/actions/setup
               with:
                   install-composer: 'true'
-
-            # wp-env pulls these images from Docker Hub. Pull the mirror copies
-            # concurrently, then tag them with the names wp-env expects.
-            - name: Load WordPress images from the Docker Hub mirror
-              run: |
-                  set -euo pipefail
-
-                  images=(
-                    "mariadb:lts"
-                    "wordpress:php7.4"
-                    "wordpress:cli-php7.4"
-                  )
-
-                  pull_image() {
-                    local image="$1"
-                    local mirror="mirror.gcr.io/library/${image}"
-
-                    docker pull "$mirror"
-                    docker tag "$mirror" "$image"
-                  }
-
-                  export -f pull_image
-
-                  printf '%s\n' "${images[@]}" |
-                    xargs -P "${#images[@]}" -I {} bash -c 'pull_image "$1"' _ {}
-
-                  for image in "${images[@]}"; do
-                    docker image inspect "$image" >/dev/null
-                  done
-
             - name: Run affected PHP integration tests
               if: github.event_name == 'pull_request'
               env:
