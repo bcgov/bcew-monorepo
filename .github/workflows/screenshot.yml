@@ -1,0 +1,118 @@
+name: Run Screenshot Generate (Manual Workflow)
+
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'Project to generate screenshot'
+        required: true
+        type: choice
+        options:
+          - bcew-blocks
+          - bcew-belleville-terminal
+          - bcew-theme-2
+          - bcew-ticorp
+          - bcew-document-repository
+          - bcew-chefs-embed
+          - bcew-theme
+          - bcew-plugin
+          - bcew-search
+          - bcew-hporoo
+          - bcew-firb
+          - bcew-starter-theme
+
+permissions:
+  contents: read
+
+env:
+  NX_DEFAULT_OUTPUT_STYLE: static
+
+jobs:
+  screenshot-test:
+    name: Screenshot test (${{ inputs.name }})
+    if: github.ref_type == 'branch' && github.ref_name != 'main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ./.github/actions/setup
+        with:
+          install-composer: 'true'
+
+      - name: Validate screenshot target
+        env:
+          PROJECT: ${{ inputs.name }}
+        run: |
+          set -euo pipefail
+
+          pnpm --silent nx show project "$PROJECT" --json |
+            jq -e '.targets["test-screenshot"]' >/dev/null
+
+      - name: Start Playwright container
+        run: |
+          set -euo pipefail
+
+          docker compose up \
+            --detach \
+            --wait \
+            playwright
+
+      - name: Run screenshot generate
+        env:
+          PROJECT: ${{ inputs.name }}
+        run: |
+          pnpm nx run "$PROJECT:test-screenshot-generate" \
+            --playwrightArgs="--max-failures=1 --reporter=list,github" \
+            --no-tui
+
+      - name: Summarize screenshot failures
+        if: failure()
+        env:
+          PROJECT: ${{ inputs.name }}
+        run: |
+          {
+            echo "### Screenshot failures: $PROJECT"
+            echo
+            echo "Download the \`playwright-report-$PROJECT\` artifact for actual, expected, and diff images plus traces."
+            echo
+
+            find plugins themes \
+              -path '*/artifacts/test-results/*' \
+              -name '*-diff.png' \
+              -print 2>/dev/null || true
+
+            while IFS= read -r file; do
+              echo
+              echo "<details><summary>$file</summary>"
+              echo
+              head -n 60 "$file"
+              echo
+              echo "</details>"
+            done < <(
+              find plugins themes \
+                -path '*/artifacts/test-results/*' \
+                -name 'error-context.md' \
+                -print 2>/dev/null
+            )
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Show Playwright container logs
+        if: failure()
+        run: docker compose logs --no-color playwright
+
+      - name: Upload failed Playwright results
+        if: failure()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: playwright-report-${{ inputs.name }}
+          path: |
+            plugins/*/artifacts/test-results/
+            themes/*/artifacts/test-results/
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Stop test containers
+        if: always()
+        run: docker compose down --volumes --remove-orphans
