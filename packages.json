@@ -206,10 +206,10 @@
                 },
                 "version": "1.2.0",
                 "dist": {
-                    "url": "https://github.com/bcgov/bcew-monorepo/releases/download/bcew-document-repository/v1.2.0/dist-3ec9d1818f9c550ca76de01975a1f14f42ec5590.zip",
+                    "url": "https://github.com/bcgov/bcew-monorepo/releases/download/bcew-document-repository/v1.2.0/bcew-document-repository-f2a8d46f83cd3d2885ea77389849267768f416e9.zip",
                     "type": "zip",
-                    "reference": "3ec9d1818f9c550ca76de01975a1f14f42ec5590",
-                    "shasum": "7b0478b7990049137743b561bd6f7b191244905e"
+                    "reference": "f2a8d46f83cd3d2885ea77389849267768f416e9",
+                    "shasum": "4e68b1057dddf534d2db7563a4512c1798c3e656"
                 }
             }
         },
