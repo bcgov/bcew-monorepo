@@ -13,6 +13,7 @@
     "targets": {
         "composer-install": {},
         "prepare-release": {},
+        "test-screenshot-generate": {},
         "build": {},
         "start": {},
         "start-playwright": {},
