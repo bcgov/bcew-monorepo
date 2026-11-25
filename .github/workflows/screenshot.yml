@@ -72,50 +72,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add --all
+          git add -- ':(glob)**/__snapshots__/**'
           git commit -m "Update $PROJECT screenshots"
           git push origin "HEAD:${GITHUB_REF_NAME}"
-
-      - name: Summarize screenshot failures
-        if: failure()
-        run: |
-          {
-            echo "### Screenshot failures: $PROJECT"
-            echo
-            echo "Download the \`playwright-report-$PROJECT\` artifact for actual, expected, and diff images plus traces."
-            echo
-
-            find plugins themes \
-              -path '*/artifacts/test-results/*' \
-              -name '*-diff.png' \
-              -print 2>/dev/null || true
-
-            while IFS= read -r file; do
-              echo
-              echo "<details><summary>$file</summary>"
-              echo
-              head -n 60 "$file"
-              echo
-              echo "</details>"
-            done < <(
-              find plugins themes \
-                -path '*/artifacts/test-results/*' \
-                -name 'error-context.md' \
-                -print 2>/dev/null
-            )
-          } >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Show Playwright container logs
-        if: failure()
-        run: docker compose logs --no-color playwright
-
-      - name: Upload failed Playwright results
-        if: failure()
-        uses: actions/upload-artifact@v7.0.1
-        with:
-          name: playwright-report-${{ inputs.name }}
-          path: |
-            plugins/*/artifacts/test-results/
-            themes/*/artifacts/test-results/
-          if-no-files-found: warn
-          retention-days: 7
