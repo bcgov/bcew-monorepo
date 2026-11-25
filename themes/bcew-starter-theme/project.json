@@ -19,9 +19,13 @@
         "start-playwright": {},
         "test-accessibility": {},
         "test-screenshot": {},
-        "test-screenshot-generate": {},
         "lint-template-parts": {},
-        "wp-env-start": {},
+        "wp-env-start": {
+            "dependsOn": [
+                "composer-install",
+                "build"
+            ]
+        },
         "test-integration": {
             "options": {
                 "command": "wp-env run tests-cli --env-cwd=wp-content/themes/bcew-starter-theme composer test"
