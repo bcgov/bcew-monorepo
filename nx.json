@@ -125,7 +125,7 @@
                 "command": "wp-env start --xdebug=coverage",
                 "cwd": "{projectRoot}"
             },
-            "dependsOn": ["composer-install"]
+            "dependsOn": ["composer-install", "build"]
         },
         "wp-env-clean": {
             "executor": "nx:run-commands",
