@@ -1,0 +1,77 @@
+name: Run Screenshot Generator (Manual Workflow)
+
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'Project to Generate'
+        required: true
+        type: choice
+        options:
+          - bcew-blocks
+          - bcew-belleville-terminal
+          - bcew-theme-2
+          - bcew-ticorp
+          - bcew-document-repository
+          - bcew-chefs-embed
+          - bcew-theme
+          - bcew-plugin
+          - bcew-search
+          - bcew-hporoo
+          - bcew-firb
+          - bcew-starter-theme
+
+
+permissions:
+  contents: write
+
+env:
+  NX_DEFAULT_OUTPUT_STYLE: static
+  # workflow_dispatch uses the selected project.
+  # The temporary push trigger defaults to bcew-starter-theme.
+  PROJECT: ${{ inputs.name }}
+
+jobs:
+  screenshot-test:
+    name: Screenshot test (${{ inputs.name }})
+    if: github.ref_type == 'branch' && github.ref_name != 'main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: ./.github/actions/setup
+        with:
+          install-composer: 'true'
+
+      - name: Validate screenshot target
+        run: |
+          set -euo pipefail
+
+          pnpm --silent nx show project "$PROJECT" --json |
+            jq -e '.targets["test-screenshot-generate"]' >/dev/null
+
+      - name: Run screenshot generate
+        run: |
+          pnpm nx run "$PROJECT:test-screenshot-generate" \
+            --playwrightArgs="--max-failures=1 --reporter=list,github" \
+            --no-tui
+
+      - name: Commit generated screenshots
+        run: |
+          set -euo pipefail
+
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "No screenshot changes generated."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add -- ':(glob)**/__snapshots__/**'
+          git commit -m "Update $PROJECT screenshots"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
