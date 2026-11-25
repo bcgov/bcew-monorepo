@@ -54,15 +54,6 @@ jobs:
           pnpm --silent nx show project "$PROJECT" --json |
             jq -e '.targets["test-screenshot-generate"]' >/dev/null
 
-      - name: Start Playwright container
-        run: |
-          set -euo pipefail
-
-          docker compose up \
-            --detach \
-            --wait \
-            playwright
-
       - name: Run screenshot generate
         run: |
           pnpm nx run "$PROJECT:test-screenshot-generate" \
@@ -128,7 +119,3 @@ jobs:
             themes/*/artifacts/test-results/
           if-no-files-found: warn
           retention-days: 7
-
-      - name: Stop test containers
-        if: always()
-        run: docker compose down --volumes --remove-orphans
