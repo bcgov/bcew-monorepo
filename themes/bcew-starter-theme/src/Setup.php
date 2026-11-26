@@ -75,6 +75,6 @@ class Setup {
      */
     public function register_blocks(): void {
         // Used the user to create a template part in the format of query-template-{post_type} for different formatting on query loop.
-        register_block_type( get_theme_file_path( 'src/query-template' ) );
+        register_block_type( get_theme_file_path( 'dist/query-template' ) );
     }
 }

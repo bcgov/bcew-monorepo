@@ -199,30 +199,27 @@
         },
         "blocks": {
             "core/navigation": {
-                "border": {
-                    "bottom": {
-                        "style": "solid",
-                        "width": "1px",
-                        "color": "var(--bcds-surface-color-border-default)"
-                    },
-                    "top": {
-                        "style": "solid",
-                        "width": "1px",
-                        "color": "var(--bcds-surface-color-border-default)"
-                    }
-                },
-                "css": "& > div:not(.has-modal-open) ul { max-width: var(--wp--style--global--content-size); margin: 0 auto !important; border-width: 0 !important; } & > div:not(.has-modal-open) .wp-block-navigation__submenu-container { border: 1px solid var(--bcds-surface-color-border-default) !important; }",
+            
+                "css": "& > div:not(.has-modal-open) ul { max-width: var(--wp--style--global--content-size); margin: 0 auto !important; !important; }",
                 "spacing": {
+                    "blockGap": "var:preset|spacing|50",
                     "padding": {
-                        "top": "0.5rem",
-                        "bottom": "0.5rem",
                         "left":"var:preset|spacing|40",
                         "right":"var:preset|spacing|40"
+                    },
+                    "margin": {
+                        "top": "0.5rem",
+                        "bottom": "0.5rem"
                     }
                   
                     
                 },
                 "elements": {
+                    "button":{
+                        "color": {
+                            "text": "cyan"
+                        }
+                    },
                     "link": {
                         "spacing": {
                             "padding": {
@@ -345,6 +342,19 @@
                         "color": "var(--bcds-surface-color-border-default)",
                         "style": "solid",
                         "width": "1px"
+                    }
+                }
+            },
+            "core/separator": {
+                "border":{
+                    "width": "1px"
+                },
+                "color": {
+                    "text": "var(--bcds-surface-color-border-default)"
+                },
+                "spacing": {
+                    "margin": {
+                        "bottom": "0"
                     }
                 }
             }

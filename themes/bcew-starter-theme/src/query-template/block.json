@@ -9,6 +9,7 @@
     "postType"
   ],
   "render": "file:./render.php",
+  "editorScript": "file:./index.js",
   "supports": {
     "html": false
   }
