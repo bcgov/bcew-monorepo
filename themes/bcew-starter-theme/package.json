@@ -24,7 +24,8 @@
   "main": "index.js",
   "dependencies": {
     "@bcgov/bc-sans": "catalog:",
-    "@bcgov/design-tokens": "catalog:"
+    "@bcgov/design-tokens": "catalog:",
+    "@wordpress/blocks": "catalog:"
   },
   "devDependencies": {
     "@bcew-monorepo/e2e": "workspace:*",
