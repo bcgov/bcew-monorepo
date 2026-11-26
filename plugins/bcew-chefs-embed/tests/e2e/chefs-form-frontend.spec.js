@@ -20,7 +20,7 @@ const FIXTURE_INTEGRITY = `sha384-${ createHash( 'sha384' )
     .update( VIEWER_FIXTURE )
     .digest( 'base64' ) }`;
 const VIEWER_INTEGRITY =
-    'sha384-vlfl5pkyza8idP/Pe5maCWTBCa0+oVuWaeNaruCwF1zyyMPIW5mv7W+wZRZxRTKd';
+    'sha384-+6FmjrHF3mEyXMMxnTTRobn8DMijGxjPqqAnUsJ5hxfcUCXLmHYPE53T76mYHYc1';
 
 // Served bodies never match the pinned hash, so these tests cover blocked loads and retries.
 const routeViewerScript = async ( page, body = VIEWER_BODY ) => {
