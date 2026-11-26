@@ -6,6 +6,10 @@
         {
             "name": "secondary",
             "title": "Pages Secondary"
+        },
+        {
+            "name": "wide-page",
+            "title": "Pages Wide"
         }
     ],
     "templateParts": [
