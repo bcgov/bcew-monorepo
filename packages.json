@@ -140,6 +140,25 @@
                     "reference": "e036a6bff8c76fa48ac98975ee8105abaff41432",
                     "shasum": "9f0f5fbc293fcfc578f138810f30eb04700c24c7"
                 }
+            },
+            "1.0.0": {
+                "name": "bcgov-plugin/bcew-chefs-embed",
+                "description": "Embed BC Government Common Hosted Form Service (CHEFS) forms into WordPress pages and posts.",
+                "type": "wordpress-plugin",
+                "license": "Apache-2.0",
+                "autoload": {
+                    "psr-4": {
+                        "Bcew\\ChefsEmbed\\": "src/",
+                        "Bcew\\ChefsEmbed\\Test\\": "tests/php/"
+                    }
+                },
+                "version": "1.0.0",
+                "dist": {
+                    "url": "https://github.com/bcgov/bcew-monorepo/releases/download/bcew-chefs-embed/v1.0.0/bcew-chefs-embed-d7fd863240ba11a015ef2484a2b5c91c5160b361.zip",
+                    "type": "zip",
+                    "reference": "d7fd863240ba11a015ef2484a2b5c91c5160b361",
+                    "shasum": "d52b4aa8c08fd0aa39ca8b6d54baac57cc3a2baf"
+                }
             }
         },
         "bcgov-theme/bcew-theme": {
