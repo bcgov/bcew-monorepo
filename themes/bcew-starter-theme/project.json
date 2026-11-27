@@ -16,6 +16,9 @@
         "test-screenshot-generate": {},
         "build": {},
         "start": {},
+        "start-playwright": {},
+        "test-accessibility": {},
+        "test-screenshot": {},
         "lint-template-parts": {},
         "wp-env-start": {
             "dependsOn": [

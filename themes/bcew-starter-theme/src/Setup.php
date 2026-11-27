@@ -14,6 +14,8 @@ class Setup {
     public function init(): void {
         add_action( 'init', [ $this, 'disable_default_block_patterns' ] );
         add_action( 'init', [ $this, 'heading_block_style_variations' ] );
+        add_action( 'init', [ $this, 'register_blocks' ] );
+
         add_action( 'enqueue_block_assets', [ $this, 'enqueue_global_styles' ] );
         add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_global_styles' ] );
     }
@@ -51,7 +53,7 @@ class Setup {
     }
 
     /**
-     * Registers cusstom block style variation.
+     * Registers custom block style variation.
      *
      * @return void
      */
@@ -64,5 +66,15 @@ class Setup {
             'style_handle' => 'bcew-starter-theme-styles',
         );
         register_block_style( $block_name, $style_properties );
+    }
+
+    /**
+     * Registers blocks.
+     *
+     * @return void
+     */
+    public function register_blocks(): void {
+        // Used the user to create a template part in the format of query-template-{post_type} for different formatting on query loop.
+        register_block_type( get_theme_file_path( 'dist/query-template' ) );
     }
 }
