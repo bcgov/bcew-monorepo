@@ -12,5 +12,4 @@ if ( is_plugin_active( 'bcew-plugin/bcew-plugin.php' ) ) :
     <!-- wp:design-system-wordpress-plugin/breadcrumb /-->
 	<?php
  endif;
- ?>
-
+?>
