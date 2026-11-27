@@ -1,163 +1,151 @@
-# CI/CD and workflow behavior
+# CI/CD
 
-All workflows live under [`.github/workflows/`](https://github.com/bcgov/bcew-monorepo/tree/main/.github/workflows). This page summarizes behavior; inline workflow comments and the [workflows README](https://github.com/bcgov/bcew-monorepo/blob/main/.github/workflows/README.md) are authoritative for details.
+GitHub Actions manages pull request validation, testing, releases, documentation deployment, and release cleanup.
 
-## Pull requests (`pr.yml`)
+## Pull request checks
 
-**Triggers:** Every `pull_request` event.
+`pr.yml` runs the main CI checks for pull requests and pushes to `main`. It coordinates the reusable quality, unit, integration, Playwright, and SonarQube workflows.
 
-**Concurrency:** One run per PR; newer commits cancel in-progress runs for that PR.
+For pull requests, Nx limits applicable tests to affected projects. Pushes to `main` run the applicable test targets across all projects.
 
-**Typical steps:**
+### Quality checks
 
-1. **Labeler** — Applies labels from `.github/labeler.yml` based on changed paths.
-2. **Install** — pnpm and Node (see workflow for versions), `pnpm install`, root `composer install`.
-3. **Lint** — Full monorepo lint: PHP, JS, CSS, Markdown, `package.json`.
-4. **Build** — `npx nx affected --base="origin/<base_branch>" -t build` so only **affected** projects build.
-5. **Tests**:
-    1. **Integration** — PHP WordPress integration tests using wp-env.
-    2. **e2e** — The `e2e` project from the shared Playwright config, running in the Playwright container with wp-env.
-    3. **Screenshot** — The `screenshot` project from the shared Playwright config, running visual regression tests against committed screenshots.
-        - If a screenshot test fails, inspect the uploaded Playwright report artifact. To intentionally update baselines, run `npx nx run <project-name>:test-screenshot-generate` for the affected project.
-6. **Artifacts** — Playwright report uploaded on completion (unless cancelled).
+`pr-quality.yml`:
 
-### How “affected” is chosen
+- Applies labels based on changed files.
+- Runs PHP, JavaScript, CSS, Markdown, `package.json`, and template-part linting.
 
-The PR workflow compares the PR head to `origin/<github.base_ref>` (the target branch, usually `main`). Any project touched or implied by the Nx graph runs the expensive targets.
+### Unit tests
 
-## PR title (`pr-title.yml`)
+`pr-unit.yml` runs JavaScript unit tests.
 
-The workflow checks whether a PR title follows Conventional Commits when a PR opens, changes, or is updated. Editing a title reruns this check without rerunning lint and tests. **The check does not block merges until a repository admin configures the GitHub settings from DSWP-1264:** enable squash merging only, set the squash commit message default to the PR title, and require `Validate PR title` in the `main` branch ruleset or protection settings. Until then, the check may report failure but is not a required merge gate. See the [PR title cheat sheet](./contributing-workflow.md#pr-title-conventional-commits).
+Pull requests test affected projects. Pushes to `main` run the target across all applicable projects.
 
-## Merges to `main`
+### Integration tests
 
-- **Docs:** Pushes to `main` that touch `docs/**`, package `docs/**`, sync script, or docs workflow deploy the VitePress site via `deploy-docs.yml` (see [Documentation site](./documentation-site.md)).
-- **Releases:** Merging code does **not** by itself publish plugin/theme zip artifacts. A maintainer starts **`tag.yml`** from Actions. That workflow creates the tag.
+`pr-integration.yml` runs PHP integration tests.
 
-## Tags (`tag.yml`)
+Pull requests test affected projects. Pushes to `main` run the target across all applicable projects.
 
-On the GitHub repository, navigate to Actions > Release Subproject and Update packages.json > Run workflow.
+PHP coverage is collected when available and passed to SonarQube.
 
-You do not type a version. The workflow reads existing `{project}/v*` tags and picks the next one.
+### Playwright tests
 
-Inputs:
+`pr-playwright.yml` runs Playwright tests for projects that provide e2e, accessibility, or screenshot test targets.
 
-- **Use workflow from:** the branch to release. A release from a branch other than `main` should stay an alpha. Most releases run from `main`.
-- **Project to release:** dropdown of monorepo projects. This list is **hardcoded** in `tag.yml` (`workflow_dispatch.inputs.name.options`). When you [rename a project](./renaming-projects.md), add the new Nx name here or you cannot cut a release.
-- **Alpha:** ticked by default. Leave it ticked for an alpha. Untick it for a real release.
+Pull requests test affected projects. Pushes to `main` test all applicable projects.
 
-How the next version is chosen:
+Each project runs separately. Failed Playwright runs upload test results, including available screenshot differences and traces.
 
-- A project with no `{project}/v*` tags starts at `1.0.0-alpha.1` (or `1.0.0` if Alpha is unticked).
-- Alphas count up on the same `X.Y.Z` (`1.0.0-alpha.1`, then `1.0.0-alpha.2`).
-- Unticking Alpha ships that `X.Y.Z` when it is not tagged yet.
-- After a real release, the next series is the next minor (`1.0.0` → `1.1.0` or `1.1.0-alpha.1`). Patch and major are not bumped.
-- Tags that are not `X.Y.Z` or `X.Y.Z-alpha.N` (for example `1.1.0-a1`) are ignored.
+### SonarQube
 
-What this workflow does:
+`pr-sonarqube.yml` runs the SonarQube scan after integration tests and includes PHP coverage when available.
 
-1. Nx Release writes that version into the project's `package.json` and `CHANGELOG.md`, commits those files, and tags `{project}/v{version}` (for example `bcew-blocks/v1.0.0-alpha.1`).
-2. Plugin PHP files and theme `style.css` in git are not edited.
-3. Builds the project and creates a zip named `<project>-<version>.zip` (for example `bcew-blocks-1.0.0-alpha.1.zip`). The zip's `Version:` header is set to that version, including alphas.
-4. Creates a GitHub Release from the changelog and attaches the zip. An alpha version is published as a prerelease.
-5. Updates `packages.json` for the Composer repository on GitHub Pages and deploys it.
+## Pull request titles
 
+`pr-title.yml` validates pull request titles against the repository's supported Conventional Commit types:
 
+- `feat`
+- `fix`
+- `perf`
+- `revert`
+- `docs`
+- `style`
+- `refactor`
+- `test`
+- `build`
+- `ci`
+- `chore`
 
-## Documentation Deployment
+The scope is optional.
 
-The workflow [`.github/workflows/deploy-docs.yml`](https://github.com/bcgov/bcew-monorepo/blob/main/.github/workflows/deploy-docs.yml) builds the site on pushes to `main` (when docs-related paths change) and deploys the output to the `docs/` folder on the `gh-pages` branch for GitHub Pages.
+## Screenshot generation
 
+`screenshot.yml` is a manually triggered workflow for regenerating screenshot baselines for a selected project.
 
-## Tag format
+It:
 
-`tag.yml` creates the tag. It encodes both the **Nx project name** and **semver**:
+1. Runs the project's `test-screenshot-generate` target.
+2. Commits changed snapshots.
+3. Pushes the changes back to the current branch.
+
+The workflow does not run against `main`.
+
+## Releases
+
+`tag.yml` is the manual release workflow for WordPress plugins and themes.
+
+The maintainer selects:
+
+- the project
+- whether the release is an alpha
+- an optional version
+
+If no version is supplied, Nx determines the release version.
+
+The workflow:
+
+1. Runs Nx Release for the selected project.
+2. Creates the release tag and GitHub Release.
+3. Builds the release archive.
+4. Uploads the ZIP to the GitHub Release.
+5. Updates the Composer `packages.json`.
+6. Publishes the updated Composer repository to GitHub Pages.
+
+Release tags use the project name and version:
 
 ```text
 <nx-project-name>/v<semver>
 ```
 
-**Rules:**
+Release operations use a GitHub App token so the workflow can commit and create tags where repository protection requires it.
 
-- `<nx-project-name>` must be the **exact** Nx project name (`npx nx show projects`). Example: `bcew-blocks`. If you rename the project, later tags use the **new** name; do not retag history. See [Renaming a plugin or theme](./renaming-projects.md).
-- `<semver>` is prefixed with `v` in the tag. The workflow only creates `X.Y.Z` or `X.Y.Z-alpha.N` (examples: `v1.0.0`, `v1.1.0-alpha.1`). Older shapes such as `v1.1.0-a1` are ignored when the next version is chosen.
-- Invalid examples:
-    - Wrong project slug not in Nx graph
-    - Non-semver suffixes such as `v100-testing-tag` for production consumption
+## Deleted releases
 
-The workflow strips the leading `v` for the version recorded in `packages.json` while keeping the full tag for GitHub Release URLs.
+`tag-delete.yml` runs when a Git tag is deleted.
 
-## Branch naming
+For supported release tags, it removes the corresponding release metadata from `packages.json` and republishes the Composer repository to GitHub Pages.
 
-Use descriptive, lowercase, hyphenated branches:
+Release creation and deletion share a concurrency group so they cannot update `packages.json` at the same time.
 
-| Prefix | Use |
-| --- | --- |
-| `feature/` | New functionality |
-| `fix/` or `bugfix/` | Defect fixes |
-| `chore/` | Tooling, housekeeping |
-| `docs/` | Documentation only |
+## Documentation
 
-Examples: `feature/add-hero-block`, `fix/wp-env-port-conflict`.
+`deploy-docs.yml` builds the VitePress documentation site when relevant documentation or documentation-build files change.
 
-**Default branch:** `main` — PRs usually target `main`; `nx.json` sets `defaultBase` to `origin/main` for local `nx affected` comparisons.
+Pull requests build the documentation without deploying it.
 
-## WordPress version on release
+Changes on `main` and manually triggered runs publish the generated site to the `docs` directory on GitHub Pages.
 
-When **`tag.yml`** releases a project:
+## Shared workflow setup
 
-1. It chooses the next version from existing `{project}/v*` tags. See [CI/CD](./ci-cd.md).
-2. It writes that version into the project's `package.json` and `CHANGELOG.md` and commits those files. Plugin PHP files and theme `style.css` in git are **not** modified.
-3. The release zip (`<project>-<version>.zip`) gets the `Version:` header set to that version, including alphas:
-   - **Theme** — `Version:` line in `style.css`
-   - **Plugin** — `* Version:` line in `<nx-project-name>.php`, or the first PHP file in the project root that contains `Plugin Name:`
-4. That header change exists only inside the zip attached to the GitHub Release.
+`.github/actions/setup/action.yml` provides common dependency setup for workflows.
 
-You do not edit the version by hand before a release. The placeholder in source (for example `1.0.0`) can stay as-is.
+It:
 
-## Communicating version bumps
+- Configures Node.js 24.
+- Configures pnpm 10 and installs dependencies from the lockfile.
+- Optionally installs Composer dependencies with caching.
 
-- Document breaking changes in package `docs/` or changelog files as agreed by the team.
+Individual workflows enable Composer setup only when required.
 
+## Dependency updates
 
-# Release and deployment model
+Dependabot manages dependency update pull requests:
 
-## Source of truth
+- npm dependencies are checked daily.
+- Composer dependencies are checked weekly.
+- Updates are assigned to the `bcgov/digital-engagement-solutions-custom-web` team for review.
 
-The **`bcgov/bcew-monorepo`** repository (this monorepo) is the **source of truth** for code, history, and automation. Day-to-day development happens on branches; **releases** are cut from tagged commits.
+Dependabot limits each package ecosystem to three open pull requests.
 
-## How consumers get packages today
+## Pull request labels
 
-1. A maintainer runs **`tag.yml`** from Actions, picks the project, and leaves **Alpha** ticked or unticks it for a real release. The workflow chooses the version and creates the tag `<nx-project-name>/v<semver>` (see [Versioning](./versioning.md)).
-2. **`tag.yml`** commits `package.json` and `CHANGELOG.md`, builds the project, attaches a release zip named **`<project>-<version>.zip`** to a **GitHub Release** on this repository, and updates the Composer package index **`packages.json`** published to GitHub Pages at `https://bcgov.github.io/bcew-monorepo/`.
-3. Downstream WordPress stacks add the Composer **repository** URL and `require` the package by name and version.
+`.github/labeler.yml` automatically labels pull requests based on changed paths.
 
-The `packages.json` entries point `dist.url` at the release asset on **this** GitHub repo (`update-packages.php` uses `github.com/<repository>/releases/download/...`).
+Labels identify:
 
-### Manual vs automated steps
+- monorepo-level changes
+- plugin changes
+- theme changes
+- specific plugins and themes
 
-| Step | Usually |
-| --- | --- |
-| Code review and merge | Manual |
-| Choosing the project, the branch, and whether it is an alpha | Manual (maintainer) |
-| Version, tag, `package.json` and changelog commit, build, zip, GitHub Release, `packages.json` deploy | **Automated** in `tag.yml` |
-
-## Composer consumer configuration
-
-Example (adjust package name and version):
-
-```json
-{
-  "repositories": [
-    {
-      "type": "composer",
-      "url": "https://bcgov.github.io/bcew-monorepo"
-    }
-  ],
-  "require": {
-    "bcgov-plugin/bcew-blocks": "^1.0"
-  }
-}
-```
-
-Renaming a project's Composer `"name"` publishes a **new** package. Downstream `require` lines must change; old names do not redirect. See [Renaming a plugin or theme](./renaming-projects.md).
