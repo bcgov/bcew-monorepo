@@ -1,4 +1,5 @@
 # Developer Documentation
+
 ## Getting Started
 
 Run the commands below from the **monorepo root** (the directory that contains `package.json` and `pnpm-workspace.yaml`).
@@ -25,6 +26,7 @@ pnpm composer-install
 ```
 
 ## Developer Commands
+
 ```bash
 # if nx is not installed globally all nx commands to to be `pnpm nx` otherwise just nx
 cd bcew-monorepo
@@ -90,12 +92,14 @@ The monorepo publishes a **single static documentation site** built with [VitePr
 ```
 
 ### Documentation Development
+
 ```bash
 # from the monorepo root:
 cd bcew-monorepo
 pnpm install
 pnpm docs:dev
 ```
+
 Mermaid diagrams are supported in Markdown with fenced `mermaid` code blocks.
 They render in the browser and adapt to the active light or dark theme.
 

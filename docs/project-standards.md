@@ -22,13 +22,13 @@ A **valid** monorepo package in this repository is a workspace member that Nx ca
 
    Playwright test suites are projects in the shared `packages/e2e/playwright.config.js`; package-level `playwright.config.js` files reuse that configuration. Use the corresponding Nx target to select `e2e`, `accessibility`, or `screenshot`.
 
-5. **Local environment**
+4. **Local environment**
    - `.wp-env.json` at the project root when using `wp-env`, consistent with generator output.
 
-6. **Documentation**
+5. **Documentation**
    - For sidebar inclusion in the published docs site, add `docs/index.md` under the package. Optional pages are additional Markdown files in the same `docs/` folder. See [Contributing docs](./contributing.md).
 
-7. **Release packaging**
+6. **Release packaging**
    - A `.gitattributes` containing the standard `export-ignore` list, enforced by `pnpm lint-gitattributes`. See [Shared tooling](./shared-tooling.md#release-packaging-with-gitattributes).
 
 ## Shared libraries (`packages/`)
