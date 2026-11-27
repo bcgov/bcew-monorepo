@@ -26,7 +26,7 @@
         
     ],
     "settings": {
-        "appearanceTools": true,
+        "appearanceTools": false,
         "color": {
             "defaultPalette": true,
             "palette": [
@@ -74,7 +74,7 @@
         "typography": {
             "defaultFontSizes": false,
             "lineHeight": false,
-            "customFontSize": true,
+            "customFontSize": false,
             "letterSpacing": false,
             "textTransform": false,
             "fontWeight": false,
@@ -88,9 +88,10 @@
             "presets": []
         },
         "spacing": {
-            "padding": true,
+            "padding": false,
             "blockGap": false,
             "defaultSpacingSizes": false,
+            "customSpacingSize": false,
             "spacingSizes": [
                 {
                     "name": "2X-Small",
@@ -156,7 +157,7 @@
             "button": {
                 ":hover": {
                     "color": {
-                        "background": "var(--bcds-surface-color-primary-button-hover)"
+                        "background": "color-mix(in srgb, var(--wp--preset--color--surface-primary) 80%, white 20%);"
                     }
                 },
                 "color": {
@@ -355,6 +356,22 @@
                 "spacing": {
                     "margin": {
                         "bottom": "0"
+                    }
+                }
+            },
+            "design-system-wordpress-plugin/breadcrumb": {
+                "css": "width: inherit; & .dswp-block-breadcrumb__container { max-width: var(--wp--style--global--content-size); margin: 0 auto !important; !important; }",
+                "spacing": {
+                    "padding": {
+                        "left": "var:preset|spacing|50",
+                        "right": "var:preset|spacing|50"
+                    }
+                },
+                "border":{
+                    "bottom": {
+                        "color": "var(--bcds-surface-color-border-default)",
+                        "style": "solid",
+                        "width": "1px"
                     }
                 }
             }
