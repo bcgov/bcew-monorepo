@@ -16,21 +16,7 @@ A **valid** monorepo package in this repository is a workspace member that Nx ca
    - Defines the Composer package name, autoloading, and scripts such as `test` for integration tests.
    - Path repositories to monorepo packages (for example `packages/phpunit-config`) must be explicit where needed.
 
-4. **Targets and scripts**
-   Implement the targets your project needs, aligned with [`nx.json` defaults](https://github.com/bcgov/bcew-monorepo/blob/main/nx.json):
 
-   | Target | Typical use |
-   | --- | --- |
-   | `composer-install` | `composer install` in the project root |
-   | `build` | `wp-scripts build` → `dist/` |
-   | `start` | `wp-scripts start` (watch) |
-   | `wp-env-start` / `wp-env-stop` / `wp-env-clean` | Local WordPress via `@wordpress/env` |
-   | `test-e2e` | Playwright via `wp-scripts test-playwright` |
-   | `test-e2e-docker` | The above target except it runs inside a docker container running the official Playwright image |
-   | `test-accessibility` | Playwright accessibility suite (`tests/accessibility/`) |
-   | `test-integration` | PHPUnit inside `wp-env` |
-   | `test-screenshot` | Playwright visual regression tests, comparing with committed screenshots, generally only used by CI/CD. |
-   | `test-screenshot-generate` | Generate new Playwright visual regression screenshots, necessary when CI/CD finds mismatch between screenshots. |
 
    Root shortcuts such as `pnpm build` run `nx run-many` across all projects that define the target.
 
@@ -49,13 +35,7 @@ A **valid** monorepo package in this repository is a workspace member that Nx ca
 
 Libraries (for example `packages/phpunit-config`) use a minimal `project.json` and supply Composer or npm metadata as needed. They are referenced by path from application `composer.json` files when appropriate.
 
-## Generators
 
-Scaffold new work with the internal Nx plugin:
-
-- **Theme:** `npx nx generate monorepo:theme` then `pnpm install`
-- **Plugin:** `npx nx generate monorepo:plugin` then `pnpm install`
-- **Block in existing plugin:** `npx nx generate monorepo:block <plugin> <block-name>`
 
 See the [monorepo README](https://github.com/bcgov/bcew-monorepo/blob/main/tools/monorepo/README.md) for details.
 

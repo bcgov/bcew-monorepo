@@ -1,11 +1,11 @@
 # Developer Documentation
-## Getting started
+## Getting Started
 
 Run the commands below from the **monorepo root** (the directory that contains `package.json` and `pnpm-workspace.yaml`).
 
 
 
-### Clone and install
+### Clone and Install
 
 ```bash
 git clone https://github.com/bcgov/bcew-monorepo.git
@@ -24,70 +24,121 @@ composer install
 pnpm composer-install
 ```
 
-Installs root Node tooling, root Composer tooling (PHPCS, and so on), and **per-project** Composer dependencies where configured.
-
-## Developer Workflows
-
-Build **one** project:
-
+## Developer Commands
 ```bash
-npx nx run <project-name>:build
+# if nx is not installed globally all nx commands to to be `pnpm nx` otherwise just nx
+cd bcew-monorepo
+pnpm build # builds all plugins and themes
+pnpm lint-php # lints all php files in monorepo
+pnpm wp-env-stop # stops all docker contains
+
+# using generators `nx generate monorepo:{plugin|theme|block}`
+nx generate monorepo:plugin
+# This asks questions about the plugin.
+cd plugins/my-plugin
+
+# Common commands used for development
+# runs the wordpress env, there should be a link with a port number, one for dev, and one for testing
+# this automatically does a build
+nx wp-env-start
+# same and npm run start
+nx start
+nx build
+
+# testing
+nx test-e2e
+nx test-accessibility 
+nx test-integration
+nx test-screenshot
+nx test-screenshot-generate
+
+# stops the docker containers
+nx wp-env-stop
+
+# back to the root, as these commands can only be run globally
+cd ../../ 
+pnpm fix-js
+pnpm lint-js
+pnpm fix-js
+pnpm lint-php
+pnpm fix-html
+pnpm lint-pkg-json
+
+# does lint of js, css, md, package.json, lint-template
+pnpm lint
+
 ```
 
-List project names:
+## Documentation Site
 
-```bash
-npx nx show projects
+The monorepo publishes a **single static documentation site** built with [VitePress](https://vitepress.dev/). VitePress is the Vue-team-maintained documentation tool (Vite-based) used for this repository’s docs portal. 
+
+- **Published site:** [https://bcgov.github.io/bcew-monorepo/docs/](https://bcgov.github.io/bcew-monorepo/docs/)
+- **Source:** `docs/` at the monorepo root, plus synced content under `docs/content/` (generated)
+
+### Plugin and Theme Structure
+
+```text
+{plugins|themes}/{slug}docs/
+  index.md
+  user-docs.md
+  user/
+    getting-started.md
+  developer-docs.md
+  developer/
+    local-development.md
 ```
 
-### After checking out a branch
-
-Because build artifacts are not committed, run these again whenever you check out or pull a branch (including when reviewing a PR):
-
+### Documentation Development
 ```bash
+# from the monorepo root:
+cd bcew-monorepo
 pnpm install
-pnpm build
+pnpm docs:dev
 ```
+Mermaid diagrams are supported in Markdown with fenced `mermaid` code blocks.
+They render in the browser and adapt to the active light or dark theme.
 
-See [Contributing workflow](./contributing-workflow.md#after-checking-out-a-branch) for more detail.
+## Generators
 
-### Local WordPress (`wp-env`)
+Scaffold new work with the internal Nx plugin:
 
-From a project directory (plugin or theme with `.wp-env.json`):
+- **Theme:** `npx nx generate monorepo:theme` then `pnpm install`
+- **Plugin:** `npx nx generate monorepo:plugin` then `pnpm install`
+- **Block in existing plugin:** `npx nx generate monorepo:block <plugin> <block-name>`
 
-```bash
-npx nx wp-env-start
-```
+## Contributing
 
-Or use the underlying command from the project root after reading `project.json` targets. If a port is already in use, stop other `wp-env` instances or adjust the port in `.wp-env.json`.
+### Day-to-day workflow
 
-Stop environments (all projects with the target). Safe to run when nothing is running — idle projects are skipped without error:
+1. Branch from `main` using the [branch naming conventions](./versioning.md#branch-naming).
+2. Open a pull request. CI runs monorepo lint and `nx affected` builds and tests. See [CI/CD](./ci-cd.md).
 
-```bash
-pnpm wp-env-stop
-```
 
-From a single project directory:
+### Pull request titles
 
-```bash
-npx nx wp-env-stop
-```
+Use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/):
+`type(optional-scope): description`
 
-Clean / reset environments (all projects with the target):
+Use `!` for breaking changes:
+`feat!: description`
+`feat(scope)!: description`
+Squash commits use the PR title, so `BREAKING CHANGE:` in the PR description is not included.
 
-```bash
-pnpm wp-env-clean
-```
+| Type | Use for |
+| --- | --- |
+| `feat` | New features |
+| `fix` | Bug fixes |
+| `perf` | Performance improvements |
+| `revert` | Reverts |
+| `docs` | Documentation |
+| `style` | Formatting or style |
+| `refactor` | Code restructuring without behaviour changes |
+| `test` | Tests |
+| `build` | Build system or dependencies |
+| `ci` | CI configuration |
+| `chore` | Maintenance |
 
-### Documentation site
-
-```bash
-pnpm docs:dev    # develop with sync + watch
-pnpm docs:build  # production build
-pnpm docs:preview
-```
-
-See [Documentation site](./documentation-site.md) and [Contributing docs](./contributing.md).
 
 
 ## Requirements
