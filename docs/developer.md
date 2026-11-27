@@ -113,12 +113,6 @@ Scaffold new work with the internal Nx plugin:
 
 ## Contributing
 
-### Day-to-day workflow
-
-1. Branch from `main` using the [branch naming conventions](./versioning.md#branch-naming).
-2. Open a pull request. CI runs monorepo lint and `nx affected` builds and tests. See [CI/CD](./ci-cd.md).
-
-
 ### Pull request titles
 
 Use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/):
