@@ -212,7 +212,6 @@ export default defineConfig({
   themeConfig: {
     nav: [
       { text: 'Home', link: '/' },
-      { text: 'Guides', link: '/' },
       { text: 'Developer', link: '/developer' }
     ],
     sidebar: [
