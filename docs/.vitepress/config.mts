@@ -176,21 +176,12 @@ function packageDocsSection(
 }
 
 const monorepoGuideItems = [
-  { text: 'Getting started', link: '/getting-started' },
-  { text: 'Documentation site', link: '/documentation-site' },
+  { text: 'Developer Documentation', link: '/developer' },
   { text: 'Architecture', link: '/architecture' },
-  { text: 'Project standards', link: '/project-standards' },
-  { text: 'Contributing & migration', link: '/contributing-workflow' },
-  { text: 'Renaming plugins and themes', link: '/renaming-projects' },
-  { text: 'Shared tooling', link: '/shared-tooling' },
   { text: 'CI/CD', link: '/ci-cd' },
-  { text: 'Release & deployment', link: '/release-and-deployment' },
-  { text: 'Versioning', link: '/versioning' },
-  { text: 'Package management', link: '/package-management' },
-  { text: 'Dependabot maintenance', link: '/dependabot-maintenance' },
-  { text: 'Contributing docs', link: '/contributing' },
-  { text: 'Onboarding checklist', link: '/onboarding-validation' },
   { text: 'Maintenance', link: '/maintenance' },
+  { text: 'FAQ', link: '/faq' },
+
 ];
 
 export default defineConfig({
@@ -221,13 +212,12 @@ export default defineConfig({
   themeConfig: {
     nav: [
       { text: 'Home', link: '/' },
-      { text: 'Guides', link: '/getting-started' },
-      { text: 'Contributing docs', link: '/contributing' }
+      { text: 'Developer', link: '/developer' }
     ],
     sidebar: [
       {
         text: 'Monorepo Guides',
-        collapsed: true,
+        collapsed: false,
         items: monorepoGuideItems
       },
       packageDocsSection('plugins', 'Plugins Guides'),
