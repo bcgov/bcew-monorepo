@@ -1,0 +1,1 @@
+import{_t as e,it as t,n,rt as r}from"./chunks/framework.BJB2RXm-.js";var i=JSON.parse(`{"title":"Frequently asked questions","description":"","frontmatter":{},"headers":[],"relativePath":"faq.md","filePath":"faq.md"}`),a={name:`faq.md`};function o(n,i,a,o,s,c){return e(),r(`div`,null,[...i[0]||=[t("",111)]])}var s=n(a,[[`render`,o]]);export{i as __pageData,s as default};
